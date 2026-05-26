@@ -1,8 +1,12 @@
 {
+  "redirects": [
+    { "source": "/", "destination": "/grasp-planning", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/admin", "destination": "/index.html" },
     { "source": "/admin/(.*)", "destination": "/index.html" },
-    { "source": "/:domain((?!data|papers|static|api|favicon|manifest|sockjs-node|_next)[a-z0-9-]+)", "destination": "/index.html" }
+    { "source": "/:domain((?!data|papers|static|api|favicon|manifest|sockjs-node|_next)[a-z0-9-]+)", "destination": "/index.html" },
+    { "source": "/:domain((?!data|papers|static|api|favicon|manifest|sockjs-node|_next)[a-z0-9-]+)/(.*)", "destination": "/index.html" }
   ]
 }

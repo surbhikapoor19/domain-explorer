@@ -12,7 +12,6 @@ function AdminPage() {
   const [buildStatus, setBuildStatus] = useState([]);
   const [deployments, setDeployments] = useState([]);
   const [building, setBuilding] = useState(null);
-  const [switching, setSwitching] = useState(null);
 
   const [uploadMode, setUploadMode] = useState(false);
   const [newDomain, setNewDomain] = useState('');
@@ -119,27 +118,6 @@ function AdminPage() {
       setError(err.message);
     }
     setBuilding(null);
-  };
-
-  const handleSwitchDomain = async (domain) => {
-    setSwitching(domain);
-    setError(null);
-    try {
-      const res = await fetch('/api/admin/switch-domain', {
-        method: 'POST',
-        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Switch failed');
-      setTimeout(async () => {
-        await fetchBuildStatus();
-        startPolling(POLL_FAST);
-      }, 3000);
-    } catch (err) {
-      setError(err.message);
-    }
-    setSwitching(null);
   };
 
   const handleUpload = async (e) => {
@@ -284,39 +262,46 @@ function AdminPage() {
           {domains.length === 0 && !loadingDomains && (
             <div className="admin-empty">No domains configured yet.</div>
           )}
-          {domains.map(d => (
-            <div key={d.slug} className="admin-domain-card">
-              <div className="admin-domain-info">
-                <h4>{d.displayName}</h4>
-                <div className="admin-domain-meta">
-                  <span>{d.slug}</span>
-                  {d.methodCount > 0 && <span>{d.methodCount} {d.methodNoun}s</span>}
-                  {d.hasData && <span className="admin-badge admin-badge-ok">Data</span>}
-                  {d.hasKG ? (
-                    <span className="admin-badge admin-badge-ok">KG</span>
-                  ) : (
-                    <span className="admin-badge admin-badge-warn">No KG</span>
-                  )}
+          {domains.map(d => {
+            const domainPath = `/${d.slug.replace(/_/g, '-')}`;
+            return (
+              <div key={d.slug} className="admin-domain-card">
+                <div className="admin-domain-info">
+                  <h4>{d.displayName}</h4>
+                  <div className="admin-domain-meta">
+                    <span>{d.slug}</span>
+                    {d.methodCount > 0 && <span>{d.methodCount} {d.methodNoun}s</span>}
+                    {d.hasData && <span className="admin-badge admin-badge-ok">Data</span>}
+                    {d.hasKG ? (
+                      <span className="admin-badge admin-badge-ok">KG</span>
+                    ) : (
+                      <span className="admin-badge admin-badge-warn">No KG</span>
+                    )}
+                  </div>
+                  <div className="admin-domain-url">
+                    <a href={domainPath} target="_blank" rel="noopener noreferrer">{window.location.origin}{domainPath}</a>
+                  </div>
+                </div>
+                <div className="admin-domain-actions">
+                  <button
+                    className="admin-btn"
+                    onClick={() => handleTriggerBuild(d.slug)}
+                    disabled={building === d.slug}
+                  >
+                    {building === d.slug ? 'Building...' : 'Build'}
+                  </button>
+                  <a
+                    className="admin-btn admin-btn-visit"
+                    href={domainPath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Visit
+                  </a>
                 </div>
               </div>
-              <div className="admin-domain-actions">
-                <button
-                  className="admin-btn"
-                  onClick={() => handleTriggerBuild(d.slug)}
-                  disabled={building === d.slug}
-                >
-                  {building === d.slug ? 'Building...' : 'Build'}
-                </button>
-                <button
-                  className="admin-btn"
-                  onClick={() => handleSwitchDomain(d.slug)}
-                  disabled={switching === d.slug}
-                >
-                  {switching === d.slug ? 'Switching...' : 'Deploy'}
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {buildStatus.length > 0 && (

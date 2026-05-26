@@ -22,11 +22,11 @@ import './App.css';
 
 function detectDomainFromPath() {
   const path = window.location.pathname.replace(/^\//, '').split('/')[0];
-  if (path === 'admin') return { page: 'admin', dataPrefix: '/data' };
+  if (path === 'admin') return { page: 'admin', dataPrefix: '/data-grasp-planning', domainSlug: null };
   if (path && path !== '' && path !== 'index.html') {
-    return { page: 'explorer', dataPrefix: `/data-${path}` };
+    return { page: 'explorer', dataPrefix: `/data-${path}`, domainSlug: path };
   }
-  return { page: 'explorer', dataPrefix: '/data' };
+  return { page: 'redirect', dataPrefix: '/data-grasp-planning', domainSlug: 'grasp-planning' };
 }
 
 function App() {
@@ -35,7 +35,13 @@ function App() {
   const detected = useMemo(() => detectDomainFromPath(), []);
   useMemo(() => setDataPrefix(detected.dataPrefix), [detected.dataPrefix]);
 
-  const [page, setPage] = useState(detected.page);
+  useEffect(() => {
+    if (detected.page === 'redirect') {
+      window.location.replace('/grasp-planning');
+    }
+  }, [detected.page]);
+
+  const [page, setPage] = useState(detected.page === 'redirect' ? 'explorer' : detected.page);
   const [termDictionary, setTermDictionary] = useState(null);
   const [data, setData] = useState([]);
   const [vizMode, setVizMode] = useState('scatter');

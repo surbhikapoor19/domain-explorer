@@ -5464,10 +5464,28 @@ body {
   color: #6b7280;
   margin-top: 0.2rem;
 }
+.admin-domain-url {
+  margin-top: 0.25rem;
+}
+.admin-domain-url a {
+  font-size: 0.72rem;
+  color: #3b82f6;
+  text-decoration: none;
+  word-break: break-all;
+}
+.admin-domain-url a:hover { text-decoration: underline; }
 .admin-domain-actions {
   display: flex;
   gap: 0.4rem;
 }
+.admin-btn-visit {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  background: #3b82f6;
+  color: #fff;
+}
+.admin-btn-visit:hover { background: #2563eb; }
 
 .admin-loading,
 .admin-empty {
