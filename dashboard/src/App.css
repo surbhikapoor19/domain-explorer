@@ -5473,32 +5473,63 @@ body {
   padding: 2rem 0;
 }
 
-.admin-builds {
-  margin-top: 1.5rem;
+.admin-builds { margin-top: 1.5rem; }
+.admin-builds h3 { font-size: 0.95rem; margin: 0 0 0.5rem; color: #374151; }
+
+.admin-build-card {
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+  padding: 0.6rem 0.75rem; margin-bottom: 0.5rem;
 }
-.admin-builds h3 {
-  font-size: 0.95rem;
-  margin: 0 0 0.5rem;
-  color: #374151;
+.admin-build-card.active { border-color: #d97706; background: #fffbeb; }
+.admin-build-card.failed { border-color: #fca5a5; background: #fef2f2; }
+.admin-build-card.success { border-color: #86efac; background: #f0fdf4; }
+
+.admin-build-header {
+  display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem;
 }
-.admin-build-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.78rem;
-  margin-bottom: 0.25rem;
-  background: #f9fafb;
+.admin-build-pill {
+  display: inline-block; padding: 0.15rem 0.5rem; border-radius: 10px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
 }
-.admin-build-status { font-weight: 600; min-width: 65px; }
-.admin-build-success .admin-build-status { color: #059669; }
-.admin-build-failure .admin-build-status { color: #dc2626; }
-.admin-build-in_progress .admin-build-status { color: #d97706; }
-.admin-build-time { flex: 1; color: #6b7280; }
+.pill-active { background: #fbbf24; color: #78350f; animation: pulse-pill 1.5s ease-in-out infinite; }
+.pill-failed { background: #fca5a5; color: #7f1d1d; }
+.pill-success { background: #86efac; color: #14532d; }
+@keyframes pulse-pill { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+.admin-build-name { font-weight: 600; color: #374151; }
+.admin-build-time { flex: 1; color: #6b7280; text-align: right; font-size: 0.72rem; }
 .admin-build-link {
-  color: var(--primary, #185a7c);
-  text-decoration: none;
-  font-weight: 500;
+  color: var(--primary, #185a7c); text-decoration: none; font-weight: 500; font-size: 0.72rem;
 }
 .admin-build-link:hover { text-decoration: underline; }
+
+.admin-progress-section { margin-top: 0.5rem; }
+.admin-progress-bar-track {
+  height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;
+}
+.admin-progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #f59e0b, #d97706);
+  border-radius: 3px; transition: width 0.5s ease;
+}
+.admin-progress-detail {
+  display: flex; justify-content: space-between; margin-top: 0.25rem;
+  font-size: 0.7rem; color: #92400e;
+}
+.admin-progress-step { font-weight: 500; }
+.admin-progress-pct { font-weight: 700; }
+
+.admin-step-list { margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.admin-step {
+  display: flex; align-items: center; gap: 0.3rem;
+  font-size: 0.68rem; color: #6b7280;
+}
+.admin-step.step-done { color: #059669; }
+.admin-step.step-active { color: #d97706; font-weight: 600; }
+.admin-step.step-pending { color: #9ca3af; }
+.step-icon { width: 12px; text-align: center; font-size: 0.6rem; }
+.step-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.admin-build-fail-msg {
+  margin-top: 0.4rem; font-size: 0.72rem; color: #dc2626;
+}
+.admin-build-fail-msg a { color: #dc2626; font-weight: 600; }

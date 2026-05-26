@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
-const STATUS_POLL_INTERVAL = 15000;
+const POLL_SLOW = 15000;
+const POLL_FAST = 5000;
 
 function AdminPage() {
   const [token, setToken] = useState('');
@@ -21,11 +22,16 @@ function AdminPage() {
   const [uploading, setUploading] = useState(false);
 
   const pollRef = useRef(null);
+  const pollIntervalRef = useRef(POLL_SLOW);
   const storedToken = useRef('');
 
   const authHeaders = useCallback(() => ({
     'x-admin-token': storedToken.current,
   }), []);
+
+  const hasActiveRun = useCallback((runs) => {
+    return runs.some(r => r.status === 'in_progress' || r.status === 'queued');
+  }, []);
 
   const fetchDomains = useCallback(async () => {
     setLoadingDomains(true);
@@ -43,23 +49,46 @@ function AdminPage() {
     setLoadingDomains(false);
   }, [authHeaders]);
 
+  const startPolling = useCallback((interval) => {
+    clearInterval(pollRef.current);
+    pollIntervalRef.current = interval;
+    pollRef.current = setInterval(() => {
+      fetch('/api/admin/build-status', { headers: { 'x-admin-token': storedToken.current } })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (!data) return;
+          const runs = data.runs || [];
+          setBuildStatus(runs);
+          const active = runs.some(r => r.status === 'in_progress' || r.status === 'queued');
+          if (!active && pollIntervalRef.current === POLL_FAST) {
+            startPolling(POLL_SLOW);
+          }
+        })
+        .catch(() => {});
+    }, interval);
+  }, []);
+
   const fetchBuildStatus = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/build-status', { headers: authHeaders() });
       if (res.ok) {
         const data = await res.json();
-        setBuildStatus(data.runs || []);
+        const runs = data.runs || [];
+        setBuildStatus(runs);
+        return runs;
       }
     } catch (_) {}
+    return [];
   }, [authHeaders]);
 
   useEffect(() => {
     if (authenticated) {
-      fetchBuildStatus();
-      pollRef.current = setInterval(fetchBuildStatus, STATUS_POLL_INTERVAL);
+      fetchBuildStatus().then(runs => {
+        startPolling(hasActiveRun(runs) ? POLL_FAST : POLL_SLOW);
+      });
       return () => clearInterval(pollRef.current);
     }
-  }, [authenticated, fetchBuildStatus]);
+  }, [authenticated, fetchBuildStatus, startPolling, hasActiveRun]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -78,7 +107,10 @@ function AdminPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Build trigger failed');
-      setTimeout(fetchBuildStatus, 3000);
+      setTimeout(async () => {
+        await fetchBuildStatus();
+        startPolling(POLL_FAST);
+      }, 3000);
     } catch (err) {
       setError(err.message);
     }
@@ -96,6 +128,10 @@ function AdminPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Switch failed');
+      setTimeout(async () => {
+        await fetchBuildStatus();
+        startPolling(POLL_FAST);
+      }, 3000);
     } catch (err) {
       setError(err.message);
     }
@@ -281,30 +317,67 @@ function AdminPage() {
 
         {buildStatus.length > 0 && (
           <div className="admin-builds">
-            <h3>Recent Builds</h3>
-            {buildStatus.map(run => (
-              <div key={run.id} className={`admin-build-row admin-build-${run.conclusion || run.status}`}>
-                <span className="admin-build-status">
-                  {run.status === 'completed'
-                    ? (run.conclusion === 'success' ? 'Done' : 'Failed')
-                    : run.status === 'in_progress' ? 'Running...'
-                    : run.status === 'queued' ? 'Queued' : run.status}
-                </span>
-                <span className="admin-build-name">{run.name}</span>
-                <span className="admin-build-time">
-                  {new Date(run.created_at).toLocaleString()}
-                </span>
-                {run.html_url && (
-                  <a href={run.html_url} target="_blank" rel="noopener noreferrer" className="admin-build-link">View</a>
-                )}
-                {run.log && run.log.length > 0 && (
-                  <details className="admin-build-log">
-                    <summary>Log ({run.log.length} lines)</summary>
-                    <pre>{run.log.join('\n')}</pre>
-                  </details>
-                )}
-              </div>
-            ))}
+            <h3>Pipeline Status</h3>
+            {buildStatus.map(run => {
+              const isActive = run.status === 'in_progress' || run.status === 'queued';
+              const isFailed = run.conclusion === 'failure';
+              const isSuccess = run.conclusion === 'success';
+              const activeJob = (run.jobs || []).find(j => j.status === 'in_progress') || (run.jobs || [])[0];
+              const steps = activeJob ? activeJob.steps : [];
+              const completedSteps = steps.filter(s => s.status === 'completed').length;
+              const activeStep = steps.find(s => s.status === 'in_progress');
+              const totalSteps = steps.length || 1;
+              const pct = isActive && totalSteps > 1 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+              const elapsed = isActive ? Math.round((Date.now() - new Date(run.created_at).getTime()) / 1000) : null;
+              const elapsedStr = elapsed ? `${Math.floor(elapsed / 60)}m ${elapsed % 60}s` : '';
+
+              return (
+                <div key={run.id} className={`admin-build-card ${isActive ? 'active' : ''} ${isFailed ? 'failed' : ''} ${isSuccess ? 'success' : ''}`}>
+                  <div className="admin-build-header">
+                    <span className={`admin-build-pill ${isActive ? 'pill-active' : isFailed ? 'pill-failed' : isSuccess ? 'pill-success' : ''}`}>
+                      {isActive ? (run.status === 'queued' ? 'Queued' : 'Running') : isFailed ? 'Failed' : isSuccess ? 'Done' : run.status}
+                    </span>
+                    <span className="admin-build-name">{run.name}</span>
+                    <span className="admin-build-time">
+                      {isActive ? elapsedStr : new Date(run.created_at).toLocaleString()}
+                    </span>
+                    {run.html_url && (
+                      <a href={run.html_url} target="_blank" rel="noopener noreferrer" className="admin-build-link">View logs</a>
+                    )}
+                  </div>
+
+                  {isActive && steps.length > 0 && (
+                    <div className="admin-progress-section">
+                      <div className="admin-progress-bar-track">
+                        <div className="admin-progress-bar-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <div className="admin-progress-detail">
+                        <span className="admin-progress-step">
+                          {activeStep ? activeStep.name : `Step ${completedSteps}/${totalSteps}`}
+                        </span>
+                        <span className="admin-progress-pct">{pct}%</span>
+                      </div>
+                      <div className="admin-step-list">
+                        {steps.map(step => (
+                          <div key={step.number} className={`admin-step ${step.status === 'completed' ? 'step-done' : step.status === 'in_progress' ? 'step-active' : 'step-pending'}`}>
+                            <span className="step-icon">
+                              {step.status === 'completed' ? (step.conclusion === 'success' ? '✓' : '✗') : step.status === 'in_progress' ? '●' : '○'}
+                            </span>
+                            <span className="step-name">{step.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {isFailed && (
+                    <div className="admin-build-fail-msg">
+                      Build failed — <a href={run.html_url} target="_blank" rel="noopener noreferrer">check logs</a> for details.
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

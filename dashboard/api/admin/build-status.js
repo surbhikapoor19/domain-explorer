@@ -15,16 +15,15 @@ export default async function handler(req, res) {
 
   const GITHUB_OWNER = process.env.GITHUB_OWNER || 'surbhikapoor19';
   const GITHUB_REPO = process.env.GITHUB_REPO || 'domain-explorer';
+  const headers = {
+    Authorization: `Bearer ${ghToken}`,
+    Accept: 'application/vnd.github.v3+json',
+  };
 
   try {
     const runsRes = await fetch(
       `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs?event=repository_dispatch&per_page=5`,
-      {
-        headers: {
-          Authorization: `Bearer ${ghToken}`,
-          Accept: 'application/vnd.github.v3+json',
-        },
-      }
+      { headers }
     );
 
     if (!runsRes.ok) {
@@ -32,14 +31,38 @@ export default async function handler(req, res) {
     }
 
     const data = await runsRes.json();
-    const runs = (data.workflow_runs || []).map(run => ({
-      id: run.id,
-      status: run.status,
-      conclusion: run.conclusion,
-      created_at: run.created_at,
-      updated_at: run.updated_at,
-      html_url: run.html_url,
-      name: run.name,
+    const runs = await Promise.all((data.workflow_runs || []).map(async (run) => {
+      const result = {
+        id: run.id,
+        status: run.status,
+        conclusion: run.conclusion,
+        created_at: run.created_at,
+        updated_at: run.updated_at,
+        html_url: run.html_url,
+        name: run.name,
+      };
+
+      if (run.status === 'in_progress' || run.status === 'queued') {
+        try {
+          const jobsRes = await fetch(run.jobs_url, { headers });
+          if (jobsRes.ok) {
+            const jobsData = await jobsRes.json();
+            result.jobs = (jobsData.jobs || []).map(job => ({
+              name: job.name,
+              status: job.status,
+              conclusion: job.conclusion,
+              steps: (job.steps || []).map(step => ({
+                name: step.name,
+                status: step.status,
+                conclusion: step.conclusion,
+                number: step.number,
+              })),
+            }));
+          }
+        } catch (_) {}
+      }
+
+      return result;
     }));
 
     return res.status(200).json({ runs });
