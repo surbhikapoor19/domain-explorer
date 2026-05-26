@@ -118,44 +118,72 @@ def step_rag(paths):
     """Chunk TEI XMLs and ingest to ChromaDB."""
     tei_dir = paths['tei']
     chroma_dir = paths['chroma']
-    chroma_dir.mkdir(parents=True, exist_ok=True)
 
     if not tei_dir.exists() or not list(tei_dir.glob('*.tei.xml')):
-        print("  No TEI files found. Run 'grobid' step first.")
+        print("  No TEI files found. Skipping RAG ingestion.")
         return
 
     tei_files = list(tei_dir.glob('*.tei.xml'))
     print(f"  Ingesting {len(tei_files)} TEI files into ChromaDB at {chroma_dir}")
 
-    from backend.rag.knowledge_graph import KnowledgeGraphBuilder
+    rag_config = REPO_ROOT / 'backend' / 'rag_config.yaml'
+    if not rag_config.exists():
+        print(f"  No rag_config.yaml found at {rag_config}. Skipping.")
+        return
 
-    builder = KnowledgeGraphBuilder(chroma_dir=str(chroma_dir))
-    builder.ingest_tei_documents(str(tei_dir))
-    print(f"  RAG ingestion done: {builder.chunk_count} chunks stored")
+    import subprocess
+    cmd = [
+        sys.executable, '-m', 'backend.rag.ingest.pipeline',
+        '--papers-dir', str(paths['papers']),
+        '--config', str(rag_config),
+    ]
+    result = subprocess.run(cmd, cwd=str(REPO_ROOT))
+    if result.returncode != 0:
+        print(f"  WARNING: RAG ingestion exited with code {result.returncode}")
+    else:
+        print("  RAG ingestion done")
 
 
 def step_kg(paths):
     """Build knowledge graph from ChromaDB data."""
     chroma_dir = paths['chroma']
-    if not chroma_dir.exists():
-        print("  No ChromaDB found. Run 'rag' step first.")
+    tei_dir = paths['tei']
+
+    facts_path = chroma_dir / 'extracted_facts.json'
+    entities_path = chroma_dir / 'extracted_entities.json'
+
+    if not chroma_dir.exists() or not facts_path.exists():
+        print("  No extracted data found. Skipping KG build.")
         return
 
     print(f"  Building knowledge graph from {chroma_dir}")
 
-    from backend.rag.knowledge_graph import KnowledgeGraphBuilder
-    from backend.rag.tei_graph import TEIGraphEnricher
+    from backend.rag.knowledge_graph import build_knowledge_graph, save_graph
+    from backend.rag.method_paper_map import build_method_paper_map
+    from backend.rag.tei_graph import enrich_graph_from_tei
 
-    builder = KnowledgeGraphBuilder(chroma_dir=str(chroma_dir))
-    builder.build_graph()
-    node_count = len(builder.graph.nodes) if hasattr(builder, 'graph') else 0
-    edge_count = len(builder.graph.edges) if hasattr(builder, 'graph') else 0
-    print(f"  Base KG: {node_count} nodes, {edge_count} edges")
+    csv_path = next(paths['dataset'].glob('*.csv'), None)
+    method_paper_map = build_method_paper_map(
+        csv_path=str(csv_path) if csv_path else None,
+        papers_dir=str(paths['papers']),
+    )
 
-    # TEI enrichment
-    enricher = TEIGraphEnricher(chroma_dir=str(chroma_dir))
-    enricher.enrich()
-    print("  TEI enrichment done")
+    G = build_knowledge_graph(
+        facts_path=str(facts_path),
+        entities_path=str(entities_path),
+        method_paper_map=method_paper_map,
+        csv_path=str(csv_path) if csv_path else None,
+    )
+    print(f"  Base KG: {len(G.nodes)} nodes, {len(G.edges)} edges")
+
+    if tei_dir.exists() and list(tei_dir.glob('*.tei.xml')):
+        paper_titles = {n: G.nodes[n].get('title', n) for n in G.nodes if G.nodes[n].get('type') == 'paper'}
+        enrich_graph_from_tei(G, str(tei_dir), paper_titles)
+        print(f"  TEI enrichment done: {len(G.nodes)} nodes, {len(G.edges)} edges")
+
+    kg_path = chroma_dir / 'knowledge_graph.json'
+    save_graph(G, str(kg_path))
+    print(f"  Saved KG to {kg_path}")
 
 
 def step_hgt(paths):
