@@ -310,6 +310,7 @@ function App() {
       </header>
 
       <section className="query-section">
+        <div className="query-label">Ask a question about {branding.methodNoun}s in this domain</div>
         <form onSubmit={handleQuerySubmit} className="query-form">
           <input
             type="text"
