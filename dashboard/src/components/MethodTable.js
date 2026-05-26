@@ -28,6 +28,7 @@ export default function MethodTable({
   const { shortNames, tableColumns } = useDomainConfig();
   const [filters, setFilters] = useState({});
   const [searchText, setSearchText] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const hasHighlights = highlightedMethods.length > 0;
 
   // Use allData (full 56) for unique filter values, fall back to data
@@ -109,27 +110,33 @@ export default function MethodTable({
         {hasHighlights && (
           <span className="hl-indicator">{highlightedMethods.length} highlighted</span>
         )}
+        <button className="filter-toggle-btn" onClick={() => setFiltersOpen(!filtersOpen)}>
+          {filtersOpen ? 'Hide Filters' : 'Filters'}
+          {activeFilterCount > 0 && ` (${activeFilterCount})`}
+        </button>
       </div>
 
-      <div className="table-filter-bar">
-        <input
-          type="text"
-          className="table-search"
-          placeholder="Search methods..."
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-        />
-        {activeFilterCount > 0 && (
-          <div className="table-filter-actions">
-            <button className="filter-apply-btn" onClick={handleApplyFilter}>
-              Re-cluster ({filteredData.length} methods)
-            </button>
-            <button className="filter-clear-btn" onClick={handleClearFilters}>
-              Clear
-            </button>
-          </div>
-        )}
-      </div>
+      {filtersOpen && (
+        <div className="table-filter-bar">
+          <input
+            type="text"
+            className="table-search"
+            placeholder="Search methods..."
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+          />
+          {activeFilterCount > 0 && (
+            <div className="table-filter-actions">
+              <button className="filter-apply-btn" onClick={handleApplyFilter}>
+                Re-cluster ({filteredData.length} methods)
+              </button>
+              <button className="filter-clear-btn" onClick={handleClearFilters}>
+                Clear
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="table-scroll">
         <table className="data-table">

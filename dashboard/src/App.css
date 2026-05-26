@@ -307,6 +307,7 @@ body {
   display: flex; flex-direction: column;
   overflow: hidden;
   max-height: 340px;
+  min-height: 340px;
   /* Horizontal margin removed; the page wrapper (.copilot-app) owns the
      gutter so MethodTable shares the same left/right edge as every other
      component on the page. */
@@ -354,6 +355,14 @@ body {
   font-size: 0.7rem; cursor: pointer;
 }
 .filter-clear-btn:hover { background: #c5cad0; }
+.filter-toggle-btn {
+  margin-left: auto;
+  background: rgba(255,255,255,0.15); color: white; border: none;
+  border-radius: 2px; padding: 0.18rem 0.45rem;
+  font-size: 0.68rem; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: background 0.12s;
+}
+.filter-toggle-btn:hover { background: rgba(255,255,255,0.3); }
 
 .th-content { display: flex; flex-direction: column; gap: 0.12rem; }
 .th-label { font-size: 0.7rem; }
