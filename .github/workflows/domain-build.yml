@@ -4,6 +4,9 @@ on:
   repository_dispatch:
     types: [domain-build, domain-switch]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     if: github.event.action == 'domain-build'
