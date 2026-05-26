@@ -5537,3 +5537,23 @@ body {
   margin-top: 0.4rem; font-size: 0.72rem; color: #dc2626;
 }
 .admin-build-fail-msg a { color: #dc2626; font-weight: 600; }
+
+.admin-deploys { margin-top: 1.5rem; }
+.admin-deploys h3 { font-size: 0.95rem; margin: 0 0 0.5rem; color: #374151; }
+.admin-deploy-card {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.78rem;
+  margin-bottom: 0.4rem; background: #f9fafb; border: 1px solid #e5e7eb;
+}
+.admin-deploy-card.deploying { border-color: #818cf8; background: #eef2ff; }
+.admin-deploy-card.live { border-color: #86efac; background: #f0fdf4; }
+.admin-deploy-card.failed { border-color: #fca5a5; background: #fef2f2; }
+.admin-deploy-pill {
+  display: inline-block; padding: 0.15rem 0.5rem; border-radius: 10px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+}
+.pill-deploying { background: #818cf8; color: white; animation: pulse-pill 1.5s ease-in-out infinite; }
+.pill-live { background: #86efac; color: #14532d; }
+.admin-deploy-sha { font-family: monospace; color: #6b7280; font-size: 0.72rem; }
+.admin-deploy-env { color: #6b7280; font-size: 0.7rem; }
+.admin-deploy-time { flex: 1; text-align: right; color: #6b7280; font-size: 0.72rem; }

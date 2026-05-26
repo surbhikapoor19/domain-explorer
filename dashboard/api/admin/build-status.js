@@ -65,7 +65,40 @@ export default async function handler(req, res) {
       return result;
     }));
 
-    return res.status(200).json({ runs });
+    let deployments = [];
+    try {
+      const deplRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/deployments?per_page=3&environment=Production`,
+        { headers }
+      );
+      if (deplRes.ok) {
+        const deplData = await deplRes.json();
+        deployments = await Promise.all((deplData || []).map(async (d) => {
+          const result = {
+            id: d.id,
+            sha: d.sha?.slice(0, 7),
+            created_at: d.created_at,
+            environment: d.environment,
+            description: d.description,
+          };
+          try {
+            const statusRes = await fetch(d.statuses_url, { headers });
+            if (statusRes.ok) {
+              const statuses = await statusRes.json();
+              const latest = statuses[0];
+              if (latest) {
+                result.state = latest.state;
+                result.target_url = latest.target_url || latest.log_url;
+                result.updated_at = latest.updated_at;
+              }
+            }
+          } catch (_) {}
+          return result;
+        }));
+      }
+    } catch (_) {}
+
+    return res.status(200).json({ runs, deployments });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

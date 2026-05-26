@@ -10,6 +10,7 @@ function AdminPage() {
   const [loadingDomains, setLoadingDomains] = useState(false);
   const [error, setError] = useState(null);
   const [buildStatus, setBuildStatus] = useState([]);
+  const [deployments, setDeployments] = useState([]);
   const [building, setBuilding] = useState(null);
   const [switching, setSwitching] = useState(null);
 
@@ -59,8 +60,10 @@ function AdminPage() {
           if (!data) return;
           const runs = data.runs || [];
           setBuildStatus(runs);
-          const active = runs.some(r => r.status === 'in_progress' || r.status === 'queued');
-          if (!active && pollIntervalRef.current === POLL_FAST) {
+          setDeployments(data.deployments || []);
+          const activeBuild = runs.some(r => r.status === 'in_progress' || r.status === 'queued');
+          const activeDeploy = (data.deployments || []).some(d => d.state === 'pending' || d.state === 'in_progress');
+          if (!activeBuild && !activeDeploy && pollIntervalRef.current === POLL_FAST) {
             startPolling(POLL_SLOW);
           }
         })
@@ -75,6 +78,7 @@ function AdminPage() {
         const data = await res.json();
         const runs = data.runs || [];
         setBuildStatus(runs);
+        setDeployments(data.deployments || []);
         return runs;
       }
     } catch (_) {}
@@ -374,6 +378,34 @@ function AdminPage() {
                     <div className="admin-build-fail-msg">
                       Build failed — <a href={run.html_url} target="_blank" rel="noopener noreferrer">check logs</a> for details.
                     </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {deployments.length > 0 && (
+          <div className="admin-deploys">
+            <h3>Vercel Deployments</h3>
+            {deployments.map(d => {
+              const isPending = d.state === 'pending' || d.state === 'in_progress';
+              const isReady = d.state === 'success';
+              const isError = d.state === 'error' || d.state === 'failure';
+              return (
+                <div key={d.id} className={`admin-deploy-card ${isPending ? 'deploying' : ''} ${isReady ? 'live' : ''} ${isError ? 'failed' : ''}`}>
+                  <span className={`admin-deploy-pill ${isPending ? 'pill-deploying' : isReady ? 'pill-live' : isError ? 'pill-failed' : ''}`}>
+                    {isPending ? 'Deploying' : isReady ? 'Live' : isError ? 'Failed' : d.state || 'Unknown'}
+                  </span>
+                  <span className="admin-deploy-sha">{d.sha}</span>
+                  <span className="admin-deploy-env">{d.environment}</span>
+                  <span className="admin-deploy-time">
+                    {new Date(d.updated_at || d.created_at).toLocaleString()}
+                  </span>
+                  {d.target_url && (
+                    <a href={d.target_url} target="_blank" rel="noopener noreferrer" className="admin-build-link">
+                      {isReady ? 'Visit' : 'View'}
+                    </a>
                   )}
                 </div>
               );
