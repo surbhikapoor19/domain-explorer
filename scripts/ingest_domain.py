@@ -8,6 +8,7 @@ Usage:
     python scripts/ingest_domain.py --domain motion_planning
     python scripts/ingest_domain.py --domain motion_planning --steps grobid,rag,kg,hgt,precompute
     python scripts/ingest_domain.py --domain motion_planning --steps precompute
+    python scripts/ingest_domain.py --domain motion_planning --force
 
 Steps (in order):
     grobid     - Parse PDFs to TEI XML via GROBID service
@@ -15,6 +16,9 @@ Steps (in order):
     kg         - Build knowledge graph from chunks + entities
     hgt        - Train HGT link prediction model
     precompute - Generate dashboard JSON files
+
+Each step checks if its output already exists and skips if so.
+Use --force to re-run all steps regardless.
 
 Environment:
     GROBID_URL     - GROBID service URL (default: http://localhost:8070)
@@ -32,6 +36,7 @@ sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / 'dashboard'))
 
 ALL_STEPS = ['grobid', 'rag', 'kg', 'hgt', 'precompute']
+FORCE = False
 
 
 def resolve_domain_paths(domain_slug):
@@ -62,7 +67,6 @@ def step_grobid(paths):
     grobid_url = os.environ.get('GROBID_URL', 'http://localhost:8070')
     papers_dir = paths['papers']
     tei_dir = paths['tei']
-    tei_dir.mkdir(parents=True, exist_ok=True)
 
     if not papers_dir.exists():
         print(f"  No papers directory at {papers_dir}")
@@ -73,9 +77,15 @@ def step_grobid(paths):
         print(f"  No PDFs found in {papers_dir}")
         return
 
-    print(f"  Processing {len(pdfs)} PDFs via GROBID at {grobid_url}")
+    tei_dir.mkdir(parents=True, exist_ok=True)
+    pending = [p for p in pdfs if not (tei_dir / f'{p.stem}.tei.xml').exists()]
 
-    # Check GROBID is alive
+    if not pending and not FORCE:
+        print(f"  All {len(pdfs)} PDFs already parsed. Skipping. (use --force to re-run)")
+        return
+
+    print(f"  Processing {len(pending)}/{len(pdfs)} PDFs via GROBID at {grobid_url}")
+
     for attempt in range(10):
         try:
             r = requests.get(f'{grobid_url}/api/isalive', timeout=5)
@@ -89,11 +99,8 @@ def step_grobid(paths):
         time.sleep(3)
 
     processed = 0
-    for pdf in pdfs:
+    for pdf in pending:
         tei_path = tei_dir / f'{pdf.stem}.tei.xml'
-        if tei_path.exists():
-            print(f"    Skip (exists): {pdf.name}")
-            continue
         try:
             with open(pdf, 'rb') as f:
                 r = requests.post(
@@ -118,9 +125,14 @@ def step_rag(paths):
     """Chunk TEI XMLs and ingest to ChromaDB."""
     tei_dir = paths['tei']
     chroma_dir = paths['chroma']
+    facts_path = chroma_dir / 'extracted_facts.json'
 
     if not tei_dir.exists() or not list(tei_dir.glob('*.tei.xml')):
         print("  No TEI files found. Skipping RAG ingestion.")
+        return
+
+    if facts_path.exists() and not FORCE:
+        print(f"  ChromaDB + facts already exist at {chroma_dir}. Skipping. (use --force to re-run)")
         return
 
     tei_files = list(tei_dir.glob('*.tei.xml'))
@@ -148,12 +160,16 @@ def step_kg(paths):
     """Build knowledge graph from ChromaDB data."""
     chroma_dir = paths['chroma']
     tei_dir = paths['tei']
-
+    kg_path = chroma_dir / 'knowledge_graph.json'
     facts_path = chroma_dir / 'extracted_facts.json'
     entities_path = chroma_dir / 'extracted_entities.json'
 
     if not chroma_dir.exists() or not facts_path.exists():
         print("  No extracted data found. Skipping KG build.")
+        return
+
+    if kg_path.exists() and not FORCE:
+        print(f"  KG already exists at {kg_path}. Skipping. (use --force to re-run)")
         return
 
     print(f"  Building knowledge graph from {chroma_dir}")
@@ -181,7 +197,6 @@ def step_kg(paths):
         enrich_graph_from_tei(G, str(tei_dir), paper_titles)
         print(f"  TEI enrichment done: {len(G.nodes)} nodes, {len(G.edges)} edges")
 
-    kg_path = chroma_dir / 'knowledge_graph.json'
     save_graph(G, str(kg_path))
     print(f"  Saved KG to {kg_path}")
 
@@ -190,9 +205,14 @@ def step_hgt(paths):
     """Train HGT link prediction model."""
     chroma_dir = paths['chroma']
     kg_path = chroma_dir / 'knowledge_graph.json'
+    model_path = chroma_dir / 'hgt_model.pt'
 
     if not kg_path.exists():
-        print("  No knowledge_graph.json found. Run 'kg' step first.")
+        print("  No knowledge_graph.json found. Skipping HGT training.")
+        return
+
+    if model_path.exists() and not FORCE:
+        print(f"  HGT model already exists at {model_path}. Skipping. (use --force to re-run)")
         return
 
     print(f"  Training HGT model (chroma_dir={chroma_dir})")
@@ -212,14 +232,20 @@ def step_precompute(paths, domain_slug):
     yaml_path = paths['yaml']
     output_dir = paths['output']
     chroma_dir = paths['chroma']
+    methods_json = output_dir / 'methods.json'
 
     if not yaml_path.exists():
         print(f"  Domain YAML not found: {yaml_path}")
         return
 
+    if methods_json.exists() and not FORCE:
+        csv_path = next(paths['dataset'].glob('*.csv'), None)
+        if csv_path and csv_path.stat().st_mtime < methods_json.stat().st_mtime:
+            print(f"  Dashboard JSONs up-to-date (CSV unchanged). Skipping. (use --force to re-run)")
+            return
+
     print(f"  Running precompute: {yaml_path} → {output_dir}")
 
-    # Precompute is designed to run from dashboard/ as `python -m scripts.precompute`
     cmd = [
         sys.executable, '-m', 'scripts.precompute',
         '--domain', str(yaml_path),
@@ -236,12 +262,16 @@ def step_precompute(paths, domain_slug):
 
 
 def main():
+    global FORCE
     parser = argparse.ArgumentParser(description='Domain ingestion pipeline')
     parser.add_argument('--domain', required=True, help='Domain slug (e.g., motion_planning)')
     parser.add_argument('--steps', default=','.join(ALL_STEPS),
                         help=f'Comma-separated steps: {",".join(ALL_STEPS)}')
+    parser.add_argument('--force', action='store_true',
+                        help='Re-run all steps even if outputs exist')
     args = parser.parse_args()
 
+    FORCE = args.force
     steps = [s.strip() for s in args.steps.split(',')]
     for s in steps:
         if s not in ALL_STEPS:
