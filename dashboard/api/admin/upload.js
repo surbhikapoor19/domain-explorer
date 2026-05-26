@@ -22,8 +22,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'domain and csvContent are required' });
   }
 
-  const GITHUB_OWNER = process.env.GITHUB_OWNER || 'wpivis';
-  const GITHUB_REPO = process.env.GITHUB_REPO || 'grasp-explorer';
+  const GITHUB_OWNER = process.env.GITHUB_OWNER || 'surbhikapoor19';
+  const GITHUB_REPO = process.env.GITHUB_REPO || 'domain-explorer';
   const branch = 'main';
 
   const domainSlug = domain.replace(/_/g, '-');

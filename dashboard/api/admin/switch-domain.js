@@ -18,8 +18,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'GH_PAT not configured' });
   }
 
-  const GITHUB_OWNER = process.env.GITHUB_OWNER || 'wpivis';
-  const GITHUB_REPO = process.env.GITHUB_REPO || 'grasp-explorer';
+  const GITHUB_OWNER = process.env.GITHUB_OWNER || 'surbhikapoor19';
+  const GITHUB_REPO = process.env.GITHUB_REPO || 'domain-explorer';
 
   try {
     // Trigger a domain-switch workflow that copies precomputed data
