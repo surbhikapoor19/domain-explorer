@@ -1,0 +1,535 @@
+{
+  "insight": "- The clustering reveals a strong tendency for methods to group based on their planning approach and object configuration, such as the \"Grasp evaluation + Sampler / Two-finger / Singulated\" group (10 methods) which focuses on generating and evaluating multiple grasp candidates for isolated objects, often using point clouds and overhead views. This indicates a preference for thorough exploration and evaluation in simpler, singulated scenarios.\n- In the \"Reinforcement learning / Two-finger / Singulated\" group (14 methods), methods like Dex-Net and GA-DDPG are clustered together due to their reliance on reinforcement learning to learn grasp policies from simulation data. These methods typically use overhead or eye-in-hand cameras and focus on two-finger grippers, highlighting the effectiveness of RL in optimizing grasp success rates for isolated objects.\n- The \"Sampling / Two-finger / Piled\" group (9 methods) includes methods like GPD and VGN, which are designed to handle more complex, piled object configurations. These methods often use point clouds and eye-in-hand cameras, emphasizing the need for robust sampling and evaluation techniques to deal with occlusions and inter-object contacts.\n- The \"Direct regression / Two-finger / Structured\" group (6 methods) consists of approaches like Contact-GraspNet and ICG-Net, which directly predict grasp poses from structured object arrangements. These methods frequently use point clouds and oblique views, indicating a focus on leveraging geometric and structural information to achieve high grasp success rates in organized settings.\n- The \"Sampling / Three-finger / Singulated\" group (4 methods) includes DDG and Multi-FinGAN, which are tailored for dexterous three-finger grippers and singulated objects. These methods often use RGBD images and oblique views, reflecting the need for detailed visual and geometric information to plan complex, multi-finger grasps.\n- The \"Sampling / Two-finger / Singulated\" group (6 methods) includes GraspMolmo, 6-DoF GraspNet, and GCNGrasp, which use sampling-based planning with two-finger grippers for isolated objects. This group is distinguished by its use of point cloud inputs and simulation-based training, with methods like GraspMolmo incorporating natural language grounding and GCNGrasp leveraging graph convolutional networks for task-oriented grasping.\n- The \"Direct regression / Two-finger / Singulated\" group (7 methods) features methods like 3DAPNet and GPNet, which predict grasp poses directly from sensor data for isolated objects. These methods commonly use point clouds and overhead views, suggesting a streamlined approach to grasp planning that balances simplicity and efficiency.",
+  "clusterStats": [
+    {
+      "id": 0,
+      "label": "Grasp evaluation + Sampler / Two-finger / Singulated",
+      "methods": [
+        "\ud83e\udd16 GraspQP",
+        "7DGCG",
+        "DexDiffuser",
+        "DexGrasp Anything",
+        "FoundationGrasp",
+        "GraspGen",
+        "GraspGPT",
+        "NeuGraspNet",
+        "ShapeGrasp",
+        "ZeroGrasp"
+      ],
+      "size": 10,
+      "topAttributes": {
+        "Effector": [
+          {
+            "count": 7,
+            "value": "Two-finger"
+          },
+          {
+            "count": 3,
+            "value": "Multi-finger"
+          },
+          {
+            "count": 2,
+            "value": "Three-finger"
+          }
+        ],
+        "Input": [
+          {
+            "count": 6,
+            "value": "Point cloud"
+          },
+          {
+            "count": 4,
+            "value": "RGBD image"
+          },
+          {
+            "count": 3,
+            "value": "Grasp"
+          }
+        ],
+        "ObjConfig": [
+          {
+            "count": 7,
+            "value": "Singulated"
+          },
+          {
+            "count": 2,
+            "value": "Cluttered"
+          },
+          {
+            "count": 1,
+            "value": "Piled"
+          }
+        ],
+        "Plan": [
+          {
+            "count": 7,
+            "value": "Grasp evaluation + Sampler"
+          },
+          {
+            "count": 3,
+            "value": "Generative"
+          },
+          {
+            "count": 1,
+            "value": "Analytical"
+          }
+        ],
+        "Train": [
+          {
+            "count": 7,
+            "value": "Sim"
+          },
+          {
+            "count": 3,
+            "value": "Training-less"
+          },
+          {
+            "count": 1,
+            "value": "Real"
+          }
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "label": "Reinforcement learning / Two-finger / Singulated",
+      "methods": [
+        "\ud83e\udd16 GraspVLA",
+        "DeepRLManip",
+        "Dex-Net",
+        "Dex-Net 1.0 (MV-CNNs)",
+        "Dex-Net 2.0 (GQ-CNN)",
+        "Dex-Net 2.1",
+        "Dex-Net 3.0",
+        "Dex-Net 4.0",
+        "GA-DDPG",
+        "Goal-Auxiliary Deep Deterministic Policy Gradient (GA-DDPG)",
+        "GRAFF (Grasp-Affordances)",
+        "GraspXL",
+        "Probablistic Multi-fingered Grasp Planner",
+        "RobustDexGrasp",
+        "UniGrasp",
+        "UniGraspTransformer"
+      ],
+      "size": 14,
+      "topAttributes": {
+        "Effector": [
+          {
+            "count": 7,
+            "value": "Two-finger"
+          },
+          {
+            "count": 6,
+            "value": "Multi-finger"
+          },
+          {
+            "count": 2,
+            "value": "Suction"
+          }
+        ],
+        "Input": [
+          {
+            "count": 7,
+            "value": "Point cloud"
+          },
+          {
+            "count": 3,
+            "value": "Depth image"
+          },
+          {
+            "count": 1,
+            "value": "RGB image"
+          }
+        ],
+        "ObjConfig": [
+          {
+            "count": 11,
+            "value": "Singulated"
+          },
+          {
+            "count": 2,
+            "value": "Piled"
+          },
+          {
+            "count": 1,
+            "value": "Packed"
+          }
+        ],
+        "Plan": [
+          {
+            "count": 8,
+            "value": "Reinforcement learning"
+          },
+          {
+            "count": 4,
+            "value": "Direct regression"
+          },
+          {
+            "count": 1,
+            "value": "Generative"
+          }
+        ],
+        "Train": [
+          {
+            "count": 12,
+            "value": "Sim"
+          },
+          {
+            "count": 2,
+            "value": "Real"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "label": "Sampling / Three-finger / Singulated",
+      "methods": [
+        "DDG",
+        "Deep Dexterous Grasping (DDG)",
+        "DDGC",
+        "Deep Dexterous Grasping in Clutter (DDGC)",
+        "Multi-FinGAN",
+        "Robust Grasp Planning Over Uncertain Shape Completions"
+      ],
+      "size": 4,
+      "topAttributes": {
+        "Effector": [
+          {
+            "count": 3,
+            "value": "Three-finger"
+          },
+          {
+            "count": 1,
+            "value": "Multi-finger"
+          }
+        ],
+        "Input": [
+          {
+            "count": 2,
+            "value": "RGBD image"
+          },
+          {
+            "count": 1,
+            "value": "Depth image"
+          },
+          {
+            "count": 1,
+            "value": "voxelized occupancy grid"
+          }
+        ],
+        "ObjConfig": [
+          {
+            "count": 3,
+            "value": "Singulated"
+          },
+          {
+            "count": 1,
+            "value": "Structured"
+          }
+        ],
+        "Plan": [
+          {
+            "count": 3,
+            "value": "Sampling"
+          },
+          {
+            "count": 1,
+            "value": "Analytical"
+          }
+        ],
+        "Train": [
+          {
+            "count": 4,
+            "value": "Sim"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "label": "Direct regression / Two-finger / Structured",
+      "methods": [
+        "\ud83e\udd16 Equivariant Volumetric Grasping",
+        "Contact-GraspNet",
+        "GeomPickPlace",
+        "ICG-Net",
+        "OrbitGrasp (EquiFormerV2)",
+        "RGBD-Grasp"
+      ],
+      "size": 6,
+      "topAttributes": {
+        "Effector": [
+          {
+            "count": 6,
+            "value": "Two-finger"
+          }
+        ],
+        "Input": [
+          {
+            "count": 3,
+            "value": "Point cloud"
+          },
+          {
+            "count": 2,
+            "value": "RGBD image"
+          },
+          {
+            "count": 1,
+            "value": "Truncated Signed Distance Function (TSDF)"
+          }
+        ],
+        "ObjConfig": [
+          {
+            "count": 5,
+            "value": "Structured"
+          },
+          {
+            "count": 1,
+            "value": "Cluttered"
+          }
+        ],
+        "Plan": [
+          {
+            "count": 4,
+            "value": "Direct regression"
+          },
+          {
+            "count": 1,
+            "value": "Generative"
+          },
+          {
+            "count": 1,
+            "value": "Analytical"
+          }
+        ],
+        "Train": [
+          {
+            "count": 6,
+            "value": "Sim"
+          },
+          {
+            "count": 2,
+            "value": "Real"
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "label": "Direct regression / Two-finger / Singulated",
+      "methods": [
+        "3DAPNet",
+        "AnyGrasp",
+        "ggcnn_plus",
+        "GPNet",
+        "Grasp Proposal Network (GPNet)",
+        "GraspSAM",
+        "PointNet++ Grasping",
+        "REgion-based Grasp Network (REGNet)"
+      ],
+      "size": 7,
+      "topAttributes": {
+        "Effector": [
+          {
+            "count": 7,
+            "value": "Two-finger"
+          }
+        ],
+        "Input": [
+          {
+            "count": 5,
+            "value": "Point cloud"
+          },
+          {
+            "count": 1,
+            "value": "RGBD image"
+          },
+          {
+            "count": 1,
+            "value": "RGB image"
+          }
+        ],
+        "ObjConfig": [
+          {
+            "count": 4,
+            "value": "Singulated"
+          },
+          {
+            "count": 3,
+            "value": "Piled"
+          }
+        ],
+        "Plan": [
+          {
+            "count": 6,
+            "value": "Direct regression"
+          },
+          {
+            "count": 1,
+            "value": "Generative"
+          }
+        ],
+        "Train": [
+          {
+            "count": 7,
+            "value": "Sim"
+          },
+          {
+            "count": 1,
+            "value": "Real"
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "label": "Sampling / Two-finger / Singulated",
+      "methods": [
+        "\ud83e\udd16 GraspMolmo",
+        "6-DoF GraspNet",
+        "CAPGrasp",
+        "EquiGraspFlow",
+        "GCNGrasp",
+        "MultiModalGrasping"
+      ],
+      "size": 6,
+      "topAttributes": {
+        "Effector": [
+          {
+            "count": 5,
+            "value": "Two-finger"
+          },
+          {
+            "count": 1,
+            "value": "Multi-finger"
+          }
+        ],
+        "Input": [
+          {
+            "count": 5,
+            "value": "Point cloud"
+          },
+          {
+            "count": 1,
+            "value": "RGBD image"
+          },
+          {
+            "count": 1,
+            "value": "Natural language"
+          }
+        ],
+        "ObjConfig": [
+          {
+            "count": 3,
+            "value": "Singulated"
+          },
+          {
+            "count": 2,
+            "value": "Structured"
+          },
+          {
+            "count": 1,
+            "value": "Packed"
+          }
+        ],
+        "Plan": [
+          {
+            "count": 5,
+            "value": "Sampling"
+          },
+          {
+            "count": 1,
+            "value": "Grasp evaluation + Sampler"
+          }
+        ],
+        "Train": [
+          {
+            "count": 6,
+            "value": "Sim"
+          },
+          {
+            "count": 2,
+            "value": "Real"
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "label": "Sampling / Two-finger / Piled",
+      "methods": [
+        "CaTGrasp",
+        "Edge Grasp Network",
+        "geometric-object-grasper",
+        "GIGA",
+        "Grasp detection via Implicit Geometry and Affordance (GIGA)",
+        "GPD",
+        "Grasp Pose Detection (GPD)",
+        "PointNetGPD",
+        "ROI-GD",
+        "S4G",
+        "Single-Shot SE(3) Grasp Detection (S4G)",
+        "VGN",
+        "Volumetric Grasping Network (VGN)"
+      ],
+      "size": 9,
+      "topAttributes": {
+        "Effector": [
+          {
+            "count": 8,
+            "value": "Two-finger"
+          },
+          {
+            "count": 1,
+            "value": "Three-finger"
+          }
+        ],
+        "Input": [
+          {
+            "count": 6,
+            "value": "Point cloud"
+          },
+          {
+            "count": 2,
+            "value": "Truncated Signed Distance Function (TSDF)"
+          },
+          {
+            "count": 1,
+            "value": "RGBD image"
+          }
+        ],
+        "ObjConfig": [
+          {
+            "count": 9,
+            "value": "Piled"
+          }
+        ],
+        "Plan": [
+          {
+            "count": 6,
+            "value": "Sampling"
+          },
+          {
+            "count": 1,
+            "value": "Analytical"
+          },
+          {
+            "count": 1,
+            "value": "ROI-based"
+          }
+        ],
+        "Train": [
+          {
+            "count": 8,
+            "value": "Sim"
+          },
+          {
+            "count": 1,
+            "value": "Real"
+          }
+        ]
+      }
+    }
+  ]
+}

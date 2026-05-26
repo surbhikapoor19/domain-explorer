@@ -1,0 +1,132 @@
+project_name: grasp-explorer
+domain_context: >
+  Robotic grasp planning: computing how a robot should position its gripper
+  to pick up objects. Methods vary by planning approach (sampling, regression,
+  RL, analytical), gripper type, sensor input, scene complexity, and training
+  paradigm (sim, real, or both).
+
+csv_path: datasets/csv-gp-combined.csv
+name_column: Name
+description_column: Description
+link_column: "Link(s)"
+
+embedding_model: all-MiniLM-L6-v2
+embedding_dimensions: 384
+chroma_persist_dir: ./chroma_db
+collection_name: grasp_papers
+
+parsing:
+  backend: grobid               # Options: "pymupdf", "docling", "grobid"
+  grobid_url: http://localhost:8070
+  docling_ocr: false            # Enable OCR for scanned PDFs
+  docling_table_mode: inline    # "inline" (embed in section) or "sections" (separate)
+  docling_max_pages: 0          # 0 = no limit
+
+chunking:
+  coarse_max_tokens: 800
+  mid_min_tokens: 200
+  mid_max_tokens: 800
+  mid_overlap_ratio: 0.15
+  fine_min_tokens: 50
+  fine_max_tokens: 300
+  semantic_similarity_threshold: 0.35
+  strategies:
+    - semantic
+  domain_topics:
+    # Grasp planning approaches
+    - grasp planning
+    - grasp detection
+    - grasp synthesis
+    - grasp pose
+    - 6-DoF
+    - 7-DoF
+    - antipodal grasp
+    - power grasp
+    - precision grasp
+    - grasp quality
+    - grasp success rate
+    # Planning methods
+    - sampling
+    - direct regression
+    - reinforcement learning
+    - analytical
+    - optimization
+    - generative model
+    - diffusion model
+    - VAE
+    - GAN
+    # Gripper types
+    - parallel-jaw
+    - two-finger
+    - multi-finger
+    - dexterous
+    - suction
+    - gripper
+    - end-effector
+    # Sensors and input
+    - point cloud
+    - depth image
+    - RGB-D
+    - TSDF
+    - voxel
+    - mesh
+    - tactile
+    - force-torque
+    # Scene types
+    - cluttered
+    - piled
+    - singulated
+    - packed
+    - bin picking
+    # Neural network architectures
+    - PointNet
+    - PointNet++
+    - ResNet
+    - VGG
+    - transformer
+    - CNN
+    - encoder-decoder
+    - U-Net
+    # Training and simulation
+    - sim-to-real
+    - domain randomization
+    - transfer learning
+    - self-supervised
+    - real-world
+    - simulation
+    - Isaac
+    - MuJoCo
+    - PyBullet
+    # Robotics concepts
+    - contact model
+    - collision detection
+    - motion planning
+    - inverse kinematics
+    - workspace
+    - reachability
+    - robot arm
+    - manipulator
+    # Evaluation
+    - success rate
+    - grasp metric
+    - clearance
+    - coverage
+    - ablation
+
+retrieval:
+  coarse_top_k: 2
+  mid_top_k: 4
+  fine_top_k: 4
+  token_budget: 3000
+  rerank: false
+
+tools_enabled: true
+dataset_columns:
+  - Planning Method
+  - Training Data
+  - End-effector Hardware
+  - Object Configuration
+  - Input Data
+  - Output Pose
+  - Backbone
+  - Language

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Interactive visualization of robotic grasp planning methods" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <title>Grasp Explorer</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      Update the <title> in JS at boot from the same branding config the
+      React tree reads. This way deploys can rebrand the product name
+      without touching index.html: just inject window.__BRANDING__
+      before this script (or set REACT_APP_BRANDING_JSON at build time).
+    -->
+    <script>
+      (function () {
+        try {
+          var b = (window.__BRANDING__) || null;
+          if (!b) {
+            // fall back to the tag in <title> on first paint; React boot
+            // will override below if a config exists.
+            return;
+          }
+          if (b.productName) document.title = b.productName;
+          var meta = document.querySelector('meta[name="description"]');
+          if (meta && b.metaDescription) meta.setAttribute('content', b.metaDescription);
+        } catch (e) { /* no-op */ }
+      })();
+    </script>
+  </body>
+</html>

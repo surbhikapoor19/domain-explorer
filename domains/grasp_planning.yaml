@@ -1,0 +1,74 @@
+# Grasp Planning domain config.
+#
+# This is the existing dashboard's setup written as configuration.
+# When the precompute / panel refactor (Phase 2 + 3) lands, the pipeline
+# will read this file and dispatch on roles instead of literal column
+# names — so the same code path serves grasp planning, motion planning,
+# or any future domain whose CSV is mapped here.
+#
+# See docs/role-schema.md for the role vocabulary.
+
+domain: grasp_planning
+display_name: "Grasp Explorer"
+display_subject: "grasp planning methods"
+display_short: "grasp planning"
+ecosystem: "COMPARE Ecosystem"
+tagline: "AI-in-the-Loop"
+query_hint: 'Ask about grasp planning methods, e.g., "methods for cluttered scenes with multi-finger grippers"'
+method_noun: "method"
+
+csv_path: datasets/csv-gp-combined.csv
+papers_dir: papers/
+
+# Column -> role mapping. `facet` hints at how the column should be
+# treated in the dashboard UI:
+#   categorical -> color-by candidate, exact-match filter, chip ribbon
+#   numeric     -> range filter, sortable column
+#   text        -> embedded as a chunk, full-text searchable
+#   url         -> rendered as a link
+#   identifier  -> never displayed verbatim; used only for joins/lookups
+columns:
+  Name:                       { role: identity.name,        facet: identifier }
+  Description:                { role: identity.description, facet: text }
+  Combined_Description:       { role: identity.description, facet: text, alias_of: Description }
+  "Planning Method":          { role: method.family,        facet: categorical }
+  "Training Data":            { role: train.regime,         facet: categorical }
+  "End-effector Hardware":    { role: hardware.platform,    facet: categorical }
+  "Object Configuration":     { role: env.context,          facet: categorical }
+  "Input Data":               { role: input.modality,       facet: categorical }
+  "Output Pose":              { role: output.shape,         facet: categorical }
+  "Corresponding Dataset (see repository linked above)": { role: eval.benchmark, facet: categorical, alias_short: "Dataset" }
+  "Simulator (see repository linked above)":             { role: train.simulator, facet: categorical, alias_short: "Simulator" }
+  Backbone:                   { role: method.backbone,      facet: categorical }
+  "Metric(s) Used":           { role: eval.metric,          facet: categorical }
+  "Camera Position(s)":       { role: input.sensor,         facet: categorical }
+  Language:                   { role: meta.language,        facet: categorical }
+  License:                    { role: meta.license,         facet: categorical }
+  "Maintainer(s)":             { role: meta.maintainer,      facet: text }
+  Citation:                   { role: identity.citation,    facet: text }
+  "Year (Initial Release)":   { role: identity.year,        facet: numeric }
+  "Link(s)":                  { role: identity.code,        facet: url }
+  Notes:                      { role: identity.description, facet: text, alias_of: Notes }
+
+# Per-domain LLM prompt overrides. Templated into the existing claim,
+# query-rewrite, and copilot prompts at runtime so prompts ask about
+# grasping rather than a generic "method."
+llm:
+  domain_subject: "robotic grasp planning"
+  claim_extraction_focus:
+    - "grasp success rate (GSR)"
+    - "head-to-head benchmarks against other grasp planners"
+    - "limitations specific to clutter, occlusion, or unseen objects"
+    - "sim-to-real transfer behaviors"
+  query_rewrite_examples:
+    - "methods for cluttered scenes with multi-finger grippers"
+    - "what backbones are used for 6-DoF grasp synthesis"
+    - "papers that benchmark on YCB and report success rates"
+
+# Hint to the Explorer's color-by dropdown — which roles look most
+# meaningful as initial color encodings. Empty array means infer.
+default_color_by_roles:
+  - method.family
+  - input.modality
+  - hardware.platform
+  - env.context

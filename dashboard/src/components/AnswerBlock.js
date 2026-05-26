@@ -1,0 +1,196 @@
+/**
+ * AnswerBlock — comparison-first answer for the Graph Reasoning page.
+ *
+ * Renders the eight method-comparability dimensions across the methods most
+ * relevant to the query (top of `suggestion.paperRelevance`), with extracted
+ * CSV values per cell. Below the table, an LLM synthesis paragraph runs
+ * through the same highlighter the Copilot Insight uses so method names and
+ * domain terms get the cluster-colored / glossary-annotated treatment.
+ */
+import React, { useMemo } from 'react';
+import InsightBullets from './InsightBullets';
+import { HighlightedText } from '../highlighter';
+import { CLUSTER_COLORS } from '../constants';
+import { useDomainConfig } from '../DomainContext';
+
+const GRASP_PRIORITY_DIMS = [
+  { key: 'Object Configuration',                                      label: 'Scene / Object Config' },
+  { key: 'Planning Method',                                           label: 'Planning Method' },
+  { key: 'Training Data',                                             label: 'Training Data' },
+  { key: 'End-effector Hardware',                                     label: 'End-effector Hardware' },
+  { key: 'Input Data',                                                label: 'Input / Sensor' },
+  { key: 'Corresponding Dataset (see repository linked above)',       label: 'Dataset' },
+  { key: 'Simulator (see repository linked above)',                   label: 'Simulator' },
+  { key: 'Metric(s) Used ',                                           label: 'Metrics' },
+];
+
+const MAX_ANCHORS = 4;
+const SCORE_THRESHOLD = 0.5;
+
+function clusterColor(clusterId) {
+  if (clusterId == null) return 'var(--primary, #185A7C)';
+  return CLUSTER_COLORS[clusterId % CLUSTER_COLORS.length];
+}
+
+function normalize(v) {
+  if (!v) return '';
+  const s = String(v).trim();
+  if (!s || s.toLowerCase() === 'nan' || s === '-') return '';
+  return s;
+}
+
+/**
+ * Pick anchor methods from `suggestion.paperRelevance`, hydrating each with
+ * its cluster + CSV metadata from `data`. Top MAX_ANCHORS by score, but if
+ * fewer than 2 clear SCORE_THRESHOLD we fall back to the raw top-N so even a
+ * single-method query renders a useful overview.
+ */
+export function computeAnchorMethods(suggestion, data) {
+  const rel = suggestion?.paperRelevance || [];
+  if (!rel.length || !data?.length) return [];
+  const sorted = [...rel].sort((a, b) => (b.score || 0) - (a.score || 0));
+  const aboveThreshold = sorted.filter(p => (p.score || 0) >= SCORE_THRESHOLD);
+  const picks = aboveThreshold.length >= 2
+    ? aboveThreshold.slice(0, MAX_ANCHORS)
+    : sorted.slice(0, Math.min(MAX_ANCHORS, sorted.length));
+  return picks.map(p => {
+    const row = data.find(d => d.name === p.name);
+    return {
+      name: p.name,
+      score: p.score || 0,
+      cluster: row?.cluster,
+      meta: row?.metadata || {},
+    };
+  });
+}
+
+export default function AnswerBlock({
+  suggestion, query, anchorMethods, termDictionary,
+  methodClusterMap, clusterLabelMap, onMethodClick,
+}) {
+  const domainCfg = useDomainConfig();
+  const PRIORITY_DIMS = (domainCfg.priorityDims && domainCfg.priorityDims.length > 0)
+    ? domainCfg.priorityDims
+    : GRASP_PRIORITY_DIMS;
+
+  // For each priority dim: 'shared' | 'differs' | 'partial' | 'gap'.
+  const dimStatus = useMemo(() => {
+    const out = {};
+    PRIORITY_DIMS.forEach(d => {
+      const vals = anchorMethods.map(m => normalize(m.meta[d.key]));
+      const filled = vals.filter(Boolean);
+      if (filled.length === 0) out[d.key] = 'gap';
+      else if (filled.length < anchorMethods.length) out[d.key] = 'partial';
+      else if (new Set(filled.map(v => v.toLowerCase())).size === 1) out[d.key] = 'shared';
+      else out[d.key] = 'differs';
+    });
+    return out;
+  }, [anchorMethods]);
+
+  const coverage = useMemo(() => {
+    const covered = PRIORITY_DIMS.filter(d => dimStatus[d.key] !== 'gap').length;
+    return { covered, total: PRIORITY_DIMS.length };
+  }, [dimStatus]);
+
+  if (anchorMethods.length === 0) return null;
+
+  const isComparison = anchorMethods.length >= 2;
+  const synthesis = suggestion?.traversalNarrative || suggestion?.insight || '';
+  const titleNames = anchorMethods.map(m => m.name).join(' · ');
+  const title = isComparison
+    ? `How ${anchorMethods.length} methods compare on the priority dimensions`
+    : `Profile: ${anchorMethods[0].name}`;
+
+  return (
+    <div className="gr-answer-block">
+      <div className="gr-card-header">
+        <h3 className="gr-card-title">{title}</h3>
+        <span className="gr-count-badge">
+          {coverage.covered} / {coverage.total} dims with evidence
+        </span>
+      </div>
+
+      <div className="gr-answer-methods">
+        {anchorMethods.map(m => (
+          <span
+            key={m.name}
+            className="gr-answer-chip"
+            style={{ borderColor: clusterColor(m.cluster), color: clusterColor(m.cluster) }}
+            onClick={() => onMethodClick && onMethodClick(m.name)}
+          >
+            {m.name}
+          </span>
+        ))}
+      </div>
+
+      <div className="gr-comparison-scroll">
+        <table className="gr-comparison-table">
+          <thead>
+            <tr>
+              <th className="gr-cmp-dim-h">Priority Dimension</th>
+              {anchorMethods.map(m => (
+                <th
+                  key={m.name}
+                  className="gr-cmp-method-h"
+                  style={{ borderTopColor: clusterColor(m.cluster) }}
+                >
+                  <span style={{ color: clusterColor(m.cluster) }}>{m.name}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {PRIORITY_DIMS.map(d => {
+              const status = dimStatus[d.key];
+              return (
+                <tr key={d.key} className={`gr-cmp-row gr-cmp-${status}`}>
+                  <td className="gr-cmp-dim">
+                    <span className="gr-cmp-dim-label">{d.label}</span>
+                    <span className={`gr-cmp-status gr-cmp-status-${status}`}>
+                      {status === 'shared' && 'shared'}
+                      {status === 'differs' && 'differs'}
+                      {status === 'partial' && 'partial'}
+                      {status === 'gap' && 'gap'}
+                    </span>
+                  </td>
+                  {anchorMethods.map(m => {
+                    const v = normalize(m.meta[d.key]);
+                    return (
+                      <td
+                        key={m.name}
+                        className="gr-cmp-cell"
+                        style={{ borderLeftColor: clusterColor(m.cluster) }}
+                      >
+                        {v ? (
+                          <HighlightedText text={v} termDictionary={termDictionary} query={query} />
+                        ) : (
+                          <span className="gr-cmp-gap-mark">not specified</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {synthesis && (
+        <div className="gr-synthesis">
+          <div className="gr-synthesis-label">Graph Analysis</div>
+          <InsightBullets
+            text={synthesis}
+            methodClusterMap={methodClusterMap}
+            clusterLabelMap={clusterLabelMap}
+            onMethodClick={onMethodClick}
+            query={query}
+            termDictionary={termDictionary}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { GRASP_PRIORITY_DIMS };

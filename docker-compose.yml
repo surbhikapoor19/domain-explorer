@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  grobid:
+    image: lfoppiano/grobid:0.8.1
+    ports:
+      - "8070:8070"
+    restart: unless-stopped
+
+  runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.runner
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - HF_API_TOKEN=${HF_API_TOKEN:-}
+      - GROBID_URL=http://grobid:8070
+      - PORT=3000
+    volumes:
+      - domain-data:/app/datasets
+      - dashboard-data:/app/dashboard/public
+    depends_on:
+      - grobid
+    restart: unless-stopped
+
+volumes:
+  domain-data:
+  dashboard-data:

@@ -1,0 +1,40 @@
+# Stage 1: Build React dashboard
+FROM node:20-slim AS dashboard-builder
+WORKDIR /build
+COPY dashboard/package.json dashboard/package-lock.json ./
+RUN npm ci --production
+COPY dashboard/ .
+ENV CI=false GENERATE_SOURCEMAP=false
+RUN npm run build
+
+# Stage 2: Python runtime with pipeline + dashboard
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl unzip && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Python dependencies
+COPY backend/requirements.txt backend/requirements.txt
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -r backend/requirements.txt && \
+    pip install --no-cache-dir requests
+
+# Copy code
+COPY backend/ backend/
+COPY hgt/ hgt/
+COPY scripts/ scripts/
+COPY domains/ domains/
+COPY datasets/ datasets/
+COPY dashboard/scripts/ dashboard/scripts/
+
+# Copy pre-built dashboard
+COPY --from=dashboard-builder /build/build dashboard/build
+COPY dashboard/public/ dashboard/public/
+
+ENV PORT=3000
+EXPOSE 3000
+
+CMD ["python", "scripts/build_runner.py"]

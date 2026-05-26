@@ -1,0 +1,54 @@
+# Motion Planning domain config — the test domain for the multi-domain
+# demo. Same role vocabulary as grasp_planning.yaml; different CSV
+# columns mapped to the same higher-level roles.
+#
+# Once Phase 2 + 3 land, switching the active domain to motion_planning
+# rebuilds the entire dashboard with motion-planning data, motion-planning
+# branding, and motion-planning LLM prompts, with no code change.
+
+domain: motion_planning
+display_name: "Motion Explorer"
+display_subject: "motion planning algorithms"
+display_short: "motion planning"
+ecosystem: "COMPARE Ecosystem"
+tagline: "AI-in-the-Loop"
+query_hint: 'Ask about motion planning algorithms, e.g., "RRT variants for high-DoF arms in cluttered workspaces"'
+method_noun: "algorithm"
+
+csv_path: datasets/motion-planning/motion_planning.csv
+papers_dir: datasets/motion-planning/papers/
+
+# Column -> role mapping. Sourced from the robot-manipulation.org
+# Google Sheet (13 methods). Motion planning has fewer columns than
+# grasp planning — no training data, backbone, sensor, or output shape.
+columns:
+  Name:                    { role: identity.name,        facet: identifier }
+  Description:             { role: identity.description, facet: text }
+  "Planning Type":         { role: method.family,        facet: categorical }
+  Middleware:              { role: method.middleware,     facet: categorical }
+  "IK/Controller":         { role: method.ik_controller, facet: categorical }
+  "Link(s)":               { role: identity.code,        facet: url }
+  Citation:                { role: identity.citation,    facet: text }
+  "Year (Initial Release)": { role: identity.year,       facet: numeric }
+  License:                 { role: meta.license,         facet: categorical }
+  Language:                { role: meta.language,        facet: categorical }
+  "Maintainer(s)":         { role: meta.maintainer,      facet: text }
+
+# Motion-planning-specific LLM prompt overrides.
+llm:
+  domain_subject: "robotic motion planning"
+  claim_extraction_focus:
+    - "path-length and computation-time benchmarks against other planners"
+    - "asymptotic optimality, completeness, and convergence guarantees"
+    - "limitations specific to high-DoF systems, narrow passages, or dynamic obstacles"
+    - "real-robot deployment results and constraints"
+  query_rewrite_examples:
+    - "RRT variants for narrow-passage environments"
+    - "what optimization methods are used for trajectory smoothing"
+    - "papers that benchmark on the MoveIt! pipeline or OMPL"
+
+default_color_by_roles:
+  - method.family
+  - input.modality
+  - hardware.platform
+  - env.context
