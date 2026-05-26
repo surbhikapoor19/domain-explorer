@@ -87,6 +87,7 @@ jobs:
 
           Automated build via admin panel.
           Pipeline: GROBID -> RAG -> KG -> HGT -> Precompute"
+          git pull --rebase origin main
           git push
 
       - name: Stop GROBID
@@ -117,4 +118,5 @@ jobs:
           git add dashboard/public/data/
           git diff --staged --quiet && echo "No changes to commit" && exit 0
           git commit -m "Switch active domain to: ${DOMAIN}"
+          git pull --rebase origin main
           git push
