@@ -131,8 +131,11 @@ function AdminPage() {
     setUpdating(true);
     setError(null);
     try {
-      const buf = await editPdfZip.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(editPdfZip);
+      });
       const res = await fetch('/api/admin/upload', {
         method: 'POST',
         headers: { ...authHeaders(), 'Content-Type': 'application/json' },
