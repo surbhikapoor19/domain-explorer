@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 const POLL_SLOW = 15000;
 const POLL_FAST = 5000;
 
-function AdminPage() {
+function AdminPage({ explorerEnabled, onToggleExplorer }) {
   const [token, setToken] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [domains, setDomains] = useState([]);
@@ -231,6 +231,14 @@ function AdminPage() {
           >
             {uploadMode ? 'Cancel' : '+ New Domain'}
           </button>
+        </div>
+
+        <div className="admin-setting-row">
+          <label className="admin-toggle-label">
+            <input type="checkbox" checked={!!explorerEnabled} onChange={e => onToggleExplorer(e.target.checked)} />
+            <span>Show Explorer tab</span>
+          </label>
+          <span className="admin-setting-hint">When off, Graph Reasoning is the landing page</span>
         </div>
 
         {error && <div className="admin-error">{error}</div>}

@@ -24,7 +24,7 @@ function detectDomainFromPath() {
   const path = window.location.pathname.replace(/^\//, '').split('/')[0];
   if (path === 'admin') return { page: 'admin', dataPrefix: '/data-grasp-planning', domainSlug: null };
   if (path && path !== '' && path !== 'index.html') {
-    return { page: 'explorer', dataPrefix: `/data-${path}`, domainSlug: path };
+    return { page: 'graph-reasoning', dataPrefix: `/data-${path}`, domainSlug: path };
   }
   return { page: 'redirect', dataPrefix: '/data-grasp-planning', domainSlug: 'grasp-planning' };
 }
@@ -42,7 +42,10 @@ function App() {
     }
   }, [detected.page]);
 
-  const [page, setPage] = useState(detected.page === 'redirect' ? 'explorer' : detected.page);
+  const [page, setPage] = useState(detected.page === 'redirect' ? 'graph-reasoning' : detected.page);
+  const [explorerEnabled, setExplorerEnabled] = useState(() => {
+    try { return localStorage.getItem('explorer-enabled') === 'true'; } catch (_) { return false; }
+  });
   const [termDictionary, setTermDictionary] = useState(null);
   const [data, setData] = useState([]);
   const [vizMode, setVizMode] = useState('scatter');
@@ -281,12 +284,14 @@ function App() {
           <span className="badge">{branding.tagline}</span>
           <span className="header-subtitle">{branding.ecosystem}</span>
           <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
-          <button
-            className={`nav-link ${page === 'explorer' ? 'active' : ''}`}
-            onClick={() => setPage('explorer')}
-          >
-            Explorer
-          </button>
+          {explorerEnabled && (
+            <button
+              className={`nav-link ${page === 'explorer' ? 'active' : ''}`}
+              onClick={() => setPage('explorer')}
+            >
+              Explorer
+            </button>
+          )}
           <button
             className={`nav-link ${page === 'graph-reasoning' ? 'active' : ''}`}
             onClick={() => setPage('graph-reasoning')}
@@ -347,7 +352,11 @@ function App() {
       <DomainContext.Provider value={domainCfg}>
       <div className="copilot-app">
         {sharedHeader}
-        <AdminPage />
+        <AdminPage explorerEnabled={explorerEnabled} onToggleExplorer={(v) => {
+          try { localStorage.setItem('explorer-enabled', v ? 'true' : 'false'); } catch (_) {}
+          setExplorerEnabled(v);
+          if (!v && page === 'explorer') setPage('graph-reasoning');
+        }} />
       </div>
       </DomainContext.Provider>
     );
