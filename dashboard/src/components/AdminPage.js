@@ -12,6 +12,9 @@ function AdminPage() {
   const [buildStatus, setBuildStatus] = useState([]);
   const [deployments, setDeployments] = useState([]);
   const [building, setBuilding] = useState(null);
+  const [editingDomain, setEditingDomain] = useState(null);
+  const [editPdfZip, setEditPdfZip] = useState(null);
+  const [updating, setUpdating] = useState(false);
 
   const [uploadMode, setUploadMode] = useState(false);
   const [newDomain, setNewDomain] = useState('');
@@ -118,6 +121,39 @@ function AdminPage() {
       setError(err.message);
     }
     setBuilding(null);
+  };
+
+  const handleUpdateDomain = async (domain) => {
+    if (!editPdfZip) {
+      setError('Select a .zip file of PDFs');
+      return;
+    }
+    setUpdating(true);
+    setError(null);
+    try {
+      const buf = await editPdfZip.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          domain,
+          updateOnly: true,
+          pdfZipBase64: base64,
+          pdfZipFilename: editPdfZip.name,
+        }),
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (_) { throw new Error(text.slice(0, 200)); }
+      if (!res.ok) throw new Error(data.error || 'Update failed');
+      setEditingDomain(null);
+      setEditPdfZip(null);
+      await fetchDomains();
+    } catch (err) {
+      setError(err.message);
+    }
+    setUpdating(false);
   };
 
   const handleUpload = async (e) => {
@@ -285,6 +321,20 @@ function AdminPage() {
                 <div className="admin-domain-actions">
                   <button
                     className="admin-btn"
+                    onClick={() => {
+                      if (editingDomain === d.slug) {
+                        setEditingDomain(null);
+                        setEditPdfZip(null);
+                      } else {
+                        setEditingDomain(d.slug);
+                        setEditPdfZip(null);
+                      }
+                    }}
+                  >
+                    {editingDomain === d.slug ? 'Cancel' : 'Update'}
+                  </button>
+                  <button
+                    className="admin-btn"
                     onClick={() => handleTriggerBuild(d.slug)}
                     disabled={building === d.slug}
                   >
@@ -299,6 +349,25 @@ function AdminPage() {
                     Visit
                   </a>
                 </div>
+                {editingDomain === d.slug && (
+                  <div className="admin-update-form">
+                    <div className="admin-field">
+                      <label>Upload PDFs (.zip of PDF files)</label>
+                      <input
+                        type="file"
+                        accept=".zip"
+                        onChange={e => setEditPdfZip(e.target.files[0])}
+                      />
+                    </div>
+                    <button
+                      className="admin-btn admin-btn-primary"
+                      onClick={() => handleUpdateDomain(d.slug)}
+                      disabled={updating || !editPdfZip}
+                    >
+                      {updating ? 'Uploading...' : 'Upload PDFs & Build'}
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}

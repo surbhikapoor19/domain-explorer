@@ -17,9 +17,12 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'GH_PAT not configured' });
   }
 
-  const { domain, csvContent, csvFilename, pdfUrl, displayName, methodNoun } = req.body || {};
-  if (!domain || !csvContent) {
-    return res.status(400).json({ error: 'domain and csvContent are required' });
+  const { domain, csvContent, csvFilename, pdfUrl, displayName, methodNoun, updateOnly, pdfZipBase64 } = req.body || {};
+  if (!domain) {
+    return res.status(400).json({ error: 'domain is required' });
+  }
+  if (!updateOnly && !csvContent) {
+    return res.status(400).json({ error: 'csvContent is required for new domains' });
   }
 
   const GITHUB_OWNER = process.env.GITHUB_OWNER || 'surbhikapoor19';
@@ -36,19 +39,27 @@ export default async function handler(req, res) {
   try {
     const filesToCommit = [];
 
-    // 1. CSV file
-    const csvPath = `datasets/${domainSlug}/${csvFilename || `${domain}.csv`}`;
-    filesToCommit.push({
-      path: csvPath,
-      content: Buffer.from(csvContent).toString('base64'),
-    });
+    if (updateOnly) {
+      if (pdfZipBase64) {
+        filesToCommit.push({
+          path: `datasets/${domainSlug}/papers.zip`,
+          content: pdfZipBase64,
+        });
+      }
+    } else {
+      // New domain mode
+      const csvPath = `datasets/${domainSlug}/${csvFilename || `${domain}.csv`}`;
+      filesToCommit.push({
+        path: csvPath,
+        content: Buffer.from(csvContent).toString('base64'),
+      });
 
-    // 2. Domain YAML config (includes pdfUrl for build job to download)
-    const yamlContent = buildDomainYaml(domain, csvPath, domainSlug, displayName, methodNoun, pdfUrl);
-    filesToCommit.push({
-      path: `domains/${domain}.yaml`,
-      content: Buffer.from(yamlContent).toString('base64'),
-    });
+      const yamlContent = buildDomainYaml(domain, csvPath, domainSlug, displayName, methodNoun, pdfUrl);
+      filesToCommit.push({
+        path: `domains/${domain}.yaml`,
+        content: Buffer.from(yamlContent).toString('base64'),
+      });
+    }
 
     // Get the current commit SHA for the branch
     const refRes = await fetch(
@@ -108,7 +119,7 @@ export default async function handler(req, res) {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          message: `Add domain: ${displayName || domain}\n\nUploaded via admin panel`,
+          message: `${updateOnly ? 'Update' : 'Add'} domain: ${displayName || domain}\n\nUploaded via admin panel`,
           tree: treeData.sha,
           parents: [baseSha],
         }),

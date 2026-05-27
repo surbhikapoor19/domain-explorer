@@ -5423,7 +5423,8 @@ body {
   margin-bottom: 0.25rem;
 }
 .admin-field input[type="text"],
-.admin-field input[type="password"] {
+.admin-field input[type="password"],
+.admin-field input[type="url"] {
   width: 100%;
   padding: 0.4rem 0.65rem;
   border: 1px solid var(--border, #ccc);
@@ -5433,6 +5434,23 @@ body {
 }
 .admin-field input[type="file"] {
   font-size: 0.8rem;
+}
+
+.admin-update-form {
+  background: #f0f4ff;
+  border-top: 1px solid var(--border, #e5e7eb);
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  border-radius: 0 0 6px 6px;
+}
+.admin-update-form .admin-field { margin-bottom: 0.5rem; }
+.admin-update-form input[type="url"] {
+  width: 100%;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  box-sizing: border-box;
 }
 
 .admin-domains { margin-top: 0.5rem; }
