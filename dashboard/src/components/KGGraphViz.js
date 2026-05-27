@@ -397,21 +397,25 @@ export default function KGGraphViz({
       window.__kgCy = cy;
     }
 
-    // Cooperative gestures: zoom requires Cmd (macOS) / Ctrl (Win/Linux).
-    // Register on containerRef (parent of cy.container()) so the capture-
-    // phase handler genuinely runs BEFORE Cytoscape's own wheel listener.
+    cy.userZoomingEnabled(false);
+
     const wrapper = containerRef.current;
     if (wrapper) {
-      const wheelHandler = (ev) => {
-        const wantsZoom = ev.metaKey || ev.ctrlKey;
-        if (wantsZoom) return;
-        ev.stopPropagation();
-        ev.stopImmediatePropagation();
-        setZoomHint(true);
-        clearTimeout(zoomHintTimer.current);
-        zoomHintTimer.current = setTimeout(() => setZoomHint(false), 1200);
-      };
-      wrapper.addEventListener('wheel', wheelHandler, { capture: true, passive: false });
+      wrapper.addEventListener('wheel', (ev) => {
+        if (ev.metaKey || ev.ctrlKey) {
+          ev.preventDefault();
+          const factor = ev.deltaY < 0 ? 1.08 : 0.92;
+          const rect = wrapper.getBoundingClientRect();
+          cy.zoom({
+            level: cy.zoom() * factor,
+            renderedPosition: { x: ev.clientX - rect.left, y: ev.clientY - rect.top },
+          });
+        } else {
+          setZoomHint(true);
+          clearTimeout(zoomHintTimer.current);
+          zoomHintTimer.current = setTimeout(() => setZoomHint(false), 1200);
+        }
+      }, { passive: false });
     }
 
     // Track which node is tap-selected so the hover mouseout doesn't
