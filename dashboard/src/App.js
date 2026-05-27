@@ -36,7 +36,8 @@ function App() {
   useMemo(() => setDataPrefix(detected.dataPrefix), [detected.dataPrefix]);
 
   useEffect(() => {
-    if (detected.page === 'redirect') {
+    const isIframe = window.self !== window.top;
+    if (detected.page === 'redirect' && !isIframe) {
       window.location.replace('/grasp-planning');
     }
   }, [detected.page]);
