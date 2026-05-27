@@ -35,12 +35,18 @@ jobs:
       - name: Set up GROBID
         run: |
           docker pull lfoppiano/grobid:0.8.1
-          docker run -d --name grobid -p 8070:8070 lfoppiano/grobid:0.8.1
+          docker run -d --name grobid -p 8070:8070 -m 4g lfoppiano/grobid:0.8.1
           echo "Waiting for GROBID to start..."
-          for i in $(seq 1 30); do
-            curl -s http://localhost:8070/api/isalive && break
+          for i in $(seq 1 60); do
+            if curl -s http://localhost:8070/api/isalive > /dev/null 2>&1; then
+              echo "GROBID alive after $((i*2))s, warming up models..."
+              sleep 10
+              echo "GROBID ready"
+              break
+            fi
             sleep 2
           done
+          docker ps --filter name=grobid
 
       - name: Extract domain info
         id: domain

@@ -86,17 +86,17 @@ def step_grobid(paths):
 
     print(f"  Processing {len(pending)}/{len(pdfs)} PDFs via GROBID at {grobid_url}")
 
-    for attempt in range(10):
+    for attempt in range(20):
         try:
             r = requests.get(f'{grobid_url}/api/isalive', timeout=5)
             if r.ok:
                 break
-        except requests.ConnectionError:
+        except (requests.ConnectionError, requests.Timeout):
             pass
-        if attempt == 9:
+        if attempt == 19:
             print("  ERROR: GROBID not responding. Is it running?")
             sys.exit(1)
-        time.sleep(3)
+        time.sleep(5)
 
     processed = 0
     for pdf in pending:
