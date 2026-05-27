@@ -30,15 +30,45 @@ export default async function handler(req, res) {
     const files = await domainsRes.json();
     const yamlFiles = files.filter(f => f.name.endsWith('.yaml') || f.name.endsWith('.yml'));
 
+    const ghHeaders = ghToken
+      ? { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+      : { Accept: 'application/vnd.github.v3+json' };
+
     const domains = [];
     for (const f of yamlFiles) {
       const slug = f.name.replace(/\.(yaml|yml)$/, '');
-      // Read the YAML to get display_name
+      const slugDashed = slug.replace(/_/g, '-');
       const contentRes = await fetch(f.download_url);
       const yamlText = await contentRes.text();
       const displayName = yamlText.match(/display_name:\s*["']?([^"'\n]+)/)?.[1] || slug;
       const methodNoun = yamlText.match(/method_noun:\s*["']?([^"'\n]+)/)?.[1] || 'method';
       const csvPath = yamlText.match(/csv_path:\s*["']?([^"'\n]+)/)?.[1] || '';
+
+      let hasData = false;
+      let hasKG = false;
+      let methodCount = 0;
+
+      try {
+        const dataRes = await fetch(
+          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/dashboard/public/data-${slugDashed}`,
+          { headers: ghHeaders }
+        );
+        if (dataRes.ok) {
+          const dataFiles = await dataRes.json();
+          const methods = dataFiles.find(df => df.name === 'methods.json');
+          const kgFull = dataFiles.find(df => df.name === 'kg-full.json');
+          hasData = !!methods && methods.size > 10;
+          hasKG = !!kgFull && kgFull.size > 100;
+
+          if (methods && methods.size > 10) {
+            try {
+              const mRes = await fetch(methods.download_url);
+              const mData = await mRes.json();
+              methodCount = Array.isArray(mData) ? mData.length : 0;
+            } catch (_) {}
+          }
+        }
+      } catch (_) {}
 
       domains.push({
         slug,
@@ -46,6 +76,9 @@ export default async function handler(req, res) {
         methodNoun: methodNoun.trim(),
         csvPath: csvPath.trim(),
         yamlFile: f.name,
+        hasData,
+        hasKG,
+        methodCount,
       });
     }
 
