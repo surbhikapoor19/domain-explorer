@@ -51,13 +51,18 @@ jobs:
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
           echo "Building domain: $DOMAIN (slug: $SLUG)"
 
+      - name: Pull LFS files
+        run: git lfs pull --include="datasets/*/papers.zip"
+
       - name: Unzip PDFs if needed
         run: |
           SLUG="${{ steps.domain.outputs.slug }}"
           if [ -f "datasets/${SLUG}/papers.zip" ]; then
             mkdir -p "datasets/${SLUG}/papers"
-            unzip -o "datasets/${SLUG}/papers.zip" -d "datasets/${SLUG}/papers/"
-            echo "Extracted PDFs to datasets/${SLUG}/papers/"
+            unzip -o "datasets/${SLUG}/papers.zip" -d "datasets/${SLUG}/"
+            echo "Extracted $(find datasets/${SLUG}/papers -name '*.pdf' | wc -l) PDFs"
+          else
+            echo "No papers.zip found for ${SLUG}"
           fi
 
       - name: Run ingestion pipeline
