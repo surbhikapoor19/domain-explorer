@@ -1,6 +1,50 @@
+import crypto from 'crypto';
+
 export const config = {
   api: { bodyParser: { sizeLimit: '100mb' } },
 };
+
+async function uploadToLFS(owner, repo, ghToken, fileBuffer) {
+  const sha256 = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+  const size = fileBuffer.length;
+
+  const batchRes = await fetch(
+    `https://github.com/${owner}/${repo}.git/info/lfs/objects/batch`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${owner}:${ghToken}`).toString('base64')}`,
+        'Content-Type': 'application/vnd.git-lfs+json',
+        Accept: 'application/vnd.git-lfs+json',
+      },
+      body: JSON.stringify({
+        operation: 'upload',
+        transfers: ['basic'],
+        objects: [{ oid: sha256, size }],
+      }),
+    }
+  );
+  if (!batchRes.ok) {
+    const errText = await batchRes.text();
+    throw new Error(`LFS batch failed (${batchRes.status}): ${errText.slice(0, 200)}`);
+  }
+  const batchData = await batchRes.json();
+  const obj = batchData.objects[0];
+
+  if (obj.actions?.upload) {
+    const uploadUrl = obj.actions.upload.href;
+    const uploadHeaders = obj.actions.upload.header || {};
+    const putRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { ...uploadHeaders, 'Content-Type': 'application/octet-stream' },
+      body: fileBuffer,
+    });
+    if (!putRes.ok) throw new Error(`LFS upload failed: ${putRes.status}`);
+  }
+
+  const pointer = `version https://git-lfs.github.com/spec/v1\noid sha256:${sha256}\nsize ${size}\n`;
+  return pointer;
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -38,12 +82,17 @@ export default async function handler(req, res) {
 
   try {
     const filesToCommit = [];
+    let lfsPointer = null;
+    const zipPath = `datasets/${domainSlug}/papers.zip`;
 
     if (updateOnly) {
       if (pdfZipBase64) {
+        const zipBuffer = Buffer.from(pdfZipBase64, 'base64');
+        lfsPointer = await uploadToLFS(GITHUB_OWNER, GITHUB_REPO, ghToken, zipBuffer);
         filesToCommit.push({
-          path: `datasets/${domainSlug}/papers.zip`,
-          content: pdfZipBase64,
+          path: zipPath,
+          content: Buffer.from(lfsPointer).toString('base64'),
+          isLfs: true,
         });
       }
     } else {

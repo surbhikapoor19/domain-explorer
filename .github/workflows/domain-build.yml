@@ -57,7 +57,6 @@ jobs:
           if [ -f "datasets/${SLUG}/papers.zip" ]; then
             mkdir -p "datasets/${SLUG}/papers"
             unzip -o "datasets/${SLUG}/papers.zip" -d "datasets/${SLUG}/papers/"
-            rm "datasets/${SLUG}/papers.zip"
             echo "Extracted PDFs to datasets/${SLUG}/papers/"
           fi
 
@@ -81,7 +80,9 @@ jobs:
           SLUG="${{ steps.domain.outputs.slug }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -- "datasets/${SLUG}/papers.zip" 2>/dev/null || true
           git add "datasets/${SLUG}/" "dashboard/public/data-${SLUG}/" "domains/${DOMAIN}.yaml" 2>/dev/null || true
+          git reset HEAD -- "datasets/${SLUG}/papers.zip" 2>/dev/null || true
           git diff --staged --quiet && echo "No changes to commit" && exit 0
           git commit -m "Build domain: ${DOMAIN}
 
