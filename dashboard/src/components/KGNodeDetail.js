@@ -10,6 +10,7 @@
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
+import Tooltip from './Tooltip';
 import { HighlightedText } from '../highlighter';
 
 function trimToSentence(text) {
@@ -1960,7 +1961,7 @@ export default function KGNodeDetail({
           };
           return (
             <div className="kgnd-lineage">
-              <div className="kgnd-lineage-title">Paper Lineage</div>
+              <div className="kgnd-lineage-title">Paper Lineage <Tooltip text="Citation graph for this paper. 'Builds on' = extends prior work, 'differs' = contrasts with it, 'neutral' = references without stance. The N× badge shows how many times this paper is cited in the text — higher counts signal deeper engagement." wide><span className="chart-help">?</span></Tooltip></div>
 
               {totalOut > 0 && (
                 <div className="kgnd-lineage-section">
