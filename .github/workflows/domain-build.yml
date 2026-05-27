@@ -35,7 +35,7 @@ jobs:
       - name: Set up GROBID
         run: |
           docker pull lfoppiano/grobid:0.8.1
-          docker run -d --name grobid -p 8070:8070 lfoppiano/grobid:0.8.1
+          docker run -d --name grobid -p 8070:8070 -e JAVA_TOOL_OPTIONS="-XX:-UseContainerSupport" lfoppiano/grobid:0.8.1
           echo "Waiting for GROBID to start..."
           READY=false
           for i in $(seq 1 90); do
