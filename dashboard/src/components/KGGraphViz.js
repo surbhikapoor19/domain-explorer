@@ -397,44 +397,21 @@ export default function KGGraphViz({
       window.__kgCy = cy;
     }
 
-    // Cooperative gestures: zoom is gated on a modifier key (cmd on macOS,
-    // ctrl on Windows/Linux). Without the modifier, the wheel event is
-    // allowed to bubble to the page so the user can scroll past the graph
-    // without it zooming under their cursor. With the modifier held,
-    // Cytoscape consumes the event normally and zooms.
-    //
-    // The earlier version of this handler ran in the bubble phase and
-    // tried to toggle userZoomingEnabled per gesture. That race-conditioned
-    // with Cytoscape's own wheel listener (which runs on the canvas inside
-    // the container, before bubbling reaches us). Fixed by:
-    //   1. Leaving userZoomingEnabled at its default (true).
-    //   2. Registering OUR listener in the capture phase so we run BEFORE
-    //      Cytoscape sees the event.
-    //   3. When no modifier is held, stopImmediatePropagation() so the
-    //      event never reaches Cytoscape (so it doesn't preventDefault,
-    //      so the browser's native scroll fires normally).
-    //   4. When the modifier is held, doing nothing — event continues
-    //      down to Cytoscape which zooms as usual.
-    //
-    // This mirrors the Mapbox `cooperativeGestures` and Google Maps
-    // `gestureHandling: 'cooperative'` pattern.
-    const container = cy.container();
-    if (container) {
+    // Cooperative gestures: zoom requires Cmd (macOS) / Ctrl (Win/Linux).
+    // Register on containerRef (parent of cy.container()) so the capture-
+    // phase handler genuinely runs BEFORE Cytoscape's own wheel listener.
+    const wrapper = containerRef.current;
+    if (wrapper) {
       const wheelHandler = (ev) => {
         const wantsZoom = ev.metaKey || ev.ctrlKey;
         if (wantsZoom) return;
-        // Stop the event from reaching Cytoscape's canvas-level listener
-        // (which would preventDefault and consume the scroll). Both stops
-        // are needed: stopPropagation blocks child-element listeners,
-        // stopImmediatePropagation blocks same-element listeners.
         ev.stopPropagation();
         ev.stopImmediatePropagation();
         setZoomHint(true);
         clearTimeout(zoomHintTimer.current);
         zoomHintTimer.current = setTimeout(() => setZoomHint(false), 1200);
       };
-      container.addEventListener('wheel', wheelHandler, { capture: true, passive: false });
-      cy._coopWheelHandler = wheelHandler;
+      wrapper.addEventListener('wheel', wheelHandler, { capture: true, passive: false });
     }
 
     // Track which node is tap-selected so the hover mouseout doesn't

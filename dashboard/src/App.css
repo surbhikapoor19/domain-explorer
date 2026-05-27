@@ -3024,6 +3024,7 @@ body {
 @media (max-width: 1100px) {
   .scatter-content.kgl-graph-stage.has-side-panel {
     grid-template-columns: 1fr;
+    grid-template-rows: minmax(400px, 55vh) minmax(300px, 45vh);
   }
 }
 /* Bottom cards: light headers to reduce visual noise */

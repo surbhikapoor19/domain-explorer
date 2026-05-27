@@ -172,19 +172,21 @@ function App() {
 
         const isIframe = window.self !== window.top;
         const sessionKey = domainConfig?.domain || 'grasp-explorer';
-        const cachedQuery = isIframe && sessionStorage.getItem(`${sessionKey}-query`);
-        const cachedResult = isIframe && sessionStorage.getItem(`${sessionKey}-result`);
-        if (cachedQuery && cachedResult) {
-          try {
-            applyQueryResult(cachedQuery, JSON.parse(cachedResult));
-            setLoading(false);
-            return;
-          } catch (_) {}
-        }
-        if (!isIframe) {
-          sessionStorage.removeItem(`${sessionKey}-query`);
-          sessionStorage.removeItem(`${sessionKey}-result`);
-        }
+        try {
+          const cachedQuery = isIframe && sessionStorage.getItem(`${sessionKey}-query`);
+          const cachedResult = isIframe && sessionStorage.getItem(`${sessionKey}-result`);
+          if (cachedQuery && cachedResult) {
+            try {
+              applyQueryResult(cachedQuery, JSON.parse(cachedResult));
+              setLoading(false);
+              return;
+            } catch (_) {}
+          }
+          if (!isIframe) {
+            sessionStorage.removeItem(`${sessionKey}-query`);
+            sessionStorage.removeItem(`${sessionKey}-result`);
+          }
+        } catch (_) {}
         setData(umapDefault.data);
         setWeights(umapDefault.config.weights);
         if (umapDefault.clusterStats) setClusterStats(umapDefault.clusterStats);
@@ -234,8 +236,7 @@ function App() {
     setWeightsOpen(false);
     setColorBy('cluster');
     const key = domainCfg.branding?.domain || 'grasp-explorer';
-    sessionStorage.removeItem(`${key}-query`);
-    sessionStorage.removeItem(`${key}-result`);
+    try { sessionStorage.removeItem(`${key}-query`); sessionStorage.removeItem(`${key}-result`); } catch (_) {}
     fetchUmap();
   };
 
