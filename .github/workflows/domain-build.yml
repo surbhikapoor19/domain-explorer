@@ -30,7 +30,7 @@ jobs:
           pip install pandas scikit-learn umap-learn hdbscan sentence-transformers numpy requests
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install torch-geometric torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-2.5.0+cpu.html
-          pip install chromadb lxml beautifulsoup4
+          pip install chromadb lxml beautifulsoup4 groq
 
       - name: Set up GROBID
         run: |
@@ -103,8 +103,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -- "datasets/${SLUG}/papers.zip" 2>/dev/null || true
-          git add "datasets/${SLUG}/" "dashboard/public/data-${SLUG}/" "domains/${DOMAIN}.yaml" 2>/dev/null || true
-          git reset HEAD -- "datasets/${SLUG}/papers.zip" 2>/dev/null || true
+          git add "datasets/${SLUG}/tei/" 2>/dev/null || true
+          git add "datasets/${SLUG}/chroma_db/extracted_facts.json" "datasets/${SLUG}/chroma_db/extracted_entities.json" "datasets/${SLUG}/chroma_db/knowledge_graph.json" "datasets/${SLUG}/chroma_db/term_dictionary.json" 2>/dev/null || true
+          git add "datasets/${SLUG}/chroma_db/hgt_schema/" 2>/dev/null || true
+          git add "dashboard/public/data-${SLUG}/" "domains/${DOMAIN}.yaml" 2>/dev/null || true
           git diff --staged --quiet && echo "No changes to commit" && exit 0
           git commit -m "Build domain: ${DOMAIN}
 

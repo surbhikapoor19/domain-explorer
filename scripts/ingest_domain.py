@@ -138,22 +138,40 @@ def step_rag(paths):
     tei_files = list(tei_dir.glob('*.tei.xml'))
     print(f"  Ingesting {len(tei_files)} TEI files into ChromaDB at {chroma_dir}")
 
-    rag_config = REPO_ROOT / 'backend' / 'rag_config.yaml'
-    if not rag_config.exists():
-        print(f"  No rag_config.yaml found at {rag_config}. Skipping.")
+    rag_config_path = REPO_ROOT / 'rag_config.yaml'
+    if not rag_config_path.exists():
+        print(f"  No rag_config.yaml found at {rag_config_path}. Skipping.")
         return
 
-    import subprocess
-    cmd = [
-        sys.executable, '-m', 'backend.rag.ingest.pipeline',
-        '--papers-dir', str(paths['papers']),
-        '--config', str(rag_config),
-    ]
-    result = subprocess.run(cmd, cwd=str(REPO_ROOT))
-    if result.returncode != 0:
-        print(f"  WARNING: RAG ingestion exited with code {result.returncode}")
+    from backend.rag.config import load_config
+    from backend.rag.ingest.pipeline import run_ingestion
+
+    config = load_config(str(rag_config_path))
+    config.chroma_persist_dir = str(chroma_dir)
+    config.collection_name = f"{paths['slug_dashed']}_papers"
+    config.parsing.backend = 'grobid'
+    grobid_url = os.environ.get('GROBID_URL', 'http://localhost:8070')
+    config.parsing.grobid_url = grobid_url
+
+    chroma_dir.mkdir(parents=True, exist_ok=True)
+    summary = run_ingestion(str(paths['papers']), config)
+    if summary.get('errors'):
+        print(f"  WARNING: RAG ingestion had {len(summary['errors'])} errors")
     else:
-        print("  RAG ingestion done")
+        print(f"  RAG ingestion done: {summary.get('n_papers', 0)} papers, {summary.get('n_chunks', 0)} chunks")
+
+    if os.environ.get('GROQ_API_KEY'):
+        try:
+            from backend.rag.config import save_config
+            domain_config_path = chroma_dir / '_rag_config.yaml'
+            save_config(config, str(domain_config_path))
+            from backend.rag.ingest.llm_entity_extractor import run_entity_extraction
+            print("  Running LLM entity extraction...")
+            run_entity_extraction(str(domain_config_path), output_path=str(chroma_dir / 'extracted_entities.json'))
+        except Exception as e:
+            print(f"  WARNING: Entity extraction failed: {e}")
+    else:
+        print("  Skipping entity extraction (no GROQ_API_KEY)")
 
 
 def step_kg(paths):
@@ -240,8 +258,14 @@ def step_precompute(paths, domain_slug):
 
     if methods_json.exists() and not FORCE:
         csv_path = next(paths['dataset'].glob('*.csv'), None)
-        if csv_path and csv_path.stat().st_mtime < methods_json.stat().st_mtime:
-            print(f"  Dashboard JSONs up-to-date (CSV unchanged). Skipping. (use --force to re-run)")
+        kg_path = chroma_dir / 'knowledge_graph.json'
+        latest_source = 0
+        if csv_path:
+            latest_source = max(latest_source, csv_path.stat().st_mtime)
+        if kg_path.exists():
+            latest_source = max(latest_source, kg_path.stat().st_mtime)
+        if latest_source and latest_source < methods_json.stat().st_mtime:
+            print(f"  Dashboard JSONs up-to-date (sources unchanged). Skipping. (use --force to re-run)")
             return
 
     print(f"  Running precompute: {yaml_path} → {output_dir}")
