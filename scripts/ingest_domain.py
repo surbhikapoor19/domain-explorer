@@ -175,9 +175,11 @@ def step_rag(paths):
 
 
 def step_kg(paths):
-    """Build knowledge graph from ChromaDB data."""
+    """Build knowledge graph from ChromaDB data.
+
+    Mirrors rebuild_kg.py: base graph → TEI enrichment → feature engineering.
+    """
     chroma_dir = paths['chroma']
-    tei_dir = paths['tei']
     kg_path = chroma_dir / 'knowledge_graph.json'
     facts_path = chroma_dir / 'extracted_facts.json'
     entities_path = chroma_dir / 'extracted_entities.json'
@@ -194,13 +196,16 @@ def step_kg(paths):
 
     from backend.rag.knowledge_graph import build_knowledge_graph, save_graph
     from backend.rag.method_paper_map import build_method_paper_map
-    from backend.rag.tei_graph import enrich_graph_from_tei
+    from backend.rag.config import load_config
+    from backend.rag.ingest.store import get_client, create_or_get_collection
 
     csv_path = next(paths['dataset'].glob('*.csv'), None)
     method_paper_map = build_method_paper_map(
         csv_path=str(csv_path) if csv_path else None,
         papers_dir=str(paths['papers']),
     )
+    print(f"  Method-paper map: {len(method_paper_map.get('method_to_paper', {}))} matched, "
+          f"{len(method_paper_map.get('unmatched_methods', []))} unmatched")
 
     G = build_knowledge_graph(
         facts_path=str(facts_path),
@@ -210,13 +215,81 @@ def step_kg(paths):
     )
     print(f"  Base KG: {len(G.nodes)} nodes, {len(G.edges)} edges")
 
+    # TEI enrichment: authors, citations, figures, tables, equations
+    # Prefer chroma_db/tei/ (from RAG pipeline, dashed IDs matching graph)
+    tei_dir = chroma_dir / 'tei'
+    if not tei_dir.exists() or not list(tei_dir.glob('*.tei.xml')):
+        tei_dir = paths['tei']
+
+    paper_texts = _build_paper_texts(chroma_dir, paths['slug_dashed'])
+
     if tei_dir.exists() and list(tei_dir.glob('*.tei.xml')):
-        paper_titles = {n: G.nodes[n].get('title', n) for n in G.nodes if G.nodes[n].get('type') == 'paper'}
-        enrich_graph_from_tei(G, str(tei_dir), paper_titles)
-        print(f"  TEI enrichment done: {len(G.nodes)} nodes, {len(G.edges)} edges")
+        from backend.rag.tei_graph import enrich_graph_from_tei
+        paper_titles = {
+            nid.replace('paper:', ''): G.nodes[nid].get('label', '')
+            for nid in G.nodes if G.nodes[nid].get('type') == 'paper'
+        }
+        stats = enrich_graph_from_tei(G, str(tei_dir), paper_titles, paper_texts=paper_texts)
+        print(f"  TEI enrichment: {len(G.nodes)} nodes, {len(G.edges)} edges")
+    else:
+        print("  No TEI files found, skipping TEI enrichment")
+
+    # Feature engineering: CSV explosion, chunks, keyphrases, TF-IDF, centrality
+    try:
+        from sentence_transformers import SentenceTransformer
+        from backend.rag.feature_engineering import enrich_knowledge_graph
+
+        rag_config_path = REPO_ROOT / 'rag_config.yaml'
+        config = load_config(str(rag_config_path))
+        config.chroma_persist_dir = str(chroma_dir)
+        config.collection_name = f"{paths['slug_dashed']}_papers"
+
+        model = SentenceTransformer(config.embedding_model)
+        client = get_client(config)
+        collection = create_or_get_collection(config, client)
+
+        skip_ft = tei_dir.exists() and bool(list(tei_dir.glob('*.tei.xml')))
+        G = enrich_knowledge_graph(
+            G, collection, model,
+            paper_texts=paper_texts or None,
+            csv_path=str(csv_path) if csv_path else None,
+            method_paper_map=method_paper_map,
+            skip_figure_table_heuristic=skip_ft,
+        )
+        print(f"  Feature engineering done: {len(G.nodes)} nodes, {len(G.edges)} edges")
+    except Exception as e:
+        print(f"  WARNING: Feature engineering failed: {e}")
 
     save_graph(G, str(kg_path))
     print(f"  Saved KG to {kg_path}")
+
+
+def _build_paper_texts(chroma_dir, slug_dashed):
+    """Build {paper_id: full_text} from ChromaDB chunks."""
+    from collections import defaultdict
+    from backend.rag.config import load_config
+    from backend.rag.ingest.store import get_client, create_or_get_collection
+
+    rag_config_path = REPO_ROOT / 'rag_config.yaml'
+    config = load_config(str(rag_config_path))
+    config.chroma_persist_dir = str(chroma_dir)
+    config.collection_name = f"{slug_dashed}_papers"
+
+    try:
+        client = get_client(config)
+        collection = create_or_get_collection(config, client)
+        total = collection.count()
+        if total == 0:
+            return {}
+        all_data = collection.get(include=['documents', 'metadatas'], limit=total)
+        texts = defaultdict(list)
+        for doc, meta in zip(all_data['documents'], all_data['metadatas']):
+            pid = meta.get('paper_id', '')
+            if pid and doc:
+                texts[pid].append(doc)
+        return {pid: ' '.join(chunks) for pid, chunks in texts.items()}
+    except Exception:
+        return {}
 
 
 def step_hgt(paths):

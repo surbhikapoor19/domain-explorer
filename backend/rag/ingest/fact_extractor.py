@@ -178,13 +178,31 @@ def extract_equations(text: str) -> list:
 
 # ─── Dataset/benchmark extraction ───
 
+_COMMON_DATASETS = (
+    'YCB|ShapeNet|Isaac\\s*(?:Gym|Sim)|MuJoCo|PyBullet|'
+    'Gazebo|CoppeliaSim|SAPIEN|Open3D|MoveIt|ROS|'
+    'Panda|UR5|Franka|KUKA|'
+    'GraspNet-1Billion|ACRONYM|ContactDB|BigBIRD|KIT|Cornell|'
+    'Jacquard|EGAD|DexGraspNet|MultiDex|'
+    'MotionBenchMaker|RoboBench|OMPL'
+)
+
 DATASET_RE = re.compile(
-    r'\b(GraspNet-1Billion|ACRONYM|YCB|ShapeNet|ContactDB|'
-    r'BigBIRD|KIT|Cornell|Jacquard|EGAD|DexGraspNet|'
-    r'MultiDex|Isaac\s*(?:Gym|Sim)|MuJoCo|PyBullet|'
-    r'Gazebo|CoppeliaSim|SAPIEN)\b',
+    r'\b(' + _COMMON_DATASETS + r')\b',
     re.IGNORECASE
 )
+
+
+def set_extra_datasets(patterns):
+    """Extend DATASET_RE with domain-specific dataset names at runtime."""
+    global DATASET_RE
+    if not patterns:
+        return
+    extra = '|'.join(re.escape(p) for p in patterns)
+    DATASET_RE = re.compile(
+        r'\b(' + _COMMON_DATASETS + '|' + extra + r')\b',
+        re.IGNORECASE
+    )
 
 
 def extract_datasets(text: str) -> list:

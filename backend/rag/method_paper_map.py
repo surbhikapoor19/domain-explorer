@@ -29,7 +29,7 @@ def build_method_paper_map(csv_path: str, papers_dir: str) -> dict:
         unmatched_papers: [paper_ids with no method]
     """
     df = pd.read_csv(csv_path)
-    paper_ids = [f.replace('.pdf', '') for f in sorted(os.listdir(papers_dir)) if f.endswith('.pdf')]
+    paper_ids = [f.replace('.pdf', '').replace('_', '-').lower() for f in sorted(os.listdir(papers_dir)) if f.endswith('.pdf')]
 
     method_to_paper = {}
     paper_to_methods = {pid: [] for pid in paper_ids}
@@ -70,12 +70,10 @@ def build_method_paper_map(csv_path: str, papers_dir: str) -> dict:
         # Try partial match: paper_id contains method slug or vice versa
         matched = False
         for pid in paper_ids:
-            # Check if the meaningful part of the name matches
             name_words = set(re.findall(r'[a-z]+', slug))
             pid_words = set(re.findall(r'[a-z]+', pid))
-            # Need at least 2 word overlap, or one long word (>5 chars) overlap
             common = name_words & pid_words
-            long_common = [w for w in common if len(w) > 5]
+            long_common = [w for w in common if len(w) > 3]
             if len(common) >= 2 or long_common:
                 method_to_paper[name] = pid
                 paper_to_methods[pid].append(name)

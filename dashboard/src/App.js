@@ -368,17 +368,6 @@ function App() {
       <div className="copilot-app">
         {sharedHeader}
         {queryError && <div className="query-error">{queryError}</div>}
-        {suggestion && (
-          <InsightCard
-            suggestion={suggestion}
-            weights={weights}
-            query={query}
-            data={data}
-            termDictionary={termDictionary}
-            onClose={() => setSuggestion(null)}
-            onMethodClick={() => {}}
-          />
-        )}
 
         {/* MethodTable — identical render to Explorer (sibling of .copilot-app, full width) */}
         <MethodTable

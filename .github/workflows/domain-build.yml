@@ -30,7 +30,7 @@ jobs:
           pip install pandas scikit-learn umap-learn hdbscan sentence-transformers numpy requests
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install torch-geometric torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-2.5.0+cpu.html
-          pip install chromadb lxml beautifulsoup4 groq pymupdf
+          pip install chromadb lxml beautifulsoup4 groq pymupdf keybert
 
       - name: Set up GROBID
         run: |

@@ -105,7 +105,7 @@ def _build_extraction_prompt(
 
     system_msg = (
         "You are a precise research paper analyst. Extract structured entities "
-        "from academic text about robotic grasp planning. Return ONLY a JSON array. "
+        "from academic text about robotics and planning algorithms. Return ONLY a JSON array. "
         "Be specific — use exact names, numbers, and method names from the text."
     )
 
