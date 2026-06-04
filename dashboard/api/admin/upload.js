@@ -61,7 +61,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'GH_PAT not configured' });
   }
 
-  const { domain, csvContent, csvFilename, pdfUrl, displayName, methodNoun, updateOnly, pdfZipBase64 } = req.body || {};
+  const { domain, csvContent, csvFilename, pdfUrl, displayName, methodNoun, updateOnly, pdfZipBase64, yamlConfig } = req.body || {};
   if (!domain) {
     return res.status(400).json({ error: 'domain is required' });
   }
@@ -103,7 +103,19 @@ export default async function handler(req, res) {
         content: Buffer.from(csvContent).toString('base64'),
       });
 
-      const yamlContent = buildDomainYaml(domain, csvPath, domainSlug, displayName, methodNoun, pdfUrl);
+      if (pdfZipBase64) {
+        const zipBuffer = Buffer.from(pdfZipBase64, 'base64');
+        lfsPointer = await uploadToLFS(GITHUB_OWNER, GITHUB_REPO, ghToken, zipBuffer);
+        filesToCommit.push({
+          path: zipPath,
+          content: Buffer.from(lfsPointer).toString('base64'),
+          isLfs: true,
+        });
+      }
+
+      const yamlContent = yamlConfig
+        ? buildFullYaml(domain, csvPath, domainSlug, pdfUrl, yamlConfig)
+        : buildDomainYaml(domain, csvPath, domainSlug, displayName, methodNoun, pdfUrl);
       filesToCommit.push({
         path: `domains/${domain}.yaml`,
         content: Buffer.from(yamlContent).toString('base64'),
@@ -196,6 +208,64 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
+}
+
+function buildFullYaml(domain, csvPath, domainSlug, pdfUrl, cfg) {
+  const lines = [];
+  lines.push(`domain: ${domain}`);
+  lines.push(`display_name: "${cfg.display_name || domain}"`);
+  lines.push(`display_subject: "${cfg.display_subject || ''}"`);
+  lines.push(`display_short: "${cfg.display_short || ''}"`);
+  lines.push(`ecosystem: "COMPARE Ecosystem"`);
+  lines.push(`tagline: "AI-in-the-Loop"`);
+  lines.push(`query_hint: '${(cfg.query_hint || '').replace(/'/g, "''")}'`);
+  lines.push(`method_noun: "${cfg.method_noun || 'method'}"`);
+  lines.push('');
+  lines.push(`csv_path: ${csvPath}`);
+  lines.push(`papers_dir: datasets/${domainSlug}/papers/`);
+  if (pdfUrl) lines.push(`pdf_url: "${pdfUrl}"`);
+  lines.push('');
+  lines.push('columns:');
+  for (const [col, mapping] of Object.entries(cfg.columns || {})) {
+    if (mapping && mapping.role) {
+      const parts = [`role: ${mapping.role}`];
+      if (mapping.facet) parts.push(`facet: ${mapping.facet}`);
+      if (mapping.alias_short) parts.push(`alias_short: "${mapping.alias_short}"`);
+      lines.push(`  "${col}": { ${parts.join(', ')} }`);
+    }
+  }
+  lines.push('');
+  lines.push('llm:');
+  lines.push(`  domain_subject: "${cfg.llm?.domain_subject || ''}"`);
+  if (cfg.llm?.claim_extraction_focus?.length) {
+    lines.push('  claim_extraction_focus:');
+    for (const item of cfg.llm.claim_extraction_focus) {
+      if (item) lines.push(`    - "${item}"`);
+    }
+  }
+  if (cfg.llm?.query_rewrite_examples?.length) {
+    lines.push('  query_rewrite_examples:');
+    for (const item of cfg.llm.query_rewrite_examples) {
+      if (item) lines.push(`    - "${item}"`);
+    }
+  }
+  lines.push('');
+  if (cfg.default_color_by_roles?.length) {
+    lines.push('default_color_by_roles:');
+    for (const r of cfg.default_color_by_roles) lines.push(`  - ${r}`);
+  }
+  if (cfg.extra_datasets?.length) {
+    lines.push('');
+    lines.push('extra_datasets:');
+    for (const d of cfg.extra_datasets) lines.push(`  - "${d}"`);
+  }
+  if (cfg.extra_keywords?.length) {
+    lines.push('');
+    lines.push('extra_keywords:');
+    for (const k of cfg.extra_keywords) lines.push(`  - "${k}"`);
+  }
+  lines.push('');
+  return lines.join('\n');
 }
 
 function buildDomainYaml(domain, csvPath, domainSlug, displayName, methodNoun, pdfUrl) {

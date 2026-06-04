@@ -1,0 +1,530 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import Plot from 'react-plotly.js';
+import { loadBenchmarkComparisons } from '../lib/data-loader';
+
+// --- helpers -----------------------------------------------------------------
+
+function gradeClass(grade) {
+  if (!grade) return '';
+  const g = grade.toUpperCase();
+  if (g === 'A') return 'benchmarks-grade-a';
+  if (g === 'B') return 'benchmarks-grade-b';
+  return 'benchmarks-grade-c';
+}
+
+function cvLabel(cv, n_reports) {
+  if (!cv || n_reports < 2) return '';
+  return `${Math.round(cv * 100)}%`;
+}
+
+// Map v2 status strings to display labels + CSS modifier class
+const STATUS_META = {
+  consistent:      { label: 'Consistent',                      cls: 'consistent' },
+  high_variance:   { label: 'High variance',                   cls: 'high-variance' },
+  different_setup: { label: 'Different setup (not comparable)', cls: 'different-setup' },
+};
+
+// -----------------------------------------------------------------------------
+
+export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
+  const [benchmarkData, setBenchmarkData] = useState(null);
+  const [loading, setLoading]             = useState(true);
+  const [selectedKey, setSelectedKey]     = useState(null);   // leaderboard key
+  const [showLowConf, setShowLowConf]     = useState(false);  // "Show low-confidence" toggle
+  const [activeTab, setActiveTab]         = useState('leaderboards');
+  const [expandedSourceRow, setExpandedSourceRow] = useState(null); // method name or null
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    loadBenchmarkComparisons()
+      .then(d => {
+        if (!cancelled) {
+          setBenchmarkData(d);
+          // Set the first leaderboard key in the same tick so currentLb is
+          // available on the very first render after data arrives.
+          const keys = Object.keys(d?.leaderboards || {});
+          if (keys.length > 0) setSelectedKey(k => k || keys[0]);
+          setLoading(false);
+        }
+      })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Build ordered list of leaderboard keys from v2 leaderboards map
+  const leaderboardKeys = useMemo(() => {
+    if (!benchmarkData?.leaderboards) return [];
+    return Object.keys(benchmarkData.leaderboards);
+  }, [benchmarkData]);
+
+  const methodIndex      = benchmarkData?.method_index || {};
+  const crossValidations = benchmarkData?.cross_validations || [];
+  const stats            = benchmarkData?.stats || {};
+  const quarantine       = benchmarkData?.quarantine || {};
+
+  // Current leaderboard object (v2: {metric_label, condition, entries: [...], ...})
+  const currentLb = useMemo(() => {
+    if (!benchmarkData?.leaderboards || !selectedKey) return null;
+    return benchmarkData.leaderboards[selectedKey] || null;
+  }, [benchmarkData, selectedKey]);
+
+  // Filtered entries based on low-confidence toggle
+  const visibleEntries = useMemo(() => {
+    if (!currentLb?.entries) return [];
+    if (showLowConf) return currentLb.entries;
+    return currentLb.entries.filter(e => e.grade !== 'C');
+  }, [currentLb, showLowConf]);
+
+  // Filtered cross-validations based on low-confidence toggle
+  const visibleCrossValidations = useMemo(() => {
+    if (showLowConf) return crossValidations;
+    return crossValidations.filter(v => v.status === 'consistent');
+  }, [crossValidations, showLowConf]);
+
+  // Win/loss summary for Head-to-Head tab
+  const winLossSummary = useMemo(() => {
+    return Object.entries(methodIndex)
+      .map(([name, info]) => ({ name, ...info }))
+      .sort((a, b) => b.n_wins - a.n_wins);
+  }, [methodIndex]);
+
+  // Helper: label for dropdown option
+  function lbOptionLabel(key) {
+    const lb = benchmarkData.leaderboards[key];
+    if (!lb) return key;
+    const { metric_label, condition, dataset_id, entries } = lb;
+    let label = metric_label || key;
+    if (condition)  label += ` — ${condition}`;
+    if (dataset_id) label += ` / ${dataset_id}`;
+    label += ` (${entries.length} method${entries.length !== 1 ? 's' : ''})`;
+    return label;
+  }
+
+  // -------------------------------------------------------------------------
+  // Loading / empty states
+  // -------------------------------------------------------------------------
+  if (loading) {
+    return (
+      <div className="benchmarks-page">
+        <div className="benchmarks-loading">Loading benchmark data...</div>
+      </div>
+    );
+  }
+
+  if (!benchmarkData || leaderboardKeys.length === 0) {
+    return (
+      <div className="benchmarks-page">
+        <div className="benchmarks-empty">
+          No benchmark comparison data available for this domain yet.
+        </div>
+      </div>
+    );
+  }
+
+  // Chart data for leaderboard bar chart
+  const chartEntries = [...visibleEntries].reverse();
+
+  return (
+    <div className="benchmarks-page">
+
+      {/* ── Stats bar ──────────────────────────────────────────────────── */}
+      <div className="benchmarks-stats-bar">
+        <div className="benchmarks-stat">
+          <span className="benchmarks-stat-value">{stats.n_comparisons ?? '—'}</span>
+          <span className="benchmarks-stat-label">comparisons</span>
+        </div>
+        <div className="benchmarks-stat">
+          <span className="benchmarks-stat-value">{stats.n_leaderboards ?? '—'}</span>
+          <span className="benchmarks-stat-label">benchmarks</span>
+        </div>
+        <div className="benchmarks-stat">
+          <span className="benchmarks-stat-value">{stats.n_methods_indexed ?? '—'}</span>
+          <span className="benchmarks-stat-label">methods</span>
+        </div>
+        <div className="benchmarks-stat">
+          <span className="benchmarks-stat-value">{stats.n_cross_validations ?? '—'}</span>
+          <span className="benchmarks-stat-label">cross-paper</span>
+        </div>
+      </div>
+
+      {/* ── Tabs ───────────────────────────────────────────────────────── */}
+      <div className="benchmarks-tabs">
+        <button
+          className={`benchmarks-tab ${activeTab === 'leaderboards' ? 'active' : ''}`}
+          onClick={() => setActiveTab('leaderboards')}
+        >
+          Leaderboards
+        </button>
+        <button
+          className={`benchmarks-tab ${activeTab === 'head-to-head' ? 'active' : ''}`}
+          onClick={() => setActiveTab('head-to-head')}
+        >
+          Head-to-Head
+        </button>
+        <button
+          className={`benchmarks-tab ${activeTab === 'cross-validation' ? 'active' : ''}`}
+          onClick={() => setActiveTab('cross-validation')}
+        >
+          Cross-Paper Validation
+        </button>
+      </div>
+
+      {/* ── Low-confidence toggle (shared across relevant tabs) ─────────── */}
+      <div className="benchmarks-confidence-toggle">
+        <label>
+          <input
+            type="checkbox"
+            checked={showLowConf}
+            onChange={e => setShowLowConf(e.target.checked)}
+          />
+          Show low-confidence (grade C / single-report)
+        </label>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* LEADERBOARDS TAB                                               */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {activeTab === 'leaderboards' && (
+        <div className="benchmarks-leaderboard-section">
+
+          {/* Metric selector */}
+          <div className="benchmarks-metric-selector">
+            <label>Metric / Benchmark:</label>
+            <select
+              value={selectedKey || ''}
+              onChange={e => setSelectedKey(e.target.value)}
+            >
+              {leaderboardKeys.map(k => (
+                <option key={k} value={k}>{lbOptionLabel(k)}</option>
+              ))}
+            </select>
+          </div>
+
+          {visibleEntries.length === 0 ? (
+            <div className="benchmarks-empty benchmarks-empty-filtered">
+              No grade A/B benchmarks for this selection — enable &ldquo;Show low-confidence&rdquo; to see all extracted results.
+            </div>
+          ) : (
+            <>
+              {/* Bar chart */}
+              <div className="benchmarks-chart-container">
+                <Plot
+                  data={[{
+                    type: 'bar',
+                    orientation: 'h',
+                    y: chartEntries.map(e => e.method),
+                    x: chartEntries.map(e => e.value),
+                    text: chartEntries.map(e =>
+                      `${e.value}${e.n_reports > 1 ? ` (${e.n_reports} reports)` : ''}`
+                    ),
+                    textposition: 'outside',
+                    marker: {
+                      color: chartEntries.map((_, i, arr) =>
+                        i === arr.length - 1 ? '#16657d' : '#93c5d6'
+                      ),
+                    },
+                    hovertemplate: '%{y}: %{x}<br>Source: %{customdata}<extra></extra>',
+                    customdata: chartEntries.map(e =>
+                      (e.source_papers || []).join(', ').replace(/-/g, ' ')
+                    ),
+                  }]}
+                  layout={{
+                    title: {
+                      text: currentLb
+                        ? `${currentLb.metric_label}${currentLb.condition ? ' — ' + currentLb.condition : ''}`
+                        : selectedKey,
+                      font: { size: 14, color: '#2a3142' },
+                    },
+                    margin: { l: 200, r: 80, t: 40, b: 40 },
+                    height: Math.max(250, visibleEntries.length * 36 + 80),
+                    xaxis: {
+                      title: currentLb?.metric_label || selectedKey,
+                      gridcolor: '#ebeef2',
+                    },
+                    yaxis: { automargin: true },
+                    plot_bgcolor: '#ffffff',
+                    paper_bgcolor: '#ffffff',
+                    font: { family: 'PT Sans, sans-serif', size: 11, color: '#2a3142' },
+                  }}
+                  config={{ displayModeBar: false, responsive: true }}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              {/* Leaderboard table */}
+              <div className="benchmarks-table-container">
+                <table className="benchmarks-table">
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Method</th>
+                      <th>Score</th>
+                      <th>Grade</th>
+                      <th>CV%</th>
+                      <th>Source Paper(s)</th>
+                      <th>Reports</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visibleEntries.map((entry, i) => {
+                      const isExpanded = expandedSourceRow === entry.method;
+                      return (
+                        <React.Fragment key={entry.method}>
+                          <tr
+                            className={[
+                              i === 0 ? 'benchmarks-rank-1' : '',
+                              selectedPoint?.name === entry.method ? 'benchmarks-selected' : '',
+                            ].filter(Boolean).join(' ')}
+                            onClick={() => {
+                              const match = (data || []).find(d => d.name === entry.method);
+                              if (match && onSelect) onSelect(match);
+                            }}
+                          >
+                            <td className="benchmarks-rank">{i + 1}</td>
+                            <td className="benchmarks-method">{entry.method}</td>
+                            <td className="benchmarks-score">{entry.value}</td>
+                            <td className="benchmarks-grade-cell">
+                              {entry.grade && (
+                                <span className={`benchmarks-grade-badge ${gradeClass(entry.grade)}`}>
+                                  {entry.grade}
+                                </span>
+                              )}
+                            </td>
+                            <td className="benchmarks-cv-cell">
+                              {cvLabel(entry.cv, entry.n_reports)}
+                            </td>
+                            <td className="benchmarks-paper">
+                              {(entry.source_papers || []).join(', ').replace(/-/g, ' ')}
+                            </td>
+                            <td className="benchmarks-reports">{entry.n_reports}</td>
+                            <td className="benchmarks-source-col" onClick={e => e.stopPropagation()}>
+                              {entry.sources && entry.sources.length > 0 && (
+                                <button
+                                  className={`benchmarks-source-btn${isExpanded ? ' active' : ''}`}
+                                  onClick={() => setExpandedSourceRow(isExpanded ? null : entry.method)}
+                                  aria-expanded={isExpanded}
+                                >
+                                  Source
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                          {isExpanded && entry.sources && entry.sources.length > 0 && (
+                            <tr className="benchmarks-source-row">
+                              <td colSpan={8} className="benchmarks-source-panel-cell">
+                                <div className="benchmarks-source-panel">
+                                  {entry.sources.map((src, si) => (
+                                    <div key={si} className="benchmarks-source-item">
+                                      <div className="benchmarks-source-meta">
+                                        <span className="benchmarks-source-value-str">{src.value_str}</span>
+                                        <span className={`benchmarks-source-extractor-badge`}>{src.extractor}</span>
+                                        <span className="benchmarks-source-paper">{(src.paper || '').replace(/-/g, ' ')}</span>
+                                        {src.page != null && (
+                                          <span className="benchmarks-source-page">p.{src.page}</span>
+                                        )}
+                                      </div>
+                                      {src.table_caption && (
+                                        <div className="benchmarks-source-caption">{src.table_caption}</div>
+                                      )}
+                                      {src.crop_image ? (
+                                        <img
+                                          className="benchmarks-source-crop"
+                                          src={src.crop_image}
+                                          alt={`source table for ${entry.method}`}
+                                        />
+                                      ) : (
+                                        <div className="benchmarks-source-no-crop">table image not available yet</div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* HEAD-TO-HEAD TAB                                               */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {activeTab === 'head-to-head' && (
+        <div className="benchmarks-h2h-section">
+          {winLossSummary.length === 0 ? (
+            <div className="benchmarks-empty">No head-to-head comparison data available.</div>
+          ) : (
+            <>
+              <div className="benchmarks-h2h-chart">
+                <Plot
+                  data={[
+                    {
+                      type: 'bar',
+                      name: 'Wins',
+                      orientation: 'h',
+                      y: winLossSummary.slice(0, 20).reverse().map(e => e.name),
+                      x: winLossSummary.slice(0, 20).reverse().map(e => e.n_wins),
+                      marker: { color: '#47a36d' },
+                      hovertemplate: '%{y}: %{x} wins<extra></extra>',
+                    },
+                    {
+                      type: 'bar',
+                      name: 'Losses',
+                      orientation: 'h',
+                      y: winLossSummary.slice(0, 20).reverse().map(e => e.name),
+                      x: winLossSummary.slice(0, 20).reverse().map(e => -e.n_losses),
+                      marker: { color: '#d95a3e' },
+                      hovertemplate: '%{y}: %{customdata} losses<extra></extra>',
+                      customdata: winLossSummary.slice(0, 20).reverse().map(e => e.n_losses),
+                    },
+                  ]}
+                  layout={{
+                    title: { text: 'Win / Loss Record (Top 20)', font: { size: 14, color: '#2a3142' } },
+                    barmode: 'relative',
+                    margin: { l: 200, r: 40, t: 40, b: 40 },
+                    height: Math.max(300, Math.min(20, winLossSummary.length) * 32 + 80),
+                    xaxis: { title: 'Comparison pairs', gridcolor: '#ebeef2', zeroline: true, zerolinecolor: '#d8dde4' },
+                    yaxis: { automargin: true },
+                    plot_bgcolor: '#ffffff',
+                    paper_bgcolor: '#ffffff',
+                    font: { family: 'PT Sans, sans-serif', size: 11, color: '#2a3142' },
+                    legend: { orientation: 'h', y: 1.08 },
+                    showlegend: true,
+                  }}
+                  config={{ displayModeBar: false, responsive: true }}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div className="benchmarks-table-container">
+                <table className="benchmarks-table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>Wins</th>
+                      <th>Losses</th>
+                      <th>Net</th>
+                      <th>Metrics</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {winLossSummary.map(entry => (
+                      <tr
+                        key={entry.name}
+                        className={selectedPoint?.name === entry.name ? 'benchmarks-selected' : ''}
+                        onClick={() => {
+                          const match = (data || []).find(d => d.name === entry.name);
+                          if (match && onSelect) onSelect(match);
+                        }}
+                      >
+                        <td className="benchmarks-method">{entry.name}</td>
+                        <td className="benchmarks-wins">{entry.n_wins}</td>
+                        <td className="benchmarks-losses">{entry.n_losses}</td>
+                        <td className={`benchmarks-net ${entry.n_wins - entry.n_losses > 0 ? 'positive' : entry.n_wins - entry.n_losses < 0 ? 'negative' : ''}`}>
+                          {entry.n_wins - entry.n_losses > 0 ? '+' : ''}{entry.n_wins - entry.n_losses}
+                        </td>
+                        <td className="benchmarks-metric-list">
+                          {(entry.metrics || []).slice(0, 3).join(', ')}
+                          {(entry.metrics || []).length > 3 ? ` +${entry.metrics.length - 3}` : ''}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* CROSS-PAPER VALIDATION TAB                                     */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {activeTab === 'cross-validation' && (
+        <div className="benchmarks-cv-section">
+          {visibleCrossValidations.length === 0 ? (
+            <div className="benchmarks-empty">
+              {crossValidations.length === 0
+                ? 'No cross-paper validations found in this domain.'
+                : 'No consistent cross-paper validations — enable “Show low-confidence” to see all.'}
+            </div>
+          ) : (
+            <>
+              <p className="benchmarks-cv-description">
+                Methods whose performance was independently reported by multiple papers on the same metric.
+                Low CV% indicates consistent, reproducible results.
+              </p>
+              <div className="benchmarks-cv-grid">
+                {visibleCrossValidations.map((v, i) => {
+                  const sm = STATUS_META[v.status] || { label: v.status, cls: 'different-setup' };
+                  return (
+                    <div key={i} className={`benchmarks-cv-card ${sm.cls}`}>
+                      <div className="benchmarks-cv-header">
+                        <span className="benchmarks-cv-method">{v.method}</span>
+                        <div className="benchmarks-cv-badges">
+                          <span className={`benchmarks-cv-badge ${sm.cls}`}>
+                            {sm.label}
+                          </span>
+                          {v.grade && (
+                            <span className={`benchmarks-grade-badge ${gradeClass(v.grade)}`}>
+                              {v.grade}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="benchmarks-cv-metric">{v.metric_label || v.metric_id}</div>
+                      <div className="benchmarks-cv-stats">
+                        <span>Mean: <strong>{v.mean}</strong></span>
+                        {v.cv !== undefined && (
+                          <span>CV: <strong>{Math.round(v.cv * 100)}%</strong></span>
+                        )}
+                        <span>{v.n_papers} paper{v.n_papers !== 1 ? 's' : ''}</span>
+                      </div>
+                      {v.reports && v.reports.length > 0 && (
+                        <div className="benchmarks-cv-reports">
+                          {v.reports.map((r, j) => (
+                            <div key={j} className="benchmarks-cv-report">
+                              <span className="benchmarks-cv-paper">{(r.paper || '').replace(/-/g, ' ')}</span>
+                              <span className="benchmarks-cv-value">
+                                {r.value_str || r.value}
+                                {r.condition ? <em className="benchmarks-cv-condition"> ({r.condition})</em> : null}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── Quarantine footnote ─────────────────────────────────────── */}
+      {(stats.n_quarantined > 0 || quarantine.n_records > 0) && (
+        <div className="benchmarks-quarantine-note">
+          <strong>{stats.n_quarantined ?? quarantine.n_records}</strong> record{(stats.n_quarantined ?? quarantine.n_records) !== 1 ? 's' : ''} withheld (low quality)
+          {quarantine.reasons && Object.keys(quarantine.reasons).length > 0 && (
+            <span className="benchmarks-quarantine-reasons">
+              {' — '}
+              {Object.entries(quarantine.reasons)
+                .map(([reason, count]) => `${count} ${reason.replace(/_/g, ' ')}`)
+                .join(', ')}
+            </span>
+          )}
+          . These rows had unresolvable headers or unmatched method names and were excluded from all analysis.
+        </div>
+      )}
+    </div>
+  );
+}

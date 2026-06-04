@@ -12,6 +12,7 @@ import NetworkGraph from './components/NetworkGraph';
 import ClusterGraph from './components/ClusterGraph';
 
 import GraphReasoningPage from './components/GraphReasoningPage';
+import BenchmarksPage from './components/BenchmarksPage';
 import AdminPage from './components/AdminPage';
 import SettingsPanel from './components/SettingsPanel';
 import { loadAllData, loadTfidfMatrices, loadDescriptionEmbeddings, loadUmapDefault, setDataPrefix } from './lib/data-loader';
@@ -299,6 +300,12 @@ function App() {
             Graph Reasoning
           </button>
           <button
+            className={`nav-link ${page === 'benchmarks' ? 'active' : ''}`}
+            onClick={() => setPage('benchmarks')}
+          >
+            Benchmarks
+          </button>
+          <button
             className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
             onClick={() => setPage('admin')}
             title="Domain administration"
@@ -431,6 +438,54 @@ function App() {
             }
           }}
         />
+      </div>
+      </DomainContext.Provider>
+    );
+  }
+
+  if (page === 'benchmarks') {
+    return (
+      <DomainContext.Provider value={domainCfg}>
+      <div className="copilot-app">
+        {sharedHeader}
+
+        <MethodTable
+          data={activeCluster != null
+            ? data.filter(d => {
+                if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
+                  const parts = (d.metadata?.[activeCluster.column] || '').split(',').map(s => s.trim());
+                  return parts.some(p => p === activeCluster.value);
+                }
+                return d.cluster === activeCluster;
+              })
+            : data}
+          allData={data}
+          highlightedMethods={highlightedMethods}
+          selectedPoint={selectedPoint}
+          hoveredIndex={hoveredIndex}
+          onSelect={setSelectedPoint}
+          onHover={setHoveredIndex}
+          onUnhover={() => setHoveredIndex(null)}
+          onFilter={(methods) => {
+            if (methods && methods.length >= 3) {
+              setFilterActive(true);
+              setFilterCount(methods.length);
+              fetchUmap(null, methods);
+            } else {
+              setFilterActive(false);
+              setFilterCount(null);
+              fetchUmap();
+            }
+          }}
+        />
+
+        <BenchmarksPage
+          data={data}
+          selectedPoint={selectedPoint}
+          onSelect={setSelectedPoint}
+        />
+
+        {selectedPoint && <DetailPanel point={selectedPoint} onClose={() => setSelectedPoint(null)} />}
       </div>
       </DomainContext.Provider>
     );

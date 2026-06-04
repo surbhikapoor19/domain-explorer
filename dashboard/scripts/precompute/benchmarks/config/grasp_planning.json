@@ -1,0 +1,30 @@
+{
+  "results_section_keywords": ["experiment", "result", "evaluation", "quantitative", "comparison", "real-world", "simulation"],
+  "ablation_section_keywords": ["ablation"],
+  "metrics": [
+    {"id": "success_rate", "unit": "%", "higher_is_better": true, "type": "rate",
+     "aliases": ["success rate", "grasp success rate", "gsr", "grasp success", "sr", "completion rate", "task success"]},
+    {"id": "declutter_rate", "unit": "%", "higher_is_better": true, "type": "rate",
+     "aliases": ["declutter rate", "dr", "clearance rate", "clutter removal"]},
+    {"id": "average_precision", "unit": "%", "higher_is_better": true, "type": "rate",
+     "aliases": ["ap", "average precision", "precision", "map"]},
+    {"id": "latency", "unit": "ms", "higher_is_better": false, "type": "time",
+     "aliases": ["latency", "inference time", "runtime", "planning time", "time"]}
+  ],
+  "conditions": [
+    {"id": "pile", "aliases": ["pile", "piled", "cluttered pile"]},
+    {"id": "packed", "aliases": ["packed", "packed scene"]},
+    {"id": "isolated", "aliases": ["isolated", "single object", "singulated"]},
+    {"id": "sim", "aliases": ["sim", "simulation", "simulated"]},
+    {"id": "real", "aliases": ["real", "real-world", "real world", "physical"]}
+  ],
+  "datasets": [
+    {"id": "ycb", "aliases": ["ycb", "ycb-video"]},
+    {"id": "egad", "aliases": ["egad", "egad!"]},
+    {"id": "graspnet1b", "aliases": ["graspnet-1billion", "graspnet1b", "graspnet-1b"]}
+  ],
+  "consistency": {
+    "cv_thresholds": {"rate": 0.10, "time": 0.20, "count": 0.15, "default": 0.15},
+    "min_papers_for_validation": 2
+  }
+}

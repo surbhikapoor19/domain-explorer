@@ -34,6 +34,7 @@ export const loadKgPredictions = () => loadJSON(dataPath('kg-predictions.json'))
 export const loadKgContradictions = () => loadJSON(dataPath('kg-contradictions.json'));
 export const loadHgtMetrics = () => loadJSON(dataPath('hgt-metrics.json'));
 export const loadRagChunks = () => loadJSON(dataPath('rag-chunks.json'));
+export const loadBenchmarkComparisons = () => loadJSON(dataPath('benchmark-comparisons.json'));
 export const loadTermDictionary = () => loadJSON(dataPath('term-dictionary.json'));
 export const loadPapersIndex = () => loadJSON(dataPath('papers-index.json'));
 export const loadQueryKeywords = () => loadJSON(dataPath('query-keywords.json'));

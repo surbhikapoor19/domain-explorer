@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Mini fixture paper</title></titleStmt>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <head>III. Experiments</head>
+        <p>We evaluate on pile scenes against prior work.</p>
+        <figure type="table">
+          <head>Table 1: Success rate on pile scenes (%)</head>
+          <figDesc>Image-based results table; GROBID could not parse the rows.</figDesc>
+        </figure>
+      </div>
+      <div>
+        <head>IV. Quantitative Comparisons</head>
+        <p>Quantitative comparison of grasp success rate.</p>
+        <figure type="table">
+          <head>Table 2: Comparison of grasp success rate (%)</head>
+          <table>
+            <row><cell>Method</cell><cell>Success Rate</cell></row>
+            <row><cell>Ours</cell><cell>86.9</cell></row>
+            <row><cell>GPD</cell><cell>70.1</cell></row>
+          </table>
+        </figure>
+      </div>
+      <div>
+        <head>V. Ablation Study</head>
+        <p>Effect of removing components.</p>
+        <figure type="table">
+          <head>Table 3: Ablation of refinement module</head>
+          <table>
+            <row><cell>Variant</cell><cell>Success Rate</cell></row>
+            <row><cell>Full</cell><cell>86.9</cell></row>
+            <row><cell>w/o refinement</cell><cell>60.0</cell></row>
+          </table>
+        </figure>
+      </div>
+    </body>
+  </text>
+</TEI>

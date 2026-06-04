@@ -1,0 +1,39 @@
+{
+  "results_section_keywords": ["experiment", "result", "evaluation", "quantitative", "comparison", "benchmark", "simulation"],
+  "ablation_section_keywords": ["ablation"],
+  "metrics": [
+    {"id": "success_rate", "unit": "%", "higher_is_better": true, "type": "rate",
+     "aliases": ["success rate", "planning success rate", "solve rate", "sr", "task success"]},
+    {"id": "planning_time", "unit": "s", "higher_is_better": false, "type": "time",
+     "aliases": ["planning time", "computation time", "compute time", "runtime", "solve time", "time", "planning_time"]},
+    {"id": "path_length", "unit": "m", "higher_is_better": false, "type": "count",
+     "aliases": ["path length", "trajectory length", "path_length"]},
+    {"id": "path_cost", "unit": null, "higher_is_better": false, "type": "count",
+     "aliases": ["path cost", "trajectory cost", "cost", "solution cost"]},
+    {"id": "smoothness", "unit": null, "higher_is_better": false, "type": "count",
+     "aliases": ["smoothness", "jerk", "acceleration cost"]},
+    {"id": "collision_checks", "unit": null, "higher_is_better": false, "type": "count",
+     "aliases": ["collision checks", "number of collision checks", "collision check count"]}
+  ],
+  "conditions": [
+    {"id": "narrow_passage", "aliases": ["narrow passage", "narrow", "bug trap", "bugtrap"]},
+    {"id": "cluttered", "aliases": ["cluttered", "clutter", "obstacle field"]},
+    {"id": "high_dof", "aliases": ["high dof", "high-dof", "7 dof", "14 dof", "manipulator"]},
+    {"id": "shelf", "aliases": ["shelf", "bookshelf", "cabinet"]},
+    {"id": "sim", "aliases": ["sim", "simulation", "simulated"]},
+    {"id": "real", "aliases": ["real", "real-world", "real world", "physical"]}
+  ],
+  "datasets": [
+    {"id": "mbm", "aliases": ["motion benchmaker", "mbm"]},
+    {"id": "ompl_bench", "aliases": ["ompl benchmark", "ompl-bench"]}
+  ],
+  "consistency": {
+    "cv_thresholds": {"rate": 0.10, "time": 0.25, "count": 0.20, "default": 0.15},
+    "min_papers_for_validation": 2
+  },
+  "corpus": {
+    "tei_dir": "",
+    "pdf_dir": "/Users/surbhikapoor/Desktop/WPI/wpivis/domain-explorer/datasets/motion-planning/papers",
+    "methods_csv": "/Users/surbhikapoor/Desktop/WPI/wpivis/domain-explorer/datasets/motion-planning/motion_planning.csv"
+  }
+}

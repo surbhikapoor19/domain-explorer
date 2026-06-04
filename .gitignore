@@ -50,3 +50,4 @@ papers/
 # Temporary
 /tmp/
 *.tmp
+.vercel
