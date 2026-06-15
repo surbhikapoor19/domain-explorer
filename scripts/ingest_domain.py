@@ -60,6 +60,74 @@ def resolve_domain_paths(domain_slug):
     }
 
 
+def fetch_latest_csv(paths):
+    """Pull the newest CSV from the domain's Google Drive folder (`drive_folder`
+    in the YAML), strip any banner/preamble rows, and write it to `csv_path` — so
+    the build always reads the latest sheet export and no CSV need be committed.
+    No-ops (keeps any existing local CSV) if no folder is set or the fetch fails."""
+    import re
+    import csv as _csv
+    import io
+    import urllib.request
+    import yaml as _yaml
+
+    yaml_path = paths['yaml']
+    if not yaml_path.exists():
+        return
+    cfg = _yaml.safe_load(open(yaml_path)) or {}
+    folder = cfg.get('drive_folder')
+    csv_rel = cfg.get('csv_path')
+    if not folder or not csv_rel:
+        return
+    csv_path = REPO_ROOT / csv_rel
+    ua = {'User-Agent': 'Mozilla/5.0'}
+
+    def _get(u, t=120):
+        return urllib.request.urlopen(urllib.request.Request(u, headers=ua), timeout=t).read().decode('utf-8', 'replace')
+
+    try:
+        m = re.search(r'/folders/([A-Za-z0-9_-]+)', folder)
+        fid = m.group(1) if m else folder.strip()
+        html = _get('https://drive.google.com/drive/folders/' + fid)
+        pairs = re.findall(r'data-id="([A-Za-z0-9_-]{20,})"[\s\S]{0,800}?([^"<>]+?\.csv)', html)
+        seen = {}
+        for did, nm in pairs:
+            seen.setdefault(nm.strip(), did)
+        if not seen:
+            print(f"  [csv] no CSV in Drive folder; keeping existing {csv_rel}")
+            return
+
+        def _keyf(n):
+            mm = re.search(r'(\d{4}-\d{2}-\d{2}[ _]\d{2}-\d{2}-\d{2})', n)
+            return (mm.group(1) if mm else '', n)
+
+        name = sorted(seen, key=_keyf)[-1]
+        data = _get('https://drive.google.com/uc?export=download&id=' + seen[name])
+        if data.lstrip()[:15].lower().startswith(('<!doctype', '<html')):
+            print(f"  [csv] download returned HTML (folder/file not public?); keeping existing {csv_rel}")
+            return
+        rows = list(_csv.reader(io.StringIO(data)))
+        # Strip preamble: find the header row by the domain's identity.name column
+        # (falls back to the existing committed CSV's first header).
+        cols = cfg.get('columns', {}) or {}
+        name_col = next((c for c, mp in cols.items() if (mp or {}).get('role') == 'identity.name'), None)
+        if not name_col and csv_path.exists():
+            with open(csv_path, encoding='utf-8') as cf:
+                hdr = next(_csv.reader(cf), [])
+                name_col = hdr[0].strip() if hdr else None
+        if name_col:
+            for i, r in enumerate(rows[:25]):
+                if r and r[0].strip() == name_col:
+                    rows = rows[i:]
+                    break
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(csv_path, 'w', encoding='utf-8', newline='') as f:
+            _csv.writer(f).writerows(rows)
+        print(f"  [csv] pulled latest from Drive folder: {name} ({max(len(rows) - 1, 0)} rows) → {csv_rel}")
+    except Exception as e:
+        print(f"  [csv] Drive fetch failed ({e}); keeping existing {csv_rel}")
+
+
 def step_grobid(paths):
     """Parse PDFs to TEI XML via GROBID."""
     import requests
@@ -431,6 +499,11 @@ def main():
     print(f"  Output dir:  {paths['output']}")
     print(f"  Steps:       {' → '.join(steps)}")
     print()
+
+    # Pull the latest CSV from the domain's Drive folder before any step that reads
+    # it, so the build always uses the current sheet (no committed CSV required).
+    if any(s in steps for s in ('kg', 'precompute', 'benchmark')):
+        fetch_latest_csv(paths)
 
     for step in steps:
         print(f"[{step}] Starting...")

@@ -691,10 +691,17 @@ export default function KGLanding({
           if (o?.type === 'paper') addSeedPaper(o.id);
         });
       } else {
-        // No node match — still surface the bare name
+        // CSV-only method (no graph node — e.g. no ingested paper yet). It still
+        // appears in the CSV-derived plots, which highlight by method NAME via
+        // Step 3 + the benchmark fan-out + GapMatrix below.
         methods.add(tableMethodName);
         labels.add(tableMethodName);
       }
+      // The scatter/table selection keeps the "🤖 " own-method marker, but the
+      // CSV-derived plot data stores names WITHOUT it — add the stripped form so
+      // name-based highlighting (Research Gaps, Timeline, Benchmark coverage) matches.
+      const bare = tableMethodName.replace(/^🤖\s*/, '').trim();
+      if (bare && bare !== tableMethodName) { methods.add(bare); labels.add(bare); }
     }
 
     // --- Step 2: fan out from every seed paper ----------------------------
