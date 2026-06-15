@@ -234,6 +234,9 @@ function buildFullYaml(domain, csvPath, domainSlug, pdfUrl, cfg) {
   lines.push(`csv_path: ${csvPath}`);
   lines.push(`papers_dir: datasets/${domainSlug}/papers/`);
   if (pdfUrl) lines.push(`pdf_url: "${pdfUrl}"`);
+  // Google Sheet live CSV-export URL — the nightly sheet-poll workflow refreshes
+  // this domain's CSV + rebuilds when the sheet changes.
+  if (cfg.csv_url) lines.push(`csv_url: "${String(cfg.csv_url).replace(/"/g, '\\"')}"`);
   lines.push('');
   lines.push('columns:');
   for (const [col, mapping] of Object.entries(cfg.columns || {})) {

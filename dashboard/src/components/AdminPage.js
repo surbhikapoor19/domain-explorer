@@ -83,6 +83,11 @@ function ConfigEditor({ config, onChange, csvHeaders }) {
           <label>Search Hint</label>
           <input type="text" value={config.query_hint || ''} onChange={e => update('query_hint', e.target.value)} />
         </div>
+        <div className="config-row">
+          <label>Google Sheet CSV URL (optional — auto-rebuild on edit)</label>
+          <input type="url" value={config.csv_url || ''} onChange={e => update('csv_url', e.target.value)}
+            placeholder="https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>" />
+        </div>
       </div>
 
       <div className="config-section">
@@ -217,6 +222,7 @@ function generateYamlPreview(domainSlug, config, csvFilename, pdfUrl) {
   lines.push(`csv_path: datasets/${dashed}/${csvFilename || `${slug}.csv`}`);
   lines.push(`papers_dir: datasets/${dashed}/papers/`);
   if (pdfUrl) lines.push(`pdf_url: "${pdfUrl}"`);
+  if (config.csv_url) lines.push(`csv_url: "${config.csv_url}"`);
   lines.push('');
   lines.push('columns:');
   for (const [col, mapping] of Object.entries(config.columns || {})) {

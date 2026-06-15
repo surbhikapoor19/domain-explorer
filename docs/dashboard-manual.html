@@ -444,6 +444,12 @@
             and map re-skin to your field automatically.</li>
       </ol>
 
+      <div class="callout tip"><span class="lab">Keep it live</span> If your items live in a Google Sheet, paste its
+      CSV-export URL (<code>…/export?format=csv&amp;gid=…</code>) into the domain&rsquo;s <b>Google Sheet CSV URL</b>
+      field in Admin. A nightly job polls the sheet and, <i>only when its contents change</i>, refreshes the CSV and
+      rebuilds the data-derived views automatically — so spreadsheet edits flow through without a manual re-upload.
+      (Adding brand-new items that need new PDFs still goes through the Admin upload.)</div>
+
       <h3>What's automatic vs what you provide</h3>
       <table>
         <tr><th>Automatic from your CSV + PDFs</th><th>You provide once (in Admin)</th></tr>

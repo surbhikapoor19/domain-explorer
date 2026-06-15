@@ -1,0 +1,94 @@
+name: Poll Google Sheets CSVs
+
+# Dynamic inputs (COMPARE integration): each domain YAML may carry a `csv_url`
+# pointing at its Google Sheet's live CSV export
+# (https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>).
+# This job polls those URLs on a schedule, and ONLY when a sheet's content has
+# actually changed does it commit the new CSV and trigger a rebuild. A sheet edit
+# is treated as a metadata change -> a fast `explorer` (precompute) build; adding
+# brand-new methods that need new PDFs still goes through the Admin upload flow.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'         # nightly at 06:00 UTC (~1-2am US Eastern, off-peak)
+  workflow_dispatch: {}         # allow manual runs / testing
+
+permissions:
+  contents: write               # commit updated CSVs
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install pyyaml
+
+      - name: Fetch sheet CSVs + detect changes
+        id: poll
+        run: |
+          python3 - <<'PY'
+          import os, glob, json, hashlib, urllib.request, yaml
+          changed = []
+          for ymlpath in sorted(glob.glob('domains/*.yaml')):
+              cfg = yaml.safe_load(open(ymlpath)) or {}
+              url = cfg.get('csv_url')
+              csv_path = cfg.get('csv_path')
+              slug = cfg.get('domain') or os.path.splitext(os.path.basename(ymlpath))[0]
+              if not url or not csv_path:
+                  continue
+              try:
+                  req = urllib.request.Request(url, headers={'User-Agent': 'domain-explorer-sheet-poll'})
+                  data = urllib.request.urlopen(req, timeout=90).read().decode('utf-8', 'replace')
+              except Exception as e:
+                  print(f'{slug}: fetch failed ({e}); skipping')
+                  continue
+              # A Google export error returns HTML, not CSV — never overwrite with that.
+              head = data.lstrip()[:15].lower()
+              if head.startswith('<!doctype') or head.startswith('<html'):
+                  print(f'{slug}: export returned HTML (sheet not link-accessible?); skipping')
+                  continue
+              old = open(csv_path, encoding='utf-8').read() if os.path.exists(csv_path) else ''
+              if hashlib.sha256(data.encode()).hexdigest() != hashlib.sha256(old.encode()).hexdigest():
+                  with open(csv_path, 'w', encoding='utf-8', newline='') as f:
+                      f.write(data)
+                  changed.append({'domain': slug, 'csv_path': csv_path})
+                  print(f'{slug}: CSV CHANGED -> {csv_path}')
+              else:
+                  print(f'{slug}: no change')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as gh:
+              gh.write(f'changed={json.dumps(changed)}\n')
+          PY
+
+      - name: Commit changed CSVs
+        if: steps.poll.outputs.changed != '[]'
+        run: |
+          git config user.name "compare-sheet-bot"
+          git config user.email "noreply@robot-manipulation.org"
+          echo '${{ steps.poll.outputs.changed }}' | python3 -c "import sys,json,subprocess; [subprocess.run(['git','add',c['csv_path']],check=True) for c in json.load(sys.stdin)]"
+          git commit -m "Sheet poll: update CSV(s) from Google Sheets" || { echo "nothing to commit"; exit 0; }
+          git pull --rebase origin "${GITHUB_REF_NAME}" && git push
+
+      - name: Trigger rebuilds for changed domains
+        if: steps.poll.outputs.changed != '[]'
+        env:
+          DISPATCH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -z "$DISPATCH_TOKEN" ]; then
+            echo "::warning::GH_PAT secret not set — CSV committed but cannot dispatch domain-build. Set GH_PAT (a PAT with repo scope) to enable auto-rebuild."
+            exit 0
+          fi
+          echo '${{ steps.poll.outputs.changed }}' | python3 -c "
+          import sys, json, os, urllib.request
+          repo = os.environ['GITHUB_REPOSITORY']; tok = os.environ['DISPATCH_TOKEN']
+          for c in json.load(sys.stdin):
+              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain'], 'pages': 'explorer'}}).encode()
+              req = urllib.request.Request(f'https://api.github.com/repos/{repo}/dispatches', data=body,
+                  headers={'Authorization': f'Bearer {tok}', 'Accept': 'application/vnd.github+json'})
+              urllib.request.urlopen(req); print('dispatched domain-build (explorer) for', c['domain'])
+          "
