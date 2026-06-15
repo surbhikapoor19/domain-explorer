@@ -52,11 +52,24 @@ def _layout_chunks(embeddings):
         return np.zeros((n, 2))
 
 
+def _papers_collection(client):
+    """Pick the domain's papers collection ('<slug>_papers') instead of hardcoding
+    the grasp collection — each domain's ChromaDB holds its own '<slug>_papers'
+    (e.g. 'motion-planning_papers'). Falls back to the only collection present."""
+    try:
+        names = [getattr(c, 'name', c) for c in client.list_collections()]
+    except Exception:
+        names = []
+    papers = [n for n in names if str(n).endswith('_papers')]
+    name = papers[0] if papers else (names[0] if names else 'grasp_papers')
+    return client.get_collection(name)
+
+
 def export_rag_chunks(chroma_dir, output_dir):
     try:
         import chromadb
         client = chromadb.PersistentClient(path=chroma_dir)
-        collection = client.get_collection('grasp_papers')
+        collection = _papers_collection(client)
         results = collection.get(include=['documents', 'metadatas', 'embeddings'])
     except Exception as e:
         print(f"  rag-chunks.json: skipped ({e})")

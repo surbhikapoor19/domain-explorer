@@ -694,7 +694,10 @@ def export_rag_chunks(chroma_dir, output_dir):
     try:
         import chromadb
         client = chromadb.PersistentClient(path=chroma_dir)
-        collection = client.get_collection('grasp_papers')
+        # Pick the domain's '<slug>_papers' collection, not the hardcoded grasp one.
+        _names = [getattr(c, 'name', c) for c in client.list_collections()]
+        _papers = [n for n in _names if str(n).endswith('_papers')]
+        collection = client.get_collection(_papers[0] if _papers else (_names[0] if _names else 'grasp_papers'))
         results = collection.get(include=['documents', 'metadatas', 'embeddings'])
         chunks = []
         for i in range(len(results['ids'])):
