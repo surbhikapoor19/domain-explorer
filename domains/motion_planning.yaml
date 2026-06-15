@@ -17,6 +17,8 @@ method_noun: "algorithm"
 
 csv_path: datasets/motion-planning/motion_planning.csv
 papers_dir: datasets/motion-planning/papers/
+# Google Drive folder of CSV exports — nightly sheet-poll pulls newest + rebuilds on change.
+drive_folder: "https://drive.google.com/drive/folders/1HZlb0VLsK_teKN5_nZol2jMqpET4VaSM"
 
 # Column -> role mapping. Sourced from the robot-manipulation.org
 # Google Sheet (13 methods). Motion planning has fewer columns than

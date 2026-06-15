@@ -1,18 +1,10 @@
-name: Poll Google Sheets CSVs
+name: Poll Google Drive CSV folders
 
-# Dynamic inputs (COMPARE integration): each domain YAML may carry a `csv_url`
-# pointing at its Google Sheet's live CSV export
-# (https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>).
-# This job polls those URLs on a schedule, and ONLY when a sheet's content has
-# actually changed does it commit the new CSV and trigger a rebuild.
-#
-# It dispatches a PRECOMPUTE-ONLY build (pages=explorer) — NO PDF re-ingest. The
-# graph builder falls back to the committed kg-full.json, so precompute re-derives
-# the CSV-driven plots (methods table, similarity map, Research-Gaps, Timeline,
-# Benchmarks) from the NEW csv without GROBID/RAG/chroma. The copilot corpus and
-# paper-extracted plots (Most-Referenced, Techniques) are preserved unchanged by
-# the overwrite guard. PDFs are re-ingested ONLY when an admin triggers a full
-# build (e.g. to add brand-new items that need new papers).
+# Each domain YAML carries `drive_folder` (its Google Drive folder of CSV exports).
+# Nightly, this job pulls the newest CSV from each domain's folder, hash-compares
+# it to the committed CSV, and ONLY when it changed does it commit the new CSV and
+# trigger a precompute-only rebuild (no PDF re-ingest). Unchanged folders are left
+# alone. PDFs are re-ingested only when an admin triggers a full build.
 
 on:
   schedule:
@@ -39,7 +31,32 @@ jobs:
         id: poll
         run: |
           python3 - <<'PY'
-          import os, glob, json, hashlib, urllib.request, yaml, csv, io
+          import os, glob, json, hashlib, urllib.request, yaml, csv, io, re
+
+          UA = {'User-Agent': 'Mozilla/5.0'}
+
+          def _get(url, timeout=120):
+              return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout).read().decode('utf-8', 'replace')
+
+          def _folder_id(s):
+              m = re.search(r'/folders/([A-Za-z0-9_-]+)', s or '')
+              return m.group(1) if m else (s or '').strip()
+
+          def newest_csv(folder):
+              """Most-recent .csv in a public Drive folder, picked by the timestamp in
+              the filename (the exports are named ..._YYYY-MM-DD_HH-MM-SS.csv)."""
+              html = _get('https://drive.google.com/drive/folders/' + _folder_id(folder))
+              pairs = re.findall(r'data-id="([A-Za-z0-9_-]{20,})"[\s\S]{0,800}?([^"<>]+?\.csv)', html)
+              seen = {}
+              for did, name in pairs:
+                  seen.setdefault(name.strip(), did)
+              if not seen:
+                  return None, None
+              def keyf(n):
+                  m = re.search(r'(\d{4}-\d{2}-\d{2}[ _]\d{2}-\d{2}-\d{2})', n)
+                  return (m.group(1) if m else '', n)
+              name = sorted(seen, key=keyf)[-1]
+              return name, _get('https://drive.google.com/uc?export=download&id=' + seen[name])
 
           def normalize_export(text, csv_path):
               """Google Sheet CSV exports often carry banner/preamble rows above the
@@ -70,31 +87,32 @@ jobs:
           changed = []
           for ymlpath in sorted(glob.glob('domains/*.yaml')):
               cfg = yaml.safe_load(open(ymlpath)) or {}
-              url = cfg.get('csv_url')
+              folder = cfg.get('drive_folder')
               csv_path = cfg.get('csv_path')
               slug = cfg.get('domain') or os.path.splitext(os.path.basename(ymlpath))[0]
-              if not url or not csv_path:
+              if not folder or not csv_path:
                   continue
               try:
-                  req = urllib.request.Request(url, headers={'User-Agent': 'domain-explorer-sheet-poll'})
-                  data = urllib.request.urlopen(req, timeout=90).read().decode('utf-8', 'replace')
+                  name, data = newest_csv(folder)
               except Exception as e:
-                  print(f'{slug}: fetch failed ({e}); skipping')
+                  print(f'{slug}: folder fetch failed ({e}); skipping')
                   continue
-              # A Google export error returns HTML, not CSV — never overwrite with that.
+              if not data:
+                  print(f'{slug}: no .csv found in folder; skipping')
+                  continue
               head = data.lstrip()[:15].lower()
               if head.startswith('<!doctype') or head.startswith('<html'):
-                  print(f'{slug}: export returned HTML (sheet not link-accessible?); skipping')
+                  print(f'{slug}: download returned HTML (folder/file not public?); skipping')
                   continue
-              data = normalize_export(data, csv_path)   # strip sheet preamble rows
+              data = normalize_export(data, csv_path)   # strip banner/preamble rows
               old = open(csv_path, encoding='utf-8').read() if os.path.exists(csv_path) else ''
               if hashlib.sha256(data.encode()).hexdigest() != hashlib.sha256(old.encode()).hexdigest():
                   with open(csv_path, 'w', encoding='utf-8', newline='') as f:
                       f.write(data)
                   changed.append({'domain': slug, 'csv_path': csv_path})
-                  print(f'{slug}: CSV CHANGED -> {csv_path}')
+                  print(f'{slug}: CHANGED <- {name} -> {csv_path}')
               else:
-                  print(f'{slug}: no change')
+                  print(f'{slug}: no change (latest in folder = {name})')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as gh:
               gh.write(f'changed={json.dumps(changed)}\n')
           PY

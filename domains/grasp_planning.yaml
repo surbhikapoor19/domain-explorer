@@ -19,6 +19,9 @@ method_noun: "method"
 
 csv_path: datasets/csv-gp-combined.csv
 papers_dir: papers/
+# Google Drive folder of CSV exports — the nightly sheet-poll workflow pulls the
+# newest CSV from here, hash-compares, and rebuilds only on change.
+drive_folder: "https://drive.google.com/drive/folders/1k_H3B-zJqq11PAdkHsx4JI_ldwRlRqcj"
 
 # Column -> role mapping. `facet` hints at how the column should be
 # treated in the dashboard UI:
