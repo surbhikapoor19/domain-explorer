@@ -28,8 +28,13 @@ export function buildBenchmarkContext(query, benchmarkData) {
   // copilot block exists, its condition map governs even if empty — don't bleed
   // grasp conditions into another domain.
   const cp = benchmarkData.copilot;
-  const metricKeywords = (cp && cp.metric_keywords) || DEFAULT_METRIC_KEYWORDS;
-  const conditionKeywords = (cp && cp.metric_keywords) ? (cp.condition_keywords || {}) : DEFAULT_CONDITION_KEYWORDS;
+  // Use the domain-derived keyword maps only when they're actually populated;
+  // an absent OR empty `copilot` block (e.g. data built before the feature, or a
+  // precompute-only refresh that didn't re-run the benchmark step) falls back to
+  // the grasp defaults so grounding still fires.
+  const hasCopilot = cp && cp.metric_keywords && Object.keys(cp.metric_keywords).length > 0;
+  const metricKeywords = hasCopilot ? cp.metric_keywords : DEFAULT_METRIC_KEYWORDS;
+  const conditionKeywords = hasCopilot ? (cp.condition_keywords || {}) : DEFAULT_CONDITION_KEYWORDS;
   const q = ' ' + (query || '').toLowerCase() + ' ';
   // Score each metric by its most SPECIFIC matched keyword: a long alias
   // ("path length") outranks a short directional word ("shortest"), so

@@ -113,3 +113,12 @@ test('without a copilot block, a motion-only "fastest" query finds no grasp late
   // grasp default maps "fastest" → latency; MOTION_BENCH has no latency board → ''
   expect(buildBenchmarkContext('fastest planner?', noCopilot)).toBe('');
 });
+
+test('an EMPTY copilot block falls back to the grasp defaults (data built before the feature)', () => {
+  // grasp's benchmark-comparisons.json carries copilot:{metric_keywords:{}} — an
+  // empty block must NOT suppress grounding; it should use the grasp defaults.
+  const emptyCopilot = { leaderboards: BENCH.leaderboards, copilot: { metric_keywords: {}, condition_keywords: {} } };
+  const out = buildBenchmarkContext('which method has the highest success rate in simulation?', emptyCopilot);
+  expect(out).toContain('Success Rate');
+  expect(out).toContain('AnyGrasp = 86.9');
+});
