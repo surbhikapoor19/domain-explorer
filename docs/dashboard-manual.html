@@ -38,16 +38,17 @@
   .hero h1{font-size:34px;margin:14px 0 6px;letter-spacing:-.5px}
   .hero p{font-size:17px;color:var(--muted);max-width:62ch;margin:0}
   section{padding:34px 0;border-bottom:1px solid var(--line);scroll-margin-top:18px}
-  /* H2 = major section: large, bold teal, big number badge, underlined title rule. */
-  section>h2{font-size:26px;font-weight:800;color:var(--teal-deep);letter-spacing:-.3px;margin:0 0 14px;
-    padding-bottom:9px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:11px}
-  section>h2 .n{background:var(--teal);color:#fff;font-size:15px;font-weight:800;width:30px;height:30px;border-radius:50%;
+  /* H2 = MAJOR SECTION: big teal title with a filled number badge and a thick teal
+     underline rule — visually a section banner. */
+  section>h2{font-size:29px;font-weight:800;color:var(--teal-deep);letter-spacing:-.4px;margin:0 0 16px;
+    padding-bottom:11px;border-bottom:3px solid var(--teal);display:flex;align-items:center;gap:12px}
+  section>h2 .n{background:var(--teal);color:#fff;font-size:16px;font-weight:800;width:34px;height:34px;border-radius:9px;
     display:inline-flex;align-items:center;justify-content:center;flex:none}
   section>.lede{color:var(--muted);margin:2px 0 18px;max-width:70ch}
-  /* H3 = subsection: clearly subordinate — near-black (NOT teal), smaller, with a
-     rust left-bar on top-level subsections so it never reads as a new section. */
-  h3{font-size:15px;color:var(--ink);font-weight:700;margin:26px 0 7px}
-  section>h3{border-left:3px solid var(--accent);padding-left:11px}
+  /* H3 = SUBSECTION: clearly subordinate — RUST (not teal), smaller, with a rust
+     left-bar. Different hue + size + the bar means it never reads like an H2. */
+  h3{font-size:15.5px;color:var(--accent);font-weight:700;margin:28px 0 7px}
+  section>h3{border-left:4px solid var(--accent);padding-left:11px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:15px 17px}
   .card.accent{border-left:4px solid var(--teal)}
@@ -393,11 +394,11 @@
         <b>3 · Knowledge graph.</b> Entities (items, papers, techniques, hardware, authors, claims) and their
         relationships — including citation stance — are assembled into a graph.<br/>
         <b>4 · HGT.</b> A heterogeneous graph neural network learns the graph and predicts latent links.<br/>
-        <b>5 · Precompute.</b> <b>HDBSCAN clustering</b> (the default cluster colours across the app), the
-        <b>UMAP</b> 2-D projection (used only by the optional Explorer map), and all landing/graph JSON are written
-        to <code>public/data-&lt;domain&gt;/</code> and served statically. A separate client-side <b>k-means</b>
-        re-clusters live only when you change attribute weights. UMAP and the knowledge graph/RAG copilot are
-        independent — the copilot does not use the projection.<br/>
+        <b>5 · Precompute.</b> Writes all the static JSON the pages read (items, knowledge-graph, landing, etc.) to
+        <code>public/data-&lt;domain&gt;/</code>, served statically. It also computes a <b>UMAP</b> 2-D layout +
+        <b>HDBSCAN</b> clusters — but <i>solely</i> to draw the optional <b>Explorer</b> similarity map and colour its
+        dots. <b>Clustering is not used for any inference</b>: not in the knowledge graph, not in the copilot. (When
+        you drag attribute weights, a client-side k-means re-clusters that map live.)<br/>
         <b>6 · Benchmarks.</b> Table cells are normalized (units, multi-level headers, aliases), de-duplicated per
         paper, scored for consistency, and assigned A/B/C grades with provenance. This step runs <i>after</i>
         precompute and is triggered separately (the Admin “Build benchmarks” action / the <code>benchmark</code> step).
