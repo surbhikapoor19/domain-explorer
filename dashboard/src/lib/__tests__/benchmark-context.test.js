@@ -65,10 +65,17 @@ const MOTION_BENCH = {
       metric_id: 'success_rate', metric_label: 'Success Rate (%)', condition: 'cluttered', higher_is_better: true,
       entries: [{ method: 'cuRobo', value: 98.0, grade: 'A', n_reports: 2, source_papers: ['curobo', 'vamp'] }],
     },
+    'path_length||narrow_passage': {
+      metric_id: 'path_length', metric_label: 'Path Length (m)', condition: 'narrow_passage', higher_is_better: false,
+      entries: [{ method: 'BIT*', value: 3.1, grade: 'B', n_reports: 1, source_papers: ['bit'] }],
+    },
   },
   copilot: {
     metric_keywords: {
+      // planning_time is the primary cost metric → owns the bare directional words
       planning_time: ['planning time', 'computation time', 'runtime', 'time', 'fastest', 'lowest', 'shortest', 'quickest'],
+      // path_length carries only its specific aliases (longest-match must win on "path length")
+      path_length: ['path length', 'trajectory length'],
       success_rate: ['success rate', 'solve rate', 'sr', 'best', 'highest', 'top', 'performance'],
     },
     condition_keywords: {
@@ -90,6 +97,15 @@ test('routes a motion success-rate query via the copilot map (grasp default lack
   const out = buildBenchmarkContext('which algorithm has the best success rate in cluttered scenes?', MOTION_BENCH);
   expect(out).toContain('Success Rate');
   expect(out).toContain('cuRobo = 98');
+});
+
+test('specific alias outranks a directional word: "shortest path length" → path_length, not planning_time', () => {
+  // planning_time owns the bare word "shortest"; path_length owns "path length".
+  // Longest-match must pick path_length (alias len 11 > "shortest" len 8).
+  const out = buildBenchmarkContext('which planner gives the shortest path length?', MOTION_BENCH);
+  expect(out).toContain('Path Length');
+  expect(out).toContain('BIT* = 3.1');
+  expect(out).not.toContain('Planning Time');
 });
 
 test('without a copilot block, a motion-only "fastest" query finds no grasp latency board', () => {

@@ -24,14 +24,24 @@ const DEFAULT_CONDITION_KEYWORDS = {
 export function buildBenchmarkContext(query, benchmarkData) {
   if (!benchmarkData || !benchmarkData.leaderboards) return '';
   // Domain-derived keyword maps when present (emitted by build_benchmarks.py from
-  // the domain's metric/condition aliases); else the grasp fallback above.
-  const metricKeywords = (benchmarkData.copilot && benchmarkData.copilot.metric_keywords) || DEFAULT_METRIC_KEYWORDS;
-  const conditionKeywords = (benchmarkData.copilot && benchmarkData.copilot.condition_keywords) || DEFAULT_CONDITION_KEYWORDS;
+  // the domain's metric/condition aliases); else the grasp fallback above. When a
+  // copilot block exists, its condition map governs even if empty — don't bleed
+  // grasp conditions into another domain.
+  const cp = benchmarkData.copilot;
+  const metricKeywords = (cp && cp.metric_keywords) || DEFAULT_METRIC_KEYWORDS;
+  const conditionKeywords = (cp && cp.metric_keywords) ? (cp.condition_keywords || {}) : DEFAULT_CONDITION_KEYWORDS;
   const q = ' ' + (query || '').toLowerCase() + ' ';
-  let metric = null, best = 0;
+  // Score each metric by its most SPECIFIC matched keyword: a long alias
+  // ("path length") outranks a short directional word ("shortest"), so
+  // "shortest path length" routes to path_length, not the primary cost metric.
+  // Hit-count breaks length ties.
+  let metric = null, bestScore = 0;
   for (const [mid, kws] of Object.entries(metricKeywords)) {
-    const hits = kws.filter(k => q.includes(k)).length;
-    if (hits > best) { best = hits; metric = mid; }
+    let hits = 0, maxLen = 0;
+    for (const k of kws) { if (k && q.includes(k)) { hits++; if (k.length > maxLen) maxLen = k.length; } }
+    if (!hits) continue;
+    const score = maxLen * 100 + hits;
+    if (score > bestScore) { bestScore = score; metric = mid; }
   }
   if (!metric) return '';                       // not a quantitative/ranking query
   let condition = null;
