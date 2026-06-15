@@ -38,11 +38,16 @@
   .hero h1{font-size:34px;margin:14px 0 6px;letter-spacing:-.5px}
   .hero p{font-size:17px;color:var(--muted);max-width:62ch;margin:0}
   section{padding:34px 0;border-bottom:1px solid var(--line);scroll-margin-top:18px}
-  section>h2{font-size:23px;color:var(--teal-deep);margin:0 0 4px;display:flex;align-items:center;gap:10px}
-  section>h2 .n{background:var(--teal);color:#fff;font-size:13px;font-weight:700;width:24px;height:24px;border-radius:50%;
-    display:inline-flex;align-items:center;justify-content:center}
+  /* H2 = major section: large, bold teal, big number badge, underlined title rule. */
+  section>h2{font-size:26px;font-weight:800;color:var(--teal-deep);letter-spacing:-.3px;margin:0 0 14px;
+    padding-bottom:9px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:11px}
+  section>h2 .n{background:var(--teal);color:#fff;font-size:15px;font-weight:800;width:30px;height:30px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:none}
   section>.lede{color:var(--muted);margin:2px 0 18px;max-width:70ch}
-  h3{font-size:16px;color:var(--teal-deep);margin:22px 0 6px}
+  /* H3 = subsection: clearly subordinate — near-black (NOT teal), smaller, with a
+     rust left-bar on top-level subsections so it never reads as a new section. */
+  h3{font-size:15px;color:var(--ink);font-weight:700;margin:26px 0 7px}
+  section>h3{border-left:3px solid var(--accent);padding-left:11px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:15px 17px}
   .card.accent{border-left:4px solid var(--teal)}
@@ -397,6 +402,34 @@
         paper, scored for consistency, and assigned A/B/C grades with provenance. This step runs <i>after</i>
         precompute and is triggered separately (the Admin “Build benchmarks” action / the <code>benchmark</code> step).
       </div></details>
+
+      <details><summary>How the knowledge graph is built — and how edges work across domains</summary><div class="body">
+        The graph is assembled from <b>three sources</b>, then normalized:
+        <ul>
+          <li><b>Your CSV</b> → one <b>item</b> node per row, plus an <b>attribute</b> node for each categorical
+            value (a technique, a piece of hardware, a dataset, a year…).</li>
+          <li><b>GROBID / TEI</b> (paper structure) → <b>paper, author, institution, year, figure, table, equation</b>
+            and <b>reference</b> nodes.</li>
+          <li><b>LLM extraction</b> over the paper text → <b>contribution, problem, limitation, comparison</b> and
+            method-step nodes.</li>
+        </ul>
+        Edges are <b>typed</b>, and the edge vocabulary is shared across every domain — e.g. <code>described_in</code>,
+        <code>uses_hardware</code>, <code>trained_on</code>, <code>implemented_in</code>, <code>maintained_by</code>,
+        <code>addresses_problem</code>, <code>contributes</code>, <code>compares</code>/<code>outperforms</code>,
+        <code>cites_external</code>, <code>authored_by</code>, <code>co_authored_with</code>,
+        <code>published_in_year</code>, <code>has_figure</code>/<code>table</code>/<code>equation</code>, plus computed
+        <code>semantically_similar</code> / <code>similar_in_role</code> links.
+        <p>The cross-domain trick: <b>CSV edges are role-driven, not column-name-driven.</b> Each column is mapped to a
+        semantic <b>role</b> (e.g. <code>hardware.platform</code>, <code>train.regime</code>,
+        <code>meta.maintainer</code>, <code>identity.year</code>), and the <i>role</i> — not the literal header —
+        decides the edge type. So a grasp sheet's “End-effector Hardware” column and a motion sheet's “Middleware”
+        column each become the appropriate relationship to their values; a new domain just maps its own columns to
+        roles and the same machinery yields the same edge semantics. Paper-structure edges come from TEI, claim edges
+        from the LLM, and similarity edges from the chunk embeddings.</p>
+        <p>Finally, per-domain <b>alias tables</b> (Admin → Knowledge-Graph aliases) canonicalize surface forms
+        (<code>rrt*</code>→<code>RRT*</code>, <code>franka</code>→<code>Franka Emika Panda</code>) so one
+        technique / robot / problem isn't fragmented into several nodes.</p>
+      </div></details>
     </section>
 
     <!-- ───────────── STACK ───────────── -->
@@ -436,7 +469,8 @@
             layer needs: <b>Knowledge-Graph aliases</b> (normalize spelling variants of your techniques /
             hardware / problems to one canonical label) and <b>Benchmark metrics</b> (the metrics, conditions,
             and datasets to read from result tables). The copilot's ranking vocabulary is then
-            <i>auto-derived</i> from those metric aliases — nothing extra to type.</li>
+            <i>auto-derived</i> from those metric aliases — nothing extra to type. Optionally paste the domain's
+            <b>Google&nbsp;Drive folder</b> of CSV exports to enable the nightly auto-sync (see <i>Keep it live</i> below).</li>
         <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → HGT → precompute) and commits the
             precomputed JSON back. <b>Benchmarks are a separate <i>Build benchmarks</i> action</b> (the Docling
             table extractor, run after precompute), so trigger that too once the main build succeeds.</li>
@@ -444,13 +478,19 @@
             and map re-skin to your field automatically.</li>
       </ol>
 
-      <div class="callout tip"><span class="lab">Keep it live</span> If your items live in a Google Sheet, paste its
-      CSV-export URL (<code>…/export?format=csv&amp;gid=…</code>) into the domain&rsquo;s <b>Google Sheet CSV URL</b>
-      field in Admin. A nightly job polls the sheet and, <i>only when its contents change</i>, commits the new CSV and
-      triggers a <b>precompute-only</b> rebuild (no PDF re-ingest) that re-derives the CSV-driven views — methods
-      table, similarity map, Research Gaps, Timeline, and Benchmarks — from the updated sheet. The copilot corpus
-      and the paper-extracted plots (Most&nbsp;Referenced, Techniques) are preserved as-is. PDFs are re-ingested
-      <i>only</i> when you trigger a full build in Admin (e.g. for brand-new items that need new papers).</div>
+      <div class="callout tip"><span class="lab">Keep it live (nightly sync)</span> Give a domain a
+      <b>Google&nbsp;Drive folder</b> of CSV exports (set it in Admin when you build the domain). A nightly job pulls
+      the <i>newest</i> CSV from that folder, hash-compares it to the current one, and — <b>only when it changed</b> —
+      commits it and triggers a <b>precompute-only</b> rebuild (no PDF re-ingest; unchanged folders are left
+      untouched). That rebuild recomputes everything CSV-derived: the methods table, the <b>similarity map (UMAP +
+      clusters) and its cluster insight</b>, Research Gaps, Timeline, and Benchmarks. The RAG/copilot corpus and the
+      paper-extracted plots (Most&nbsp;Referenced, Techniques) are preserved unchanged, and the knowledge-graph keeps
+      its existing nodes — a brand-new item gains a graph <i>node</i> only after a full Admin build (which re-ingests
+      its PDF). PDFs are re-ingested <i>only</i> when you trigger that full build.</div>
+
+      <div class="callout tip"><span class="lab">Safe rebuilds</span> Every precomputed artifact is written through an
+      overwrite guard: a failed or partial rebuild (missing data, a crashed step) can never blank a populated file —
+      the last good data is kept.</div>
 
       <h3>What's automatic vs what you provide</h3>
       <table>
