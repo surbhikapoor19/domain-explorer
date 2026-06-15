@@ -3,7 +3,7 @@
   "ablation_section_keywords": ["ablation"],
   "metrics": [
     {"id": "success_rate", "unit": "%", "higher_is_better": true, "type": "rate",
-     "aliases": ["success rate", "planning success rate", "solve rate", "sr", "task success"]},
+     "aliases": ["success rate", "planning success rate", "solve rate", "sr", "task success", "success", "succ", "rate success", "success %", "succ rate"]},
     {"id": "planning_time", "unit": "s", "higher_is_better": false, "type": "time",
      "aliases": ["planning time", "computation time", "compute time", "runtime", "solve time", "time", "planning_time"]},
     {"id": "path_length", "unit": "m", "higher_is_better": false, "type": "count",
@@ -12,8 +12,12 @@
      "aliases": ["path cost", "trajectory cost", "cost", "solution cost"]},
     {"id": "smoothness", "unit": null, "higher_is_better": false, "type": "count",
      "aliases": ["smoothness", "jerk", "acceleration cost"]},
+    {"id": "iterations", "unit": null, "higher_is_better": false, "type": "count",
+     "aliases": ["iterations", "iteration", "num iterations", "iters", "number of iterations"]},
+    {"id": "tracking_error", "unit": null, "higher_is_better": false, "type": "count",
+     "aliases": ["tracking error", "error tracking", "trajectory error"]},
     {"id": "collision_checks", "unit": null, "higher_is_better": false, "type": "count",
-     "aliases": ["collision checks", "number of collision checks", "collision check count"]}
+     "aliases": ["collision checks", "number of collision checks", "collision check count", "collisions", "collision", "num collisions"]}
   ],
   "conditions": [
     {"id": "narrow_passage", "aliases": ["narrow passage", "narrow", "bug trap", "bugtrap"]},
@@ -27,7 +31,12 @@
     {"id": "mbm", "aliases": ["motion benchmaker", "mbm"]},
     {"id": "ompl_bench", "aliases": ["ompl benchmark", "ompl-bench"]}
   ],
-  "method_aliases": {},
+  "method_aliases": {
+    "crisp (ours)": "🤖 CRISP",
+    "crisp": "🤖 CRISP",
+    "pybullet/ompl": "OMPL",
+    "moveit/ompl": "OMPL"
+  },
   "consistency": {
     "cv_thresholds": {"rate": 0.10, "time": 0.25, "count": 0.20, "default": 0.15},
     "min_papers_for_validation": 2
