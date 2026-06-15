@@ -44,7 +44,9 @@ jobs:
           key: docling-hf-models-v1
 
       - name: Set up GROBID
-        if: ${{ github.event.client_payload.pages != 'benchmark' }}
+        # Skip for benchmark (Docling-only) AND the CSV-only precompute refresh
+        # (reads the committed kg-full.json — no PDF parsing, so no GROBID needed).
+        if: ${{ github.event.client_payload.pages != 'benchmark' && github.event.client_payload.pages != 'precompute' && github.event.client_payload.pages != 'explorer' }}
         run: |
           docker pull lfoppiano/grobid:0.8.1
           docker run -d --name grobid -p 8070:8070 -e JAVA_TOOL_OPTIONS="-XX:-UseContainerSupport" lfoppiano/grobid:0.8.1
@@ -105,7 +107,10 @@ jobs:
           DOMAIN="${{ steps.domain.outputs.domain }}"
           PAGES="${{ github.event.client_payload.pages }}"
           STEPS="grobid,rag,kg,hgt,precompute"
-          if [ "$PAGES" = "explorer" ]; then
+          # 'precompute' = CSV-only refresh (regenerates ALL data JSON for every
+          # page from the CSV + committed KG; no PDF re-ingest). 'explorer' kept as
+          # a back-compat alias. NOTE: this is a build SCOPE, not the Explorer page.
+          if [ "$PAGES" = "precompute" ] || [ "$PAGES" = "explorer" ]; then
             STEPS="precompute"
           elif [ "$PAGES" = "benchmark" ]; then
             STEPS="benchmark"

@@ -6,12 +6,13 @@ name: Poll Google Sheets CSVs
 # This job polls those URLs on a schedule, and ONLY when a sheet's content has
 # actually changed does it commit the new CSV and trigger a rebuild.
 #
-# It dispatches the FULL domain-build (not a precompute-only build): TEI + the
-# ChromaDB vector store are gitignored and regenerated from the PDFs (in LFS) on
-# every CI run, so the CSV edit must flow through the whole pipeline to re-derive
-# BOTH the knowledge graph (CSV->graph explosion in the kg step) and the
-# precomputed views. The existing PDFs are reused — no re-upload needed. (Adding
-# brand-new items that require NEW PDFs still goes through the Admin upload flow.)
+# It dispatches a PRECOMPUTE-ONLY build (pages=explorer) — NO PDF re-ingest. The
+# graph builder falls back to the committed kg-full.json, so precompute re-derives
+# the CSV-driven plots (methods table, similarity map, Research-Gaps, Timeline,
+# Benchmarks) from the NEW csv without GROBID/RAG/chroma. The copilot corpus and
+# paper-extracted plots (Most-Referenced, Techniques) are preserved unchanged by
+# the overwrite guard. PDFs are re-ingested ONLY when an admin triggers a full
+# build (e.g. to add brand-new items that need new papers).
 
 on:
   schedule:
@@ -38,7 +39,34 @@ jobs:
         id: poll
         run: |
           python3 - <<'PY'
-          import os, glob, json, hashlib, urllib.request, yaml
+          import os, glob, json, hashlib, urllib.request, yaml, csv, io
+
+          def normalize_export(text, csv_path):
+              """Google Sheet CSV exports often carry banner/preamble rows above the
+              real header (e.g. 'Latest update: ...'). Strip them so the committed CSV
+              starts at the header the pipeline expects. We locate the header by
+              matching the FIRST column of the existing committed CSV (the identity
+              name column); if there's no committed CSV yet, assume a clean export."""
+              try:
+                  rows = list(csv.reader(io.StringIO(text)))
+              except Exception:
+                  return text
+              if not rows:
+                  return text
+              first_col = None
+              if os.path.exists(csv_path):
+                  with open(csv_path, encoding='utf-8') as cf:
+                      hdr = next(csv.reader(cf), [])
+                      first_col = hdr[0].strip() if hdr else None
+              if first_col:
+                  for i, r in enumerate(rows[:25]):
+                      if r and r[0].strip() == first_col:
+                          if i:
+                              print(f'    stripped {i} preamble row(s) from sheet export')
+                          out = io.StringIO(); csv.writer(out).writerows(rows[i:])
+                          return out.getvalue()
+              return text
+
           changed = []
           for ymlpath in sorted(glob.glob('domains/*.yaml')):
               cfg = yaml.safe_load(open(ymlpath)) or {}
@@ -58,6 +86,7 @@ jobs:
               if head.startswith('<!doctype') or head.startswith('<html'):
                   print(f'{slug}: export returned HTML (sheet not link-accessible?); skipping')
                   continue
+              data = normalize_export(data, csv_path)   # strip sheet preamble rows
               old = open(csv_path, encoding='utf-8').read() if os.path.exists(csv_path) else ''
               if hashlib.sha256(data.encode()).hexdigest() != hashlib.sha256(old.encode()).hexdigest():
                   with open(csv_path, 'w', encoding='utf-8', newline='') as f:
@@ -92,10 +121,11 @@ jobs:
           import sys, json, os, urllib.request
           repo = os.environ['GITHUB_REPOSITORY']; tok = os.environ['DISPATCH_TOKEN']
           for c in json.load(sys.stdin):
-              # Full build (no 'pages'): TEI/chroma are regenerated from PDFs each
-              # CI run, so the CSV change must flow through kg + precompute. Reuses
-              # the existing PDFs (LFS) — only the CSV changed.
-              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain']}}).encode()
+              # pages=precompute: CSV-only refresh, NO PDF re-ingest. (This is a build
+              # SCOPE, not the Explorer page.) The graph builder falls back to the
+              # committed kg-full.json, so the CSV-driven plots refresh from the new
+              # csv; the overwrite guard preserves the copilot corpus + paper plots.
+              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain'], 'pages': 'precompute'}}).encode()
               req = urllib.request.Request(f'https://api.github.com/repos/{repo}/dispatches', data=body,
                   headers={'Authorization': f'Bearer {tok}', 'Accept': 'application/vnd.github+json'})
               urllib.request.urlopen(req); print('dispatched full domain-build for', c['domain'])

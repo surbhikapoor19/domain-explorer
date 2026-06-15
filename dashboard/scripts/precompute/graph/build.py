@@ -40,7 +40,10 @@ def _write_empty_stubs(output_dir):
 def build(chroma_dir, output_dir, method_df=None, domain_cfg=None):
     os.makedirs(output_dir, exist_ok=True)
 
-    loaded = load_kg(chroma_dir)
+    # Fall back to the committed kg-full.json so a CSV-only precompute run (no
+    # chroma, no PDF re-ingest) still re-derives the landing/macro plots from the
+    # new CSV + the existing KG.
+    loaded = load_kg(chroma_dir, fallback_path=os.path.join(output_dir, 'kg-full.json'))
     if loaded is None:
         _write_empty_stubs(output_dir)
         return

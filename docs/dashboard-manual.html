@@ -447,9 +447,10 @@
       <div class="callout tip"><span class="lab">Keep it live</span> If your items live in a Google Sheet, paste its
       CSV-export URL (<code>…/export?format=csv&amp;gid=…</code>) into the domain&rsquo;s <b>Google Sheet CSV URL</b>
       field in Admin. A nightly job polls the sheet and, <i>only when its contents change</i>, commits the new CSV and
-      triggers a rebuild that re-derives the methods table, similarity map, <b>and the knowledge graph</b> from the
-      updated sheet — reusing the existing PDFs, so a spreadsheet edit (new row, renamed item, changed attribute)
-      flows through without any re-upload. (Adding brand-new items that need NEW PDFs still goes through Admin upload.)</div>
+      triggers a <b>precompute-only</b> rebuild (no PDF re-ingest) that re-derives the CSV-driven views — methods
+      table, similarity map, Research Gaps, Timeline, and Benchmarks — from the updated sheet. The copilot corpus
+      and the paper-extracted plots (Most&nbsp;Referenced, Techniques) are preserved as-is. PDFs are re-ingested
+      <i>only</i> when you trigger a full build in Admin (e.g. for brand-new items that need new papers).</div>
 
       <h3>What's automatic vs what you provide</h3>
       <table>
