@@ -376,24 +376,26 @@
             <line x1="658" y1="123" x2="690" y2="123" stroke="#16657d" marker-end="url(#a2)"/>
           </g>
         </svg>
-        <figcaption>One command (<code>ingest_domain.py --domain &lt;name&gt;</code>) or the Admin “Build” button runs the whole chain in CI.</figcaption>
+        <figcaption>One command (<code>ingest_domain.py --domain &lt;name&gt;</code>) or the Admin “Build” button runs the main chain in CI (GROBID → RAG → graph → HGT → precompute). Benchmark extraction runs <i>after</i> precompute and is a separate “Build benchmarks” action.</figcaption>
       </figure>
       <details><summary>Step by step</summary><div class="body">
         <b>1 · Extract.</b> GROBID parses born-digital text into structured TEI (sections, references, in-text
         citation context). Docling reads the result <i>tables</i> (with bounding boxes, so each number keeps a crop)
         — OCR off, since papers are born-digital.<br/>
-        <b>2 · RAG.</b> Text is chunked, embedded with a sentence-transformer, and stored in a vector index for
-        semantic retrieval.<br/>
+        <b>2 · RAG.</b> Text is chunked, embedded with a sentence-transformer, and stored in a vector index. (At
+        query time the copilot ranks these chunks with <b>BM25 lexical</b> scoring; the embeddings back semantic
+        search.)<br/>
         <b>3 · Knowledge graph.</b> Entities (items, papers, techniques, hardware, authors, claims) and their
         relationships — including citation stance — are assembled into a graph.<br/>
         <b>4 · HGT.</b> A heterogeneous graph neural network learns the graph and predicts latent links.<br/>
-        <b>5 · Benchmarks.</b> Table cells are normalized (units, multi-level headers, aliases), de-duplicated per
-        paper, scored for consistency, and assigned A/B/C grades with provenance.<br/>
-        <b>6 · Precompute.</b> <b>HDBSCAN clustering</b> (the default cluster colours across the app), the
+        <b>5 · Precompute.</b> <b>HDBSCAN clustering</b> (the default cluster colours across the app), the
         <b>UMAP</b> 2-D projection (used only by the optional Explorer map), and all landing/graph JSON are written
         to <code>public/data-&lt;domain&gt;/</code> and served statically. A separate client-side <b>k-means</b>
         re-clusters live only when you change attribute weights. UMAP and the knowledge graph/RAG copilot are
-        independent — the copilot does not use the projection.
+        independent — the copilot does not use the projection.<br/>
+        <b>6 · Benchmarks.</b> Table cells are normalized (units, multi-level headers, aliases), de-duplicated per
+        paper, scored for consistency, and assigned A/B/C grades with provenance. This step runs <i>after</i>
+        precompute and is triggered separately (the Admin “Build benchmarks” action / the <code>benchmark</code> step).
       </div></details>
     </section>
 
@@ -435,9 +437,10 @@
             hardware / problems to one canonical label) and <b>Benchmark metrics</b> (the metrics, conditions,
             and datasets to read from result tables). The copilot's ranking vocabulary is then
             <i>auto-derived</i> from those metric aliases — nothing extra to type.</li>
-        <li>Hit <b>Build</b>. CI runs the full pipeline (extraction → RAG → graph → HGT → benchmarks → precompute)
-            and commits the precomputed JSON back.</li>
-        <li>When it finishes, your domain is a first-class, interactive view — the copilot, benchmarks, graph,
+        <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → HGT → precompute) and commits the
+            precomputed JSON back. <b>Benchmarks are a separate <i>Build benchmarks</i> action</b> (the Docling
+            table extractor, run after precompute), so trigger that too once the main build succeeds.</li>
+        <li>When both finish, your domain is a first-class, interactive view — the copilot, benchmarks, graph,
             and map re-skin to your field automatically.</li>
       </ol>
 
