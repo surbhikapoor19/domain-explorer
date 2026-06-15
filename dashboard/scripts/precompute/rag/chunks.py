@@ -22,6 +22,7 @@ import umap as umap_lib
 from sklearn.metrics import pairwise_distances
 
 from ..shared.config import UMAP_METRIC, UMAP_MIN_DIST, UMAP_N_NEIGHBORS
+from .._safe_write import safe_write_json
 
 SNIPPET_LEN = 240
 
@@ -72,9 +73,10 @@ def export_rag_chunks(chroma_dir, output_dir):
         collection = _papers_collection(client)
         results = collection.get(include=['documents', 'metadatas', 'embeddings'])
     except Exception as e:
-        print(f"  rag-chunks.json: skipped ({e})")
-        with open(os.path.join(output_dir, 'rag-chunks.json'), 'w') as f:
-            json.dump([], f)
+        # No chroma collection on this run (e.g. a CSV-only rebuild without the
+        # vector store). Don't blank a committed corpus — keep the existing chunks.
+        print(f"  rag-chunks.json: no collection this run ({e})")
+        safe_write_json(os.path.join(output_dir, 'rag-chunks.json'), [], label='no chroma collection')
         return
 
     ids = results['ids']
@@ -105,6 +107,5 @@ def export_rag_chunks(chroma_dir, output_dir):
             'snippet': _make_snippet(text),
         })
 
-    with open(os.path.join(output_dir, 'rag-chunks.json'), 'w') as f:
-        json.dump(chunks, f)
+    safe_write_json(os.path.join(output_dir, 'rag-chunks.json'), chunks, label='empty chunk set')
     print(f"  rag-chunks.json: {len(chunks)} chunks (with 2D UMAP + flat fields)")

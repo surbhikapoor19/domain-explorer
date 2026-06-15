@@ -188,6 +188,6 @@ def export_kg_macro(nodes, edges, output_dir, method_df=None, node_by_id=None,
         out_links.append(link)
 
     payload = {'success': True, 'nodes': out_nodes, 'links': out_links}
-    with open(os.path.join(output_dir, 'kg-macro.json'), 'w') as f:
-        json.dump(payload, f)
+    from .._safe_write import safe_write_json
+    safe_write_json(os.path.join(output_dir, 'kg-macro.json'), payload, label='empty macro')
     print(f"  kg-macro.json: {len(out_nodes)} nodes, {len(out_links)} links")

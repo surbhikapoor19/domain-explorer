@@ -23,8 +23,8 @@ def export_methods(df, output_dir, domain_cfg=None):
     for col, values in derived.items():
         df_out[col] = values
     records = [{k: _clean(v) for k, v in r.items()} for r in df_out.to_dict(orient='records')]
-    with open(os.path.join(output_dir, 'methods.json'), 'w') as f:
-        json.dump(records, f, allow_nan=False)
+    from .._safe_write import safe_write_json
+    safe_write_json(os.path.join(output_dir, 'methods.json'), records, dump_kwargs={'allow_nan': False}, label='no methods')
     noun = domain_cfg.method_noun if domain_cfg else 'method'
     print(f"  methods.json: {len(records)} {noun}s")
     return df_out

@@ -207,8 +207,8 @@ def export_kg_landing(nodes, edges, node_by_id, method_df, output_dir):
         'citeFlow': _build_cite_flow(edges),
         'topExternalRefs': _build_top_external_refs(edges, node_by_id),
     }
-    with open(os.path.join(output_dir, 'kg-landing.json'), 'w') as f:
-        json.dump(landing, f)
+    from .._safe_write import safe_write_json
+    safe_write_json(os.path.join(output_dir, 'kg-landing.json'), landing, label='empty landing')
     print(
         f"  kg-landing.json: summary + "
         f"{len(landing['techniqueCooccurrence']['nodes'])} techniques, "

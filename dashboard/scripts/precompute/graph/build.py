@@ -15,6 +15,7 @@ import json
 import os
 
 from ._loader import load_kg
+from .._safe_write import safe_write_json
 from .kg_contradictions import export_kg_contradictions
 from .kg_full import export_kg_full
 from .kg_landing import export_kg_landing
@@ -28,10 +29,12 @@ EMPTY_OUTPUTS = (
 
 
 def _write_empty_stubs(output_dir):
-    print("  WARNING: knowledge_graph.json not found, writing empty stubs")
+    # KG missing (e.g. a CSV-only run with no chroma): write empty stubs so the
+    # front-end never 404s — but NEVER clobber a committed non-empty artifact.
+    print("  WARNING: knowledge_graph.json not found, writing empty stubs (keeping any existing non-empty data)")
     for name in EMPTY_OUTPUTS:
-        with open(os.path.join(output_dir, name), 'w') as f:
-            json.dump({} if 'landing' in name or 'full' in name or 'macro' in name else [], f)
+        empty = {} if 'landing' in name or 'full' in name or 'macro' in name else []
+        safe_write_json(os.path.join(output_dir, name), empty, label='empty stub')
 
 
 def build(chroma_dir, output_dir, method_df=None, domain_cfg=None):

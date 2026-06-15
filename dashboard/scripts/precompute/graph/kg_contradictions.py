@@ -36,10 +36,10 @@ def export_kg_contradictions(kg_data, output_dir):
                 normalized['links'] = normalized.pop('edges')
             G = nx.node_link_graph(normalized)
         contras = detect_contradictions(G)
-        with open(out_path, 'w') as f:
-            json.dump(contras, f)
+        from .._safe_write import safe_write_json
+        safe_write_json(out_path, contras, label='no contradictions')
         print(f"  kg-contradictions.json: {len(contras)} contradictions")
     except Exception as e:
         print(f"  kg-contradictions.json: skipped ({e})")
-        with open(out_path, 'w') as f:
-            json.dump([], f)
+        from .._safe_write import safe_write_json
+        safe_write_json(out_path, [], label='contradiction detection failed')

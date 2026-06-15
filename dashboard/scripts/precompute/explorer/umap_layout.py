@@ -167,8 +167,8 @@ def export_umap_default(df, tfidf_matrices, desc_embeddings, output_dir,
         'nClusters': len(set(labels)),
         'valueClusterMap': value_cluster_map,
     }
-    with open(os.path.join(output_dir, 'umap-default.json'), 'w') as f:
-        json.dump(result, f)
+    from .._safe_write import safe_write_json
+    safe_write_json(os.path.join(output_dir, 'umap-default.json'), result, label='no umap points')
     noun = domain_cfg.method_noun if domain_cfg else 'method'
     print(f"  umap-default.json: {n} {noun}s, {len(set(labels))} clusters")
 

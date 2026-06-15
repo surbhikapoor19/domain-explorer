@@ -140,8 +140,10 @@ def export_kg_predictions(chroma_dir, output_dir, node_by_id=None,
     out_path = os.path.join(output_dir, 'kg-predictions.json')
     src_path = os.path.join(chroma_dir, 'hgt_schema', 'predicted_edges.json')
     if not os.path.exists(src_path):
-        with open(out_path, 'w') as f:
-            json.dump({'success': True, 'nodes': [], 'links': []}, f)
+        # No HGT output this run — keep any committed predictions rather than
+        # blanking the Predicted-Relationships tab (e.g. a build without HGT).
+        from .._safe_write import safe_write_json
+        safe_write_json(out_path, {'success': True, 'nodes': [], 'links': []}, label='no HGT output')
         print(f"  kg-predictions.json: empty (no HGT output found)")
         return
 
@@ -269,8 +271,8 @@ def export_kg_predictions(chroma_dir, output_dir, node_by_id=None,
         links.append(link)
 
     payload = {'success': True, 'nodes': nodes, 'links': links}
-    with open(out_path, 'w') as f:
-        json.dump(payload, f)
+    from .._safe_write import safe_write_json
+    safe_write_json(out_path, payload, label='empty predictions')
     print(
         f"  kg-predictions.json: {len(nodes)} nodes, {len(links)} links "
         f"(min_confidence={MIN_CONFIDENCE}, comparability on {n_with_cmp} edges)"
