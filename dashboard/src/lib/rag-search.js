@@ -10,7 +10,7 @@ function cosineSimilarity(a, b) {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB) || 1);
 }
 
-const INTENT_LAYERS = {
+export const INTENT_LAYERS = {
   BROAD: ['coarse'], TECHNICAL: ['mid', 'fine'], EVALUATION: ['mid', 'fine'],
   COMPARISON: ['coarse', 'mid'], LIMITATION: ['mid'], PEOPLE: ['coarse'],
 };

@@ -63,3 +63,49 @@ def test_motion_table_parses_under_motion_config_lower_is_better():
     assert by["BIT*"].condition == "narrow_passage"
     assert by["BIT*"].value == 1.2
     assert by["BIT*"].extractor == "tei_table"
+
+
+def test_collapsing_subcolumns_disambiguated_by_leaf_label():
+    """A 'Time Efficiency' super-header over Forward-passing/Processing/Total Time:
+    all three leaf columns resolve to the SAME metric (`latency`) with no condition,
+    so they would collapse into one bucket (n=3, meaningless CV). The parser must
+    keep them distinct by disambiguating on the leaf label."""
+    loc = TableLocation(
+        paper_id="regnet", table_index=0, caption="Table I: Results",
+        section_label="Experiments", is_results_section=True, is_ablation_section=False,
+        has_rows=True,
+        rows=[
+            ["", "Time Efficiency", "Time Efficiency", "Time Efficiency"],
+            ["Method", "Forward-passing Time", "Processing Time", "Total Time"],
+            ["S4G", "22.23", "824.20", "846.43"],
+        ])
+    resolver = MethodResolver(["Single-Shot SE(3) Grasp Detection (S4G)"],
+                              alias_seeds={"s4g": "Single-Shot SE(3) Grasp Detection (S4G)"})
+    recs = [r for r in records_from_tei_rows(loc, GRASP, resolver) if r.metric_id == "latency"]
+    assert len(recs) == 3, "all three time columns parsed"
+    conds = {r.condition for r in recs}
+    assert len(conds) == 3, f"3 distinct time columns must stay distinct, got conditions={conds}"
+    # raw labels preserved per column (provenance: which column each value came from)
+    raws = {r.metric_raw for r in recs}
+    assert len(raws) == 3
+    # the values land on the right columns (no cross-contamination)
+    by_val = {r.value: r.condition for r in recs}
+    assert set(by_val) == {22.23, 824.20, 846.43}
+
+
+def test_distinct_metrics_not_spuriously_disambiguated():
+    """Two columns that resolve to DIFFERENT metrics must NOT be touched by the
+    disambiguator — only same-(metric,condition) collisions get split."""
+    loc = TableLocation(
+        paper_id="anygrasp", table_index=0,
+        caption="Table 2: Pile scenes", section_label="Experiments",
+        is_results_section=True, is_ablation_section=False, has_rows=True,
+        rows=[["Method", "Success Rate", "Declutter Rate"],
+              ["Ours", "86.9", "90.1"], ["GPD", "70.1", "75.0"]])
+    resolver = MethodResolver(["AnyGrasp", "Grasp Pose Detection (GPD)"],
+                              alias_seeds={"gpd": "Grasp Pose Detection (GPD)", "ours": "AnyGrasp"})
+    recs = records_from_tei_rows(loc, GRASP, resolver)
+    own = [r for r in recs if r.method_id == "AnyGrasp"]
+    # different metrics, condition stays the caption-inferred 'pile' (NOT disambiguated)
+    assert {r.metric_id for r in own} == {"success_rate", "declutter_rate"}
+    assert all(r.condition == "pile" for r in own), [r.condition for r in own]

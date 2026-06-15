@@ -88,3 +88,160 @@ def test_cross_validation_reports_carry_provenance():
     r = cvs[0]['reports'][0]
     for k in ('paper', 'value_str', 'table_caption', 'page', 'extractor', 'crop_image'):
         assert k in r, f"provenance field '{k}' present on cross-validation report"
+
+
+def _same_table_inflation_records():
+    """One paper, one method, one (metric,condition) — but 3 cells from the SAME table.
+    A second method so the leaderboard bucket is emitted (>=2 methods)."""
+    base = dict(metric_raw="Latency", metric_id="latency", unit="ms", higher_is_better=False,
+                dataset_id=None, condition="forward", extractor="tei_table",
+                table_caption="Table I", section_label="Experiments", page=5,
+                crop_image="crops/regnet_t0.png", extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="regnet", method_raw="S4G", method_id="S4G",
+                     value=v, value_str=f"{v}ms", is_own_method=True, **base)
+        for v in (22.23, 824.20, 846.43)
+    ]
+    recs.append(ResultRecord(paper_id="regnet", method_raw="GPD", method_id="GPD",
+                             value=10.0, value_str="10.0ms", **base))
+    return recs
+
+
+def test_n_reports_counts_distinct_papers_not_same_table_cells():
+    out = build_benchmark_json(_same_table_inflation_records(), CFG)
+    lb = next(lb for lb in out['leaderboards'].values() if lb['metric_id'] == 'latency')
+    s4g = next(e for e in lb['entries'] if e['method'] == 'S4G')
+    # n_reports stays = distinct papers (3 cells of one paper != 3 reports) ...
+    assert s4g['n_reports'] == 1, f"cells of ONE paper = 1 report, got {s4g['n_reports']}"
+    # ... but a paper whose own cells disagree 22 vs 846 must SURFACE (high cv -> C),
+    # not hide behind a per-paper median.
+    assert s4g['cv'] > 0.5, f"within-paper disagreement must surface, got cv={s4g['cv']}"
+    assert s4g['grade'] == 'C', f"self-contradicting cells -> grade C, got {s4g['grade']}"
+
+
+def test_n_reports_counts_genuine_multiple_papers():
+    """Three DIFFERENT papers reporting the same (method,metric,condition) = 3 reports (legit)."""
+    base = dict(method_raw="M", method_id="M", metric_raw="Latency", metric_id="latency",
+                unit="ms", higher_is_better=False, condition="c", extractor="tei_table",
+                extraction_conf="high", verified=True)
+    recs = [ResultRecord(paper_id=p, value=v, value_str=str(v), **base)
+            for p, v in (("p1", 20.0), ("p2", 22.0), ("p3", 24.0))]
+    recs.append(ResultRecord(paper_id="p1", method_raw="N", method_id="N", metric_raw="Latency",
+                             metric_id="latency", unit="ms", higher_is_better=False, condition="c",
+                             value=99.0, value_str="99.0", extractor="tei_table",
+                             extraction_conf="high", verified=True))
+    out = build_benchmark_json(recs, CFG)
+    lb = next(lb for lb in out['leaderboards'].values() if lb['metric_id'] == 'latency')
+    m = next(e for e in lb['entries'] if e['method'] == 'M')
+    assert m['n_reports'] == 3, f"3 distinct papers = 3 reports, got {m['n_reports']}"
+    assert m['cv'] > 0, "genuine cross-paper spread is reported"
+
+
+def test_leaderboard_sources_carry_metric_raw_and_condition():
+    out = build_benchmark_json(_prov_records(), CFG)
+    lb = next(iter(out['leaderboards'].values()))
+    s = lb['entries'][0]['sources'][0]
+    assert 'metric_raw' in s, "source carries which column the value came from"
+    assert 'condition' in s, "source carries the condition"
+    assert s['metric_raw'] == "Success Rate"
+
+
+def test_condition_aliases_merge_near_duplicate_conditions():
+    """config condition_aliases merges column-label variants (e.g. 'total' vs
+    'total-time') so the same concept cross-validates across papers instead of
+    fragmenting into separate near-duplicate buckets."""
+    base = dict(metric_raw="Latency", metric_id="latency", unit="ms", higher_is_better=False,
+                extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="p1", method_raw="M", method_id="M", value=100.0, value_str="100",
+                     condition="total", **base),
+        ResultRecord(paper_id="p2", method_raw="M", method_id="M", value=110.0, value_str="110",
+                     condition="total-time", **base),
+        ResultRecord(paper_id="p1", method_raw="N", method_id="N", value=200.0, value_str="200",
+                     condition="total", **base),
+    ]
+    out = build_benchmark_json(recs, CFG)  # grasp config has "total" -> "total-time"
+    lat = [lb for lb in out['leaderboards'].values()
+           if lb['metric_id'] == 'latency' and lb['condition'] == 'total-time']
+    assert lat, "the two variants merged into a single 'total-time' bucket"
+    m = next(e for e in lat[0]['entries'] if e['method'] == 'M')
+    assert m['n_reports'] == 2, f"p1(total)+p2(total-time) must merge to 2 reports, got {m['n_reports']}"
+
+
+def test_per_paper_median_surfaces_outliers_not_hidden_by_best():
+    """A paper reporting an outlier (2232) next to a small value (48) must NOT have
+    the outlier hidden by taking the best (min). The per-paper MEDIAN surfaces it so
+    the CV is honest and the entry is not falsely graded A. (The 6-DoF GraspNet bug.)"""
+    base = dict(metric_raw="Latency", metric_id="latency", unit="ms", higher_is_better=False,
+                condition=None, extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="pA", method_raw="6DoF", method_id="6DoF", value=41.08, value_str="41.08", **base),
+        ResultRecord(paper_id="pB", method_raw="6DoF", method_id="6DoF", value=2232.0, value_str="2232", **base),
+        ResultRecord(paper_id="pB", method_raw="6DoF", method_id="6DoF", value=48.0, value_str="48", **base),
+        ResultRecord(paper_id="pA", method_raw="X", method_id="X", value=10.0, value_str="10", **base),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    lat = next(lb for lb in out['leaderboards'].values() if lb['metric_id'] == 'latency')
+    e = next(x for x in lat['entries'] if x['method'] == '6DoF')
+    assert e['n_reports'] == 2, "two distinct papers"
+    assert e['cv'] > 0.5, f"the 2232 outlier must NOT be hidden — CV should be high, got {e['cv']}"
+    assert e['grade'] != 'A', f"papers that disagree must not be grade A, got {e['grade']}"
+
+
+def test_cross_validation_ignores_none_value_papers():
+    """A paper whose cells ALL parsed to None must not inflate cross-validation
+    n_papers into a fake 'two papers agree' (cv=0, grade A) from a single value."""
+    base = dict(metric_id="success_rate", unit="%", higher_is_better=True, condition="pile",
+                dataset_id=None, extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="rgbd", method_raw="EVG", method_id="EVG", metric_raw="GSR",
+                     value=91.67, value_str="91.67", **base),
+        ResultRecord(paper_id="unigrasp", method_raw="EVG", method_id="EVG", metric_raw="GSR",
+                     value=None, value_str="78.4 86.6 89.9 91.2", **base),  # all-None paper
+    ]
+    out = build_benchmark_json(recs, CFG)
+    cvs = [v for v in out['cross_validations'] if v['method'] == 'EVG']
+    assert not cvs, "one value-bearing paper is NOT a cross-paper validation"
+
+
+def test_confidence_field_present_and_threshold_semantics():
+    from benchmarks.aggregate.build_benchmarks import _confidence
+    out = build_benchmark_json(_prov_records(), CFG)
+    e = next(iter(out['leaderboards'].values()))['entries'][0]
+    assert 'confidence' in e and 0.0 <= e['confidence'] <= 1.0
+    assert _confidence('C', 0.0) < 0.70, "grade C scores below the 0.70 cutoff"
+    assert _confidence('A', 0.05) >= 0.70, "grade A scores at/above 0.70"
+
+
+def test_fraction_scale_rates_lifted_to_percent():
+    base = dict(metric_raw="Success Rate", metric_id="success_rate", unit="%", higher_is_better=True,
+                condition="k", extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [ResultRecord(paper_id="p1", method_raw="A", method_id="A", value=0.93, value_str="0.93", **base),
+            ResultRecord(paper_id="p1", method_raw="B", method_id="B", value=0.57, value_str="0.57", **base)]
+    out = build_benchmark_json(recs, CFG)
+    lb = next(lb for lb in out['leaderboards'].values() if lb['metric_id'] == 'success_rate')
+    assert sorted(e['value'] for e in lb['entries']) == [57.0, 93.0], "0-1 fractions lifted to percent"
+
+
+def test_cross_validation_is_condition_aware():
+    base = dict(metric_id="latency", unit="ms", higher_is_better=False, extractor="tei_table",
+                extraction_conf="high", verified=True)
+    recs = [ResultRecord(paper_id="p1", method_raw="M", method_id="M", metric_raw="Inference Time",
+                         value=5.0, value_str="5", condition="inference-time", **base),
+            ResultRecord(paper_id="p2", method_raw="M", method_id="M", metric_raw="Total Time",
+                         value=5000.0, value_str="5000", condition="total-time", **base)]
+    out = build_benchmark_json(recs, CFG)
+    assert not [v for v in out['cross_validations'] if v['method'] == 'M'], \
+        "different conditions (inference vs total time) must not cross-validate"
+
+
+def test_latency_scope_separates_time_from_latency():
+    base = dict(metric_id="latency", unit="ms", higher_is_better=False, condition=None,
+                extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [ResultRecord(paper_id="p1", method_raw="A", method_id="A", metric_raw="Latency (ms)", value=9.0, value_str="9", **base),
+            ResultRecord(paper_id="p1", method_raw="B", method_id="B", metric_raw="Latency (ms)", value=24.0, value_str="24", **base),
+            ResultRecord(paper_id="p2", method_raw="C", method_id="C", metric_raw="Time", value=150.0, value_str="150", **base),
+            ResultRecord(paper_id="p2", method_raw="D", method_id="D", metric_raw="Time", value=25.0, value_str="25", **base)]
+    out = build_benchmark_json(recs, CFG)
+    conds = {lb['condition'] for lb in out['leaderboards'].values() if lb['metric_id'] == 'latency'}
+    assert 'latency' in conds and 'time' in conds, f"Latency and Time separated into distinct boards, got {conds}"

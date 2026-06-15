@@ -9,7 +9,7 @@ import os
 import yaml
 
 _HERE = os.path.abspath(__file__)
-REPO_ROOT = os.path.dirname(  # grasp-explorer/
+REPO_ROOT = os.path.dirname(  # domain-explorer/
     os.path.dirname(  # dashboard/
         os.path.dirname(  # scripts/
             os.path.dirname(  # precompute/

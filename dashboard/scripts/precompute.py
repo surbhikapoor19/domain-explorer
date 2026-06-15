@@ -2,7 +2,7 @@
 """Generate static JSON files for the Vercel dashboard.
 
 Usage:
-    cd grasp-explorer
+    cd domain-explorer
     source backend/venv/bin/activate
     python dashboard/scripts/precompute.py
 

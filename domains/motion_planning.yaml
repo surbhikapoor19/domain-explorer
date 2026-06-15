@@ -52,3 +52,92 @@ default_color_by_roles:
   - input.modality
   - hardware.platform
   - env.context
+
+# Knowledge-graph entity normalization for motion planning. Maps the many
+# surface forms found in papers to a single canonical label so the KG doesn't
+# fragment one planner/robot/problem across spelling variants. Read by
+# ingest_domain.py step_kg -> build_knowledge_graph(domain_config=...). A domain
+# that omits this keeps the built-in grasp-planning defaults.
+kg_aliases:
+  technique:
+    rrt: RRT
+    "rrt-connect": RRT-Connect
+    "rrt connect": RRT-Connect
+    "rrt*": "RRT*"
+    "rrt-star": "RRT*"
+    "informed rrt*": "Informed RRT*"
+    prm: PRM
+    "prm*": "PRM*"
+    lazyprm: LazyPRM
+    "lazy prm": LazyPRM
+    est: EST
+    sbl: SBL
+    kpiece: KPIECE
+    "bit*": "BIT*"
+    "abit*": "ABIT*"
+    "fmt*": "FMT*"
+    sst: SST
+    spars: SPARS
+    chomp: CHOMP
+    stomp: STOMP
+    trajopt: TrajOpt
+    komo: KOMO
+    gpmp: GPMP
+    gpmp2: GPMP2
+    itomp: ITOMP
+    curobo: cuRobo
+    vamp: VAMP
+    ompl: OMPL
+    klampt: Klampt
+    moveit: MoveIt
+    "moveit!": MoveIt
+    sqp: SQP
+    "sequential quadratic programming": SQP
+    "gauss-newton": Gauss-Newton
+    "levenberg-marquardt": Levenberg-Marquardt
+    "sampling-based": Sampling-based
+    "optimization-based": Optimization-based
+  hardware:
+    franka: Franka Emika Panda
+    "franka panda": Franka Emika Panda
+    "franka emika": Franka Emika Panda
+    panda: Franka Emika Panda
+    ur5e: Universal Robots UR5e
+    ur10: Universal Robots UR10
+    ur5: Universal Robots UR5
+    "kuka iiwa": KUKA LBR iiwa
+    kuka: KUKA LBR iiwa
+    kinova: Kinova Gen3
+    "kinova gen3": Kinova Gen3
+    fetch: Fetch Robot
+    pr2: PR2
+    baxter: Rethink Baxter
+    sawyer: Rethink Sawyer
+    hsr: Toyota HSR
+    mujoco: MuJoCo
+    pybullet: PyBullet
+    bullet: Bullet
+    "isaac gym": Isaac Gym
+    "isaac sim": Isaac Sim
+    gazebo: Gazebo
+    drake: Drake
+    ros: ROS
+  problem:
+    "narrow passage": narrow-passage planning
+    "narrow passages": narrow-passage planning
+    "bug trap": narrow-passage planning
+    "high dof": high-DoF motion planning
+    "high-dof": high-DoF motion planning
+    "dynamic obstacles": planning among dynamic obstacles
+    "moving obstacles": planning among dynamic obstacles
+    "collision avoidance": collision avoidance
+    "collision-free": collision-free planning
+    "trajectory optimization": trajectory optimization
+    "trajectory smoothing": trajectory smoothing
+    "kinodynamic": kinodynamic planning
+    "manipulation planning": manipulation planning
+    "asymptotic optimality": asymptotically optimal planning
+    "asymptotically optimal": asymptotically optimal planning
+    "real-time planning": real-time planning
+    "cluttered": planning in clutter
+    "cluttered environments": planning in clutter

@@ -1,4 +1,4 @@
-"""SciCite-style citation-intent classifier for the grasp-explorer KG.
+"""SciCite-style citation-intent classifier for the domain-explorer KG.
 
 For every citation context string (both internal `cites` edges in
 ``knowledge_graph.json`` and external back-citations in ``s2_enrichment.json``),
@@ -228,7 +228,7 @@ class SciCiteClassifier:
 # ----------------------------------------------------------------------
 def main(argv: Optional[list] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="SciCite citation-intent classification over the grasp-explorer KG.",
+        description="SciCite citation-intent classification over the domain-explorer KG.",
     )
     parser.add_argument(
         "--config",

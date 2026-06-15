@@ -35,7 +35,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / 'dashboard'))
 
-ALL_STEPS = ['grobid', 'rag', 'kg', 'hgt', 'precompute']
+ALL_STEPS = ['grobid', 'rag', 'kg', 'hgt', 'precompute', 'benchmark']
 FORCE = False
 
 
@@ -207,11 +207,25 @@ def step_kg(paths):
     print(f"  Method-paper map: {len(method_paper_map.get('method_to_paper', {}))} matched, "
           f"{len(method_paper_map.get('unmatched_methods', []))} unmatched")
 
+    # Domain-specific KG normalization (technique/hardware/problem aliases) from
+    # the domain YAML's `kg_aliases`; absent → built-in grasp-planning defaults.
+    domain_config = None
+    yaml_path = paths.get('yaml')
+    if yaml_path and yaml_path.exists():
+        import yaml as _yaml
+        with open(yaml_path) as _f:
+            _ycfg = _yaml.safe_load(_f) or {}
+        if _ycfg.get('kg_aliases'):
+            domain_config = {'kg_aliases': _ycfg['kg_aliases']}
+            print(f"  KG aliases from config: "
+                  f"{', '.join(f'{k}={len(v)}' for k, v in _ycfg['kg_aliases'].items())}")
+
     G = build_knowledge_graph(
         facts_path=str(facts_path),
         entities_path=str(entities_path),
         method_paper_map=method_paper_map,
         csv_path=str(csv_path) if csv_path else None,
+        domain_config=domain_config,
     )
     print(f"  Base KG: {len(G.nodes)} nodes, {len(G.edges)} edges")
 
@@ -358,6 +372,42 @@ def step_precompute(paths, domain_slug):
         print(f"  WARNING: precompute exited with code {result.returncode}")
 
 
+def step_benchmark(paths, domain):
+    """Build benchmark-comparisons.json + crops for a domain via the Docling extractor.
+    Docling-only unless ANTHROPIC_API_KEY is set; skips if output exists (FORCE_BENCHMARK=1 to rebuild)."""
+    import os
+    import subprocess
+    import tempfile
+    output_dir = paths['output']
+    out_json = output_dir / 'benchmark-comparisons.json'
+    if out_json.exists() and os.environ.get('FORCE_BENCHMARK') != '1':
+        print(f"  [benchmark] {out_json} exists; skipping (FORCE_BENCHMARK=1 to rebuild)")
+        return
+    pre = Path(__file__).resolve().parent.parent / 'dashboard' / 'scripts' / 'precompute'
+    cfg = pre / 'benchmarks' / 'config' / f'{domain}.json'
+    if not cfg.exists():
+        print(f"  [benchmark] no benchmarks config at {cfg}; skipping")
+        return
+    csv_path = next(paths['dataset'].glob('*.csv'), None)
+    if csv_path is None:
+        print(f"  [benchmark] no methods CSV in {paths['dataset']}; skipping")
+        return
+    crops_dir = output_dir / 'crops'
+    crops_url = f"/data-{paths['slug_dashed']}/crops"
+    rr = Path(tempfile.mkdtemp()) / 'result-records.json'
+    no_vlm = [] if os.environ.get('ANTHROPIC_API_KEY') else ['--no-vlm']
+    extract = [sys.executable, '-m', 'benchmarks.extraction.run_extraction',
+               '--engine', 'docling', '--config', str(cfg), '--pdf-dir', str(paths['papers']),
+               '--methods-csv', str(csv_path), '--crops-dir', str(crops_dir),
+               '--crops-url', crops_url, '--output', str(rr)] + no_vlm
+    print(f"  [benchmark] extracting via Docling ({'born-digital' if no_vlm else 'with VLM'}) ...")
+    subprocess.run(extract, cwd=str(pre), check=True)
+    export = [sys.executable, 'graph/benchmark_data.py', '--from-records', str(rr),
+              '--output-dir', str(output_dir), '--config', str(cfg)]
+    subprocess.run(export, cwd=str(pre), check=True)
+    print(f"  [benchmark] wrote {out_json}")
+
+
 def main():
     global FORCE
     parser = argparse.ArgumentParser(description='Domain ingestion pipeline')
@@ -395,6 +445,8 @@ def main():
             step_hgt(paths)
         elif step == 'precompute':
             step_precompute(paths, args.domain)
+        elif step == 'benchmark':
+            step_benchmark(paths, args.domain)
         elapsed = time.time() - t0
         print(f"[{step}] Done ({elapsed:.1f}s)\n")
 

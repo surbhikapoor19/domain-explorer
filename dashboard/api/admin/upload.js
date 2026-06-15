@@ -61,7 +61,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'GH_PAT not configured' });
   }
 
-  const { domain, csvContent, csvFilename, pdfUrl, displayName, methodNoun, updateOnly, pdfZipBase64, yamlConfig } = req.body || {};
+  const { domain, csvContent, csvFilename, pdfUrl, displayName, methodNoun, updateOnly, pdfZipBase64, yamlConfig, benchmarkConfig } = req.body || {};
   if (!domain) {
     return res.status(400).json({ error: 'domain is required' });
   }
@@ -120,6 +120,16 @@ export default async function handler(req, res) {
         path: `domains/${domain}.yaml`,
         content: Buffer.from(yamlContent).toString('base64'),
       });
+
+      // Benchmark extraction config (metrics/conditions/datasets the copilot and
+      // benchmark pages depend on). Hand-authored before; now optionally provided
+      // from the admin panel and committed to the path the build reads.
+      if (benchmarkConfig && Array.isArray(benchmarkConfig.metrics) && benchmarkConfig.metrics.length) {
+        filesToCommit.push({
+          path: `dashboard/scripts/precompute/benchmarks/config/${domain}.json`,
+          content: Buffer.from(JSON.stringify(benchmarkConfig, null, 2)).toString('base64'),
+        });
+      }
     }
 
     // Get the current commit SHA for the branch
@@ -263,6 +273,23 @@ function buildFullYaml(domain, csvPath, domainSlug, pdfUrl, cfg) {
     lines.push('');
     lines.push('extra_keywords:');
     for (const k of cfg.extra_keywords) lines.push(`  - "${k}"`);
+  }
+  // KG entity-normalization aliases (technique / hardware / problem). Keys + values
+  // are quoted so YAML-special tokens ("rrt*", "moveit!") round-trip cleanly. Read
+  // by ingest_domain.py step_kg -> build_knowledge_graph(domain_config=...).
+  const ka = cfg.kg_aliases || {};
+  const aliasCats = ['technique', 'hardware', 'problem'].filter(c => ka[c] && Object.keys(ka[c]).length);
+  if (aliasCats.length) {
+    lines.push('');
+    lines.push('kg_aliases:');
+    for (const cat of aliasCats) {
+      lines.push(`  ${cat}:`);
+      for (const [alias, canonical] of Object.entries(ka[cat])) {
+        const k = String(alias).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        const v = String(canonical).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        lines.push(`    "${k}": "${v}"`);
+      }
+    }
   }
   lines.push('');
   return lines.join('\n');

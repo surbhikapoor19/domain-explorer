@@ -20,6 +20,25 @@ def _default_client():
     return anthropic.Anthropic()
 
 
+def _default_converter():
+    """Construct a Docling DocumentConverter for born-digital papers.
+
+    OCR is disabled on purpose: the corpus is born-digital (selectable text), so
+    OCR adds nothing but cost — and it pulls in RapidOCR, whose model/config
+    packaging is fragile (a missing arch_config.yaml takes the whole converter
+    down). Table-structure (TableFormer) stays on; that's what we actually need.
+    Lazy imports so the module loads even when docling isn't installed.
+    """
+    from docling.document_converter import DocumentConverter, PdfFormatOption
+    from docling.datamodel.base_models import InputFormat
+    from docling.datamodel.pipeline_options import PdfPipelineOptions
+    opts = PdfPipelineOptions()
+    opts.do_ocr = False
+    opts.do_table_structure = True
+    return DocumentConverter(
+        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=opts)})
+
+
 def extract_paper(tei_path, pdf_path, cfg, resolver, *, vlm_client=None, render_fn=None,
                   crop_text_fn=None, crop_saver=None, find_page_fn=None):
     locs = locate_tables(tei_path, cfg)
@@ -82,6 +101,8 @@ def extract_paper_docling(pdf_path, paper_id, cfg, resolver, *, converter=None,
                 r.page = loc.page
             if crop_url and not r.crop_image:
                 r.crop_image = crop_url
+            if r.is_own_method and r.method_id is None:
+                r.method_id = resolver.resolve(paper_id).method_id
         merged.extend(recs)
     return merged
 
@@ -96,6 +117,23 @@ def run(tei_dir, pdf_dir, cfg, resolver, *, vlm_client=None, crop_saver=None):
         recs = extract_paper(os.path.join(tei_dir, fn),
                              pdf if os.path.exists(pdf) else None,
                              cfg, resolver, vlm_client=vlm_client, crop_saver=crop_saver)
+        records.extend(recs)
+        unknown += [r.metric_raw for r in recs if r.metric_id is None]
+    return records, unknown
+
+
+def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop_saver=None):
+    """Iterate *.pdf in pdf_dir through ONE shared DocumentConverter -> ResultRecords.
+    Mirrors run() but uses the Docling path (no TEI needed)."""
+    if converter is None:
+        converter = _default_converter()
+    records, unknown = [], []
+    for fn in sorted(os.listdir(pdf_dir)):
+        if not fn.endswith('.pdf'):
+            continue
+        slug = fn[:-4]
+        recs = extract_paper_docling(os.path.join(pdf_dir, fn), slug, cfg, resolver,
+                                     converter=converter, crop_saver=crop_saver, vlm_client=vlm_client)
         records.extend(recs)
         unknown += [r.metric_raw for r in recs if r.metric_id is None]
     return records, unknown
@@ -120,7 +158,8 @@ def main():
     p.add_argument('--pdf-dir')
     p.add_argument('--methods-csv')
     p.add_argument('--crops-dir', default=None)
-    p.add_argument('--crops-url', default='/data-grasp-planning/crops')
+    p.add_argument('--crops-url', default=None)
+    p.add_argument('--engine', choices=['tei', 'docling'], default='docling')
     p.add_argument('--no-vlm', action='store_true', help='born-digital only; skip image-table VLM')
     p.add_argument('--output', required=True)
     a = p.parse_args()
@@ -135,7 +174,7 @@ def main():
             n = (row.get('Name') or '').replace('\U0001f916 ', '').strip()
             if n:
                 names.append(n)
-    resolver = MethodResolver(names)
+    resolver = MethodResolver(names, alias_seeds=cfg.get('method_aliases'))
     crop_saver = _make_crop_saver(a.crops_dir, a.crops_url) if a.crops_dir else None
     vlm_client = None
     if not a.no_vlm:
@@ -144,7 +183,14 @@ def main():
             vlm_client = lambda png: call_vlm(png, client)
         except Exception as e:
             print(f"  WARNING: VLM client unavailable ({e}); born-digital only")
-    records, unknown = run(tei_dir, pdf_dir, cfg, resolver, vlm_client=vlm_client, crop_saver=crop_saver)
+    if a.engine == 'docling':
+        try:
+            records, unknown = run_docling(pdf_dir, cfg, resolver, vlm_client=vlm_client, crop_saver=crop_saver)
+        except Exception as e:
+            print(f"  WARNING: Docling extraction unavailable ({e}); writing empty benchmark output")
+            records, unknown = [], []
+    else:
+        records, unknown = run(tei_dir, pdf_dir, cfg, resolver, vlm_client=vlm_client, crop_saver=crop_saver)
     payload = {'records': [r.__dict__ for r in records],
                'coldstart': {'metric_clusters': []},
                'stats': {'n_records': len(records),

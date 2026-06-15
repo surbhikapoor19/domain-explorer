@@ -21,13 +21,18 @@ def classify_consistency(values, metric_type='default', same_condition=True,
     return 'consistent' if coefficient_of_variation(values) <= thr else 'high_variance'
 
 def evidence_grade(n_papers, status, verified, extraction_conf):
-    """A = corroborated+consistent+verified; B = single verified; C = everything weaker."""
+    """A = 2+ papers, consistent, verified; B = single verified consistent source;
+    C = weak/unverified extraction OR any disagreement (within OR across papers).
+
+    NOTE: 'high_variance' / 'different_setup' force C even for a single paper — a
+    paper whose own cells for one metric+condition disagree (e.g. 2232 vs 48 ms)
+    must not be passed off as a solid grade-B source."""
     if extraction_conf == 'low' or not verified:
+        return 'C'
+    if status in ('high_variance', 'different_setup'):
         return 'C'
     if n_papers >= 2 and status == 'consistent':
         return 'A'
-    if n_papers >= 2 and status in ('high_variance', 'different_setup'):
-        return 'C'
     if n_papers == 1:
         return 'B'
     return 'C'

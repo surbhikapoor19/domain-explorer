@@ -169,11 +169,30 @@ def _resolve_method_reference(mention: str, method_names: list) -> str:
 # Graph construction
 # ---------------------------------------------------------------------------
 
+def _apply_domain_aliases(domain_config):
+    """Override the module-level normalization alias tables for the current build
+    from a domain's `kg_aliases` config (technique / hardware / problem). A domain
+    that omits a category keeps the built-in (grasp-planning) defaults, so existing
+    grasp behavior is unchanged. Keys are lowercased to match the _normalize_*
+    lookups. Single-threaded batch build, so module-global reassignment is safe."""
+    global TECHNIQUE_ALIASES, HARDWARE_ALIASES, PROBLEM_ALIASES
+    if not domain_config:
+        return
+    ka = domain_config.get('kg_aliases') or {}
+    if ka.get('technique'):
+        TECHNIQUE_ALIASES = {str(k).lower(): v for k, v in ka['technique'].items()}
+    if ka.get('hardware'):
+        HARDWARE_ALIASES = {str(k).lower(): v for k, v in ka['hardware'].items()}
+    if ka.get('problem'):
+        PROBLEM_ALIASES = {str(k).lower(): v for k, v in ka['problem'].items()}
+
+
 def build_knowledge_graph(
     facts_path: str,
     entities_path: str,
     method_paper_map: dict,
     csv_path: str = None,
+    domain_config: dict = None,
 ) -> nx.DiGraph:
     """Build the enriched knowledge graph.
 
@@ -184,10 +203,13 @@ def build_knowledge_graph(
         entities_path: Path to extracted_entities.json
         method_paper_map: Output of build_method_paper_map()
         csv_path: Optional CSV path for method metadata
+        domain_config: Optional dict with a `kg_aliases` block to override the
+            technique/hardware/problem normalization tables for this domain.
 
     Returns:
         NetworkX DiGraph with all nodes and edges.
     """
+    _apply_domain_aliases(domain_config)
     G = nx.DiGraph()
 
     # Load data

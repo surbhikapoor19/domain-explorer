@@ -32,3 +32,22 @@ def test_method_resolver_scores_confidence():
     assert hit.method_id == "Grasp Pose Detection (GPD)" and hit.confidence == "high"
     miss = r.resolve("SomeUnknownBaseline")
     assert miss.method_id is None and miss.confidence == "low"
+
+
+def test_timing_metrics_routed_distinctly_not_pooled_as_latency():
+    """Different timing semantics must resolve to different metrics so they don't
+    pool into one leaderboard (the 6-DoF GraspNet sampling-vs-latency bug)."""
+    reg = MetricRegistry(CFG)
+    assert reg.resolve("Sampling time (ms)").id == "sampling_time"
+    assert reg.resolve("Total Time").id == "total_time"
+    assert reg.resolve("Latency (ms)").id == "latency"
+    # a generic bare "Time" column still falls back to latency
+    assert reg.resolve("Time").id == "latency"
+
+
+def test_completion_rate_is_its_own_metric_not_success_rate():
+    """Scene-completion is a different measurement than grasp-success; must not pool."""
+    reg = MetricRegistry(CFG)
+    assert reg.resolve("Completion Rate").id == "completion_rate"
+    assert reg.resolve("Success Rate").id == "success_rate"
+    assert reg.resolve("GSR (%)").id == "success_rate"

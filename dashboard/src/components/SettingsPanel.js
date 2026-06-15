@@ -4,6 +4,7 @@ import { getProviders, loadSettings, saveSettings } from '../lib/llm-client';
 export default function SettingsPanel({ onClose }) {
   const providers = getProviders();
   const [settings, setSettings] = useState(loadSettings);
+  const prov = providers[settings.provider];
 
   useEffect(() => { saveSettings(settings); }, [settings]);
 
@@ -18,21 +19,40 @@ export default function SettingsPanel({ onClose }) {
           <label>Provider</label>
           <select
             value={settings.provider}
-            onChange={e => setSettings(s => ({ ...s, provider: e.target.value, apiKey: '', model: '' }))}
+            onChange={e => setSettings(s => ({ ...s, provider: e.target.value, apiKey: '', model: '', baseUrl: '' }))}
           >
             {Object.entries(providers).map(([key, p]) => (
-              <option key={key} value={key}>{p.name}{p.requiresKey ? '' : ' (no key needed)'}</option>
+              <option key={key} value={key}>{p.name}{p.requiresKey ? '' : '  (no key needed)'}</option>
             ))}
           </select>
 
-          {providers[settings.provider]?.requiresKey && (
+          {prov?.requiresBaseUrl && (
             <>
-              <label>API Key</label>
+              <label>Base URL</label>
+              <input
+                type="text"
+                value={settings.baseUrl || ''}
+                onChange={e => setSettings(s => ({ ...s, baseUrl: e.target.value }))}
+                placeholder={prov.baseUrlPlaceholder}
+              />
+            </>
+          )}
+
+          {prov?.requiresKey && (
+            <>
+              <label>
+                {prov.keyLabel || 'API Key'}
+                {prov.keyUrl && (
+                  <a className="settings-keylink" href={prov.keyUrl} target="_blank" rel="noopener noreferrer">
+                    get a key →
+                  </a>
+                )}
+              </label>
               <input
                 type="password"
                 value={settings.apiKey}
                 onChange={e => setSettings(s => ({ ...s, apiKey: e.target.value }))}
-                placeholder={`Enter ${providers[settings.provider].name} API key`}
+                placeholder={`Paste your ${prov.name} ${prov.keyLabel?.includes('token') ? 'token' : 'API key'}`}
               />
             </>
           )}
@@ -42,13 +62,13 @@ export default function SettingsPanel({ onClose }) {
             type="text"
             value={settings.model}
             onChange={e => setSettings(s => ({ ...s, model: e.target.value }))}
-            placeholder={providers[settings.provider]?.defaultModel}
+            placeholder={prov?.defaultModel || 'provider default'}
           />
 
           <p className="settings-note">
-            {settings.provider === 'huggingface'
-              ? 'HuggingFace free inference — no key required for most models.'
-              : 'Your key is stored locally in your browser. Never sent to any server.'}
+            {prov?.requiresKey
+              ? 'Your key is stored only in this browser (localStorage) and sent directly to the provider — never to our server. Use this to run the copilot locally.'
+              : 'Uses the server-side key. For local testing without a server key, pick Hugging Face, OpenRouter, or Groq above and paste your token.'}
           </p>
         </div>
       </div>

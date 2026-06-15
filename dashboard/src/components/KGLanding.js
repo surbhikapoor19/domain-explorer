@@ -393,187 +393,6 @@ function SidePanel({ data, selectedTechnique, onTechSelect, selectedYear, onYear
   );
 }
 
-/* ─── Citation Stance (TEI-derived, divergent spectrum bar) ─── */
-function CitationStance({ data }) {
-  if (!data) return null;
-  const flow = data.citeFlow || { builds_on: 0, differs_from: 0, neutral: 0 };
-  const total = (flow.builds_on || 0) + (flow.differs_from || 0) + (flow.neutral || 0);
-  if (total === 0) return null;
-
-  const segments = [
-    { key: 'builds_on',    label: 'Builds on',    value: flow.builds_on    || 0, desc: 'extends or adopts prior work',     cls: 'builds'   },
-    { key: 'neutral',      label: 'Neutral',      value: flow.neutral      || 0, desc: 'descriptive reference, no stance', cls: 'neutral'  },
-    { key: 'differs_from', label: 'Differs from', value: flow.differs_from || 0, desc: 'outperforms or contrasts',         cls: 'differs'  },
-  ];
-  const dominant = segments.slice().sort((a, b) => b.value - a.value)[0];
-  const dominantPct = Math.round((dominant.value / total) * 100);
-
-  return (
-    <div className="kgl-card kgl-stance-v2">
-      <div className="kgl-card-header">
-        <h3>Citation Stance <Tooltip text="How papers cite each other in the corpus: building on prior work, differentiating from it, or neutral. Derived from in-text context around each TEI citation." wide><span className="chart-help">?</span></Tooltip></h3>
-        <span className="kgl-stance-v2-total">{total.toLocaleString()} citations</span>
-      </div>
-      <div className="kgl-card-body kgl-stance-v2-body">
-        <div className="kgl-stance-v2-headline">
-          The corpus leans <strong className={`kgl-stance-v2-lean ${dominant.cls}`}>{dominant.label.toLowerCase()}</strong>
-          {' '}—{' '}<strong>{dominantPct}%</strong> of in-text citations {dominant.desc}.
-        </div>
-        <div className="kgl-stance-v2-bar" role="img" aria-label={`Citation stance: ${segments.map(s => `${s.label} ${Math.round((s.value/total)*100)}%`).join(', ')}`}>
-          {segments.map(s => {
-            const pct = (s.value / total) * 100;
-            return (
-              <div key={s.key} className={`kgl-stance-v2-seg ${s.cls}`} style={{ flexGrow: pct }} title={`${s.label}: ${s.value} (${pct.toFixed(1)}%)`}>
-                {pct >= 9 && <span className="kgl-stance-v2-seg-num">{Math.round(pct)}%</span>}
-              </div>
-            );
-          })}
-        </div>
-        <div className="kgl-stance-v2-legend">
-          {segments.map(s => {
-            const pct = (s.value / total) * 100;
-            return (
-              <div key={s.key} className="kgl-stance-v2-item">
-                <div className="kgl-stance-v2-item-head">
-                  <span className={`kgl-stance-v2-dot ${s.cls}`} />
-                  <span className="kgl-stance-v2-item-label">{s.label}</span>
-                </div>
-                <div className="kgl-stance-v2-item-num">{s.value.toLocaleString()}<span className="kgl-stance-v2-item-pct">{pct.toFixed(1)}%</span></div>
-                <div className="kgl-stance-v2-item-desc">{s.desc}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Institutions + Authors + Foundational External Works (TEI-derived) ─── */
-function CommunityPanel({
-  data, selectedInstitution, onInstitutionSelect,
-  selectedAuthor, onAuthorSelect,
-  selectedExternalRef, onExternalRefSelect,
-  highlightedMethods, highlightedLabels,
-  highlightedInstitutions, highlightedAuthors,
-  highlightedExternalRefs, highlightedPapers,
-}) {
-  if (!data) return null;
-  const institutions = data.topInstitutions || [];
-  const authors = data.topAuthors || [];
-  const topRefs = data.topExternalRefs || [];
-  const maxInst = Math.max(...institutions.map(i => i.count), 1);
-  const maxAuth = Math.max(...authors.map(a => a.count), 1);
-  // A row is "highlighted" if EITHER its name is in the relevant dimension
-  // set (cross-selection from another card) OR one of its papers intersects
-  // the current paper/method highlight set.
-  const hasAnyHL =
-    (highlightedMethods && highlightedMethods.size > 0) ||
-    (highlightedPapers && highlightedPapers.size > 0) ||
-    (highlightedInstitutions && highlightedInstitutions.size > 0) ||
-    (highlightedAuthors && highlightedAuthors.size > 0) ||
-    (highlightedExternalRefs && highlightedExternalRefs.size > 0);
-  const paperOverlap = (papers) => papers && papers.some(p => (
-    (highlightedMethods && highlightedMethods.has(p)) ||
-    (highlightedPapers && highlightedPapers.has(p))
-  ));
-  // Render as a fragment so the cards land as direct grid children of the
-  // parent `.kgl-bottom-grid`. Wrapping them in `.kgl-community` (the old
-  // multi-column masonry) made the right half of the page empty whenever
-  // the cards didn't fill all available masonry columns.
-  return (
-    <>
-      {institutions.length > 0 && (
-        <div className="kgl-card">
-          <div className="kgl-card-header">
-            <h3>Top Institutions <Tooltip text="Click to highlight papers from this institution across the graph and every chart below." wide><span className="chart-help">?</span></Tooltip></h3>
-            {selectedInstitution && <button className="kgl-side-clear" onClick={() => onInstitutionSelect(null)}>Clear</button>}
-          </div>
-          <div className="kgl-card-body">
-            {institutions.slice(0, 8).map((inst, i) => {
-              const isActive = selectedInstitution === inst.name;
-              const byName = highlightedInstitutions && highlightedInstitutions.has(inst.name);
-              const isHL = byName || paperOverlap(inst.papers);
-              const isDim = hasAnyHL && !isHL && !isActive;
-              return (
-                <div
-                  key={i}
-                  className={`kgl-tech-row variant-inst ${isActive ? 'active' : ''} ${isHL ? 'graph-highlighted' : ''} ${isDim ? 'dimmed' : ''}`}
-                  title={inst.papers ? inst.papers.join(', ') : ''}
-                  onClick={() => onInstitutionSelect(isActive ? null : inst.name)}
-                >
-                  <span className="kgl-tech-name">{inst.name}</span>
-                  <div className="kgl-tech-track"><div className="kgl-tech-fill" style={{width:`${(inst.count/maxInst)*100}%`}} /></div>
-                  <span className="kgl-tech-n">{inst.count}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {authors.length > 0 && (
-        <div className="kgl-card">
-          <div className="kgl-card-header">
-            <h3>Top Authors <Tooltip text="Click to highlight papers by this author across the graph and every chart below." wide><span className="chart-help">?</span></Tooltip></h3>
-            {selectedAuthor && <button className="kgl-side-clear" onClick={() => onAuthorSelect(null)}>Clear</button>}
-          </div>
-          <div className="kgl-card-body">
-            {authors.slice(0, 8).map((a, i) => {
-              const isActive = selectedAuthor === a.name;
-              const byName = highlightedAuthors && highlightedAuthors.has(a.name);
-              const isHL = byName || paperOverlap(a.papers);
-              const isDim = hasAnyHL && !isHL && !isActive;
-              return (
-                <div
-                  key={i}
-                  className={`kgl-tech-row variant-author ${isActive ? 'active' : ''} ${isHL ? 'graph-highlighted' : ''} ${isDim ? 'dimmed' : ''}`}
-                  title={a.papers ? a.papers.join(', ') : ''}
-                  onClick={() => onAuthorSelect(isActive ? null : a.name)}
-                >
-                  <span className="kgl-tech-name">{a.name}</span>
-                  <div className="kgl-tech-track"><div className="kgl-tech-fill" style={{width:`${(a.count/maxAuth)*100}%`}} /></div>
-                  <span className="kgl-tech-n">{a.count}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {topRefs.length > 0 && (
-        <div className="kgl-card">
-          <div className="kgl-card-header">
-            <h3>Foundational External Works <Tooltip text="Click a work to highlight every corpus paper that cites it — the scholarly roots of a method family." wide><span className="chart-help">?</span></Tooltip></h3>
-            {selectedExternalRef && <button className="kgl-side-clear" onClick={() => onExternalRefSelect(null)}>Clear</button>}
-          </div>
-          <div className="kgl-card-body">
-            {topRefs.slice(0, 6).map((r, i) => {
-              const isActive = selectedExternalRef === r.title;
-              const isHL = highlightedExternalRefs && highlightedExternalRefs.has(r.title);
-              const isDim = hasAnyHL && !isHL && !isActive;
-              return (
-                <div
-                  key={i}
-                  className={`kgl-ref-row ${isActive ? 'active' : ''} ${isHL ? 'graph-highlighted' : ''} ${isDim ? 'dimmed' : ''}`}
-                  onClick={() => onExternalRefSelect(isActive ? null : r.title)}
-                >
-                  <div className="kgl-ref-title">{r.title}</div>
-                  <div className="kgl-ref-meta">
-                    {r.authors && r.authors.length > 0 && <span>{r.authors.join(', ')}</span>}
-                    {r.year && <span>{r.year}</span>}
-                    <span className="kgl-ref-cites">{r.citations} cites</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
 /* ─── MAIN ─── */
 export default function KGLanding({
   scatterData, scatterHighlights, selectedPoint, hoveredIndex,
@@ -614,11 +433,6 @@ export default function KGLanding({
   // the other so the side-panel slot only ever holds one detail view.
   const [edgeSelection, setEdgeSelection] = useState(null);
   const [macroGraph, setMacroGraph] = useState(null);
-  // Community-panel selections (institution / author / foundational-ref).
-  // Any of these broadcasts a highlight across the graph + all sibling charts.
-  const [selectedInstitution, setSelectedInstitution] = useState(null);
-  const [selectedAuthor, setSelectedAuthor] = useState(null);
-  const [selectedExternalRef, setSelectedExternalRef] = useState(null);
   // Most-Referenced (TopCited) selection — clicking a row highlights that
   // paper across the graph + every other chart. Same connect-everything
   // pattern as the other selection-state vars above.
@@ -648,6 +462,24 @@ export default function KGLanding({
   // have only one subheading of content so they always render in side
   // mode without an expand toggle.
   const [panelExpanded, setPanelExpanded] = useState(false);
+
+  // Discoverability tip for the node<->table cross-highlight. Lazy-init the
+  // dismissed flag from localStorage so a returning user isn't nagged.
+  const [xhintDismissed, setXhintDismissed] = useState(() => {
+    try { return window.localStorage.getItem('kgl-xhighlight-hint') === 'dismissed'; }
+    catch (_) { return false; }
+  });
+  const dismissXhint = useCallback(() => {
+    setXhintDismissed(true);
+    try { window.localStorage.setItem('kgl-xhighlight-hint', 'dismissed'); } catch (_) {}
+  }, []);
+
+  // "Jump to insights" — the lower panel band is below the fold and goes
+  // unnoticed (survey feedback). A visible cue + smooth scroll surfaces it.
+  const insightsRef = React.useRef(null);
+  const scrollToInsights = useCallback(() => {
+    insightsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   // Load full predictions data once when the user opens the predictions view.
   useEffect(() => {
@@ -713,6 +545,36 @@ export default function KGLanding({
   // but the Techniques card keyed on `highlightedTechniques` (only ever
   // fed by graph-node neighbors) and the Timeline keyed on a single
   // `highlightedYear` value — so half the cards stayed dark.
+  // Static graph lookup maps — depend ONLY on the graph data, so they are built
+  // once per graph load, NOT rebuilt on every hover/selection (the ~3,500-node
+  // adjacency was previously re-iterated on each mouse move).
+  const _kgMaps = useMemo(() => {
+    const nodeById = new Map();
+    const adj = new Map();
+    const paperIdToMethod = new Map();
+    if (!macroGraph) return { nodeById, adj, paperIdToMethod };
+    macroGraph.nodes.forEach(n => nodeById.set(n.id, n));
+    macroGraph.links.forEach(l => {
+      const s = l.source?.id || l.source;
+      const t = l.target?.id || l.target;
+      if (!adj.has(s)) adj.set(s, []);
+      if (!adj.has(t)) adj.set(t, []);
+      adj.get(s).push([t, l.type]);
+      adj.get(t).push([s, l.type]);
+    });
+    macroGraph.links.forEach(l => {
+      if (l.type !== 'described_in') return;
+      const s = l.source?.id || l.source;
+      const t = l.target?.id || l.target;
+      const sNode = nodeById.get(s);
+      const tNode = nodeById.get(t);
+      if (sNode?.type === 'method' && tNode?.type === 'paper') {
+        paperIdToMethod.set(tNode.id, sNode.label);
+      }
+    });
+    return { nodeById, adj, paperIdToMethod };
+  }, [macroGraph]);
+
   const _highlightResolution = useMemo(() => {
     const methods = new Set();
     const papers = new Set();          // paper labels
@@ -728,33 +590,8 @@ export default function KGLanding({
       methods, papers, techniques, institutions, authors, externalRefs, benchmarks, years, labels,
     };
 
-    // --- Build lookup maps once -------------------------------------------
-    const nodeById = new Map();
-    macroGraph.nodes.forEach(n => nodeById.set(n.id, n));
-
-    // adj[id] → list of [otherId, edgeType]
-    const adj = new Map();
-    macroGraph.links.forEach(l => {
-      const s = l.source?.id || l.source;
-      const t = l.target?.id || l.target;
-      if (!adj.has(s)) adj.set(s, []);
-      if (!adj.has(t)) adj.set(t, []);
-      adj.get(s).push([t, l.type]);
-      adj.get(t).push([s, l.type]);
-    });
-
-    // paperId → method label (via described_in)
-    const paperIdToMethod = new Map();
-    macroGraph.links.forEach(l => {
-      if (l.type !== 'described_in') return;
-      const s = l.source?.id || l.source;
-      const t = l.target?.id || l.target;
-      const sNode = nodeById.get(s);
-      const tNode = nodeById.get(t);
-      if (sNode?.type === 'method' && tNode?.type === 'paper') {
-        paperIdToMethod.set(tNode.id, sNode.label);
-      }
-    });
+    // Reuse the prebuilt static maps (no per-hover rebuild).
+    const { nodeById, adj, paperIdToMethod } = _kgMaps;
 
     // --- Step 1: collect SEED paper IDs from every active selection ------
     const seedPaperIds = new Set();
@@ -794,24 +631,6 @@ export default function KGLanding({
     if (selectedTechnique) {
       const tNode = macroGraph.nodes.find(n => n.type === 'technique' && n.label === selectedTechnique);
       if (tNode) papersConnectedTo(tNode).forEach(addSeedPaper);
-    }
-
-    // Institution → papers published from it
-    if (selectedInstitution) {
-      const iNode = macroGraph.nodes.find(n => n.type === 'institution' && n.label === selectedInstitution);
-      if (iNode) papersConnectedTo(iNode, 'published_from').forEach(addSeedPaper);
-    }
-
-    // Author → papers they wrote
-    if (selectedAuthor) {
-      const aNode = macroGraph.nodes.find(n => n.type === 'author' && n.label === selectedAuthor);
-      if (aNode) papersConnectedTo(aNode, 'authored_by').forEach(addSeedPaper);
-    }
-
-    // External-ref → corpus papers that cite it
-    if (selectedExternalRef) {
-      const rNode = macroGraph.nodes.find(n => n.type === 'reference' && n.label === selectedExternalRef);
-      if (rNode) papersConnectedTo(rNode, 'cites_external').forEach(addSeedPaper);
     }
 
     // Top-cited row → the paper itself
@@ -977,16 +796,13 @@ export default function KGLanding({
     if (hoverEntity && hoverEntity.label) labels.add(hoverEntity.label);
 
     return { methods, papers, techniques, institutions, authors, externalRefs, benchmarks, years, labels };
-  }, [data, selectedYear, selectedGraphNode, selectedTechnique, selectedInstitution,
-      selectedAuthor, selectedExternalRef, selectedTopCited, macroGraph, hoverEntity,
+  }, [_kgMaps, data, selectedYear, selectedGraphNode, selectedTechnique,
+      selectedTopCited, macroGraph, hoverEntity,
       scatterData, hoveredIndex, selectedPoint, graphView, predGraph]);
 
   const highlightedMethods       = _highlightResolution.methods;
   const highlightedPapers        = _highlightResolution.papers;
   const highlightedTechniques    = _highlightResolution.techniques;
-  const highlightedInstitutions  = _highlightResolution.institutions;
-  const highlightedAuthors       = _highlightResolution.authors;
-  const highlightedExternalRefs  = _highlightResolution.externalRefs;
   const highlightedBenchmarks    = _highlightResolution.benchmarks;
   const highlightedYears         = _highlightResolution.years;
   const highlightedLabels        = _highlightResolution.labels;
@@ -997,32 +813,14 @@ export default function KGLanding({
   const pickTechnique = useCallback((name) => {
     setSelectedTechnique(name);
     if (name) {
-      setSelectedYear(null); setSelectedInstitution(null);
-      setSelectedAuthor(null); setSelectedExternalRef(null);
+      setSelectedYear(null);
       setSelectedGraphNode(null); setNodeSelection(null);
     }
   }, []);
   const pickYear = useCallback((year) => {
     setSelectedYear(year);
     if (year) {
-      setSelectedTechnique(null); setSelectedInstitution(null);
-      setSelectedAuthor(null); setSelectedExternalRef(null);
-      setSelectedGraphNode(null); setNodeSelection(null);
-    }
-  }, []);
-  const pickInstitution = useCallback((name) => {
-    setSelectedInstitution(name);
-    if (name) {
-      setSelectedTechnique(null); setSelectedYear(null);
-      setSelectedAuthor(null); setSelectedExternalRef(null);
-      setSelectedGraphNode(null); setNodeSelection(null);
-    }
-  }, []);
-  const pickAuthor = useCallback((name) => {
-    setSelectedAuthor(name);
-    if (name) {
-      setSelectedTechnique(null); setSelectedYear(null);
-      setSelectedInstitution(null); setSelectedExternalRef(null);
+      setSelectedTechnique(null);
       setSelectedGraphNode(null); setNodeSelection(null);
     }
   }, []);
@@ -1030,16 +828,6 @@ export default function KGLanding({
     setSelectedTopCited(paper);
     if (paper) {
       setSelectedTechnique(null); setSelectedYear(null);
-      setSelectedInstitution(null); setSelectedAuthor(null);
-      setSelectedExternalRef(null); setSelectedGraphNode(null); setNodeSelection(null);
-    }
-  }, []);
-  const pickExternalRef = useCallback((name) => {
-    setSelectedExternalRef(name);
-    if (name) {
-      setSelectedTechnique(null); setSelectedYear(null);
-      setSelectedInstitution(null); setSelectedAuthor(null);
-      setSelectedTopCited(null);
       setSelectedGraphNode(null); setNodeSelection(null);
     }
   }, []);
@@ -1054,9 +842,6 @@ export default function KGLanding({
   const clearAllSelections = useCallback(() => {
     setSelectedTechnique(null);
     setSelectedYear(null);
-    setSelectedInstitution(null);
-    setSelectedAuthor(null);
-    setSelectedExternalRef(null);
     setSelectedTopCited(null);
     setSelectedGraphNode(null);
     setNodeSelection(null);
@@ -1068,7 +853,7 @@ export default function KGLanding({
     const inThing = e.target.closest(
       '.kgl-card, .scatter-panel, .viz-toolbar, .kg-filter-panel, ' +
       '.kgl-graph-panel, .kgl-pred-slider, .kgl-pred-legend, ' +
-      '.kgl-pred-toggle, .kgl-graph-stage'
+      '.kgl-pred-toggle, .kgl-graph-stage, .kgl-xhint, .kgl-insights-jump'
     );
     if (!inThing) clearAllSelections();
   }, [clearAllSelections]);
@@ -1083,28 +868,71 @@ export default function KGLanding({
 
   const handleGraphNodeClick = useCallback(node => {
     if (!node) return;
-    setSelectedGraphNode(prev => prev?.id === node.id ? null : node);
+    // The graph viz now owns the select/deselect TOGGLE (re-tap or background tap
+    // clears via onBackgroundTap), so this just SETS the selection — no toggle
+    // here, or the two would cancel out.
+    setSelectedGraphNode(node);
     // Reset coarser sidebar selections when drilling into a specific graph node —
     // otherwise their highlights union and the "drill-in" experience gets lost.
     // Exception: technique click syncs to the Techniques-chart selection.
-    if (node.type === 'technique') {
-      setSelectedTechnique(prev => prev === node.label ? null : node.label);
-    } else {
-      setSelectedTechnique(null);
-    }
+    setSelectedTechnique(node.type === 'technique' ? node.label : null);
     setSelectedYear(null);
-    setSelectedInstitution(null);
-    setSelectedAuthor(null);
-    setSelectedExternalRef(null);
   }, []);
+
+  // Esc fully deselects (matches the background-tap escape hatch).
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') clearAllSelections(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [clearAllSelections]);
+
+  // Reverse cross-highlight: a graph-node hover lights up the matching row in
+  // the method table above. We resolve the node label to the scatter row's
+  // id and reuse the app-level hover channel (onHover/onUnhover) — the same
+  // signal table-row hovering uses — so the highlight resolver and the table
+  // both react identically regardless of which surface the hover came from.
+  const handleGraphNodeHover = useCallback((label) => {
+    if (!label) { if (onUnhover) onUnhover(); return; }
+    const row = (scatterData || []).find(
+      d => (d.name || '').toLowerCase() === label.toLowerCase()
+    );
+    if (row && onHover) onHover(row.id);
+    else if (onUnhover) onUnhover();
+  }, [scatterData, onHover, onUnhover]);
+
+  // Count of populated lower-band panels, for the jump cue's label. Research
+  // Gaps (the cross-tab matrix) always renders, the rest are data-gated.
+  const insightCount = useMemo(() => {
+    let n = 1; // Research Gaps matrix
+    if (data?.techniqueCooccurrence?.nodes?.length) n++;
+    if (data?.temporal?.length) n++;
+    if (data?.benchmarkCoverage?.length) n++;
+    if (data?.topCited?.length) n++;
+    if (data?.topInstitutions?.length) n++;
+    if (data?.topAuthors?.length) n++;
+    if (data?.topExternalRefs?.length) n++;
+    if (data?.citeFlow) n++;
+    return n;
+  }, [data]);
 
   if (loading) return <div className="kgl-loading"><div className="gr-loading-bar" />Loading knowledge graph...</div>;
   if (!data) return <div className="kgl-loading">Knowledge graph not available.</div>;
 
-  const s = data.summary;
-
   return (
     <div className="kgl-page" onClick={handleBackgroundClick}>
+      {/* Cross-highlight discoverability — the link between the method table
+          above and the graph below is invisible until you stumble on it.
+          One dismissable line, then it stays out of the way. */}
+      {!xhintDismissed && (
+        <div className="kgl-xhint" role="note">
+          <span className="kgl-xhint-icon" aria-hidden="true">⇄</span>
+          <span className="kgl-xhint-text">
+            Hover a <strong>table row</strong> or a <strong>graph node</strong> to
+            spotlight the same method across the table, the graph, and every panel below.
+          </span>
+          <button className="kgl-xhint-dismiss" onClick={dismissXhint} aria-label="Dismiss tip">×</button>
+        </div>
+      )}
       {/* ── Exact Explorer layout: scatter-section > viz-toolbar > content ── */}
       <div className="scatter-section">
         <div className="viz-toolbar">
@@ -1203,8 +1031,10 @@ export default function KGLanding({
           <div className={`scatter-panel kgl-graph-panel ${panelExpanded && nodeSelection ? 'has-detail' : ''}`}>
             <KGGraphViz
               key={graphView + '-' + predMinConf + '-' + (predShowExisting ? 'ov' : 'only') + '-' + (predTypeFilter || 'all')}
-              height={480}
+              height={440}
               onNodeClick={handleGraphNodeClick}
+              onNodeHover={handleGraphNodeHover}
+              onBackgroundTap={clearAllSelections}
               selectedNode={selectedGraphNode}
               onNodeSelect={(s) => { setEdgeSelection(null); setNodeSelection(s); }}
               onEdgeSelect={(e) => { setNodeSelection(null); setSelectedGraphNode(null); setEdgeSelection(e); }}
@@ -1272,15 +1102,28 @@ export default function KGLanding({
         </div>
       </div>
 
-      {/* Three semantic bands:
-          - Band 1 (connectors A): Techniques · Timeline · Benchmarks · Top Cited
-          - Band 2 (connectors B): Institutions · Authors · Foundational Works
-          - Band 3 (aggregates):  Citation Stance + Research Gaps (matrix wider)
-          Splitting like this groups the cross-highlighting bar charts together
-          on top and keeps the two summary visualizations on their own row so
-          neither competes for matrix width and the stance card has the
-          horizontal space it needs for its divergent bar. */}
-      <div className="kgl-bottom">
+      {/* Jump cue — the panel band below the graph is past the fold and the
+          survey showed people never scroll to it. This makes its existence
+          explicit and one click away. */}
+      <button
+        className="kgl-insights-jump"
+        onClick={scrollToInsights}
+        aria-label="Scroll to insight panels"
+      >
+        <span className="kgl-insights-jump-text">
+          {insightCount} interactive panels below — Techniques, Benchmarks, Research Gaps &amp; more
+        </span>
+        <span className="kgl-insights-jump-chevron" aria-hidden="true">↓</span>
+      </button>
+
+      {/* Lower dashboard:
+          - Connectors band: Techniques · Timeline · Benchmarks · Most Referenced
+            (the interactive cross-highlighting charts)
+          - Research Gaps: the cross-tab matrix, full width below.
+          The static ranked-list panels (Institutions, Authors, Foundational
+          External Works) and Citation Stance were removed — low interactivity,
+          thin counts, redundant with Most Referenced. */}
+      <div className="kgl-bottom" ref={insightsRef}>
         <div className="kgl-band kgl-band-connectors">
           <SidePanel
             data={data}
@@ -1305,27 +1148,7 @@ export default function KGLanding({
             highlightedPapers={highlightedPapers}
           />
         </div>
-        <div className="kgl-band kgl-band-connectors">
-          <CommunityPanel
-            data={data}
-            selectedInstitution={selectedInstitution}
-            onInstitutionSelect={pickInstitution}
-            selectedAuthor={selectedAuthor}
-            onAuthorSelect={pickAuthor}
-            selectedExternalRef={selectedExternalRef}
-            onExternalRefSelect={pickExternalRef}
-            highlightedMethods={highlightedMethods}
-            highlightedLabels={highlightedLabels}
-            highlightedInstitutions={highlightedInstitutions}
-            highlightedAuthors={highlightedAuthors}
-            highlightedExternalRefs={highlightedExternalRefs}
-            highlightedPapers={highlightedPapers}
-          />
-        </div>
-        <div className="kgl-band kgl-band-aggregates">
-          <CitationStance data={data} />
-          <GapMatrix highlightedMethods={highlightedMethods} />
-        </div>
+        <GapMatrix highlightedMethods={highlightedMethods} />
       </div>
 
     </div>

@@ -1,18 +1,19 @@
 import { chat as llmChat } from './llm-client';
-import { loadRagChunks, loadKgFull } from './data-loader';
-import { searchChunks, classifyIntent, initChunks } from './rag-search';
+import { loadRagChunks, loadKgFull, loadBenchmarkComparisons } from './data-loader';
+import { buildBenchmarkContext } from './benchmark-context';
+import { classifyIntent, initChunks, INTENT_LAYERS } from './rag-search';
 import { initGraph, extractSubgraph } from './kg-graph';
 import { runQueryPipeline } from './query-engine';
-import { recomputeUmap } from './umap';
 import { spellCorrectQuery } from './spell-correct';
 import { GRASP_DEFAULTS } from '../DomainContext';
 
-const SUMMARY_COLUMNS = [
+// Grasp fallbacks, used only when the domain config supplies no summary columns
+// (a new domain provides these via domain-config.json priorityDims / shortNames).
+const DEFAULT_SUMMARY_COLUMNS = [
   'Planning Method', 'End-effector Hardware', 'Input Data',
   'Training Data', 'Object Configuration',
 ];
-
-const SHORT_COLUMN_NAMES = {
+const DEFAULT_SHORT_NAMES = {
   'Planning Method': 'Plan', 'Training Data': 'Train', 'End-effector Hardware': 'Gripper',
   'Object Configuration': 'Objects', 'Input Data': 'Input', 'Output Pose': 'Output',
   'Corresponding Dataset (see repository linked above)': 'Dataset',
@@ -21,142 +22,27 @@ const SHORT_COLUMN_NAMES = {
   'Description': 'Desc',
 };
 
-function smartSplit(value) {
-  if (!value) return [];
-  const s = String(value).trim();
-  if (!s) return [];
-  const parts = [];
-  let current = '';
-  let inQuotes = false;
-  for (let i = 0; i < s.length; i++) {
-    const c = s[i];
-    if (c === '"') { inQuotes = !inQuotes; continue; }
-    if (c === ',' && !inQuotes) { parts.push(current.trim()); current = ''; continue; }
-    current += c;
-  }
-  if (current.trim()) parts.push(current.trim());
-  return parts.filter(Boolean);
-}
-
-function buildMethodSummaries(methods) {
+// Summarize each method over the domain's most meaningful columns for the LLM
+// prompt. `summaryColumns`/`shortNames` come from the active domain config
+// (priorityDims + shortNames); for grasp with no config they fall back above.
+export function buildMethodSummaries(methods, { summaryColumns, shortNames } = {}) {
+  const cols = (summaryColumns && summaryColumns.length) ? summaryColumns : DEFAULT_SUMMARY_COLUMNS;
+  const shorts = shortNames || DEFAULT_SHORT_NAMES;
   return methods.map(m => {
-    const parts = SUMMARY_COLUMNS.map(col => {
+    const parts = cols.map(col => {
       const val = m.metadata?.[col] || '';
       if (!val) return null;
-      const short = SHORT_COLUMN_NAMES[col] || col;
+      const short = shorts[col] || col;
       return `${short}=${val}`;
     }).filter(Boolean);
     return `- ${m.name}: ${parts.join('; ')}`;
   }).join('\n');
 }
 
-function buildClusterStats(responseData, weights) {
-  const clusters = {};
-  responseData.forEach(pt => {
-    if (!clusters[pt.cluster]) clusters[pt.cluster] = [];
-    clusters[pt.cluster].push(pt);
-  });
-
-  const weightedCols = Object.entries(weights)
-    .filter(([col, w]) => w > 0 && col !== 'Description')
-    .map(([col]) => col);
-  const keyCols = ['Planning Method', 'End-effector Hardware', 'Object Configuration', 'Input Data', 'Training Data'];
-
-  const clusterStats = [];
-  const lines = [`GROUPING RESULTS (${responseData.length} methods in ${Object.keys(clusters).length} groups):\n`];
-
-  for (const cid of Object.keys(clusters).sort((a, b) => Number(a) - Number(b))) {
-    const members = clusters[cid];
-    const names = members.map(m => m.name);
-
-    const labelCols = Object.entries(weights)
-      .filter(([c]) => c !== 'Description')
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 3)
-      .map(([c]) => c);
-
-    const dominant = labelCols.map(col => {
-      const vals = members.flatMap(m => smartSplit(m.metadata?.[col] || ''));
-      if (!vals.length) return null;
-      const counts = {};
-      vals.forEach(v => { counts[v] = (counts[v] || 0) + 1; });
-      return Object.entries(counts).sort(([, a], [, b]) => b - a)[0][0];
-    }).filter(Boolean);
-
-    const label = dominant.length ? dominant.join(' / ') : `Group ${cid}`;
-    lines.push(`Group "${label}" (${members.length} methods): ${names.join(', ')}`);
-
-    const stat = { id: Number(cid), label, methods: names, size: members.length, topAttributes: {} };
-
-    for (const col of weightedCols) {
-      const vals = members.flatMap(m => smartSplit(m.metadata?.[col] || ''));
-      if (vals.length) {
-        const counts = {};
-        vals.forEach(v => { counts[v] = (counts[v] || 0) + 1; });
-        const top = Object.entries(counts).sort(([, a], [, b]) => b - a).slice(0, 3);
-        const short = SHORT_COLUMN_NAMES[col] || col;
-        const summary = top.map(([v, c]) => `${v} (${c})`).join(', ');
-        lines.push(`  ${short}: ${summary}`);
-        if (keyCols.includes(col)) {
-          stat.topAttributes[short] = top.map(([v, c]) => ({ value: v, count: c }));
-        }
-      }
-    }
-    lines.push('');
-    stat.label = label;
-    clusterStats.push(stat);
-  }
-
-  // Value → cluster map
-  const valueClusterMap = {};
-  for (const col of weightedCols) {
-    const vcm = {};
-    responseData.forEach(pt => {
-      smartSplit(pt.metadata?.[col] || '').forEach(part => {
-        if (!vcm[part]) vcm[part] = [];
-        vcm[part].push(pt.cluster);
-      });
-    });
-    valueClusterMap[col] = {};
-    for (const [val, clusterIds] of Object.entries(vcm)) {
-      const counts = {};
-      clusterIds.forEach(c => { counts[c] = (counts[c] || 0) + 1; });
-      valueClusterMap[col][val] = Number(Object.entries(counts).sort(([, a], [, b]) => b - a)[0][0]);
-    }
-  }
-
-  const idToLabel = {};
-  clusterStats.forEach(s => { idToLabel[s.id] = s.label; });
-
-  lines.push('DOMINANT GROUP PER VALUE:');
-  for (const [col, mapping] of Object.entries(valueClusterMap)) {
-    if (Object.keys(mapping).length) {
-      const short = SHORT_COLUMN_NAMES[col] || col;
-      const pairs = Object.entries(mapping).sort(([a], [b]) => a.localeCompare(b))
-        .map(([v, c]) => `${v}→"${idToLabel[c] || `Group ${c}`}"`);
-      lines.push(`  ${short}: ${pairs.join(', ')}`);
-    }
-  }
-
-  return {
-    summaryText: lines.join('\n'),
-    clusterStats,
-    clusteringInfo: {
-      n_clusters: Object.keys(clusters).length,
-      cluster_labels: responseData.map(d => d.cluster),
-      value_cluster_map: valueClusterMap,
-    },
-  };
-}
-
-function buildInsightPrompt(query, responseData, clusterStats, weights, highlightMethods, ragText, kgContext, methodSummaries, branding = {}) {
-  const methodNoun = branding.methodNoun || 'method';
+function buildInsightPrompt(query, highlightMethods, ragText, kgContext, methodSummaries, branding = {}, benchmarkText = '') {
   const subject = branding.productSubject || 'grasp planning';
-  const compactClusters = clusterStats.map(cs =>
-    `- ${cs.label} (${cs.size} ${methodNoun}s): ${cs.methods.slice(0, 5).join(', ')}`
-  ).join('\n');
 
-  return `You are an expert research assistant for a robotic ${subject} visualization tool. A researcher has queried the system and you have access to real data from academic papers and clustering analysis.
+  return `You are an expert research assistant for a robotic ${subject} visualization tool. A researcher has queried the system and you have access to real data from academic papers.
 
 RESEARCHER'S QUESTION: "${query}"
 
@@ -166,11 +52,11 @@ ${ragText || '(No paper excerpts available for this query)'}
 KNOWLEDGE GRAPH INSIGHTS:
 ${kgContext || '(No structured knowledge available)'}
 
+VERIFIED BENCHMARK EVIDENCE (extracted from the corpus' result tables, ranked; every row carries an evidence grade — A = corroborated by multiple papers, B = single solid source, C = low-confidence/disputed — and the source paper(s)):
+${benchmarkText || '(No benchmark leaderboard matched this query)'}
+
 RELEVANT METHODS IN THE DATASET:
 ${methodSummaries}
-
-CLUSTERING RESULTS (${responseData.length} methods in ${clusterStats.length} groups):
-${compactClusters}
 
 Highlighted methods (most relevant to query): ${highlightMethods.slice(0, 6).join(', ')}
 
@@ -178,13 +64,12 @@ INSTRUCTIONS:
 Write exactly 3-5 bullet points that answer the researcher's question. Each bullet must start with "- ".
 
 Rules:
+0. If the question is about performance, rankings, "best/highest/fastest", or any quantitative comparison, LEAD with the VERIFIED BENCHMARK EVIDENCE: state the ranking with the EXACT values, name the evidence grade (A/B/C) and the source paper(s), and prefer grade A/B (explicitly flag grade C as low-confidence). Never invent a number that is not in that block; if the block says none matched, say the benchmark data doesn't cover it rather than guessing.
 1. Lead with evidence from the paper excerpts. Quote specific techniques, equations, or results by paper name (e.g., "Contact-GraspNet uses a binary cross-entropy loss on predicted contact points").
 2. When no paper excerpt covers a point, draw on the method metadata (planning approach, gripper type, etc.) to provide grounded analysis.
-3. Connect findings to the clustering: explain why methods using similar approaches end up in the same group.
-4. Be specific and technical. Avoid generic statements like "various methods use different approaches."
-5. Never reference cluster numbers. Use group names like "the sampling-based parallel-jaw group."
-6. Always use the exact method names as provided in the data (e.g., "Grasp Pose Detection (GPD)" not just "GPD", "Volumetric Grasping Network (VGN)" not just "VGN"). This ensures methods are correctly linked in the interface.
-7. Do NOT use markdown formatting like **bold** or *italic*. Write plain text only. The interface has its own highlighting system that automatically color-codes technique names, method names, and domain terms.
+3. Be specific and technical. Avoid generic statements like "various methods use different approaches."
+4. Always use the exact method names as provided in the data (e.g., "Grasp Pose Detection (GPD)" not just "GPD", "Volumetric Grasping Network (VGN)" not just "VGN"). This ensures methods are correctly linked in the interface.
+5. Do NOT use markdown formatting like **bold** or *italic*. Write plain text only. The interface has its own highlighting system that automatically color-codes technique names, method names, and domain terms.
 
 Respond with ONLY the bullet points, nothing else.`;
 }
@@ -215,9 +100,14 @@ function runGroundingCheck(insightText, methods, kgNodes) {
     if (!skip.has(match[1])) mentions.add(match[1]);
   }
 
+  // Whole-word matching so "GraspNet" is no longer counted as grounded merely
+  // because some known label contains "Net" (the old loose substring test).
+  const knownPadded = [...allKnown].filter(k => k.length >= 4)
+    .map(k => ' ' + k.replace(/[^a-z0-9]+/g, ' ').trim() + ' ');
   for (const mention of mentions) {
     const lower = mention.toLowerCase();
-    const found = [...allKnown].some(known => known.length > 3 && (lower.includes(known) || known.includes(lower)));
+    const lw = ' ' + lower.replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
+    const found = knownPadded.some(kw => lw.includes(kw) || (lower.length >= 5 && kw.includes(lw)));
     if (found) grounded.push(mention);
     else ungrounded.push(mention);
   }
@@ -251,7 +141,7 @@ function formatRagContext(chunks) {
   return { ragText, ragCitations };
 }
 
-export async function runAIQuery(query, allMethods, tfidfMatrices, descEmbeddings, queryKeywords, defaultK, domainOpts = {}) {
+export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = {}) {
   const DEFAULT_WEIGHTS = domainOpts.defaultWeights || GRASP_DEFAULTS.defaultWeights;
   const domainBranding = domainOpts.branding || GRASP_DEFAULTS.branding;
   // Step 0: Spell correction
@@ -263,26 +153,21 @@ export async function runAIQuery(query, allMethods, tfidfMatrices, descEmbedding
   const { weights: newWeights, colorBy: newColorBy, filterMethods } =
     runQueryPipeline(effectiveQuery, DEFAULT_WEIGHTS, allMethods, queryKeywords);
 
-  // Step 2: UMAP + clustering
-  const methods = filterMethods
+  // Step 2: Resolve the query's method subset for highlighting/filtering.
+  // The copilot does NO clustering — it neither re-clusters nor reasons over
+  // clusters. The scatter keeps its default HDBSCAN colours and layout (clustering
+  // is an Explorer concern, not a copilot one), so each method passes through with
+  // its existing `cluster`/x/y untouched.
+  const subset = filterMethods
     ? allMethods.filter(m => filterMethods.includes(m.name))
     : allMethods;
+  const responseData = subset.length ? subset : allMethods;
 
-  let recomputed;
-  if (methods.length === 0) {
-    recomputed = allMethods;
-  } else {
-    try {
-      recomputed = recomputeUmap(tfidfMatrices, descEmbeddings, newWeights, methods, defaultK);
-    } catch (e) {
-      console.warn('UMAP recomputation failed, using original positions:', e);
-      recomputed = methods;
-    }
-  }
-
-  const highlightMethods = filterMethods || recomputed.slice(0, 8).map(m => m.name);
-  const { summaryText, clusterStats, clusteringInfo } = buildClusterStats(recomputed, newWeights);
-  const methodSummaries = buildMethodSummaries(recomputed);
+  const highlightMethods = filterMethods || responseData.slice(0, 8).map(m => m.name);
+  const methodSummaries = buildMethodSummaries(responseData, {
+    summaryColumns: domainOpts.summaryColumns,
+    shortNames: domainOpts.shortNames,
+  });
 
   // Step 3: RAG retrieval (client-side)
   let ragText = '';
@@ -292,21 +177,40 @@ export async function runAIQuery(query, allMethods, tfidfMatrices, descEmbedding
     const ragChunks = await loadRagChunks();
     if (ragChunks.length) {
       initChunks(ragChunks);
-      // We need a query embedding for RAG search. For now, use intent-based filtering without embedding.
-      // The chunks are scored by layer matching.
+      // Real lexical retrieval (BM25) over the chunks, scoped by query intent.
+      // (Replaces the previous +1-per-substring count, which ranked common words
+      // as highly as discriminating ones.) A neural query-embedding upgrade can
+      // later swap this for searchChunks() over c.embedding.
       const intent = classifyIntent(effectiveQuery);
-      const queryWords = effectiveQuery.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-      const scored = ragChunks
-        .filter(c => c.text)
-        .map(c => {
-          const text = c.text.toLowerCase();
-          let score = 0;
-          queryWords.forEach(w => { if (text.includes(w)) score += 1; });
-          return { ...c, score: score / (queryWords.length || 1) };
-        })
-        .filter(c => c.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 10);
+      const targetLayers = new Set(INTENT_LAYERS[intent] || ['coarse', 'mid', 'fine']);
+      const STOP = new Set(['the', 'a', 'an', 'of', 'for', 'and', 'to', 'in', 'on', 'with', 'is',
+        'are', 'as', 'by', 'how', 'what', 'which', 'that', 'this', 'do', 'does', 'can', 'using',
+        'use', 'used', 'their', 'its', 'from', 'at', 'or', 'be', 'has', 'have']);
+      const qTerms = [...new Set((effectiveQuery.toLowerCase().match(/[a-z0-9-]+/g) || []))]
+        .filter(w => w.length > 2 && !STOP.has(w));
+      const toks = (c) => (c._toks || (c._toks = (c.text.toLowerCase().match(/[a-z0-9-]+/g) || [])));
+      let pool = ragChunks.filter(c => c.text && targetLayers.has(c.metadata?.layer));
+      if (pool.length < 5) pool = ragChunks.filter(c => c.text);   // fall back across layers
+      const df = {};
+      pool.forEach(c => { const seen = new Set(); toks(c).forEach(t => { if (!seen.has(t)) { seen.add(t); df[t] = (df[t] || 0) + 1; } }); });
+      const N = pool.length || 1;
+      const avgdl = pool.reduce((s, c) => s + toks(c).length, 0) / N || 1;
+      const k1 = 1.5, b = 0.75;
+      const scored = pool.map(c => {
+        const t = toks(c), dl = t.length || 1, tf = {};
+        t.forEach(x => { tf[x] = (tf[x] || 0) + 1; });
+        let s = 0;
+        qTerms.forEach(q => {
+          const f = tf[q];
+          if (f) {
+            const idf = Math.log(1 + (N - (df[q] || 0) + 0.5) / ((df[q] || 0) + 0.5));
+            s += idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * dl / avgdl));
+          }
+        });
+        const kp = ((c.metadata && c.metadata.keyphrases) || []).join(' ').toLowerCase();
+        qTerms.forEach(q => { if (kp.includes(q)) s += 0.6; });   // keyphrase field boost
+        return { ...c, score: s };
+      }).filter(c => c.score > 0).sort((a, b) => b.score - a.score).slice(0, 10);
 
       const formatted = formatRagContext(scored);
       ragText = formatted.ragText;
@@ -319,20 +223,35 @@ export async function runAIQuery(query, allMethods, tfidfMatrices, descEmbedding
     console.warn('RAG retrieval failed:', e);
   }
 
-  // Step 4: KG context
+  // Step 4: KG context. Load the full KG ONCE here and reuse it for the
+  // grounding check below (it was previously loaded twice per query).
+  let kgData = null;
   let kgContext = '';
   let kgTraversal = [];
   try {
-    const kgData = await loadKgFull();
+    kgData = await loadKgFull();
     if (kgData && kgData.nodes && kgData.nodes.length) {
       initGraph(kgData);
-      // Find paper IDs related to the query methods
+      // Resolve the query's methods to their papers via method -> described_in ->
+      // paper edges (precise), instead of a letters-only label substring that
+      // mis-linked short names / acronyms. Fall back to a TIGHTENED (>=4 char)
+      // label match only if no edge is found.
       const methodNames = highlightMethods.slice(0, 5);
-      const paperIds = kgData.nodes
-        .filter(n => n.type === 'paper' && methodNames.some(m =>
-          (n.label || '').toLowerCase().includes(m.toLowerCase().replace(/[^a-z]/g, ''))
-        ))
-        .map(n => n.id);
+      const wanted = new Set(methodNames.map(m => m.toLowerCase().trim()));
+      const sid = l => (l.source && l.source.id) || l.source;
+      const tid = l => (l.target && l.target.id) || l.target;
+      const methodNodeIds = new Set(
+        kgData.nodes.filter(n => n.type === 'method' && wanted.has((n.label || '').toLowerCase().trim())).map(n => n.id)
+      );
+      let paperIds = (kgData.links || [])
+        .filter(l => l.type === 'described_in' && methodNodeIds.has(sid(l)))
+        .map(l => tid(l));
+      if (!paperIds.length) {
+        paperIds = kgData.nodes.filter(n => n.type === 'paper' && methodNames.some(m => {
+          const c = m.toLowerCase().replace(/[^a-z0-9]/g, '');
+          return c.length >= 4 && (n.label || '').toLowerCase().replace(/[^a-z0-9]/g, '').includes(c);
+        })).map(n => n.id);
+      }
 
       if (paperIds.length > 0) {
         const subgraph = extractSubgraph(paperIds);
@@ -360,13 +279,20 @@ export async function runAIQuery(query, allMethods, tfidfMatrices, descEmbedding
     console.warn('KG context failed:', e);
   }
 
-  // Step 5: LLM insight
+  // Step 5: LLM insight — ground it in the verified benchmark leaderboards when
+  // the query is about performance/rankings/comparisons.
+  let benchmarkText = '';
+  try {
+    const bench = await loadBenchmarkComparisons();
+    benchmarkText = buildBenchmarkContext(effectiveQuery, bench);
+  } catch (e) { /* benchmarks optional */ }
+
   let insightText = '';
   let grounding = { grounded: [], ungrounded: [] };
   try {
     const prompt = buildInsightPrompt(
-      effectiveQuery, recomputed, clusterStats, newWeights,
-      highlightMethods, ragText, kgContext, methodSummaries, domainBranding
+      effectiveQuery, highlightMethods, ragText, kgContext,
+      methodSummaries, domainBranding, benchmarkText
     );
     insightText = await llmChat([{ role: 'user', content: prompt }]);
     if (insightText.startsWith('```')) {
@@ -374,13 +300,12 @@ export async function runAIQuery(query, allMethods, tfidfMatrices, descEmbedding
       insightText = lines.slice(1, -1).join('\n');
     }
 
-    // Guardrail: validate entity mentions
+    // Guardrail: validate entity mentions (reuse the KG already loaded in step 4).
     try {
-      const kgData = await loadKgFull();
-      grounding = runGroundingCheck(insightText, allMethods, kgData?.nodes || []);
+      grounding = runGroundingCheck(insightText, allMethods, (kgData && kgData.nodes) || []);
     } catch (e) {}
   } catch (llmErr) {
-    insightText = `- Query processed. ${recomputed.length} methods shown.${filterMethods ? `\n- Filtered to: ${filterMethods.join(', ')}.` : ''}\n- (LLM unavailable: ${llmErr.message})`;
+    insightText = `- Query processed. ${responseData.length} methods shown.${filterMethods ? `\n- Filtered to: ${filterMethods.join(', ')}.` : ''}\n- (LLM unavailable: ${llmErr.message})`;
   }
 
   // Step 6: Traversal narrative
@@ -412,20 +337,18 @@ export async function runAIQuery(query, allMethods, tfidfMatrices, descEmbedding
   }
 
   // Build method relevance scores
-  const methodRelevance = recomputed.slice(0, 10).map(m => ({
+  const methodRelevance = responseData.slice(0, 10).map(m => ({
     name: m.name,
     score: highlightMethods.includes(m.name) ? 0.9 : 0.5,
   }));
 
   return {
     success: true,
-    umapData: recomputed,
+    umapData: responseData,
     weights: newWeights,
     colorBy: newColorBy,
     filterMethods,
     highlightMethods,
-    clusterStats,
-    clustering: clusteringInfo,
     insight: insightText,
     grounding,
     ragCitations,

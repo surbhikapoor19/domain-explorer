@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Plot from 'react-plotly.js';
+import Tooltip from './Tooltip';
 import { loadBenchmarkComparisons } from '../lib/data-loader';
+
+// Reusable help affordance, matching the rest of the app's "?" tooltips.
+const Help = ({ text }) => (
+  <Tooltip text={text} wide><span className="chart-help">?</span></Tooltip>
+);
 
 // --- helpers -----------------------------------------------------------------
 
@@ -26,7 +32,7 @@ const STATUS_META = {
 
 // -----------------------------------------------------------------------------
 
-export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
+export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfidence = 0.70 }) {
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [loading, setLoading]             = useState(true);
   const [selectedKey, setSelectedKey]     = useState(null);   // leaderboard key
@@ -69,25 +75,36 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
     return benchmarkData.leaderboards[selectedKey] || null;
   }, [benchmarkData, selectedKey]);
 
-  // Filtered entries based on low-confidence toggle
+  // Filter by the global minimum-confidence threshold. Below it, the extracted
+  // numbers are likely unreliable (grade C / weak / disputed) and are hidden.
+  // The local "show all" toggle is an escape hatch that ignores the threshold.
+  const passesConf = (x) => (typeof x?.confidence === 'number' ? x.confidence : 1) >= minConfidence;
   const visibleEntries = useMemo(() => {
     if (!currentLb?.entries) return [];
     if (showLowConf) return currentLb.entries;
-    return currentLb.entries.filter(e => e.grade !== 'C');
-  }, [currentLb, showLowConf]);
+    return currentLb.entries.filter(passesConf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLb, showLowConf, minConfidence]);
 
-  // Filtered cross-validations based on low-confidence toggle
   const visibleCrossValidations = useMemo(() => {
     if (showLowConf) return crossValidations;
-    return crossValidations.filter(v => v.status === 'consistent');
-  }, [crossValidations, showLowConf]);
+    return crossValidations.filter(passesConf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [crossValidations, showLowConf, minConfidence]);
 
   // Win/loss summary for Head-to-Head tab
   const winLossSummary = useMemo(() => {
+    const keep = (c) => (typeof c?.confidence === 'number' ? c.confidence : 1) >= (showLowConf ? 0 : minConfidence);
     return Object.entries(methodIndex)
-      .map(([name, info]) => ({ name, ...info }))
+      .map(([name, info]) => {
+        const wins = (info.wins || []).filter(keep);
+        const losses = (info.losses || []).filter(keep);
+        return { name, ...info, wins, losses, n_wins: wins.length, n_losses: losses.length };
+      })
+      .filter(e => e.n_wins > 0 || e.n_losses > 0)   // drop methods with no comparisons above threshold
       .sort((a, b) => b.n_wins - a.n_wins);
-  }, [methodIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [methodIndex, minConfidence, showLowConf]);
 
   // Helper: label for dropdown option
   function lbOptionLabel(key) {
@@ -132,11 +149,11 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
       <div className="benchmarks-stats-bar">
         <div className="benchmarks-stat">
           <span className="benchmarks-stat-value">{stats.n_comparisons ?? '—'}</span>
-          <span className="benchmarks-stat-label">comparisons</span>
+          <span className="benchmarks-stat-label">comparisons <Help text="Head-to-head results extracted from papers where one method directly outperformed another on the same metric and condition." /></span>
         </div>
         <div className="benchmarks-stat">
           <span className="benchmarks-stat-value">{stats.n_leaderboards ?? '—'}</span>
-          <span className="benchmarks-stat-label">benchmarks</span>
+          <span className="benchmarks-stat-label">benchmarks <Help text="Distinct metric + condition leaderboards (e.g. success rate on pile scenes) with at least two methods to rank." /></span>
         </div>
         <div className="benchmarks-stat">
           <span className="benchmarks-stat-value">{stats.n_methods_indexed ?? '—'}</span>
@@ -144,7 +161,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
         </div>
         <div className="benchmarks-stat">
           <span className="benchmarks-stat-value">{stats.n_cross_validations ?? '—'}</span>
-          <span className="benchmarks-stat-label">cross-paper</span>
+          <span className="benchmarks-stat-label">cross-paper <Help text="Numbers reported for the same method + metric by 2+ independent papers — the basis for the CV consistency check." /></span>
         </div>
       </div>
 
@@ -170,7 +187,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
         </button>
       </div>
 
-      {/* ── Low-confidence toggle (shared across relevant tabs) ─────────── */}
+      {/* ── Confidence filter (driven by the global Min-confidence control) ─── */}
       <div className="benchmarks-confidence-toggle">
         <label>
           <input
@@ -178,7 +195,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
             checked={showLowConf}
             onChange={e => setShowLowConf(e.target.checked)}
           />
-          Show low-confidence (grade C / single-report)
+          Show all (including below {Math.round(minConfidence * 100)}% confidence)
         </label>
       </div>
 
@@ -203,7 +220,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
 
           {visibleEntries.length === 0 ? (
             <div className="benchmarks-empty benchmarks-empty-filtered">
-              No grade A/B benchmarks for this selection — enable &ldquo;Show low-confidence&rdquo; to see all extracted results.
+              Nothing meets the {Math.round(minConfidence * 100)}% confidence threshold for this selection — pick a lower tier on the <em>Evidence</em> filter in the header (or &ldquo;All&rdquo;) to see every extracted result.
             </div>
           ) : (
             <>
@@ -259,11 +276,11 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
                     <tr>
                       <th>Rank</th>
                       <th>Method</th>
-                      <th>Score</th>
-                      <th>Grade</th>
-                      <th>CV%</th>
-                      <th>Source Paper(s)</th>
-                      <th>Reports</th>
+                      <th>Score <Help text="The method's best reported value for this metric and condition, across every paper that reports it." /></th>
+                      <th>Grade <Help text="Evidence grade — how much to trust this number. A = corroborated by multiple papers with consistent values; B = a single solid report (or minor spread); C = low-confidence (single weak report, or papers disagree)." /></th>
+                      <th>CV% <Help text="Coefficient of Variation: the standard deviation divided by the mean of this method's score across independent papers, as a percent. Low = papers agree (trustworthy); high = they disagree. Shown only when 2+ papers report it." /></th>
+                      <th>Source Paper(s) <Help text="The paper(s) the number was extracted from. Click 'Source' to see the exact table cell, caption, and a crop of the source table." /></th>
+                      <th>Reports <Help text="How many distinct papers independently report this number. More papers = stronger corroboration. Several cells from one table count as a single report, not many." /></th>
                       <th></th>
                     </tr>
                   </thead>
@@ -409,10 +426,10 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
                   <thead>
                     <tr>
                       <th>Method</th>
-                      <th>Wins</th>
-                      <th>Losses</th>
-                      <th>Net</th>
-                      <th>Metrics</th>
+                      <th>Wins <Help text="Number of head-to-head comparisons (within a single paper, same metric and condition) where this method beat another." /></th>
+                      <th>Losses <Help text="Number of head-to-head comparisons where another method beat this one." /></th>
+                      <th>Net <Help text="Wins minus losses — a quick tally of how often this method comes out ahead in direct comparisons." /></th>
+                      <th>Metrics <Help text="The distinct metrics this method has been compared on (e.g. success rate, latency)." /></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -454,7 +471,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect }) {
             <div className="benchmarks-empty">
               {crossValidations.length === 0
                 ? 'No cross-paper validations found in this domain.'
-                : 'No consistent cross-paper validations — enable “Show low-confidence” to see all.'}
+                : `Nothing meets the ${Math.round(minConfidence * 100)}% confidence threshold — pick a lower tier on the Evidence filter in the header (or “All”).`}
             </div>
           ) : (
             <>

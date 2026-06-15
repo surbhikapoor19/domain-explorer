@@ -4,14 +4,39 @@ from benchmarks.normalize.registries import load_config
 from benchmarks.adapters.v4_results import records_from_v4
 from benchmarks.aggregate.build_benchmarks import build_benchmark_json
 
+
+def _write_benchmark_json(out, output_dir):
+    """Write benchmark-comparisons.json — but NEVER clobber existing non-empty
+    data with an empty build (e.g. a failed/empty extraction). This is the
+    overwrite hazard guard: a Docling crash that yields 0 records must not wipe
+    the live page. Returns True if written, False if the write was refused."""
+    path = os.path.join(output_dir, 'benchmark-comparisons.json')
+    s = out.get('stats', {})
+    new_empty = s.get('n_comparisons', 0) == 0 and s.get('n_leaderboards', 0) == 0
+    if new_empty and os.path.exists(path):
+        try:
+            with open(path) as f:
+                prev = json.load(f).get('stats', {})
+            if prev.get('n_comparisons', 0) > 0 or prev.get('n_leaderboards', 0) > 0:
+                print(f"  REFUSING overwrite of {path}: new build is empty "
+                      f"(0 comparisons/leaderboards) but the existing file has "
+                      f"{prev.get('n_comparisons', 0)} comparisons. Keeping existing data.")
+                return False
+        except Exception:
+            pass  # unreadable existing file -> fall through and write
+    with open(path, 'w') as f:
+        json.dump(out, f)
+    return True
+
+
 def export_benchmark_data(extraction_results_path, output_dir, kg_path=None, config_path=None):
     with open(extraction_results_path) as f:
         v4 = json.load(f)
     cfg = load_config(config_path)
     records = records_from_v4(v4, cfg)
     out = build_benchmark_json(records, cfg)
-    with open(os.path.join(output_dir, 'benchmark-comparisons.json'), 'w') as f:
-        json.dump(out, f)
+    if not _write_benchmark_json(out, output_dir):
+        return out
     s = out['stats']
     print(f"  benchmark-comparisons.json: {s['n_comparisons']} comparisons, "
           f"{s['n_leaderboards']} leaderboards, {s['n_cross_validations']} cross-validations, "
@@ -54,8 +79,8 @@ def export_from_records(records_path, output_dir, kg_path=None, config_path=None
         payload = json.load(f)
     cfg = load_config(config_path)
     out = build_benchmark_json(load_records(payload), cfg)
-    with open(os.path.join(output_dir, 'benchmark-comparisons.json'), 'w') as f:
-        json.dump(out, f)
+    if not _write_benchmark_json(out, output_dir):
+        return out
     s = out['stats']
     print(f"  benchmark-comparisons.json (from records): {s['n_comparisons']} comparisons, "
           f"{s['n_leaderboards']} leaderboards, {s['n_cross_validations']} cross-validations, "
@@ -68,9 +93,15 @@ def export_from_records(records_path, output_dir, kg_path=None, config_path=None
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser()
-    p.add_argument('--extraction-results', required=True)
+    p.add_argument('--extraction-results', help='v4 table_extraction_results json')
+    p.add_argument('--from-records', help='Docling result-records.json (engine=docling path)')
     p.add_argument('--output-dir', required=True)
     p.add_argument('--kg-path', default=None)
     p.add_argument('--config', default=None)
     a = p.parse_args()
-    export_benchmark_data(a.extraction_results, a.output_dir, a.kg_path, a.config)
+    if a.from_records:
+        export_from_records(a.from_records, a.output_dir, a.kg_path, a.config)
+    elif a.extraction_results:
+        export_benchmark_data(a.extraction_results, a.output_dir, a.kg_path, a.config)
+    else:
+        p.error('one of --from-records or --extraction-results is required')

@@ -67,6 +67,17 @@ function App() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [selectedPoint, setSelectedPoint] = useState(null);
 
+  // Global minimum-confidence filter for inferred/extracted metrics. Below this,
+  // numbers are likely unreliable (grade C / weak / disputed) and are hidden.
+  const [minConfidence, setMinConfidence] = useState(() => {
+    try { const v = parseFloat(window.localStorage.getItem('min-confidence')); return isNaN(v) ? 0.70 : v; }
+    catch (_) { return 0.70; }
+  });
+  const updateMinConfidence = (v) => {
+    setMinConfidence(v);
+    try { window.localStorage.setItem('min-confidence', String(v)); } catch (_) {}
+  };
+
   const [clusterInsight, setClusterInsight] = useState(null);
   const [clusterStats, setClusterStats] = useState([]);
   const [activeCluster, setActiveCluster] = useState(null);
@@ -122,9 +133,10 @@ function App() {
         const [tfidf, descEmb, umapDefault] = await Promise.all([
           loadTfidfMatrices(), loadDescriptionEmbeddings(), loadUmapDefault(),
         ]);
+        const indexed = allMethodsRef.current.map((m, i) => ({ ...m, _row: i }));
         const methods = filterMethods
-          ? allMethodsRef.current.filter(m => filterMethods.includes(m.name))
-          : allMethodsRef.current;
+          ? indexed.filter(m => filterMethods.includes(m.name))
+          : indexed;
         const recomputed = recomputeUmap(tfidf, descEmb, customWeights || defaultWeightsRef.current, methods, defaultKRef.current);
         setData(recomputed);
         if (customWeights) setWeights(customWeights);
@@ -175,7 +187,7 @@ function App() {
         }
 
         const isIframe = window.self !== window.top;
-        const sessionKey = domainConfig?.domain || 'grasp-explorer';
+        const sessionKey = domainConfig?.domain || 'domain-explorer';
         try {
           const cachedQuery = isIframe && sessionStorage.getItem(`${sessionKey}-query`);
           const cachedResult = isIframe && sessionStorage.getItem(`${sessionKey}-result`);
@@ -211,16 +223,24 @@ function App() {
     setSuggestion(null);
     try {
       const queryText = query.trim();
-      const [tfidf, descEmb] = await Promise.all([loadTfidfMatrices(), loadDescriptionEmbeddings()]);
+      // Method-summary columns + short names come from the active domain config
+      // (priorityDims are the domain's most meaningful method-describing columns),
+      // so the copilot's "RELEVANT METHODS" block is correct for any domain.
+      const summaryColumns = (domainCfg.priorityDims || [])
+        .map(d => d.key).filter(k => k && k !== 'Description').slice(0, 6);
       const result = await runAIQuery(
-        queryText, allMethodsRef.current, tfidf, descEmb,
-        queryKeywordsRef.current || {}, defaultKRef.current,
-        { defaultWeights: defaultWeightsRef.current, branding }
+        queryText, allMethodsRef.current,
+        queryKeywordsRef.current || {},
+        {
+          defaultWeights: defaultWeightsRef.current, branding,
+          summaryColumns, shortNames: domainCfg.shortNames,
+        }
       );
       applyQueryResult(queryText, result);
       try {
-        sessionStorage.setItem('grasp-explorer-query', queryText);
-        sessionStorage.setItem('grasp-explorer-result', JSON.stringify(result));
+        const sk = domainCfg?.domain || 'domain-explorer';
+        sessionStorage.setItem(`${sk}-query`, queryText);
+        sessionStorage.setItem(`${sk}-result`, JSON.stringify(result));
       } catch (_) {}
     } catch (err) {
       setQueryError(err.message);
@@ -239,7 +259,7 @@ function App() {
     setAiAdjustedCols(new Set());
     setWeightsOpen(false);
     setColorBy('cluster');
-    const key = domainCfg.branding?.domain || 'grasp-explorer';
+    const key = domainCfg?.domain || 'domain-explorer';
     try { sessionStorage.removeItem(`${key}-query`); sessionStorage.removeItem(`${key}-result`); } catch (_) {}
     fetchUmap();
   };
@@ -278,6 +298,7 @@ function App() {
   const hasHighlights = highlightedMethods.length > 0;
 
   const sharedHeader = (
+    <>
     <div className="sticky-top">
       <header className="copilot-header">
         <div className="header-content">
@@ -285,6 +306,19 @@ function App() {
           <span className="badge">{branding.tagline}</span>
           <span className="header-subtitle">{branding.ecosystem}</span>
           <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
+          <div className="conf-filter" title="Hide extracted metrics below this evidence tier (grades map to confidence: A≈0.9, B≈0.78, C≈0.45)">
+            <span className="conf-filter-label">Evidence</span>
+            <div className="conf-seg">
+              {[['All', 0], ['Hide weak', 0.6], ['Strong only', 0.85]].map(([lab, v], i) => {
+                const tier = minConfidence >= 0.85 ? 2 : minConfidence >= 0.55 ? 1 : 0;
+                return (
+                  <button key={lab} type="button"
+                    className={`conf-seg-btn ${tier === i ? 'active' : ''}`}
+                    onClick={() => updateMinConfidence(v)}>{lab}</button>
+                );
+              })}
+            </div>
+          </div>
           {explorerEnabled && (
             <button
               className={`nav-link ${page === 'explorer' ? 'active' : ''}`}
@@ -352,6 +386,10 @@ function App() {
         )}
       </section>
     </div>
+    {/* AI Settings modal — part of the shared header so the gear works on EVERY
+        page (it previously only rendered on Explorer). */}
+    {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+    </>
   );
 
   if (page === 'admin') {
@@ -483,9 +521,10 @@ function App() {
           data={data}
           selectedPoint={selectedPoint}
           onSelect={setSelectedPoint}
+          minConfidence={minConfidence}
         />
 
-        {selectedPoint && <DetailPanel point={selectedPoint} onClose={() => setSelectedPoint(null)} />}
+        {selectedPoint && <DetailPanel point={selectedPoint} onClose={() => setSelectedPoint(null)} minConfidence={minConfidence} />}
       </div>
       </DomainContext.Provider>
     );
@@ -674,13 +713,12 @@ function App() {
         <AnalyticsDashboard suggestion={suggestion} />
       )}
 
-      <DetailPanel point={selectedPoint} onClose={() => setSelectedPoint(null)} />
+      <DetailPanel point={selectedPoint} onClose={() => setSelectedPoint(null)} minConfidence={minConfidence} />
 
       <footer className="copilot-footer">
         <span>COMPARE Project &middot; Worcester Polytechnic Institute &middot; NSF POSE</span>
       </footer>
 
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
     </DomainContext.Provider>
   );

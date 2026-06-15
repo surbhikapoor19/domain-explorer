@@ -1,15 +1,40 @@
 {
+  "method_aliases": {
+    "edgegraspnet": "Edge Grasp Network",
+    "edge grasp network": "Edge Grasp Network",
+    "orbitgrasp": "OrbitGrasp (EquiFormerV2)",
+    "icgnet": "ICG-Net",
+    "6dof graspnet": "6-DoF GraspNet",
+    "6 dof graspnet": "6-DoF GraspNet",
+    "graspnet": "6-DoF GraspNet",
+    "vgn": "Volumetric Grasping Network (VGN)",
+    "giga": "Grasp detection via Implicit Geometry and Affordance (GIGA)",
+    "gpd": "Grasp Pose Detection (GPD)",
+    "gqcnn": "Dex-Net 2.0 (GQ-CNN)",
+    "gq-cnn": "Dex-Net 2.0 (GQ-CNN)",
+    "dexnet": "Dex-Net 2.0 (GQ-CNN)",
+    "contactgraspnet": "Contact-GraspNet",
+    "regnet": "REgion-based Grasp Network (REGNet)",
+    "neugraspnet": "NeuGraspNet",
+    "anygrasp": "AnyGrasp"
+  },
   "results_section_keywords": ["experiment", "result", "evaluation", "quantitative", "comparison", "real-world", "simulation"],
   "ablation_section_keywords": ["ablation"],
   "metrics": [
     {"id": "success_rate", "unit": "%", "higher_is_better": true, "type": "rate",
-     "aliases": ["success rate", "grasp success rate", "gsr", "grasp success", "sr", "completion rate", "task success"]},
+     "aliases": ["success rate", "grasp success rate", "gsr", "grasp success", "sr", "task success"]},
+    {"id": "completion_rate", "unit": "%", "higher_is_better": true, "type": "rate",
+     "aliases": ["completion rate", "scene completion"]},
     {"id": "declutter_rate", "unit": "%", "higher_is_better": true, "type": "rate",
      "aliases": ["declutter rate", "dr", "clearance rate", "clutter removal"]},
     {"id": "average_precision", "unit": "%", "higher_is_better": true, "type": "rate",
      "aliases": ["ap", "average precision", "precision", "map"]},
     {"id": "latency", "unit": "ms", "higher_is_better": false, "type": "time",
-     "aliases": ["latency", "inference time", "runtime", "planning time", "time"]}
+     "aliases": ["latency", "inference time", "runtime", "planning time", "time"]},
+    {"id": "sampling_time", "unit": "ms", "higher_is_better": false, "type": "time",
+     "aliases": ["sampling time", "sampling times"]},
+    {"id": "total_time", "unit": "ms", "higher_is_better": false, "type": "time",
+     "aliases": ["total time"]}
   ],
   "conditions": [
     {"id": "pile", "aliases": ["pile", "piled", "cluttered pile"]},
@@ -26,5 +51,16 @@
   "consistency": {
     "cv_thresholds": {"rate": 0.10, "time": 0.20, "count": 0.15, "default": 0.15},
     "min_papers_for_validation": 2
+  },
+  "condition_aliases": {
+    "total": "total-time",
+    "processing": "processing-time",
+    "inference": "inference-time",
+    "average-success-rate": "success-rate"
+  },
+  "corpus": {
+    "tei_dir": "datasets/grasp-planning/tei",
+    "pdf_dir": "datasets/grasp-planning/papers",
+    "methods_csv": "datasets/grasp-planning/grasp_planning.csv"
   }
 }

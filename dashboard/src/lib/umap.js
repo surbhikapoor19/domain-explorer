@@ -55,14 +55,20 @@ export function runKmeans(features, k) {
 }
 
 export function recomputeUmap(tfidfMatrices, descEmbeddings, weights, methods, defaultK) {
-  const features = buildWeightedFeatures(tfidfMatrices, descEmbeddings, weights);
+  const fullFeatures = buildWeightedFeatures(tfidfMatrices, descEmbeddings, weights);
+  // Slice the feature matrix to the rows the (possibly FILTERED) methods occupy
+  // in the full corpus, so features / coords / labels / methods share the same
+  // length AND order. Each method carries `_row` = its index into the full
+  // matrices. Without this, a filtered view assigned coords[i]/labels[i] of
+  // UNRELATED corpus items to the i-th filtered method — every dot mis-placed.
+  const rows = methods.map(m => m._row);
+  const useRows = rows.every(r => Number.isInteger(r) && r >= 0 && r < fullFeatures.length);
+  const features = useRows ? rows.map(r => fullFeatures[r]) : fullFeatures;
   const coords = runUmap(features);
   const k = Math.max(2, Math.min(defaultK, Math.floor(features.length / 3)));
   const labels = runKmeans(features, k);
-  return methods.map((method, i) => ({
-    ...method,
-    x: coords[i][0],
-    y: coords[i][1],
-    cluster: labels[i],
-  }));
+  return methods.map((method, i) => {
+    const { _row, ...rest } = method;
+    return { ...rest, x: coords[i][0], y: coords[i][1], cluster: labels[i] };
+  });
 }

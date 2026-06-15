@@ -11,7 +11,15 @@ from dataclasses import dataclass
 from typing import Optional
 
 def _norm(s):
-    return re.sub(r'\s+', ' ', re.sub(r'[()%]', ' ', (s or '').lower())).strip()
+    s = (s or '').lower()
+    s = re.sub(r'\[[\d,\s\-]+\]', ' ', s)            # citation refs: [12], [1, 2]
+    s = re.sub(r'\(\s*n\s*=\s*\d+\s*\)', ' ', s)     # (N=1) qualifiers
+    s = re.sub(r'[*†‡✓✗]', ' ', s)  # markers: * † ‡ ✓ ✗
+    s = re.sub(r'[()%]', ' ', s)                     # paren chars (keep inner tokens), percent
+    s = re.sub(r'[\-_/]', ' ', s)                    # unify separators - _ /
+    s = re.sub(r'\bbaselines?\b', ' ', s)            # drop trailing 'baseline(s)'
+    s = re.sub(r'\s+', ' ', s).strip()
+    return s
 
 @dataclass
 class MetricHit:
@@ -62,10 +70,15 @@ class MethodHit:
     method_id: Optional[str]; confidence: str; raw: str
 
 class MethodResolver:
-    """Confidence-scored: exact/alias -> high, fuzzy-contains -> medium, none -> low (kept, flagged)."""
+    """exact/alias -> high; separator-insensitive exact (>=5 chars) -> high;
+    fuzzy-contains -> medium; none -> low (kept, flagged)."""
     def __init__(self, method_names, alias_seeds=None):
         self._exact = {_norm(m): m for m in method_names}
         self._alias = {_norm(k): v for k, v in (alias_seeds or {}).items()}
+        self._exact_ns = {k.replace(' ', ''): v for k, v in self._exact.items()
+                          if len(k.replace(' ', '')) >= 5}
+        self._alias_ns = {k.replace(' ', ''): v for k, v in self._alias.items()
+                          if len(k.replace(' ', '')) >= 5}
 
     def resolve(self, raw):
         n = _norm(raw)
@@ -73,6 +86,12 @@ class MethodResolver:
             return MethodHit(self._exact[n], 'high', raw)
         if n in self._alias:
             return MethodHit(self._alias[n], 'high', raw)
+        ns = n.replace(' ', '')
+        if len(ns) >= 5:
+            if ns in self._exact_ns:
+                return MethodHit(self._exact_ns[ns], 'high', raw)
+            if ns in self._alias_ns:
+                return MethodHit(self._alias_ns[ns], 'high', raw)
         for key, full in self._exact.items():
             if len(key) >= 5 and (key in n or n in key):
                 return MethodHit(full, 'medium', raw)

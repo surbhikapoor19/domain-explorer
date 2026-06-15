@@ -22,7 +22,7 @@ NO LLM APIs are called. Everything runs locally:
   - Regex + heuristics for citation resolution
 
 Usage:
-  cd grasp-explorer
+  cd domain-explorer
   source backend/venv/bin/activate
   python backend/rebuild_kg.py
   python backend/rebuild_kg.py --config rag_config.yaml      # explicit config

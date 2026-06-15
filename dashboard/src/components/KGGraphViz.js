@@ -253,7 +253,7 @@ const LAYOUT = {
 
 export default function KGGraphViz({
   onNodeClick, selectedNode, height = 420, dataUrl, postData,
-  onNodeSelect, onEdgeSelect, refitTrigger,
+  onNodeSelect, onEdgeSelect, onNodeHover, onBackgroundTap, refitTrigger,
   hiddenEdgeTypes, hiddenNodeTypes: extHiddenNodeTypes, highlightedLabels, dimUnhighlighted,
   minDegree = 0, searchTerm = '', viewName, minConfidence = 0,
 }) {
@@ -275,6 +275,11 @@ export default function KGGraphViz({
   const [zoomHint, setZoomHint] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const zoomHintTimer = useRef(null);
+  // True while a node is being hovered. The external (label-based) highlight
+  // effect skips while this is set, so a hover shows ONLY the node's own
+  // neighborhood — the table-bridge no longer re-dims the graph to the
+  // method's smaller semantic cohort (which looked like an auto-click).
+  const hoverActiveRef = useRef(false);
 
   // Load graph data from static JSON. When `postData` carries paperIds we
   // mirror the legacy /api/kg-subgraph behavior: load kg-full, build the
@@ -421,6 +426,10 @@ export default function KGGraphViz({
     // Track which node is tap-selected so the hover mouseout doesn't
     // clear the persistent neighborhood highlight.
     let pinnedNode = null;
+    // Hover is debounced: highlights/tooltips only commit once the cursor SETTLES
+    // for this long. In a dense graph a tiny movement otherwise flips between
+    // adjacent nodes/edges and the highlights strobe.
+    const HOVER_DELAY = 140;
 
     const applyNeighborhoodHighlight = (node) => {
       const neighborhood = node.closedNeighborhood();
@@ -434,26 +443,34 @@ export default function KGGraphViz({
       cy.elements().removeClass('dimmed highlighted neighbor');
     };
 
-    // Hover: highlight neighborhood (temporarily, unless a node is pinned)
+    // Hover: highlight neighborhood once the cursor settles (debounced). The
+    // neighborhood highlight, the table bridge, and the tooltip all fire together
+    // on the same delayed timer, so a quick pass-through commits nothing.
     cy.on('mouseover', 'node', e => {
       const node = e.target;
-      clearNeighborhoodHighlight();
-      applyNeighborhoodHighlight(node);
-
       clearTimeout(tooltipTimer.current);
       tooltipTimer.current = setTimeout(() => {
+        hoverActiveRef.current = true;   // suppress the label-based graph re-dim
+        clearNeighborhoodHighlight();
+        applyNeighborhoodHighlight(node);
+        // Bridge the hover up so the parent can spotlight the matching row in
+        // the method table above (the reverse of table-row -> node, which the
+        // landing's highlight resolver already does via hoveredIndex).
+        if (onNodeHover) onNodeHover(node.data('label'));
         setTooltipNode({ label: node.data('label'), type: node.data('type'), subtype: node.data('subtype'), degree: node.data('degree'), value: node.data('value') });
-      }, 80);
+      }, HOVER_DELAY);
     });
 
     cy.on('mouseout', 'node', () => {
+      clearTimeout(tooltipTimer.current);   // cancel a pending (passed-through) hover
+      hoverActiveRef.current = false;
       if (pinnedNode) {
         clearNeighborhoodHighlight();
         applyNeighborhoodHighlight(pinnedNode);
       } else {
         clearNeighborhoodHighlight();
       }
-      clearTimeout(tooltipTimer.current);
+      if (onNodeHover) onNodeHover(null);
       setTooltipNode(null);
     });
 
@@ -480,7 +497,7 @@ export default function KGGraphViz({
           semantic_relevance: edge.data('semantic_relevance') || 0,
           sentiment: edge.data('sentiment') || '',
         });
-      }, 80);
+      }, HOVER_DELAY);
     });
 
     cy.on('mouseout', 'edge', () => {
@@ -521,38 +538,50 @@ export default function KGGraphViz({
       }
     });
 
-    // Click: select node, pin neighborhood highlight, emit to parent
+    // Tap a node to select it; tap the SAME (already-selected) node again to
+    // deselect — a consistent toggle. Selecting pins the neighborhood highlight
+    // and emits to the parent; deselecting routes through the same full-clear as
+    // a background tap so no selection state is left dangling.
     cy.on('tap', 'node', e => {
       const node = e.target;
+      const wasSelected = node.hasClass('selected');   // robust toggle detection
       cy.nodes().removeClass('selected');
-      node.addClass('selected');
-
-      pinnedNode = node;
       clearNeighborhoodHighlight();
+      if (wasSelected) {
+        pinnedNode = null;
+        hoverActiveRef.current = false;
+        if (onBackgroundTap) onBackgroundTap();
+        else if (onNodeSelect) onNodeSelect(null);
+        return;
+      }
+      pinnedNode = node;
+      node.addClass('selected');
       applyNeighborhoodHighlight(node);
-
       if (onNodeClick) onNodeClick({ id: node.data('id'), label: node.data('label'), type: node.data('type'), subtype: node.data('subtype') });
-
       if (onNodeSelect) {
         const neighbors = node.neighborhood().nodes().map(n => ({ ...n.data() }));
-        const edges = node.connectedEdges().map(e => ({
-          ...e.data(),
-          source: e.data('source'), target: e.data('target'),
-          inferred: !!e.data('inferred'),
+        const edges = node.connectedEdges().map(ed => ({
+          ...ed.data(),
+          source: ed.data('source'), target: ed.data('target'),
+          inferred: !!ed.data('inferred'),
         }));
         onNodeSelect({ node: { ...node.data() }, neighbors, edges, viewName });
       }
     });
 
+    // Tap empty canvas -> FULL deselect (node + edge + every sticky highlight),
+    // not just the side panel. This is the standard escape hatch.
     cy.on('tap', e => {
       if (e.target === cy) {
         pinnedNode = null;
+        hoverActiveRef.current = false;
         clearNeighborhoodHighlight();
         cy.nodes().removeClass('selected');
-        if (onNodeSelect) onNodeSelect(null);
+        if (onBackgroundTap) onBackgroundTap();
+        else if (onNodeSelect) onNodeSelect(null);
       }
     });
-  }, [onNodeClick, onNodeSelect, onEdgeSelect, viewName]);
+  }, [onNodeClick, onNodeSelect, onEdgeSelect, onNodeHover, onBackgroundTap, viewName]);
 
   // Re-fit on trigger change (also resize so Cytoscape recalculates its
   // viewport from the possibly-resized container, e.g. when the side
@@ -667,7 +696,9 @@ export default function KGGraphViz({
     if (!cy) return;
     cy.nodes().removeClass('ext-dim ext-hl');
     cy.edges().removeClass('ext-dim ext-hl');
-    if (selectedNode) return;
+    // Skip while a graph node is selected OR hovered — its own neighborhood
+    // highlight is the sole visual; don't layer the label-cohort dim on top.
+    if (selectedNode || hoverActiveRef.current) return;
     const labels = highlightedLabels instanceof Set ? highlightedLabels : new Set(highlightedLabels || []);
     if (labels.size === 0 || !dimUnhighlighted) return;
     const normalized = new Set([...labels].map(l => (l || '').toLowerCase()));

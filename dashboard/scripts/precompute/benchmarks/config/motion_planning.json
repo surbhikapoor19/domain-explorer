@@ -27,13 +27,14 @@
     {"id": "mbm", "aliases": ["motion benchmaker", "mbm"]},
     {"id": "ompl_bench", "aliases": ["ompl benchmark", "ompl-bench"]}
   ],
+  "method_aliases": {},
   "consistency": {
     "cv_thresholds": {"rate": 0.10, "time": 0.25, "count": 0.20, "default": 0.15},
     "min_papers_for_validation": 2
   },
   "corpus": {
-    "tei_dir": "",
-    "pdf_dir": "/Users/surbhikapoor/Desktop/WPI/wpivis/domain-explorer/datasets/motion-planning/papers",
-    "methods_csv": "/Users/surbhikapoor/Desktop/WPI/wpivis/domain-explorer/datasets/motion-planning/motion_planning.csv"
+    "tei_dir": "datasets/motion-planning/tei",
+    "pdf_dir": "datasets/motion-planning/papers",
+    "methods_csv": "datasets/motion-planning/motion_planning.csv"
   }
 }

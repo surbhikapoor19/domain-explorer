@@ -20,7 +20,7 @@ function gradeBadgeClass(grade) {
   return 'detail-badge-b';
 }
 
-export default function DetailPanel({ point, onClose }) {
+export default function DetailPanel({ point, onClose, minConfidence = 0.70 }) {
   const { shortNames } = useDomainConfig();
   const [benchmarkInfo, setBenchmarkInfo] = useState(null);
 
@@ -33,14 +33,15 @@ export default function DetailPanel({ point, onClose }) {
         }
         const info = _benchmarkCache?.method_index?.[point.name] || null;
         const validations = (_benchmarkCache?.cross_validations || [])
-          .filter(v => v.method === point.name);
+          .filter(v => v.method === point.name)
+          .filter(v => (typeof v.confidence === 'number' ? v.confidence : 1) >= minConfidence);
         setBenchmarkInfo(info ? { ...info, cross_validations: validations } : null);
       } catch {
         setBenchmarkInfo(null);
       }
     };
     loadInfo();
-  }, [point]);
+  }, [point, minConfidence]);
 
   if (!point) return null;
 

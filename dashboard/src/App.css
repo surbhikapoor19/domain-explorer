@@ -40,7 +40,9 @@ body {
      .kgl-page. */
   max-width: 100%;
   margin: 0;
-  padding: 0 8px;
+  /* bottom inset so the last content isn't flush against the viewport —
+     lets every page scroll comfortably past its final row */
+  padding: 0 8px 4rem;
 }
 
 /* ─── STICKY TOP BAR ─── */
@@ -2278,7 +2280,81 @@ body {
    which is a textbook scroll-trap (NN/g).
    The 24px / 48px values are conservative; on ultra-wide viewports the
    max-width clamp does the rest. */
-.kgl-page { max-width: 100%; margin: 0; padding: 0 8px; }
+.kgl-page { max-width: 100%; margin: 0; padding: 0 8px 4rem; }
+
+/* ── Cross-highlight discoverability tip ──────────────────────────────────
+   One subtle, dismissable line above the graph explaining the table<->graph
+   spotlight link. Primary-tinted so it reads as helper chrome, not content. */
+.kgl-xhint {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.4rem 0 0.5rem;
+  padding: 0.5rem 0.7rem;
+  background: rgba(22, 101, 125, 0.07);
+  border: 1px solid rgba(22, 101, 125, 0.18);
+  border-radius: 7px;
+  font-size: 0.78rem;
+  color: var(--primary-deep);
+  line-height: 1.35;
+}
+.kgl-xhint-icon {
+  flex: none;
+  font-size: 0.95rem;
+  color: var(--primary);
+}
+.kgl-xhint-text { flex: 1; }
+.kgl-xhint-text strong { color: var(--primary); font-weight: 650; }
+.kgl-xhint-dismiss {
+  flex: none;
+  border: none;
+  background: transparent;
+  color: var(--primary-deep);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+.kgl-xhint-dismiss:hover { opacity: 1; }
+
+/* ── "Jump to insights" cue ───────────────────────────────────────────────
+   A full-width divider/button between the graph and the lower panel band so
+   the otherwise-below-the-fold panels announce themselves. */
+.kgl-insights-jump {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0.55rem 0 0.4rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(to bottom, rgba(22, 101, 125, 0.045), rgba(22, 101, 125, 0.09));
+  border: 1px dashed rgba(22, 101, 125, 0.3);
+  border-radius: 7px;
+  color: var(--primary-deep);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.kgl-insights-jump:hover {
+  background: rgba(22, 101, 125, 0.13);
+  border-color: var(--primary);
+}
+.kgl-insights-jump-chevron {
+  font-size: 0.95rem;
+  line-height: 1;
+  animation: kgl-jump-bounce 1.8s ease-in-out infinite;
+}
+@keyframes kgl-jump-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kgl-insights-jump-chevron { animation: none; }
+}
 
 /* Cooperative-gesture hint shown when the user scrolls over the graph
    without holding the zoom modifier. Centered, low opacity, fades after
@@ -3159,13 +3235,16 @@ body {
 .kgl-tab:last-child { border-radius: 0 3px 3px 0; border-left: none; }
 .kgl-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 .kgl-matrix-scroll { overflow-x: auto; }
-.kgl-matrix { width: 100%; border-collapse: collapse; }
+/* Size to content (not 100%) so on the full-width card the row labels sit
+   directly beside their data columns instead of stranded left with a big gap. */
+.kgl-matrix { width: auto; border-collapse: collapse; }
 .kgl-matrix th, .kgl-matrix td { padding: 0.4rem 0.5rem; text-align: center; font-size: 0.82rem; }
 .kgl-matrix-corner { text-align: left; }
+.kgl-matrix-colhead, .kgl-matrix-cell { min-width: 84px; }
 .kgl-matrix-colhead { font-weight: 700; color: var(--text); font-size: 0.75rem; white-space: nowrap; }
 .kgl-matrix-rowhead { text-align: left; font-weight: 600; color: var(--text); white-space: nowrap; font-size: 0.8rem; }
 .kgl-matrix-cell {
-  position: relative; min-width: 38px; min-height: 32px;
+  position: relative; min-width: 84px; min-height: 32px;
   border: 1px solid var(--border-light); font-weight: 600;
   transition: opacity 0.15s;
 }
@@ -4746,11 +4825,27 @@ body {
 /* Settings panel (BYOK) */
 .settings-btn { background: none; border: 1px solid var(--border-light, #ddd); border-radius: 6px; color: var(--text, #333); font-size: 18px; cursor: pointer; padding: 4px 10px; margin-left: 8px; }
 .settings-btn:hover { background: var(--bg-light, #f0f0f0); color: var(--primary, #185A7C); }
+
+/* Global min-confidence filter control in the header */
+.conf-filter {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: 10px;
+  padding: 3px 9px; border: 1px solid var(--border-light, #ddd); border-radius: 6px;
+  cursor: pointer; font-size: 0.72rem; color: var(--text-muted, #5a6b70);
+}
+.conf-filter-label { font-weight: 600; white-space: nowrap; }
+.conf-seg { display: inline-flex; border: 1px solid var(--border-light, #ddd); border-radius: 6px; overflow: hidden; }
+.conf-seg-btn { border: none; background: transparent; padding: 3px 8px; font-size: 0.7rem; font-weight: 600;
+  color: var(--text-muted, #5a6b70); cursor: pointer; border-right: 1px solid var(--border-light, #eee); white-space: nowrap; }
+.conf-seg-btn:last-child { border-right: none; }
+.conf-seg-btn:hover { background: var(--bg-light, #f0f4f6); }
+.conf-seg-btn.active { background: var(--primary, #16657d); color: #fff; }
 .settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; }
 .settings-panel { background: #1e1e2e; border-radius: 12px; padding: 24px; width: 400px; max-width: 90vw; color: #e0e0e0; }
 .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .settings-header h3 { margin: 0; }
 .settings-header button { background: none; border: none; color: #999; font-size: 24px; cursor: pointer; }
+.settings-keylink { float: right; font-size: 0.76rem; font-weight: 600; color: #6fb3c7; text-decoration: none; }
+.settings-keylink:hover { text-decoration: underline; }
 .settings-body label { display: block; margin-top: 12px; font-size: 13px; color: #999; }
 .settings-body select, .settings-body input { width: 100%; padding: 8px; margin-top: 4px; background: #2a2a3e; border: 1px solid #444; border-radius: 6px; color: #e0e0e0; font-size: 14px; box-sizing: border-box; }
 .settings-note { margin-top: 16px; font-size: 12px; color: #777; }

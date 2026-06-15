@@ -36,6 +36,29 @@ function ConfigEditor({ config, onChange, csvHeaders }) {
     updateLlm(listKey, arr);
   };
 
+  // Tolerant JSON editing for the nested KG-alias / benchmark blocks: keep the raw
+  // text locally, only commit to editedConfig when it parses, surface an inline
+  // error otherwise (so a half-typed object never corrupts the config).
+  const [rawJson, setRawJson] = useState({});
+  const [jsonErr, setJsonErr] = useState({});
+  const commitJson = (stateKey, raw, apply, clear) => {
+    setRawJson(p => ({ ...p, [stateKey]: raw }));
+    if (!raw.trim()) { clear(); setJsonErr(p => ({ ...p, [stateKey]: null })); return; }
+    try { apply(JSON.parse(raw)); setJsonErr(p => ({ ...p, [stateKey]: null })); }
+    catch (e) { setJsonErr(p => ({ ...p, [stateKey]: e.message })); }
+  };
+  const updateKgAlias = (cat, raw) => commitJson(`kg.${cat}`, raw,
+    parsed => update('kg_aliases', { ...(config.kg_aliases || {}), [cat]: parsed }),
+    () => { const ka = { ...(config.kg_aliases || {}) }; delete ka[cat]; update('kg_aliases', ka); });
+  const kgValue = (cat) => rawJson[`kg.${cat}`] !== undefined ? rawJson[`kg.${cat}`]
+    : (config.kg_aliases?.[cat] ? JSON.stringify(config.kg_aliases[cat], null, 2) : '');
+  const updateBenchmarks = (raw) => commitJson('benchmarks', raw,
+    parsed => update('benchmarks', parsed), () => update('benchmarks', undefined));
+  const benchValue = () => rawJson.benchmarks !== undefined ? rawJson.benchmarks
+    : (config.benchmarks ? JSON.stringify(config.benchmarks, null, 2) : '');
+  const taStyle = { width: '100%', fontFamily: 'monospace', fontSize: '0.82em' };
+  const errStyle = { color: '#c0392b', fontSize: '0.8em', display: 'block', marginTop: 2 };
+
   return (
     <div className="config-editor">
       <div className="config-section">
@@ -135,6 +158,45 @@ function ConfigEditor({ config, onChange, csvHeaders }) {
           />
         </div>
       </div>
+
+      <div className="config-section">
+        <h4>Knowledge Graph Aliases</h4>
+        <p className="config-hint">
+          Normalize entity surface forms to one canonical label so the graph doesn&rsquo;t fragment a
+          planner / robot / problem across spelling variants. Each is a JSON object{' '}
+          <code>{'{ "alias": "Canonical Name" }'}</code>. Leave blank to inherit the built-in defaults.
+        </p>
+        {['technique', 'hardware', 'problem'].map(cat => (
+          <div className="config-row" key={cat}>
+            <label>{cat[0].toUpperCase() + cat.slice(1)} aliases</label>
+            <textarea
+              rows={5} style={taStyle} value={kgValue(cat)}
+              onChange={e => updateKgAlias(cat, e.target.value)}
+              placeholder={cat === 'technique'
+                ? '{\n  "rrt*": "RRT*",\n  "chomp": "CHOMP"\n}'
+                : (cat === 'hardware' ? '{\n  "franka": "Franka Emika Panda"\n}' : '{\n  "narrow passage": "narrow-passage planning"\n}')}
+            />
+            {jsonErr[`kg.${cat}`] && <span style={errStyle}>Invalid JSON: {jsonErr[`kg.${cat}`]}</span>}
+          </div>
+        ))}
+      </div>
+
+      <div className="config-section">
+        <h4>Benchmark Metrics</h4>
+        <p className="config-hint">
+          Metrics / conditions / datasets the benchmark extractor and the copilot&rsquo;s ranking
+          answers depend on. The copilot&rsquo;s query vocabulary is auto-derived from these aliases at
+          build time. JSON with <code>metrics</code>, <code>conditions</code>, <code>datasets</code>.
+        </p>
+        <div className="config-row">
+          <textarea
+            rows={12} style={taStyle} value={benchValue()}
+            onChange={e => updateBenchmarks(e.target.value)}
+            placeholder={'{\n  "metrics": [\n    {"id": "success_rate", "unit": "%", "higher_is_better": true, "type": "rate", "aliases": ["success rate", "sr"]},\n    {"id": "planning_time", "unit": "s", "higher_is_better": false, "type": "time", "aliases": ["planning time", "runtime"]}\n  ],\n  "conditions": [\n    {"id": "cluttered", "aliases": ["cluttered", "clutter"]}\n  ],\n  "datasets": []\n}'}
+          />
+          {jsonErr.benchmarks && <span style={errStyle}>Invalid JSON: {jsonErr.benchmarks}</span>}
+        </div>
+      </div>
     </div>
   );
 }
@@ -189,6 +251,23 @@ function generateYamlPreview(domainSlug, config, csvFilename, pdfUrl) {
     lines.push('');
     lines.push('extra_keywords:');
     for (const k of config.extra_keywords) lines.push(`  - "${k}"`);
+  }
+  const ka = config.kg_aliases || {};
+  const aliasCats = ['technique', 'hardware', 'problem'].filter(c => ka[c] && Object.keys(ka[c]).length);
+  if (aliasCats.length) {
+    lines.push('');
+    lines.push('kg_aliases:');
+    for (const cat of aliasCats) {
+      lines.push(`  ${cat}:`);
+      for (const [alias, canonical] of Object.entries(ka[cat])) {
+        lines.push(`    "${alias}": "${canonical}"`);
+      }
+    }
+  }
+  if (config.benchmarks?.metrics?.length) {
+    lines.push('');
+    lines.push(`# + benchmark config (${config.benchmarks.metrics.length} metrics) written to`);
+    lines.push(`#   dashboard/scripts/precompute/benchmarks/config/${slug}.json`);
   }
   return lines.join('\n');
 }
@@ -366,14 +445,14 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     setProposing(false);
   };
 
-  const handleTriggerBuild = async (domain) => {
+  const handleTriggerBuild = async (domain, pages) => {
     setBuilding(domain);
     setError(null);
     try {
       const res = await fetch('/api/admin/trigger-build', {
         method: 'POST',
         headers: { ...authHeaders(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain }),
+        body: JSON.stringify(pages ? { domain, pages } : { domain }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Build trigger failed');
@@ -433,6 +512,22 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     try {
       const csvContent = await csvFile.text();
       const cfg = editedConfig || {};
+      const slug = newDomain.trim().replace(/\s+/g, '_').toLowerCase();
+      const dashed = slug.replace(/_/g, '-');
+      // Assemble a full benchmark-extraction config from the editor's metrics block
+      // + sane defaults + repo-relative corpus paths. The copilot's ranking vocab is
+      // auto-derived from these metric/condition aliases at build time.
+      const bm = cfg.benchmarks || {};
+      const benchmarkConfig = (Array.isArray(bm.metrics) && bm.metrics.length) ? {
+        results_section_keywords: bm.results_section_keywords || ['experiment', 'result', 'evaluation', 'comparison', 'benchmark'],
+        ablation_section_keywords: bm.ablation_section_keywords || ['ablation'],
+        metrics: bm.metrics,
+        conditions: bm.conditions || [],
+        datasets: bm.datasets || [],
+        method_aliases: bm.method_aliases || {},
+        consistency: bm.consistency || { cv_thresholds: { rate: 0.10, time: 0.25, count: 0.20, default: 0.15 }, min_papers_for_validation: 2 },
+        corpus: { tei_dir: `datasets/${dashed}/tei`, pdf_dir: `datasets/${dashed}/papers`, methods_csv: `datasets/${dashed}/${csvFile.name}` },
+      } : undefined;
       let pdfZipBase64 = undefined;
       let pdfZipFilename = undefined;
       if (pdfZipFile) {
@@ -456,6 +551,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
           displayName: cfg.display_name || displayName.trim() || undefined,
           methodNoun: cfg.method_noun || methodNoun.trim() || undefined,
           yamlConfig: cfg,
+          benchmarkConfig,
         }),
       });
       const text = await res.text();
@@ -672,6 +768,13 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
                     disabled={building === d.slug}
                   >
                     {building === d.slug ? 'Building...' : 'Build'}
+                  </button>
+                  <button
+                    className="admin-btn"
+                    onClick={() => handleTriggerBuild(d.slug, 'benchmark')}
+                    disabled={building === d.slug}
+                  >
+                    {building === d.slug ? 'Building...' : 'Build benchmarks'}
                   </button>
                   <a
                     className="admin-btn admin-btn-visit"
