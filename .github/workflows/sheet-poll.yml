@@ -4,9 +4,14 @@ name: Poll Google Sheets CSVs
 # pointing at its Google Sheet's live CSV export
 # (https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>).
 # This job polls those URLs on a schedule, and ONLY when a sheet's content has
-# actually changed does it commit the new CSV and trigger a rebuild. A sheet edit
-# is treated as a metadata change -> a fast `explorer` (precompute) build; adding
-# brand-new methods that need new PDFs still goes through the Admin upload flow.
+# actually changed does it commit the new CSV and trigger a rebuild.
+#
+# It dispatches the FULL domain-build (not a precompute-only build): TEI + the
+# ChromaDB vector store are gitignored and regenerated from the PDFs (in LFS) on
+# every CI run, so the CSV edit must flow through the whole pipeline to re-derive
+# BOTH the knowledge graph (CSV->graph explosion in the kg step) and the
+# precomputed views. The existing PDFs are reused — no re-upload needed. (Adding
+# brand-new items that require NEW PDFs still goes through the Admin upload flow.)
 
 on:
   schedule:
@@ -87,8 +92,11 @@ jobs:
           import sys, json, os, urllib.request
           repo = os.environ['GITHUB_REPOSITORY']; tok = os.environ['DISPATCH_TOKEN']
           for c in json.load(sys.stdin):
-              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain'], 'pages': 'explorer'}}).encode()
+              # Full build (no 'pages'): TEI/chroma are regenerated from PDFs each
+              # CI run, so the CSV change must flow through kg + precompute. Reuses
+              # the existing PDFs (LFS) — only the CSV changed.
+              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain']}}).encode()
               req = urllib.request.Request(f'https://api.github.com/repos/{repo}/dispatches', data=body,
                   headers={'Authorization': f'Bearer {tok}', 'Accept': 'application/vnd.github+json'})
-              urllib.request.urlopen(req); print('dispatched domain-build (explorer) for', c['domain'])
+              urllib.request.urlopen(req); print('dispatched full domain-build for', c['domain'])
           "
