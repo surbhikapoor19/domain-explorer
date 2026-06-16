@@ -1,42 +1,35 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Plot from 'react-plotly.js';
 import Tooltip from './Tooltip';
-import AgreementView from './AgreementView';
+import ReproducibilityView from './ReproducibilityView';
+import ComparisonsView from './ComparisonsView';
+import ConditionSpine from './ConditionSpine';
 import { loadBenchmarkComparisons } from '../lib/data-loader';
+import { buildCells, findCells } from '../lib/benchmark-cells';
 
 // Reusable help affordance, matching the rest of the app's "?" tooltips.
 const Help = ({ text }) => (
   <Tooltip text={text} wide><span className="chart-help">?</span></Tooltip>
 );
 
-// --- helpers -----------------------------------------------------------------
-
-function gradeClass(grade) {
-  if (!grade) return '';
-  const g = grade.toUpperCase();
-  if (g === 'A') return 'benchmarks-grade-a';
-  if (g === 'B') return 'benchmarks-grade-b';
-  return 'benchmarks-grade-c';
-}
-
-function cvLabel(cv, n_reports) {
-  if (!cv || n_reports < 2) return '';
-  return `${Math.round(cv * 100)}%`;
-}
-
 // -----------------------------------------------------------------------------
 
-export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfidence = 0.70 }) {
+export default function BenchmarksPage({
+  data,
+  selectedPoint,
+  onSelect,
+  minConfidence = 0.70,
+  incomingPageRef,
+}) {
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [loading, setLoading]             = useState(true);
-  const [selectedKey, setSelectedKey]     = useState(null);   // leaderboard key
-  const [showLowConf, setShowLowConf]     = useState(false);  // "Show low-confidence" toggle
-  // activeTab is null until data arrives, then defaults to the Agreement view
-  // whenever there are independently-reproduced (consistent) results to show.
-  // With no consistent cross-validations there is nothing for the agreement
-  // hero to celebrate, so we fall back to the Leaderboards tab.
-  const [activeTab, setActiveTab]         = useState(null);
-  const [expandedSourceRow, setExpandedSourceRow] = useState(null); // method name or null
+  const [showLowConf, setShowLowConf]     = useState(false);  // "Show all" confidence escape hatch
+  // The page has two views: the default "reproducibility" landing and the
+  // cell-scoped "comparisons" drill-down. activeView starts on reproducibility.
+  const [activeView, setActiveView]       = useState('reproducibility');
+  // The cell-scoped drill-down targets ONE (metric × condition) cell by key.
+  const [activeCellKey, setActiveCellKey] = useState(null);
+  // The condition spine's facet filter: { metricId?, scene?, success_criterion? }.
+  const [conditionFilter, setConditionFilter] = useState({});
 
   useEffect(() => {
     let cancelled = false;
@@ -45,15 +38,6 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
       .then(d => {
         if (!cancelled) {
           setBenchmarkData(d);
-          // Set the first leaderboard key in the same tick so currentLb is
-          // available on the very first render after data arrives.
-          const keys = Object.keys(d?.leaderboards || {});
-          if (keys.length > 0) setSelectedKey(k => k || keys[0]);
-          // Land on the Agreement view by default when there is at least one
-          // independently-reproduced result; otherwise show Leaderboards.
-          const hasConsistent = (d?.cross_validations || [])
-            .some(v => v.status === 'consistent');
-          setActiveTab(t => t || (hasConsistent ? 'agreement' : 'leaderboards'));
           setLoading(false);
         }
       })
@@ -61,65 +45,137 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
     return () => { cancelled = true; };
   }, []);
 
-  // Build ordered list of leaderboard keys from v2 leaderboards map
-  const leaderboardKeys = useMemo(() => {
-    if (!benchmarkData?.leaderboards) return [];
-    return Object.keys(benchmarkData.leaderboards);
-  }, [benchmarkData]);
+  // ── Deep-link handshake: incomingPageRef opens a view / cell / filter. ──────
+  // pageRef shape: { view: "reproducibility"|"comparisons", cellKey, conditionFilter }.
+  useEffect(() => {
+    if (!incomingPageRef) return;
+    const { view, cellKey, conditionFilter: cf } = incomingPageRef;
+    if (cf && typeof cf === 'object') {
+      // conditionFilter from a pageRef uses facet names (scene / success_criterion).
+      const next = {};
+      if (cf.metricId != null) next.metricId = cf.metricId;
+      if (cf.scene != null) next.scene = cf.scene;
+      if (cf.success_criterion != null) next.success_criterion = cf.success_criterion;
+      setConditionFilter(next);
+    }
+    if (cellKey != null) setActiveCellKey(cellKey);
+    if (view === 'comparisons') {
+      setActiveView('comparisons');
+    } else if (view === 'reproducibility') {
+      setActiveView('reproducibility');
+    }
+  }, [incomingPageRef]);
 
-  const methodIndex      = benchmarkData?.method_index || {};
   const crossValidations = benchmarkData?.cross_validations || [];
   const stats            = benchmarkData?.stats || {};
   const quarantine       = benchmarkData?.quarantine || {};
 
-  // Current leaderboard object (v2: {metric_label, condition, entries: [...], ...})
-  const currentLb = useMemo(() => {
-    if (!benchmarkData?.leaderboards || !selectedKey) return null;
-    return benchmarkData.leaderboards[selectedKey] || null;
-  }, [benchmarkData, selectedKey]);
+  // All merged cells (metric × condition) from the shared alignment module.
+  const allCells = useMemo(() => buildCells(benchmarkData), [benchmarkData]);
 
-  // Filter by the global minimum-confidence threshold. Below it, the extracted
-  // numbers are likely unreliable (grade C / weak / disputed) and are hidden.
-  // The local "show all" toggle is an escape hatch that ignores the threshold.
-  const passesConf = (x) => (typeof x?.confidence === 'number' ? x.confidence : 1) >= minConfidence;
-  const visibleEntries = useMemo(() => {
-    if (!currentLb?.entries) return [];
-    if (showLowConf) return currentLb.entries;
-    return currentLb.entries.filter(passesConf);
+  // When the whole domain has a single metric, the metric is a constant — it is
+  // stated once in the spine and we don't repeat it on every card (which also
+  // keeps each metric label in one canonical place on the page).
+  const showMetricOnCards = useMemo(() => {
+    const ids = new Set(allCells.map(c => c.metric_id));
+    return ids.size > 1;
+  }, [allCells]);
+
+  // The spine filter narrows the visible cells via findCells(). With no facets
+  // selected, every cell is in scope.
+  const visibleCells = useMemo(() => {
+    if (!benchmarkData) return [];
+    const hasFacets =
+      (conditionFilter.metricId != null && conditionFilter.metricId !== '') ||
+      (conditionFilter.scene != null && conditionFilter.scene !== '') ||
+      (conditionFilter.success_criterion != null && conditionFilter.success_criterion !== '');
+    if (!hasFacets) return allCells;
+    const { matched } = findCells(benchmarkData, {
+      metricId: conditionFilter.metricId,
+      facets: {
+        scene: conditionFilter.scene,
+        success_criterion: conditionFilter.success_criterion,
+      },
+    });
+    return matched;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLb, showLowConf, minConfidence]);
+  }, [benchmarkData, allCells, conditionFilter]);
 
+  // Set of cell keys currently in scope (for filtering cross-validations).
+  const visibleCellKeys = useMemo(
+    () => new Set(visibleCells.map(c => c.key)),
+    [visibleCells]
+  );
+
+  // Confidence gate — below the threshold the extracted numbers are unreliable
+  // (grade C / weak / disputed) and are hidden. "Show all" ignores the gate.
+  const passesConf = (x) =>
+    showLowConf || (typeof x?.confidence === 'number' ? x.confidence : 1) >= minConfidence;
+
+  // Cross-validations shown in the reproducibility buckets: pass the confidence
+  // gate AND fall inside a spine-visible (metric × condition) cell.
   const visibleCrossValidations = useMemo(() => {
-    if (showLowConf) return crossValidations;
-    return crossValidations.filter(passesConf);
+    return crossValidations
+      .filter(passesConf)
+      .filter(cv => {
+        // Map each CV to its cell via the merged cells (metric_id + condition).
+        const cond = cv.condition == null ? '' : String(cv.condition);
+        const cell = allCells.find(
+          c => c.metric_id === cv.metric_id && c.condition === cond
+        );
+        // If the CV has a backing cell, require it to be in scope; if it has no
+        // backing leaderboard cell, keep it only when no facet filter is set.
+        if (cell) return visibleCellKeys.has(cell.key);
+        return visibleCellKeys.size === allCells.length; // no facet narrowing
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [crossValidations, showLowConf, minConfidence]);
+  }, [crossValidations, allCells, visibleCellKeys, showLowConf, minConfidence]);
 
-  // Win/loss summary for Head-to-Head tab
-  const winLossSummary = useMemo(() => {
-    const keep = (c) => (typeof c?.confidence === 'number' ? c.confidence : 1) >= (showLowConf ? 0 : minConfidence);
-    return Object.entries(methodIndex)
-      .map(([name, info]) => {
-        const wins = (info.wins || []).filter(keep);
-        const losses = (info.losses || []).filter(keep);
-        return { name, ...info, wins, losses, n_wins: wins.length, n_losses: losses.length };
-      })
-      .filter(e => e.n_wins > 0 || e.n_losses > 0)   // drop methods with no comparisons above threshold
-      .sort((a, b) => b.n_wins - a.n_wins);
+  // Cell keys that already appear as a cross-validation in the buckets — so we
+  // don't double-list them under "Not yet reproduced".
+  const reproducedCellKeys = useMemo(() => {
+    const s = new Set();
+    for (const cv of visibleCrossValidations) {
+      const cond = cv.condition == null ? '' : String(cv.condition);
+      const cell = allCells.find(c => c.metric_id === cv.metric_id && c.condition === cond);
+      if (cell) s.add(cell.key);
+    }
+    return s;
+  }, [visibleCrossValidations, allCells]);
+
+  // Cells with leaderboard entries but no cross-validation in scope: surface
+  // them as "Not yet reproduced", confidence-filtering their entries so they
+  // honour the same threshold as everything else.
+  const unreproducedCells = useMemo(() => {
+    return visibleCells
+      .filter(cell => !reproducedCellKeys.has(cell.key))
+      .map(cell => ({
+        ...cell,
+        entries: (cell.entries || []).filter(passesConf),
+      }))
+      .filter(cell => cell.entries.length > 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [methodIndex, minConfidence, showLowConf]);
+  }, [visibleCells, reproducedCellKeys, showLowConf, minConfidence]);
 
-  // Helper: label for dropdown option
-  function lbOptionLabel(key) {
-    const lb = benchmarkData.leaderboards[key];
-    if (!lb) return key;
-    const { metric_label, condition, dataset_id, entries } = lb;
-    let label = metric_label || key;
-    if (condition)  label += ` — ${condition}`;
-    if (dataset_id) label += ` / ${dataset_id}`;
-    label += ` (${entries.length} method${entries.length !== 1 ? 's' : ''})`;
-    return label;
-  }
+  // The cell currently open in the Comparisons drill-down, with its entries
+  // confidence-filtered to match the rest of the page.
+  const activeCell = useMemo(() => {
+    if (!activeCellKey) return null;
+    const cell = allCells.find(c => c.key === activeCellKey);
+    if (!cell) return null;
+    return { ...cell, entries: (cell.entries || []).filter(passesConf) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCellKey, allCells, showLowConf, minConfidence]);
+
+  // Open the cell-scoped Comparisons view for a given cell key.
+  const openCell = (cellKey) => {
+    setActiveCellKey(cellKey);
+    setActiveView('comparisons');
+  };
+
+  const backToReproducibility = () => {
+    setActiveView('reproducibility');
+  };
 
   // -------------------------------------------------------------------------
   // Loading / empty states
@@ -132,7 +188,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
     );
   }
 
-  if (!benchmarkData || leaderboardKeys.length === 0) {
+  if (!benchmarkData || allCells.length === 0) {
     return (
       <div className="benchmarks-page">
         <div className="benchmarks-empty">
@@ -141,9 +197,6 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
       </div>
     );
   }
-
-  // Chart data for leaderboard bar chart
-  const chartEntries = [...visibleEntries].reverse();
 
   return (
     <div className="benchmarks-page">
@@ -156,7 +209,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
         </div>
         <div className="benchmarks-stat">
           <span className="benchmarks-stat-value">{stats.n_leaderboards ?? '—'}</span>
-          <span className="benchmarks-stat-label">benchmarks <Help text="Distinct metric + condition leaderboards (e.g. success rate on pile scenes) with at least two methods to rank." /></span>
+          <span className="benchmarks-stat-label">benchmarks <Help text="Distinct metric + condition cells (e.g. success rate on pile scenes). Drill into one to compare the methods measured under those exact conditions." /></span>
         </div>
         <div className="benchmarks-stat">
           <span className="benchmarks-stat-value">{stats.n_methods_indexed ?? '—'}</span>
@@ -164,31 +217,41 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
         </div>
         <div className="benchmarks-stat">
           <span className="benchmarks-stat-value">{stats.n_cross_validations ?? '—'}</span>
-          <span className="benchmarks-stat-label">cross-paper <Help text="Numbers reported for the same method + metric by 2+ independent papers — the basis for the CV consistency check." /></span>
+          <span className="benchmarks-stat-label">cross-paper <Help text="Numbers reported for the same method + metric by 2+ independent papers — the basis for the reproducibility consistency check." /></span>
         </div>
       </div>
 
-      {/* ── Tabs ───────────────────────────────────────────────────────── */}
+      {/* ── Tabs (views) ───────────────────────────────────────────────── */}
       <div className="benchmarks-tabs">
         <button
-          className={`benchmarks-tab ${activeTab === 'agreement' ? 'active' : ''}`}
-          onClick={() => setActiveTab('agreement')}
+          className={`benchmarks-tab ${activeView === 'reproducibility' ? 'active' : ''}`}
+          onClick={() => setActiveView('reproducibility')}
         >
-          Agreement
+          Reproducibility
         </button>
         <button
-          className={`benchmarks-tab ${activeTab === 'leaderboards' ? 'active' : ''}`}
-          onClick={() => setActiveTab('leaderboards')}
+          className={`benchmarks-tab ${activeView === 'comparisons' ? 'active' : ''}`}
+          onClick={() => setActiveView('comparisons')}
+          disabled={!activeCellKey}
+          title={activeCellKey ? '' : 'Pick a cell from the spine or a result to compare'}
         >
-          Leaderboards
-        </button>
-        <button
-          className={`benchmarks-tab ${activeTab === 'head-to-head' ? 'active' : ''}`}
-          onClick={() => setActiveTab('head-to-head')}
-        >
-          Head-to-Head
+          Comparisons
         </button>
       </div>
+
+      {/* ── Condition spine (persistent facet filter bar) ──────────────────
+       * Persists across the reproducibility landing, where it picks among the
+       * (metric × condition) cells. Inside a single cell-scoped Comparisons
+       * drill-down the spine is hidden, because the cell header already states
+       * the exact conditions — re-showing the facet chips there would be
+       * redundant (and would double the scene/criterion tokens on screen). */}
+      {activeView === 'reproducibility' && (
+        <ConditionSpine
+          benchmarkData={benchmarkData}
+          value={conditionFilter}
+          onChange={setConditionFilter}
+        />
+      )}
 
       {/* ── Confidence filter (driven by the global Min-confidence control) ─── */}
       <div className="benchmarks-confidence-toggle">
@@ -203,276 +266,29 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* LEADERBOARDS TAB                                               */}
+      {/* REPRODUCIBILITY VIEW — default landing                          */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {activeTab === 'leaderboards' && (
-        <div className="benchmarks-leaderboard-section">
-
-          {/* Metric selector */}
-          <div className="benchmarks-metric-selector">
-            <label>Metric / Benchmark:</label>
-            <select
-              value={selectedKey || ''}
-              onChange={e => setSelectedKey(e.target.value)}
-            >
-              {leaderboardKeys.map(k => (
-                <option key={k} value={k}>{lbOptionLabel(k)}</option>
-              ))}
-            </select>
-          </div>
-
-          {visibleEntries.length === 0 ? (
-            <div className="benchmarks-empty benchmarks-empty-filtered">
-              Nothing meets the {Math.round(minConfidence * 100)}% confidence threshold for this selection — pick a lower tier on the <em>Evidence</em> filter in the header (or &ldquo;All&rdquo;) to see every extracted result.
-            </div>
-          ) : (
-            <>
-              {/* Bar chart */}
-              <div className="benchmarks-chart-container">
-                <Plot
-                  data={[{
-                    type: 'bar',
-                    orientation: 'h',
-                    y: chartEntries.map(e => e.method),
-                    x: chartEntries.map(e => e.value),
-                    text: chartEntries.map(e =>
-                      `${e.value}${e.n_reports > 1 ? ` (${e.n_reports} reports)` : ''}`
-                    ),
-                    textposition: 'outside',
-                    marker: {
-                      color: chartEntries.map((_, i, arr) =>
-                        i === arr.length - 1 ? '#16657d' : '#93c5d6'
-                      ),
-                    },
-                    hovertemplate: '%{y}: %{x}<br>Source: %{customdata}<extra></extra>',
-                    customdata: chartEntries.map(e =>
-                      (e.source_papers || []).join(', ').replace(/-/g, ' ')
-                    ),
-                  }]}
-                  layout={{
-                    title: {
-                      text: currentLb
-                        ? `${currentLb.metric_label}${currentLb.condition ? ' — ' + currentLb.condition : ''}`
-                        : selectedKey,
-                      font: { size: 14, color: '#2a3142' },
-                    },
-                    margin: { l: 200, r: 80, t: 40, b: 40 },
-                    height: Math.max(250, visibleEntries.length * 36 + 80),
-                    xaxis: {
-                      title: currentLb?.metric_label || selectedKey,
-                      gridcolor: '#ebeef2',
-                    },
-                    yaxis: { automargin: true },
-                    plot_bgcolor: '#ffffff',
-                    paper_bgcolor: '#ffffff',
-                    font: { family: 'PT Sans, sans-serif', size: 11, color: '#2a3142' },
-                  }}
-                  config={{ displayModeBar: false, responsive: true }}
-                  style={{ width: '100%' }}
-                />
-              </div>
-
-              {/* Leaderboard table */}
-              <div className="benchmarks-table-container">
-                <table className="benchmarks-table">
-                  <thead>
-                    <tr>
-                      <th>Rank</th>
-                      <th>Method</th>
-                      <th>Score <Help text="The method's best reported value for this metric and condition, across every paper that reports it." /></th>
-                      <th>Grade <Help text="Evidence grade — how much to trust this number. A = corroborated by multiple papers with consistent values; B = a single solid report (or minor spread); C = low-confidence (single weak report, or papers disagree)." /></th>
-                      <th>CV% <Help text="Coefficient of Variation: the standard deviation divided by the mean of this method's score across independent papers, as a percent. Low = papers agree (trustworthy); high = they disagree. Shown only when 2+ papers report it." /></th>
-                      <th>Source Paper(s) <Help text="The paper(s) the number was extracted from. Click 'Source' to see the exact table cell, caption, and a crop of the source table." /></th>
-                      <th>Reports <Help text="How many distinct papers independently report this number. More papers = stronger corroboration. Several cells from one table count as a single report, not many." /></th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleEntries.map((entry, i) => {
-                      const isExpanded = expandedSourceRow === entry.method;
-                      return (
-                        <React.Fragment key={entry.method}>
-                          <tr
-                            className={[
-                              i === 0 ? 'benchmarks-rank-1' : '',
-                              selectedPoint?.name === entry.method ? 'benchmarks-selected' : '',
-                            ].filter(Boolean).join(' ')}
-                            onClick={() => {
-                              const match = (data || []).find(d => d.name === entry.method);
-                              if (match && onSelect) onSelect(match);
-                            }}
-                          >
-                            <td className="benchmarks-rank">{i + 1}</td>
-                            <td className="benchmarks-method">{entry.method}</td>
-                            <td className="benchmarks-score">{entry.value}</td>
-                            <td className="benchmarks-grade-cell">
-                              {entry.grade && (
-                                <span className={`benchmarks-grade-badge ${gradeClass(entry.grade)}`}>
-                                  {entry.grade}
-                                </span>
-                              )}
-                            </td>
-                            <td className="benchmarks-cv-cell">
-                              {cvLabel(entry.cv, entry.n_reports)}
-                            </td>
-                            <td className="benchmarks-paper">
-                              {(entry.source_papers || []).join(', ').replace(/-/g, ' ')}
-                            </td>
-                            <td className="benchmarks-reports">{entry.n_reports}</td>
-                            <td className="benchmarks-source-col" onClick={e => e.stopPropagation()}>
-                              {entry.sources && entry.sources.length > 0 && (
-                                <button
-                                  className={`benchmarks-source-btn${isExpanded ? ' active' : ''}`}
-                                  onClick={() => setExpandedSourceRow(isExpanded ? null : entry.method)}
-                                  aria-expanded={isExpanded}
-                                >
-                                  Source
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                          {isExpanded && entry.sources && entry.sources.length > 0 && (
-                            <tr className="benchmarks-source-row">
-                              <td colSpan={8} className="benchmarks-source-panel-cell">
-                                <div className="benchmarks-source-panel">
-                                  {entry.sources.map((src, si) => (
-                                    <div key={si} className="benchmarks-source-item">
-                                      <div className="benchmarks-source-meta">
-                                        <span className="benchmarks-source-value-str">{src.value_str}</span>
-                                        <span className={`benchmarks-source-extractor-badge`}>{src.extractor}</span>
-                                        <span className="benchmarks-source-paper">{(src.paper || '').replace(/-/g, ' ')}</span>
-                                        {src.page != null && (
-                                          <span className="benchmarks-source-page">p.{src.page}</span>
-                                        )}
-                                      </div>
-                                      {src.table_caption && (
-                                        <div className="benchmarks-source-caption">{src.table_caption}</div>
-                                      )}
-                                      {src.crop_image ? (
-                                        <img
-                                          className="benchmarks-source-crop"
-                                          src={src.crop_image}
-                                          alt={`source table for ${entry.method}`}
-                                        />
-                                      ) : (
-                                        <div className="benchmarks-source-no-crop">table image not available yet</div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* HEAD-TO-HEAD TAB                                               */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {activeTab === 'head-to-head' && (
-        <div className="benchmarks-h2h-section">
-          {winLossSummary.length === 0 ? (
-            <div className="benchmarks-empty">No head-to-head comparison data available.</div>
-          ) : (
-            <>
-              <div className="benchmarks-h2h-chart">
-                <Plot
-                  data={[
-                    {
-                      type: 'bar',
-                      name: 'Wins',
-                      orientation: 'h',
-                      y: winLossSummary.slice(0, 20).reverse().map(e => e.name),
-                      x: winLossSummary.slice(0, 20).reverse().map(e => e.n_wins),
-                      marker: { color: '#47a36d' },
-                      hovertemplate: '%{y}: %{x} wins<extra></extra>',
-                    },
-                    {
-                      type: 'bar',
-                      name: 'Losses',
-                      orientation: 'h',
-                      y: winLossSummary.slice(0, 20).reverse().map(e => e.name),
-                      x: winLossSummary.slice(0, 20).reverse().map(e => -e.n_losses),
-                      marker: { color: '#d95a3e' },
-                      hovertemplate: '%{y}: %{customdata} losses<extra></extra>',
-                      customdata: winLossSummary.slice(0, 20).reverse().map(e => e.n_losses),
-                    },
-                  ]}
-                  layout={{
-                    title: { text: 'Win / Loss Record (Top 20)', font: { size: 14, color: '#2a3142' } },
-                    barmode: 'relative',
-                    margin: { l: 200, r: 40, t: 40, b: 40 },
-                    height: Math.max(300, Math.min(20, winLossSummary.length) * 32 + 80),
-                    xaxis: { title: 'Comparison pairs', gridcolor: '#ebeef2', zeroline: true, zerolinecolor: '#d8dde4' },
-                    yaxis: { automargin: true },
-                    plot_bgcolor: '#ffffff',
-                    paper_bgcolor: '#ffffff',
-                    font: { family: 'PT Sans, sans-serif', size: 11, color: '#2a3142' },
-                    legend: { orientation: 'h', y: 1.08 },
-                    showlegend: true,
-                  }}
-                  config={{ displayModeBar: false, responsive: true }}
-                  style={{ width: '100%' }}
-                />
-              </div>
-
-              <div className="benchmarks-table-container">
-                <table className="benchmarks-table">
-                  <thead>
-                    <tr>
-                      <th>Method</th>
-                      <th>Wins <Help text="Number of head-to-head comparisons (within a single paper, same metric and condition) where this method beat another." /></th>
-                      <th>Losses <Help text="Number of head-to-head comparisons where another method beat this one." /></th>
-                      <th>Net <Help text="Wins minus losses — a quick tally of how often this method comes out ahead in direct comparisons." /></th>
-                      <th>Metrics <Help text="The distinct metrics this method has been compared on (e.g. success rate, latency)." /></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {winLossSummary.map(entry => (
-                      <tr
-                        key={entry.name}
-                        className={selectedPoint?.name === entry.name ? 'benchmarks-selected' : ''}
-                        onClick={() => {
-                          const match = (data || []).find(d => d.name === entry.name);
-                          if (match && onSelect) onSelect(match);
-                        }}
-                      >
-                        <td className="benchmarks-method">{entry.name}</td>
-                        <td className="benchmarks-wins">{entry.n_wins}</td>
-                        <td className="benchmarks-losses">{entry.n_losses}</td>
-                        <td className={`benchmarks-net ${entry.n_wins - entry.n_losses > 0 ? 'positive' : entry.n_wins - entry.n_losses < 0 ? 'negative' : ''}`}>
-                          {entry.n_wins - entry.n_losses > 0 ? '+' : ''}{entry.n_wins - entry.n_losses}
-                        </td>
-                        <td className="benchmarks-metric-list">
-                          {(entry.metrics || []).slice(0, 3).join(', ')}
-                          {(entry.metrics || []).length > 3 ? ` +${entry.metrics.length - 3}` : ''}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* AGREEMENT (CROSS-PAPER REPRODUCIBILITY) TAB — default landing  */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {activeTab === 'agreement' && (
-        <AgreementView
+      {activeView === 'reproducibility' && (
+        <ReproducibilityView
           crossValidations={visibleCrossValidations}
           totalCrossValidations={crossValidations.length}
           minConfidence={minConfidence}
+          unreproducedCells={unreproducedCells}
+          onOpenCell={openCell}
+          showMetric={showMetricOnCards}
+        />
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* COMPARISONS VIEW — cell-scoped drill-down                       */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {activeView === 'comparisons' && (
+        <ComparisonsView
+          cell={activeCell}
+          data={data}
+          selectedPoint={selectedPoint}
+          onSelect={onSelect}
+          onBack={backToReproducibility}
         />
       )}
 

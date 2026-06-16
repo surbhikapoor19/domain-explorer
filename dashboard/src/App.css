@@ -6155,3 +6155,253 @@ body {
   font-style: italic;
   margin-top: 0.2rem;
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * Phase 2a restructure — Condition spine, Reproducibility cards, Comparisons
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Condition spine (persistent facet filter bar) ──────────────────────── */
+.benchmarks-condition-spine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1.1rem;
+  margin: 0.6rem 1.5rem 0;
+  padding: 0.55rem 0.85rem;
+  background: var(--primary-wash);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+}
+.benchmarks-spine-facet {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.benchmarks-spine-facet-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+.benchmarks-spine-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.benchmarks-spine-chip {
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-mid);
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.benchmarks-spine-chip:hover { border-color: var(--primary); color: var(--primary); }
+.benchmarks-spine-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.benchmarks-spine-clear {
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 12px;
+  border-radius: 999px;
+  border: 1px dashed var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.benchmarks-spine-clear:hover { border-color: var(--primary); color: var(--primary); }
+.benchmarks-spine-clear.active {
+  background: var(--text-mid);
+  border-style: solid;
+  border-color: var(--text-mid);
+  color: #fff;
+}
+.benchmarks-spine-coverage {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #b45309;
+  background: #fef6e7;
+  border: 1px solid #f4e0b6;
+  border-radius: 6px;
+  padding: 2px 10px;
+}
+
+/* ── Reproducibility cards — clickable + spread + drill cue ──────────────── */
+.benchmarks-cv-card-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.05s, border-color 0.15s;
+}
+.benchmarks-cv-card-clickable:hover {
+  box-shadow: 0 2px 10px rgba(22, 101, 125, 0.12);
+}
+.benchmarks-cv-card-clickable:active { transform: translateY(1px); }
+
+.benchmarks-cv-spread {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0.1rem;
+  font-size: 0.66rem;
+  color: var(--text-muted);
+}
+.benchmarks-cv-spread-track {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #d6ede0, #9ed6b6);
+}
+.benchmarks-cv-spread-mean {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #1a7a42;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(26, 122, 66, 0.4);
+}
+.benchmarks-cv-spread-min, .benchmarks-cv-spread-max { font-variant-numeric: tabular-nums; }
+
+.benchmarks-cv-drill {
+  margin-top: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: right;
+  opacity: 0.75;
+}
+.benchmarks-cv-card-clickable:hover .benchmarks-cv-drill { opacity: 1; }
+
+/* Not-yet-reproduced (single-paper leaderboard) cards */
+.benchmarks-agreement-unreproduced .benchmarks-agreement-bucket-title { color: var(--text-mid); }
+.benchmarks-cv-card-single { border-left-color: #c9b27a; }
+.benchmarks-cv-single-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+.benchmarks-cv-single-method {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+.benchmarks-cv-entry-source { position: relative; display: inline-flex; }
+.benchmarks-source-panel-inline {
+  margin-top: 0.4rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--primary-wash);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+
+/* ── Cell-scoped Comparisons view ───────────────────────────────────────── */
+.benchmarks-comparisons-section { margin-top: 0.4rem; }
+
+.benchmarks-cell-header { margin-bottom: 0.8rem; }
+.benchmarks-cell-back {
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+.benchmarks-cell-back:hover { text-decoration: underline; }
+.benchmarks-cell-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+.benchmarks-cell-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.benchmarks-cell-cond { color: var(--text-muted); font-weight: 600; }
+.benchmarks-cell-facets { display: inline-flex; gap: 0.35rem; flex-wrap: wrap; }
+.benchmarks-cell-facet {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+.benchmarks-cell-facet-scene { background: #e8f3fb; color: #16657d; }
+.benchmarks-cell-facet-criterion { background: #e6f7ef; color: #1a7a42; }
+.benchmarks-cell-facet-raw { background: #f0f2f5; color: #6b7280; }
+.benchmarks-row-scope {
+  background: #f0f2f5;
+  color: #8691a0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+.benchmarks-cell-caption {
+  margin: 0.45rem 0 0;
+  font-size: 0.76rem;
+  font-style: italic;
+  color: #b45309;
+  background: #fef6e7;
+  border-left: 3px solid #f0c674;
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+}
+
+.benchmarks-h2h-cell { margin-top: 0.5rem; }
+.benchmarks-h2h-table .benchmarks-h2h-winner { background: #f3fbf6; }
+.benchmarks-h2h-name { font-weight: 700; }
+.benchmarks-h2h-tag-win {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1a7a42;
+  background: #e6f7ef;
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 0.3rem;
+}
+.benchmarks-h2h-provenance {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  background: var(--primary-wash);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+.benchmarks-h2h-provenance-line {
+  font-size: 0.76rem;
+  color: var(--text-mid);
+  text-transform: capitalize;
+}
+.benchmarks-h2h-provenance-line strong { color: var(--text); font-family: 'Courier New', monospace; }
+.benchmarks-h2h-proof-wrap { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.benchmarks-cell-gap-note { margin: 0.75rem 0; }
