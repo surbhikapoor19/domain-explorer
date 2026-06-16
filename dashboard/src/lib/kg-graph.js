@@ -22,8 +22,6 @@ export function initGraph(kgData) {
   return graph;
 }
 
-export function getGraph() { return graph; }
-
 // Mirrors backend INTENT_CONFIG. Each intent re-weights what gets pulled into
 // the focused subgraph so a "comparison" query brings in outperforms/cites
 // edges + comparison claims, while a "hardware" query brings in hardware

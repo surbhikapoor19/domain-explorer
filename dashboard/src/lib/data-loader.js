@@ -6,10 +6,6 @@ export function setDataPrefix(prefix) {
   _dataPrefix = prefix;
 }
 
-export function getDataPrefix() {
-  return _dataPrefix;
-}
-
 async function loadJSON(path) {
   if (cache[path]) return cache[path];
   const res = await fetch(path);

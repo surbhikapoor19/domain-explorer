@@ -60,22 +60,6 @@ const ACRONYMS = {
 
 export default ACRONYMS;
 
-// Helper: expand a query by adding full forms of any acronyms found
-export function expandQueryWithAcronyms(query) {
-  const words = query.split(/\s+/);
-  const expansions = [];
-  words.forEach(w => {
-    const clean = w.replace(/[.,;:!?'"()]/g, '').toUpperCase();
-    if (ACRONYMS[clean]) {
-      expansions.push(ACRONYMS[clean].full);
-    }
-  });
-  if (expansions.length > 0) {
-    return query + ' ' + expansions.join(' ');
-  }
-  return query;
-}
-
 // Helper: get all forms of keywords for highlighting
 export function expandKeywordsWithAcronyms(keywords) {
   const expanded = [...keywords];
