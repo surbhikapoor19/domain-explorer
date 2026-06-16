@@ -15,6 +15,7 @@ import GraphReasoningPage from './components/GraphReasoningPage';
 import BenchmarksPage from './components/BenchmarksPage';
 import AdminPage from './components/AdminPage';
 import SettingsPanel from './components/SettingsPanel';
+import ManualButton from './components/ManualButton';
 import { loadAllData, loadTfidfMatrices, loadDescriptionEmbeddings, loadUmapDefault, setDataPrefix } from './lib/data-loader';
 import { recomputeUmap } from './lib/umap';
 import { runAIQuery } from './lib/ai-pipeline';
@@ -346,6 +347,7 @@ function App() {
           >
             Admin
           </button>
+          <ManualButton />
           {(recomputing || filterActive || hasHighlights) && (
             <div className="header-status">
               {recomputing && <span className="status-computing">Computing...</span>}

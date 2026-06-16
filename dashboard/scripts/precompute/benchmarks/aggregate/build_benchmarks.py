@@ -199,9 +199,15 @@ def build_benchmark_json(records, cfg):
 
     comparisons, method_index = _comparisons_and_index(publishable, cross_validations, metric_type, cv_thr)
 
+    # n_grade_a counts grade-A CROSS-VALIDATIONS, not comparisons. A comparison is a
+    # single-paper pairwise win (evidence_grade is called with n_papers=1), so by
+    # construction it can never reach grade A (A requires 2+ consistent papers).
+    # Counting comparisons therefore always yielded 0 even when multiple papers
+    # genuinely corroborate a result. Cross-validations ARE the multi-paper surface
+    # where grade A is meaningful, so the headline "grade-A" tally is taken there.
     stats = {'n_comparisons': len(comparisons), 'n_leaderboards': len(leaderboards),
              'n_methods_indexed': len(method_index), 'n_cross_validations': len(cross_validations),
-             'n_grade_a': sum(1 for c in comparisons if c['grade'] == 'A'),
+             'n_grade_a': sum(1 for v in cross_validations if v['grade'] == 'A'),
              'n_quarantined': len(quarantined)}
     q_reasons = defaultdict(int)
     for r in quarantined:

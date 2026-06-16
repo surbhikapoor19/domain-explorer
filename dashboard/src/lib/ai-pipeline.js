@@ -77,9 +77,13 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   const responseData = subset.length ? subset : allMethods;
 
   const highlightMethods = filterMethods || responseData.slice(0, 8).map(m => m.name);
+  // Float the query-relevant methods to the front and cap the dump so the prompt
+  // leads with what matters instead of an unranked wall of all methods.
   const methodSummaries = buildMethodSummaries(responseData, {
     summaryColumns: domainOpts.summaryColumns,
     shortNames: domainOpts.shortNames,
+    prioritize: highlightMethods,
+    limit: 12,
   });
 
   // Step 3: RAG retrieval (client-side)
@@ -110,7 +114,10 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   let kgTraversal = [];
   try {
     kgData = await loadKgFull();
-    const kg = buildKgContext(kgData, highlightMethods);
+    // Seed the subgraph from the RAG-retrieved papers when the query's methods
+    // don't resolve (broad queries), so the KG context matches the question
+    // instead of arbitrary array-order methods.
+    const kg = buildKgContext(kgData, highlightMethods, { seedPaperIds: ragAnalytics.papers || [] });
     kgContext = kg.kgContext;
     kgTraversal = kg.kgTraversal;
   } catch (e) {
@@ -122,7 +129,9 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   let benchmarkText = '';
   try {
     const bench = await loadBenchmarkComparisons();
-    benchmarkText = buildBenchmarkContext(effectiveQuery, bench);
+    // knownMethods lets the benchmark grounding fire on comparison intent
+    // ("compare GPD and VGN") even when no metric keyword is present.
+    benchmarkText = buildBenchmarkContext(effectiveQuery, bench, { knownMethods: methodNames });
   } catch (e) { /* benchmarks optional */ }
 
   let insightText = '';

@@ -143,34 +143,6 @@ export default function ProofBlock({
           <section className="gr-proof-section">
             <div className="gr-proof-step">
               <span className="gr-proof-step-num">2</span>
-              <span className="gr-proof-step-label">Property extraction</span>
-            </div>
-            <div className="gr-proof-extraction">
-              <span className="gr-proof-tally gr-proof-tally-shared">
-                {extractionSummary.shared} shared
-              </span>
-              <span className="gr-proof-tally gr-proof-tally-differs">
-                {extractionSummary.differs} differ
-              </span>
-              {extractionSummary.partial > 0 && (
-                <span className="gr-proof-tally gr-proof-tally-partial">
-                  {extractionSummary.partial} partial
-                </span>
-              )}
-              {extractionSummary.gap > 0 && (
-                <span className="gr-proof-tally gr-proof-tally-gap">
-                  {extractionSummary.gap} gap{extractionSummary.gap === 1 ? '' : 's'}
-                </span>
-              )}
-              <span className="gr-proof-extraction-total">
-                across {PRIORITY_DIMS.length} priority dimensions
-              </span>
-            </div>
-          </section>
-
-          <section className="gr-proof-section">
-            <div className="gr-proof-step">
-              <span className="gr-proof-step-num">3</span>
               <span className="gr-proof-step-label">Evidence collected</span>
             </div>
             {topQuotes.length === 0 && (
@@ -204,7 +176,7 @@ export default function ProofBlock({
 
           <section className="gr-proof-section">
             <div className="gr-proof-step">
-              <span className="gr-proof-step-num">4</span>
+              <span className="gr-proof-step-num">3</span>
               <span className="gr-proof-step-label">Synthesis</span>
             </div>
             <div className="gr-proof-meta">

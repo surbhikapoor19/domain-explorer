@@ -21,10 +21,36 @@ export const DEFAULT_SHORT_NAMES = {
 // Summarize each method over the domain's most meaningful columns for the LLM
 // prompt. `summaryColumns`/`shortNames` come from the active domain config
 // (priorityDims + shortNames); for grasp with no config they fall back above.
-export function buildMethodSummaries(methods, { summaryColumns, shortNames } = {}) {
+export function buildMethodSummaries(methods, { summaryColumns, shortNames, limit, prioritize } = {}) {
   const cols = (summaryColumns && summaryColumns.length) ? summaryColumns : DEFAULT_SUMMARY_COLUMNS;
   const shorts = shortNames || DEFAULT_SHORT_NAMES;
-  return methods.map(m => {
+
+  // Stable-sort prioritized methods (in the order they are named) to the front;
+  // everything else keeps its original relative order. Names not present in
+  // `methods` are ignored.
+  let ordered = methods;
+  if (prioritize && prioritize.length) {
+    const priorityRank = new Map();
+    prioritize.forEach((name, idx) => {
+      if (!priorityRank.has(name)) priorityRank.set(name, idx);
+    });
+    ordered = methods
+      .map((m, idx) => ({ m, idx }))
+      .sort((a, b) => {
+        const ra = priorityRank.has(a.m.name) ? priorityRank.get(a.m.name) : Infinity;
+        const rb = priorityRank.has(b.m.name) ? priorityRank.get(b.m.name) : Infinity;
+        if (ra !== rb) return ra - rb;
+        return a.idx - b.idx; // stable for equal priority (incl. both non-prioritized)
+      })
+      .map(({ m }) => m);
+  }
+
+  // Cap the number of emitted lines after prioritization, if requested.
+  if (typeof limit === 'number' && limit < ordered.length) {
+    ordered = ordered.slice(0, limit);
+  }
+
+  return ordered.map(m => {
     const parts = cols.map(col => {
       const val = m.metadata?.[col] || '';
       if (!val) return null;
@@ -51,10 +77,14 @@ export function formatRagContext(chunks) {
     score: chunk.score || 0,
   }));
 
+  // Rank-aware character caps: top-3 chunks keep more of their text (1500),
+  // ranks 4-6 keep a smaller window (900). Stops starving the LLM of the most
+  // relevant paper text while bounding total prompt size.
   const ragText = chunks.slice(0, 6).map((chunk, i) => {
     const paper = chunk.metadata?.paper_title || chunk.metadata?.paper_id || 'Unknown';
     const section = chunk.metadata?.section || '';
-    const text = (chunk.text || '').slice(0, 400);
+    const cap = i < 3 ? 1500 : 900;
+    const text = (chunk.text || '').slice(0, cap);
     return `[${paper}${section ? ' - ' + section : ''}] (relevance: ${(chunk.score || 0).toFixed(3)})\n${text}`;
   }).join('\n\n');
 

@@ -9,9 +9,23 @@
  */
 import React, { useMemo } from 'react';
 import InsightBullets from './InsightBullets';
+import Tooltip from './Tooltip';
 import { HighlightedText } from '../highlighter';
 import { CLUSTER_COLORS } from '../constants';
 import { useDomainConfig } from '../DomainContext';
+
+// Per-status copy: a short pill tooltip plus the plain-English meaning used in
+// the table caption. Keeps the two surfaces describing the four states from one
+// source of truth.
+const STATUS_TOOLTIPS = {
+  shared: 'All compared methods report the same value for this dimension.',
+  differs: 'Methods make different but equally valid choices for this dimension.',
+  partial: 'Only some of the compared methods document this dimension.',
+  gap: 'None of the compared methods document this dimension.',
+};
+
+const COMPARISON_TITLE_TOOLTIP =
+  'Each row is one priority dimension. The pill flags whether the compared methods agree (shared), make different valid choices (differs), are partly documented (partial), or have no data (gap).';
 
 const GRASP_PRIORITY_DIMS = [
   { key: 'Object Configuration',                                      label: 'Scene / Object Config' },
@@ -104,11 +118,18 @@ export default function AnswerBlock({
   return (
     <div className="gr-answer-block">
       <div className="gr-card-header">
-        <h3 className="gr-card-title">{title}</h3>
+        <Tooltip text={COMPARISON_TITLE_TOOLTIP} wide>
+          <h3 className="gr-card-title">{title}</h3>
+        </Tooltip>
         <span className="gr-count-badge">
-          {coverage.covered} / {coverage.total} dims with evidence
+          {coverage.covered} of {coverage.total} dimensions documented
         </span>
       </div>
+
+      <p className="gr-comparison-caption">
+        shared = all agree · differs = different valid choices · partial = some
+        documented · gap = no data
+      </p>
 
       <div className="gr-answer-methods">
         {anchorMethods.map(m => (
@@ -146,12 +167,11 @@ export default function AnswerBlock({
                 <tr key={d.key} className={`gr-cmp-row gr-cmp-${status}`}>
                   <td className="gr-cmp-dim">
                     <span className="gr-cmp-dim-label">{d.label}</span>
-                    <span className={`gr-cmp-status gr-cmp-status-${status}`}>
-                      {status === 'shared' && 'shared'}
-                      {status === 'differs' && 'differs'}
-                      {status === 'partial' && 'partial'}
-                      {status === 'gap' && 'gap'}
-                    </span>
+                    <Tooltip text={STATUS_TOOLTIPS[status]}>
+                      <span className={`gr-cmp-status gr-cmp-status-${status}`}>
+                        {status}
+                      </span>
+                    </Tooltip>
                   </td>
                   {anchorMethods.map(m => {
                     const v = normalize(m.meta[d.key]);

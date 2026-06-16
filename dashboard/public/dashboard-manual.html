@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Domain Explorer — User &amp; Architecture Manual</title>
+<style>
+  :root{
+    --teal:#16657d; --teal-deep:#0e4457; --accent:#d95a3e; --ink:#1c2528;
+    --muted:#5a6b70; --line:#dce6e9; --bg:#f5f8f9; --card:#ffffff;
+    --good:#2f9e6f; --warn:#d9883e; --soft:#eef6f8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.55;font-size:15px}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;background:#eef4f6;padding:1px 5px;border-radius:4px;font-size:.86em;color:var(--teal-deep)}
+  .layout{display:grid;grid-template-columns:248px 1fr;max-width:1180px;margin:0 auto;gap:0}
+  /* Sidebar */
+  .sidebar{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:22px 16px;
+    border-right:1px solid var(--line);background:var(--card)}
+  .brandmark{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+  .brandmark .dot{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--teal),var(--teal-deep));
+    display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px}
+  .brandmark b{font-size:15px}
+  .sidebar .sub{font-size:11.5px;color:var(--muted);margin:0 0 16px 35px}
+  .toc a{display:block;padding:6px 10px;border-radius:7px;color:var(--muted);font-size:13.5px;font-weight:600;border-left:2px solid transparent}
+  .toc a:hover{background:var(--soft);text-decoration:none;color:var(--teal-deep)}
+  .toc a.active{background:var(--soft);color:var(--teal-deep);border-left-color:var(--accent)}
+  .toc .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#9aa9ad;margin:14px 10px 4px;font-weight:700}
+  /* Content */
+  .content{padding:0 40px 80px;min-width:0}
+  .hero{padding:46px 0 26px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .hero .tag{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+  .hero h1{font-size:34px;margin:14px 0 6px;letter-spacing:-.5px}
+  .hero p{font-size:17px;color:var(--muted);max-width:62ch;margin:0}
+  section{padding:34px 0;border-bottom:1px solid var(--line);scroll-margin-top:18px}
+  /* H2 = MAJOR SECTION: big teal title with a filled number badge and a thick teal
+     underline rule — visually a section banner. */
+  section>h2{font-size:29px;font-weight:800;color:var(--teal-deep);letter-spacing:-.4px;margin:0 0 16px;
+    padding-bottom:11px;border-bottom:3px solid var(--teal);display:flex;align-items:center;gap:12px}
+  section>h2 .n{background:var(--teal);color:#fff;font-size:16px;font-weight:800;width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;flex:none}
+  section>.lede{color:var(--muted);margin:2px 0 18px;max-width:70ch}
+  /* H3 = SUBSECTION: clearly subordinate — RUST (not teal), smaller, with a rust
+     left-bar. Different hue + size + the bar means it never reads like an H2. */
+  h3{font-size:15.5px;color:var(--accent);font-weight:700;margin:28px 0 7px}
+  section>h3{border-left:4px solid var(--accent);padding-left:11px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:15px 17px}
+  .card.accent{border-left:4px solid var(--teal)}
+  .card h4{margin:0 0 5px;color:var(--teal-deep);font-size:14.5px}
+  .card p{margin:0;font-size:13.6px;color:#384a4f}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:5px}
+  .pill.a{background:#e4f4ec;color:var(--good)} .pill.b{background:#e7f0f4;color:var(--teal)} .pill.c{background:#fdf0e4;color:var(--warn)}
+  .callout{background:var(--soft);border:1px solid #cfe2e8;border-left:4px solid var(--teal);border-radius:8px;padding:12px 15px;margin:14px 0;font-size:13.8px}
+  .callout.tip{border-left-color:var(--accent);background:#fdf3f0;border-color:#f2d8cf}
+  .callout .lab{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);display:block;margin-bottom:3px}
+  .callout.tip .lab{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.4px}
+  th{background:var(--teal);color:#fff;text-align:left;padding:7px 11px;font-weight:600}
+  td{padding:7px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#f7fafb}
+  td b{color:var(--teal-deep)}
+  /* Tabs */
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+  .tab{padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);cursor:pointer;
+    font-weight:600;font-size:13.5px;color:var(--muted)}
+  .tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .panel{display:none;animation:fade .25s ease} .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:8px 0}
+  .steps li{counter-increment:s;position:relative;padding:6px 0 6px 38px;font-size:14px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:24px;height:24px;border-radius:50%;
+    background:var(--teal);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+  /* Collapsible */
+  details{border:1px solid var(--line);border-radius:9px;margin:9px 0;background:var(--card);overflow:hidden}
+  summary{cursor:pointer;padding:11px 15px;font-weight:650;color:var(--teal-deep);font-size:14px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸";color:var(--accent);margin-right:9px;display:inline-block;transition:.15s}
+  details[open] summary::before{transform:rotate(90deg)}
+  details .body{padding:0 15px 13px;font-size:13.6px;color:#384a4f}
+  figure{margin:16px 0;text-align:center}
+  figcaption{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic}
+  svg{max-width:100%;height:auto}
+  .stack-row td:first-child{font-weight:700;color:var(--teal-deep);width:26%}
+  footer{padding:26px 0 0;color:var(--muted);font-size:12.5px}
+  .agnostic{background:linear-gradient(100deg,#16657d,#0e4457);color:#fff;border-radius:12px;padding:18px 22px;margin:6px 0 0}
+  .agnostic h3{color:#fff;margin:0 0 6px}
+  .agnostic p{margin:0;color:#d7eef4;font-size:14px}
+  @media(max-width:880px){
+    .layout{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+    .toc{display:flex;flex-wrap:wrap;gap:4px} .toc .grp{width:100%}
+    .content{padding:0 18px 60px}.grid2{grid-template-columns:1fr}
+  }
+  @media print{.sidebar{display:none}.layout{display:block}.panel{display:block!important}.tab{display:none}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="brandmark"><span class="dot">DX</span><b>Domain Explorer</b></div>
+    <p class="sub">User &amp; Architecture Manual</p>
+    <div class="toc" id="toc">
+      <div class="grp">Use it</div>
+      <a href="#overview">Overview</a>
+      <a href="#start">Getting started</a>
+      <a href="#views">The four views</a>
+      <a href="#concepts">Key concepts</a>
+      <a href="#copilot">The AI copilot</a>
+      <div class="grp">Build it</div>
+      <a href="#pipeline">Pipeline architecture</a>
+      <a href="#stack">Technology stack</a>
+      <a href="#your-domain">Add your own domain</a>
+    </div>
+  </nav>
+
+  <main class="content">
+    <header class="hero">
+      <span class="tag">Any-domain &middot; PDF-driven</span>
+      <h1>Domain Explorer</h1>
+      <p>Point it at a folder of research papers and a spreadsheet of items, and it turns them into an
+      interactive knowledge map — a searchable graph, a similarity landscape, evidence-graded benchmark
+      tables, and an AI copilot that answers questions with sourced, verifiable numbers.</p>
+    </header>
+
+    <!-- ───────────── OVERVIEW ───────────── -->
+    <section id="overview">
+      <h2><span class="n">1</span> Overview</h2>
+      <p class="lede">Domain Explorer is <b>domain-agnostic</b>. The screenshots people first see are about
+      robotic grasp planning, but nothing in the tool is grasp-specific — it ships with example domains
+      (grasp planning, motion planning) and you can add your own. Wherever this manual says <i>“items”</i>,
+      read it as the things <i>your</i> corpus is about: methods, algorithms, drugs, materials, models…</p>
+
+      <div class="grid2">
+        <div class="card accent"><h4>1 · Ask &amp; reason</h4><p>Type a natural-language question. The system
+          retrieves relevant passages, walks a knowledge graph, and an LLM synthesizes a grounded answer with a
+          step-by-step proof of how it got there.</p></div>
+        <div class="card accent"><h4>2 · See the landscape <span style="font-size:10px;color:#d95a3e">(optional view)</span></h4><p>A 2-D similarity map (UMAP) groups similar items
+          into clusters. Nearby points = similar items. An optional secondary lens (off by default); the
+          knowledge graph is the primary navigation.</p></div>
+        <div class="card accent"><h4>3 · Trust the numbers</h4><p>Benchmark tables are extracted from the papers'
+          own result tables, each number carrying an <b>evidence grade</b> (A/B/C), a consistency score, and a
+          crop of the source table you can inspect.</p></div>
+        <div class="card accent"><h4>4 · Discover the non-obvious</h4><p>A graph neural network overlays
+          <b>predicted</b> relationships with confidence scores, surfacing connections the papers never stated
+          explicitly.</p></div>
+      </div>
+
+      <div class="agnostic">
+        <h3>The one-sentence model</h3>
+        <p>PDFs + a CSV of items &nbsp;→&nbsp; extraction &amp; embeddings &nbsp;→&nbsp; a knowledge graph,
+        a similarity map, and graded benchmarks &nbsp;→&nbsp; an explorable dashboard + a copilot. Swap the
+        PDFs and CSV, rebuild, and the whole experience re-skins to your field.</p>
+      </div>
+    </section>
+
+    <!-- ───────────── GETTING STARTED ───────────── -->
+    <section id="start">
+      <h2><span class="n">2</span> Getting started</h2>
+      <p class="lede">No install needed to <i>use</i> a published domain — it's a website. Here's the 60-second
+      orientation.</p>
+      <ol class="steps">
+        <li>Open the dashboard. You land on <b>Graph Reasoning</b> (the default view).</li>
+        <li>Either <b>ask a question</b> in the box at the top, or just explore the knowledge graph and the
+            insight panels below it.</li>
+        <li>Use the top nav to switch views: <b>Graph Reasoning</b>, <b>Explorer</b>, <b>Benchmarks</b>, and
+            (token-gated) <b>Admin</b>.</li>
+        <li>Use the <b>Evidence</b> filter in the header (<i>All / Hide weak / Strong only</i>) to hide weak/low-grade numbers across the whole app.</li>
+        <li>To run the copilot on your own key, open <b>⚙ Settings</b> and pick a provider (see
+            <a href="#copilot">The AI copilot</a>).</li>
+      </ol>
+      <div class="callout tip"><span class="lab">Tip</span>
+        Hover any <b>method/item row</b> in the table or any <b>node</b> in the graph — it spotlights the same
+        item across the table, the graph, and every panel. That cross-highlighting is the fastest way to learn
+        how things connect.</div>
+    </section>
+
+    <!-- ───────────── THE FOUR VIEWS ───────────── -->
+    <section id="views">
+      <h2><span class="n">3</span> The four views</h2>
+      <p class="lede">Each view answers a different question. Click through them:</p>
+      <div class="tabs" id="viewTabs">
+        <div class="tab active" data-p="v1">Graph Reasoning</div>
+        <div class="tab" data-p="v2">Explorer</div>
+        <div class="tab" data-p="v3">Benchmarks</div>
+        <div class="tab" data-p="v4">Admin</div>
+      </div>
+
+      <div class="panel active" id="v1">
+        <h3>Graph Reasoning — “how are these connected, and what does the literature say?”</h3>
+        <p>The landing view. A live <b>knowledge graph</b> of your corpus (items, papers, techniques, hardware,
+        authors, claims) you can pan, zoom, filter, and click into. Toggle between the documented
+        <b>Knowledge Graph</b> and the model-inferred <b>Predicted Relationships</b>. Below the graph sit
+        cross-highlighting insight panels (techniques, timeline, benchmarks, research-gap matrix).</p>
+        <p>Type a question and it becomes the <b>AI copilot</b>: it shows the answer, the sub-graph it traversed,
+        the supporting passages, and (for performance questions) the ranked benchmark evidence.</p>
+        <div class="callout"><span class="lab">Example</span> <code>Which approaches share a technique with the
+          top-cited item, and how do they differ?</code></div>
+      </div>
+
+      <div class="panel" id="v2">
+        <h3>Explorer — “what's the shape of the field?” <span style="font-size:11px;color:#d95a3e;font-weight:700">OPTIONAL · OFF BY DEFAULT</span></h3>
+        <p>A 2-D <b>UMAP</b> similarity map: each item is a dot, similar items sit close together, and
+        clustering colours the natural families. Adjust <b>attribute weights</b> to re-project the map around what
+        you care about (e.g. weight “input data” higher and watch the clusters re-form). A full, filterable
+        <b>item table</b> sits above it, cross-linked to the map.</p>
+        <div class="callout tip"><span class="lab">Note on UMAP</span> This similarity map is a <b>secondary lens</b>
+        and is <b>off by default</b> (enable it from Admin). The <b>Knowledge Graph</b> is the primary way to navigate.
+        UMAP's 2-D projection is used <i>only</i> here — the graph and the copilot don't depend on it. (The default cluster
+        <i>colours</i> you see across the app come from <b>HDBSCAN</b> in the precompute step; a separate client-side
+        k-means re-clusters live when you change attribute weights. Both are independent of the UMAP layout.)</div>
+      </div>
+
+      <div class="panel" id="v3">
+        <h3>Benchmarks — “what actually performs best, and can I trust it?”</h3>
+        <p>Leaderboards, head-to-head records, and cross-paper validation — all extracted from the papers' own
+        result tables. Every entry shows:</p>
+        <table>
+          <tr><th>Signal</th><th>Means</th></tr>
+          <tr><td><b>Value / rank</b></td><td>the metric (e.g. success rate) for that item + condition.</td></tr>
+          <tr><td><b>Evidence grade</b></td><td><span class="pill a">A</span>multiple papers agree
+            <span class="pill b">B</span>one solid source <span class="pill c">C</span>weak / papers disagree.</td></tr>
+          <tr><td><b>CV %</b></td><td>coefficient of variation across papers — low = consistent, high = disputed.</td></tr>
+          <tr><td><b>Source</b></td><td>the exact paper, table caption, page, and a <b>crop of the source table</b>.</td></tr>
+        </table>
+        <p>The header's <b>Evidence</b> filter (<i>All / Hide weak / Strong only</i>) hides anything below your
+        chosen tier so you only see numbers worth trusting.</p>
+      </div>
+
+      <div class="panel" id="v4">
+        <h3>Admin — “ingest a new corpus / rebuild”</h3>
+        <p>Token-gated. Upload a CSV + PDFs for a new domain, map columns to roles, provide the domain&rsquo;s
+        knowledge-graph aliases and benchmark metrics, then trigger a cloud build, watch its status, and toggle
+        which views are enabled. This is where a new domain is born (see
+        <a href="#your-domain">Add your own domain</a>).</p>
+      </div>
+    </section>
+
+    <!-- ───────────── KEY CONCEPTS ───────────── -->
+    <section id="concepts">
+      <h2><span class="n">4</span> Key concepts</h2>
+      <p class="lede">A few ideas explained once, used everywhere. Expand any to go deeper.</p>
+
+      <details open><summary>Evidence grades &amp; confidence (A / B / C)</summary>
+        <div class="body">Extracted numbers are not equal. A grade encodes how much to trust one: <b>A</b> when
+        multiple independent papers report consistent values, <b>B</b> for a single solid source, <b>C</b> when a
+        number is weak or papers disagree. A single 0–1 <b>confidence score</b> (grade + a penalty for high
+        variance) drives the global <b>Evidence</b> filter — pick <i>Hide weak</i> and grade-C / disputed
+        numbers vanish across Benchmarks, the detail panels, and head-to-head.</div></details>
+
+      <details><summary>Cross-highlighting (“everything connects to everything”)</summary>
+        <div class="body">Hovering or selecting an item in any surface — table row, graph node, scatter dot,
+        insight bar — lights up that item everywhere else. Clicking a category (a technique, a year, an author)
+        highlights every item connected to it across all panels. Click empty space, press <code>Esc</code>, or
+        re-click to clear.</div></details>
+
+      <details><summary>Predicted relationships (a graph neural network)</summary>
+        <div class="body">Beyond the relationships literally stated in papers, a heterogeneous graph neural network
+        learns the structure of the corpus and <b>predicts</b> likely-but-undocumented links (e.g. “these two items
+        probably belong in a head-to-head”), each with a confidence score and a min-confidence slider. It's a
+        hypothesis generator, clearly separated from documented facts.</div></details>
+
+      <details><summary>Provenance &amp; proof</summary>
+        <div class="body">Every benchmark number carries its lineage: the source paper, the raw cell text, the table
+        caption, the page, and an image crop of the table it came from. Click <b>Source</b> on any row to verify the
+        number with your own eyes — no black boxes.</div></details>
+
+      <details><summary>Research-gap matrix</summary>
+        <div class="body">A cross-tab of any two attributes from your CSV. Empty cells are <b>coverage gaps</b> —
+        combinations no item in the corpus addresses yet. A fast way to spot open problems / under-explored
+        regions in your field.</div></details>
+    </section>
+
+    <!-- ───────────── COPILOT ───────────── -->
+    <section id="copilot">
+      <h2><span class="n">5</span> The AI copilot</h2>
+      <p class="lede">The query box on Graph Reasoning. It runs <b>client-side</b>: retrieval + graph traversal +
+      benchmark grounding happen in your browser, and only the final prompt goes to an LLM.</p>
+      <figure>
+        <svg viewBox="0 0 760 130" role="img" aria-label="Copilot flow">
+          <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#16657d"/></marker></defs>
+          <g font-family="inherit" font-size="12">
+            <rect x="6" y="46" width="120" height="40" rx="8" fill="#eef6f8" stroke="#16657d"/>
+            <text x="66" y="62" text-anchor="middle" font-weight="700">Your question</text>
+            <text x="66" y="77" text-anchor="middle" fill="#5a6b70" font-size="10.5">natural language</text>
+            <rect x="166" y="14" width="150" height="32" rx="7" fill="#fff" stroke="#dce6e9"/>
+            <text x="241" y="34" text-anchor="middle">RAG: paper passages</text>
+            <rect x="166" y="49" width="150" height="32" rx="7" fill="#fff" stroke="#dce6e9"/>
+            <text x="241" y="69" text-anchor="middle">Knowledge-graph walk</text>
+            <rect x="166" y="84" width="150" height="32" rx="7" fill="#fdf3f0" stroke="#d95a3e"/>
+            <text x="241" y="104" text-anchor="middle" font-weight="700" fill="#b14b1f">Benchmark grounding</text>
+            <rect x="356" y="46" width="120" height="40" rx="8" fill="#eef6f8" stroke="#16657d"/>
+            <text x="416" y="62" text-anchor="middle" font-weight="700">Grounded prompt</text>
+            <text x="416" y="77" text-anchor="middle" fill="#5a6b70" font-size="10.5">all evidence assembled</text>
+            <rect x="516" y="46" width="100" height="40" rx="8" fill="#fff" stroke="#dce6e9"/>
+            <text x="566" y="70" text-anchor="middle">LLM (BYOK)</text>
+            <rect x="652" y="46" width="102" height="40" rx="8" fill="#e4f4ec" stroke="#2f9e6f"/>
+            <text x="703" y="62" text-anchor="middle" font-weight="700">Answer</text>
+            <text x="703" y="77" text-anchor="middle" fill="#5a6b70" font-size="10.5">+ proof + sources</text>
+            <line x1="126" y1="66" x2="164" y2="30" stroke="#16657d" marker-end="url(#ar)"/>
+            <line x1="126" y1="66" x2="164" y2="65" stroke="#16657d" marker-end="url(#ar)"/>
+            <line x1="126" y1="66" x2="164" y2="100" stroke="#16657d" marker-end="url(#ar)"/>
+            <line x1="316" y1="30" x2="354" y2="60" stroke="#16657d" marker-end="url(#ar)"/>
+            <line x1="316" y1="65" x2="354" y2="66" stroke="#16657d" marker-end="url(#ar)"/>
+            <line x1="316" y1="100" x2="354" y2="72" stroke="#16657d" marker-end="url(#ar)"/>
+            <line x1="476" y1="66" x2="514" y2="66" stroke="#16657d" marker-end="url(#ar)"/>
+            <line x1="616" y1="66" x2="650" y2="66" stroke="#16657d" marker-end="url(#ar)"/>
+          </g>
+        </svg>
+        <figcaption>For performance/ranking questions, the verified leaderboard is injected so the answer cites real, graded, sourced numbers.</figcaption>
+      </figure>
+      <h3>Bring your own key (run it locally / privately)</h3>
+      <p>Open <b>⚙ Settings → Provider</b>. The <code>Default</code> option uses a server-side key (production).
+      For local or private use, pick a BYOK provider and paste a token — it's stored only in your browser and sent
+      straight to the provider:</p>
+      <table>
+        <tr><th>Provider</th><th>Good for</th></tr>
+        <tr><td><b>Hugging Face</b></td><td>open models via a free HF access token.</td></tr>
+        <tr><td><b>OpenRouter</b></td><td>one key → GPT-4o, Claude, Llama, and many more.</td></tr>
+        <tr><td><b>Groq</b></td><td>very fast open-model inference.</td></tr>
+        <tr><td><b>OpenAI-compatible (custom URL)</b></td><td>any OpenAI-style endpoint (self-hosted, Together, etc.).</td></tr>
+      </table>
+      <div class="callout tip"><span class="lab">Note</span> Browsers block direct calls to <code>api.openai.com</code>
+      (CORS). To use GPT/Claude locally, go through <b>OpenRouter</b>.</div>
+    </section>
+
+    <!-- ───────────── PIPELINE ───────────── -->
+    <section id="pipeline">
+      <h2><span class="n">6</span> Pipeline architecture</h2>
+      <p class="lede">How raw PDFs become the dashboard. Every step is precomputed offline into static JSON, so the
+      live site is fast and serverless.</p>
+      <figure>
+        <svg viewBox="0 0 820 250" role="img" aria-label="Ingestion pipeline">
+          <defs><marker id="a2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#16657d"/></marker></defs>
+          <g font-family="inherit" font-size="11.5">
+            <!-- input -->
+            <rect x="8" y="96" width="118" height="54" rx="9" fill="#eef6f8" stroke="#16657d" stroke-width="1.4"/>
+            <text x="67" y="118" text-anchor="middle" font-weight="700">PDF corpus</text>
+            <text x="67" y="134" text-anchor="middle" fill="#5a6b70">+ items CSV</text>
+            <!-- extraction -->
+            <rect x="158" y="40" width="150" height="44" rx="8" fill="#fff" stroke="#dce6e9"/>
+            <text x="233" y="60" text-anchor="middle" font-weight="700">GROBID → TEI</text>
+            <text x="233" y="75" text-anchor="middle" fill="#5a6b70">text, sections, citations</text>
+            <rect x="158" y="160" width="150" height="44" rx="8" fill="#fff" stroke="#dce6e9"/>
+            <text x="233" y="180" text-anchor="middle" font-weight="700">Docling tables</text>
+            <text x="233" y="195" text-anchor="middle" fill="#5a6b70">result tables + crops</text>
+            <!-- middle -->
+            <rect x="342" y="22" width="150" height="40" rx="8" fill="#fff" stroke="#dce6e9"/>
+            <text x="417" y="46" text-anchor="middle">RAG: chunks + embeddings</text>
+            <rect x="342" y="70" width="150" height="40" rx="8" fill="#fff" stroke="#dce6e9"/>
+            <text x="417" y="94" text-anchor="middle">Knowledge graph</text>
+            <rect x="342" y="118" width="150" height="40" rx="8" fill="#fff" stroke="#dce6e9"/>
+            <text x="417" y="142" text-anchor="middle">HGT link prediction</text>
+            <rect x="342" y="166" width="150" height="40" rx="8" fill="#fdf3f0" stroke="#d95a3e"/>
+            <text x="417" y="184" text-anchor="middle" font-weight="700" fill="#b14b1f">Benchmark extraction</text>
+            <text x="417" y="198" text-anchor="middle" fill="#b14b1f" font-size="10">normalize → grade</text>
+            <!-- precompute -->
+            <rect x="528" y="96" width="130" height="54" rx="9" fill="#eef6f8" stroke="#16657d" stroke-width="1.4"/>
+            <text x="593" y="118" text-anchor="middle" font-weight="700">Precompute</text>
+            <text x="593" y="134" text-anchor="middle" fill="#5a6b70">all page JSON</text>
+            <!-- dash -->
+            <rect x="692" y="96" width="118" height="54" rx="9" fill="#e4f4ec" stroke="#2f9e6f" stroke-width="1.4"/>
+            <text x="751" y="118" text-anchor="middle" font-weight="700">Dashboard</text>
+            <text x="751" y="134" text-anchor="middle" fill="#5a6b70">static + serverless</text>
+            <!-- arrows -->
+            <line x1="126" y1="116" x2="156" y2="62" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="126" y1="130" x2="156" y2="182" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="308" y1="62" x2="340" y2="42" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="308" y1="62" x2="340" y2="90" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="308" y1="182" x2="340" y2="186" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="492" y1="42" x2="526" y2="112" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="492" y1="90" x2="526" y2="118" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="492" y1="138" x2="526" y2="126" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="492" y1="186" x2="526" y2="134" stroke="#16657d" marker-end="url(#a2)"/>
+            <line x1="658" y1="123" x2="690" y2="123" stroke="#16657d" marker-end="url(#a2)"/>
+          </g>
+        </svg>
+        <figcaption>One command (<code>ingest_domain.py --domain &lt;name&gt;</code>) or the Admin “Build” button runs the main chain in CI (GROBID → RAG → graph → HGT → precompute). Benchmark extraction runs <i>after</i> precompute and is a separate “Build benchmarks” action.</figcaption>
+      </figure>
+      <details><summary>Step by step</summary><div class="body">
+        <b>1 · Extract.</b> GROBID parses born-digital text into structured TEI (sections, references, in-text
+        citation context). Docling reads the result <i>tables</i> (with bounding boxes, so each number keeps a crop)
+        — OCR off, since papers are born-digital.<br/>
+        <b>2 · RAG.</b> Text is chunked, embedded with a sentence-transformer, and stored in a vector index. (At
+        query time the copilot ranks these chunks with <b>BM25 lexical</b> scoring; the embeddings back semantic
+        search.)<br/>
+        <b>3 · Knowledge graph.</b> Entities (items, papers, techniques, hardware, authors, claims) and their
+        relationships — including citation stance — are assembled into a graph.<br/>
+        <b>4 · HGT.</b> A heterogeneous graph neural network learns the graph and predicts latent links.<br/>
+        <b>5 · Precompute.</b> Writes all the static JSON the pages read (items, knowledge-graph, landing, etc.) to
+        <code>public/data-&lt;domain&gt;/</code>, served statically. It also computes a <b>UMAP</b> 2-D layout +
+        <b>HDBSCAN</b> clusters — but <i>solely</i> to draw the optional <b>Explorer</b> similarity map and colour its
+        dots. <b>Clustering is not used for any inference</b>: not in the knowledge graph, not in the copilot. (When
+        you drag attribute weights, a client-side k-means re-clusters that map live.)<br/>
+        <b>6 · Benchmarks.</b> Table cells are normalized (units, multi-level headers, aliases), de-duplicated per
+        paper, scored for consistency, and assigned A/B/C grades with provenance. This step runs <i>after</i>
+        precompute and is triggered separately (the Admin “Build benchmarks” action / the <code>benchmark</code> step).
+      </div></details>
+
+      <details><summary>How the knowledge graph is built — and how edges work across domains</summary><div class="body">
+        The graph is assembled from <b>three sources</b>, then normalized:
+        <ul>
+          <li><b>Your CSV</b> → one <b>item</b> node per row, plus an <b>attribute</b> node for each categorical
+            value (a technique, a piece of hardware, a dataset, a year…).</li>
+          <li><b>GROBID / TEI</b> (paper structure) → <b>paper, author, institution, year, figure, table, equation</b>
+            and <b>reference</b> nodes.</li>
+          <li><b>LLM extraction</b> over the paper text → <b>contribution, problem, limitation, comparison</b> and
+            method-step nodes.</li>
+        </ul>
+        Edges are <b>typed</b>, and the edge vocabulary is shared across every domain — e.g. <code>described_in</code>,
+        <code>uses_hardware</code>, <code>trained_on</code>, <code>implemented_in</code>, <code>maintained_by</code>,
+        <code>addresses_problem</code>, <code>contributes</code>, <code>compares</code>/<code>outperforms</code>,
+        <code>cites_external</code>, <code>authored_by</code>, <code>co_authored_with</code>,
+        <code>published_in_year</code>, <code>has_figure</code>/<code>table</code>/<code>equation</code>, plus computed
+        <code>semantically_similar</code> / <code>similar_in_role</code> links.
+        <p>The cross-domain trick: <b>CSV edges are role-driven, not column-name-driven.</b> Each column is mapped to a
+        semantic <b>role</b> (e.g. <code>hardware.platform</code>, <code>train.regime</code>,
+        <code>meta.maintainer</code>, <code>identity.year</code>), and the <i>role</i> — not the literal header —
+        decides the edge type. So a grasp sheet's “End-effector Hardware” column and a motion sheet's “Middleware”
+        column each become the appropriate relationship to their values; a new domain just maps its own columns to
+        roles and the same machinery yields the same edge semantics. Paper-structure edges come from TEI, claim edges
+        from the LLM, and similarity edges from the chunk embeddings.</p>
+        <p>Finally, per-domain <b>alias tables</b> (Admin → Knowledge-Graph aliases) canonicalize surface forms
+        (<code>rrt*</code>→<code>RRT*</code>, <code>franka</code>→<code>Franka Emika Panda</code>) so one
+        technique / robot / problem isn't fragmented into several nodes.</p>
+      </div></details>
+    </section>
+
+    <!-- ───────────── STACK ───────────── -->
+    <section id="stack">
+      <h2><span class="n">7</span> Technology stack</h2>
+      <p class="lede">All open components; nothing proprietary required to run it.</p>
+      <table>
+        <tr><th>Layer</th><th>Tech</th><th>Used for</th></tr>
+        <tr class="stack-row"><td>Frontend</td><td>React (CRA)</td><td>the single-page dashboard; domain config via context.</td></tr>
+        <tr class="stack-row"><td>Charts</td><td>Plotly</td><td>scatter / UMAP map and benchmark bar charts.</td></tr>
+        <tr class="stack-row"><td>Graph</td><td>Cytoscape.js</td><td>the interactive knowledge graph + predicted-edge view.</td></tr>
+        <tr class="stack-row"><td>Hosting</td><td>Vercel</td><td>static site + serverless API functions (admin, chat proxy).</td></tr>
+        <tr class="stack-row"><td>Builds</td><td>GitHub Actions</td><td>per-domain ingestion pipeline triggered from Admin.</td></tr>
+        <tr class="stack-row"><td>Text extraction</td><td>GROBID (TEI)</td><td>born-digital text, sections, citations.</td></tr>
+        <tr class="stack-row"><td>Table extraction</td><td>Docling</td><td>result tables with coordinates → croppable numbers.</td></tr>
+        <tr class="stack-row"><td>Embeddings / RAG</td><td>sentence-transformers + Chroma</td><td>semantic chunk retrieval for the copilot.</td></tr>
+        <tr class="stack-row"><td>Graph ML</td><td>PyTorch (HGT)</td><td>predicting latent relationships between items.</td></tr>
+        <tr class="stack-row"><td>Copilot LLM</td><td>BYOK (HF / OpenRouter / Groq / custom) or server proxy</td><td>final answer synthesis from assembled evidence.</td></tr>
+      </table>
+    </section>
+
+    <!-- ───────────── YOUR DOMAIN ───────────── -->
+    <section id="your-domain">
+      <h2><span class="n">8</span> Add your own domain</h2>
+      <p class="lede">This is the whole point: the dashboard is a <b>template over a corpus</b>. To bring a new field
+      in, you supply your corpus (a CSV + the PDFs) plus a small one-time vocabulary block, then rebuild.</p>
+      <div class="grid2">
+        <div class="card"><h4>① A CSV of items</h4><p>One row per item, columns for the attributes you want to
+          explore and compare (the Explorer table, weights, and research-gap matrix read these directly).</p></div>
+        <div class="card"><h4>② The PDFs</h4><p>The papers describing those items. Everything downstream — graph,
+          embeddings, benchmarks — is derived from them.</p></div>
+      </div>
+      <ol class="steps">
+        <li>In <b>Admin</b>, create the domain and upload the CSV + PDFs. An LLM proposes a column→<b>role</b>
+            mapping (title, description, attributes) from your headers; you confirm or adjust it — no code.</li>
+        <li>In the same editor, optionally provide the small amount of <b>domain vocabulary</b> the intelligence
+            layer needs: <b>Knowledge-Graph aliases</b> (normalize spelling variants of your techniques /
+            hardware / problems to one canonical label) and <b>Benchmark metrics</b> (the metrics, conditions,
+            and datasets to read from result tables). The copilot's ranking vocabulary is then
+            <i>auto-derived</i> from those metric aliases — nothing extra to type. Optionally paste the domain's
+            <b>Google&nbsp;Drive folder</b> of CSV exports to enable the nightly auto-sync (see <i>Keep it live</i> below).</li>
+        <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → HGT → precompute) and commits the
+            precomputed JSON back. <b>Benchmarks are a separate <i>Build benchmarks</i> action</b> (the Docling
+            table extractor, run after precompute), so trigger that too once the main build succeeds.</li>
+        <li>When both finish, your domain is a first-class, interactive view — the copilot, benchmarks, graph,
+            and map re-skin to your field automatically.</li>
+      </ol>
+
+      <div class="callout tip"><span class="lab">Keep it live (nightly sync)</span> Give a domain a
+      <b>Google&nbsp;Drive folder</b> of CSV exports (set it in Admin when you build the domain). A nightly job pulls
+      the <i>newest</i> CSV from that folder, hash-compares it to the current one, and — <b>only when it changed</b> —
+      commits it and triggers a <b>precompute-only</b> rebuild (no PDF re-ingest; unchanged folders are left
+      untouched). That rebuild recomputes everything CSV-derived: the methods table, the <b>similarity map (UMAP +
+      clusters) and its cluster insight</b>, Research Gaps, Timeline, and Benchmarks. The RAG/copilot corpus and the
+      paper-extracted plots (Most&nbsp;Referenced, Techniques) are preserved unchanged, and the knowledge-graph keeps
+      its existing nodes — a brand-new item gains a graph <i>node</i> only after a full Admin build (which re-ingests
+      its PDF). PDFs are re-ingested <i>only</i> when you trigger that full build.</div>
+
+      <div class="callout tip"><span class="lab">Safe rebuilds</span> Every precomputed artifact is written through an
+      overwrite guard: a failed or partial rebuild (missing data, a crashed step) can never blank a populated file —
+      the last good data is kept.</div>
+
+      <h3>What's automatic vs what you provide</h3>
+      <table>
+        <tr><th>Automatic from your CSV + PDFs</th><th>You provide once (in Admin)</th></tr>
+        <tr>
+          <td>Branding, column→role rendering, Explorer table / weights / color-by, the similarity map,
+            knowledge-graph structure, RAG retrieval, evidence grades, and the copilot's method summaries.</td>
+          <td>Knowledge-graph alias tables (spelling normalization) and the benchmark metrics + conditions +
+            datasets. The copilot's ranking keywords are derived from these — not typed separately.</td>
+        </tr>
+      </table>
+
+      <div class="agnostic">
+        <h3>How domain-agnostic is it really? (the honest version)</h3>
+        <p>The <b>presentation layer</b> is genuinely agnostic — it reads everything from config, so the chrome
+        re-skins for any field with zero code changes. The <b>intelligence layer</b> (copilot vocabulary, graph
+        entity-normalization, benchmark metrics) is config-driven too, but those configs encode real domain
+        knowledge you supply once in Admin — they are not inferred for free. So the honest claim is
+        <b>“domain-adaptable with a small, one-time vocabulary file,”</b> not “drop in PDFs and everything is
+        perfect.” A second domain — <b>motion planning</b> — is configured end-to-end as the working proof case:
+        its knowledge graph, similarity map, benchmarks, and copilot all run from its own config via exactly the
+        path your field would follow. The richness of the benchmarks still depends on whether your papers report
+        comparable result tables — that is a property of the corpus, not the engine.</p>
+      </div>
+    </section>
+
+    <footer>
+      Domain Explorer — user &amp; architecture manual. Self-contained HTML; open in any browser or print to PDF.
+      Diagrams are inline SVG (no external dependencies).
+    </footer>
+  </main>
+</div>
+
+<script>
+  // Tabs
+  document.querySelectorAll('#viewTabs .tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('#viewTabs .tab').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+      t.classList.add('active');
+      document.getElementById(t.dataset.p).classList.add('active');
+    });
+  });
+  // Scroll-spy: highlight active nav link
+  var links = [].slice.call(document.querySelectorAll('#toc a'));
+  var byId = {}; links.forEach(function(a){ byId[a.getAttribute('href').slice(1)] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){a.classList.remove('active')});
+        if(byId[e.target.id]) byId[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  document.querySelectorAll('main section').forEach(function(s){ obs.observe(s); });
+</script>
+</body>
+</html>
