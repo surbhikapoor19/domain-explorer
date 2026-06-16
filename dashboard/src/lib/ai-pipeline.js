@@ -57,6 +57,10 @@ function runGroundingCheck(insightText, methods, kgNodes) {
 export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = {}) {
   const DEFAULT_WEIGHTS = domainOpts.defaultWeights || GRASP_DEFAULTS.defaultWeights;
   const domainBranding = domainOpts.branding || GRASP_DEFAULTS.branding;
+  // Defensive: the contract is "never throws, always returns the documented
+  // shape", so normalize a nullish allMethods before the pre-pipeline map/filter
+  // (which sit outside the per-step try/catches) can throw.
+  allMethods = Array.isArray(allMethods) ? allMethods : [];
   // Step 0: Spell correction
   const methodNames = allMethods.map(m => m.name);
   const { text: correctedQuery, corrected: wasSpellCorrected } = await spellCorrectQuery(query, queryKeywords, methodNames);
