@@ -5955,6 +5955,57 @@ body {
 .benchmarks-cv-badge.high-variance { background: #fef2f0; color: #c0392b; }
 .benchmarks-cv-badge.different-setup { background: #f0f2f5; color: #6b7280; }
 
+/* ── Agreement (cross-paper reproducibility) view ─────────────────────────── */
+.benchmarks-agreement-section { margin-top: 0.25rem; }
+
+.benchmarks-agreement-hero {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1.1rem;
+  background: linear-gradient(180deg, #f3f9f6 0%, var(--card) 100%);
+  border: 1px solid var(--border);
+  border-left: 4px solid #47a36d;
+  border-radius: 6px;
+}
+.benchmarks-agreement-hero-line {
+  font-size: 1.05rem; font-weight: 600; color: var(--text); line-height: 1.4;
+}
+.benchmarks-agreement-hero-count { font-size: 1.5rem; color: #1a7a42; font-weight: 800; }
+.benchmarks-agreement-hero-contested { color: var(--text-mid); font-weight: 600; }
+.benchmarks-agreement-hero-contested strong { color: #c0392b; }
+.benchmarks-agreement-caption {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; max-width: 70ch;
+}
+
+.benchmarks-agreement-bucket { margin-bottom: 1.5rem; }
+.benchmarks-agreement-bucket-title {
+  margin: 0 0 0.1rem; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.3px;
+}
+.benchmarks-agreement-consistent .benchmarks-agreement-bucket-title { color: #1a7a42; }
+.benchmarks-agreement-contested .benchmarks-agreement-bucket-title { color: #c0392b; }
+.benchmarks-agreement-bucket-sub {
+  font-size: 0.72rem; color: var(--text-muted);
+  margin-bottom: 0.7rem; padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+.benchmarks-agreement-bucket-empty {
+  font-size: 0.78rem; color: var(--text-muted); font-style: italic;
+  padding: 0.4rem 0;
+}
+.benchmarks-cv-cond-tag { color: var(--text-mid); font-style: italic; }
+
+/* Per-paper report row with optional inline crop provenance */
+.benchmarks-cv-report-line {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; font-size: 0.72rem; padding: 0.2rem 0; color: var(--text-mid);
+}
+.benchmarks-cv-source-btn { padding: 0 6px; font-size: 0.62rem; line-height: 1.5; }
+.benchmarks-cv-report-proof {
+  padding: 0.35rem 0 0.5rem 0.2rem;
+  display: flex; flex-direction: column; gap: 0.3rem;
+}
+.benchmarks-cv-report-proof .benchmarks-source-crop { max-width: 100%; max-height: 200px; }
+
 /* Grade badges — small rounded pill matching cv-badge style */
 .benchmarks-grade-badge {
   display: inline-block; font-size: 0.68rem; font-weight: 700;

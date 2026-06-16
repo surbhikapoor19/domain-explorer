@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import Tooltip from './Tooltip';
+import AgreementView from './AgreementView';
 import { loadBenchmarkComparisons } from '../lib/data-loader';
 
 // Reusable help affordance, matching the rest of the app's "?" tooltips.
@@ -23,13 +24,6 @@ function cvLabel(cv, n_reports) {
   return `${Math.round(cv * 100)}%`;
 }
 
-// Map v2 status strings to display labels + CSS modifier class
-const STATUS_META = {
-  consistent:      { label: 'Consistent',                      cls: 'consistent' },
-  high_variance:   { label: 'High variance',                   cls: 'high-variance' },
-  different_setup: { label: 'Different setup (not comparable)', cls: 'different-setup' },
-};
-
 // -----------------------------------------------------------------------------
 
 export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfidence = 0.70 }) {
@@ -37,7 +31,11 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   const [loading, setLoading]             = useState(true);
   const [selectedKey, setSelectedKey]     = useState(null);   // leaderboard key
   const [showLowConf, setShowLowConf]     = useState(false);  // "Show low-confidence" toggle
-  const [activeTab, setActiveTab]         = useState('leaderboards');
+  // activeTab is null until data arrives, then defaults to the Agreement view
+  // whenever there are independently-reproduced (consistent) results to show.
+  // With no consistent cross-validations there is nothing for the agreement
+  // hero to celebrate, so we fall back to the Leaderboards tab.
+  const [activeTab, setActiveTab]         = useState(null);
   const [expandedSourceRow, setExpandedSourceRow] = useState(null); // method name or null
 
   useEffect(() => {
@@ -51,6 +49,11 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
           // available on the very first render after data arrives.
           const keys = Object.keys(d?.leaderboards || {});
           if (keys.length > 0) setSelectedKey(k => k || keys[0]);
+          // Land on the Agreement view by default when there is at least one
+          // independently-reproduced result; otherwise show Leaderboards.
+          const hasConsistent = (d?.cross_validations || [])
+            .some(v => v.status === 'consistent');
+          setActiveTab(t => t || (hasConsistent ? 'agreement' : 'leaderboards'));
           setLoading(false);
         }
       })
@@ -168,6 +171,12 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
       {/* ── Tabs ───────────────────────────────────────────────────────── */}
       <div className="benchmarks-tabs">
         <button
+          className={`benchmarks-tab ${activeTab === 'agreement' ? 'active' : ''}`}
+          onClick={() => setActiveTab('agreement')}
+        >
+          Agreement
+        </button>
+        <button
           className={`benchmarks-tab ${activeTab === 'leaderboards' ? 'active' : ''}`}
           onClick={() => setActiveTab('leaderboards')}
         >
@@ -178,12 +187,6 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
           onClick={() => setActiveTab('head-to-head')}
         >
           Head-to-Head
-        </button>
-        <button
-          className={`benchmarks-tab ${activeTab === 'cross-validation' ? 'active' : ''}`}
-          onClick={() => setActiveTab('cross-validation')}
-        >
-          Cross-Paper Validation
         </button>
       </div>
 
@@ -463,68 +466,14 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* CROSS-PAPER VALIDATION TAB                                     */}
+      {/* AGREEMENT (CROSS-PAPER REPRODUCIBILITY) TAB — default landing  */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {activeTab === 'cross-validation' && (
-        <div className="benchmarks-cv-section">
-          {visibleCrossValidations.length === 0 ? (
-            <div className="benchmarks-empty">
-              {crossValidations.length === 0
-                ? 'No cross-paper validations found in this domain.'
-                : `Nothing meets the ${Math.round(minConfidence * 100)}% confidence threshold — pick a lower tier on the Evidence filter in the header (or “All”).`}
-            </div>
-          ) : (
-            <>
-              <p className="benchmarks-cv-description">
-                Methods whose performance was independently reported by multiple papers on the same metric.
-                Low CV% indicates consistent, reproducible results.
-              </p>
-              <div className="benchmarks-cv-grid">
-                {visibleCrossValidations.map((v, i) => {
-                  const sm = STATUS_META[v.status] || { label: v.status, cls: 'different-setup' };
-                  return (
-                    <div key={i} className={`benchmarks-cv-card ${sm.cls}`}>
-                      <div className="benchmarks-cv-header">
-                        <span className="benchmarks-cv-method">{v.method}</span>
-                        <div className="benchmarks-cv-badges">
-                          <span className={`benchmarks-cv-badge ${sm.cls}`}>
-                            {sm.label}
-                          </span>
-                          {v.grade && (
-                            <span className={`benchmarks-grade-badge ${gradeClass(v.grade)}`}>
-                              {v.grade}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="benchmarks-cv-metric">{v.metric_label || v.metric_id}</div>
-                      <div className="benchmarks-cv-stats">
-                        <span>Mean: <strong>{v.mean}</strong></span>
-                        {v.cv !== undefined && (
-                          <span>CV: <strong>{Math.round(v.cv * 100)}%</strong></span>
-                        )}
-                        <span>{v.n_papers} paper{v.n_papers !== 1 ? 's' : ''}</span>
-                      </div>
-                      {v.reports && v.reports.length > 0 && (
-                        <div className="benchmarks-cv-reports">
-                          {v.reports.map((r, j) => (
-                            <div key={j} className="benchmarks-cv-report">
-                              <span className="benchmarks-cv-paper">{(r.paper || '').replace(/-/g, ' ')}</span>
-                              <span className="benchmarks-cv-value">
-                                {r.value_str || r.value}
-                                {r.condition ? <em className="benchmarks-cv-condition"> ({r.condition})</em> : null}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </div>
+      {activeTab === 'agreement' && (
+        <AgreementView
+          crossValidations={visibleCrossValidations}
+          totalCrossValidations={crossValidations.length}
+          minConfidence={minConfidence}
+        />
       )}
 
       {/* ── Quarantine footnote ─────────────────────────────────────── */}
