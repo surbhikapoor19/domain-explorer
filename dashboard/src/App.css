@@ -6287,6 +6287,146 @@ body {
 }
 .benchmarks-cv-card-clickable:hover .benchmarks-cv-drill { opacity: 1; }
 
+/* ── Forest-plot rows (reproducibility entries) ───────────────────────────────
+ * Each cross-validation entry is one thin row grouped under its metric sub-head.
+ * Within a metric group all rows share an x-domain, so spread width reads as true
+ * agreement (tight) vs disagreement (wide). Palette is calm: teal for consistent,
+ * amber/slate for contested — never alarm red. */
+.benchmarks-forest {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.benchmarks-forest-group { display: flex; flex-direction: column; }
+.benchmarks-forest-group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+}
+.benchmarks-forest-rows {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+/* One thin row: label | plot | stats, with a collapsible source panel below. */
+.benchmarks-forest-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.1fr) auto minmax(96px, 0.8fr);
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid var(--border-light);
+  border-left: 3px solid transparent;
+}
+.benchmarks-forest-rows .benchmarks-forest-row:last-child { border-bottom: none; }
+.benchmarks-forest-row.tone-consistent { border-left-color: #47a36d; }
+.benchmarks-forest-row.tone-contested { border-left-color: #d3a049; }
+.benchmarks-forest-row.benchmarks-cv-card-clickable:hover {
+  box-shadow: inset 0 0 0 100vmax rgba(22, 101, 125, 0.035);
+}
+
+/* left: method · condition + status/grade badges */
+.benchmarks-forest-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.benchmarks-forest-method-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.benchmarks-forest-cond {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* center: the SVG strip + the readable per-paper value list */
+.benchmarks-forest-plot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+.benchmarks-forest-svg { display: block; }
+.benchmarks-forest-axis { stroke: var(--border); stroke-width: 1; }
+.benchmarks-forest-segment {
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+.benchmarks-forest-svg.tone-consistent .benchmarks-forest-segment { stroke: #9ed6b6; }
+.benchmarks-forest-svg.tone-consistent .benchmarks-forest-dot { fill: #1e7e3e; }
+.benchmarks-forest-svg.tone-consistent .benchmarks-forest-mean { fill: #16657d; }
+.benchmarks-forest-svg.tone-contested .benchmarks-forest-segment { stroke: #e3c98f; }
+.benchmarks-forest-svg.tone-contested .benchmarks-forest-dot { fill: #b06a00; }
+.benchmarks-forest-svg.tone-contested .benchmarks-forest-mean { fill: #64748b; }
+.benchmarks-forest-dot {
+  stroke: var(--card);
+  stroke-width: 1;
+}
+.benchmarks-forest-values {
+  font-size: 0.68rem;
+  color: var(--text-mid);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1px;
+  text-align: center;
+  max-width: 200px;
+}
+.benchmarks-forest-value { white-space: nowrap; }
+.benchmarks-forest-value-sep { color: var(--text-muted); }
+
+/* right: mean / CV% / N papers + the source toggle */
+.benchmarks-forest-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+  text-align: right;
+}
+.benchmarks-forest-mean-val {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.benchmarks-forest-stat-sub {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.benchmarks-forest-src-btn { margin-top: 0.15rem; }
+
+/* collapsible per-paper provenance, spans the full row width */
+.benchmarks-forest-reports {
+  grid-column: 1 / -1;
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--border);
+}
+
+@media (max-width: 640px) {
+  .benchmarks-forest-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label stats"
+      "plot  plot";
+  }
+  .benchmarks-forest-label { grid-area: label; }
+  .benchmarks-forest-stats { grid-area: stats; }
+  .benchmarks-forest-plot { grid-area: plot; align-items: flex-start; }
+}
+
 /* Not-yet-reproduced (single-paper leaderboard) cards */
 .benchmarks-agreement-unreproduced .benchmarks-agreement-bucket-title { color: var(--text-mid); }
 .benchmarks-cv-card-single { border-left-color: #c9b27a; }
