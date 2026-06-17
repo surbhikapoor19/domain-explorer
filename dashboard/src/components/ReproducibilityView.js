@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CELL_KEY } from '../lib/benchmark-cells';
 
 /* ──────────────────────────────────────────────────────────────────────────
- * ReproducibilityView (Phase 2a — renamed/evolved from AgreementView, UNIT B1)
+ * ReproducibilityView (Phase 2a — UNIT B1) — "Agreement Row" dumbbell design.
  *
  * The default landing view of the Benchmarks page. It reframes the cross-paper
  * data to answer "what replicates vs what is contested" — ONE method across
@@ -13,15 +13,18 @@ import { CELL_KEY } from '../lib/benchmark-cells';
  *                 | status === 'different_setup'         (conditions not comparable)
  *
  * A (method × metric × condition) only appears in those two buckets when 2+
- * independent papers measured it — that is the one comparison the conditions
- * sanction. The framing is reproducibility, never a global rank.
+ * independent papers measured it. Single-paper leaderboard cells (not yet
+ * reproduced) are FOLDED into the SAME row component with an ○ "single source"
+ * verdict — so the whole landing speaks ONE visual language.
  *
- * Each reproducibility card is CLICKABLE: clicking it (or its method) opens the
- * cell-scoped Comparisons drill-down for that exact (metric × condition) cell.
+ * THE MARK is a Cleveland DUMBBELL, not a forest plot: one dot per paper on a
+ * per-metric shared x-axis, plus a connecting segment between the lowest and
+ * highest dot whose LENGTH + COLOR encode disagreement (short+teal = agree,
+ * long+amber = contested). No mean diamond — only a thin neutral mean tick.
+ * Higher-grade / higher-confidence papers get bolder, more opaque dots.
  *
- * Cells that have leaderboard entries but no cross-validation yet (single-paper
- * / not-yet-reproduced numbers) are surfaced in a "Not yet reproduced" section
- * so they remain reachable from the landing view and can be drilled into.
+ * Each row is CLICKABLE: it opens the cell-scoped Comparisons drill-down for
+ * that exact (metric × condition) cell.
  * ────────────────────────────────────────────────────────────────────────── */
 
 function gradeClass(grade) {
@@ -32,14 +35,60 @@ function gradeClass(grade) {
   return 'benchmarks-grade-c';
 }
 
-// Display labels + CSS modifier for each v2 status. The consistent badge says
-// "Replicated" (not "Consistent") so the single "Consistent" section heading
-// stays unambiguous for assistive tech and queries.
-const STATUS_META = {
-  consistent:      { label: 'Replicated',                      cls: 'consistent' },
-  high_variance:   { label: 'High variance',                   cls: 'high-variance' },
-  different_setup: { label: 'Different setup (not comparable)', cls: 'different-setup' },
+// Per-verdict glyph + label + CSS modifier. Color is ALWAYS paired with a
+// symbol so the verdict survives grayscale and colorblindness.
+//   ✓  agree      (consistent)         — teal/green
+//   ⚠  contested  (papers disagree)    — amber
+//   ○  single source (not yet contested) — slate/gray
+const VERDICT = {
+  agree:    { glyph: '✓', cls: 'agree' },
+  contested:{ glyph: '⚠', cls: 'contested' },
+  single:   { glyph: '○', cls: 'single' },
 };
+
+// Map a v2 cross_validation status onto a verdict key.
+function verdictForStatus(status) {
+  return status === 'consistent' ? 'agree' : 'contested';
+}
+
+// Coerce a report's value to a finite number, or null.
+function numVal(r) {
+  const n = typeof r.value === 'number' ? r.value : parseFloat(r.value);
+  return Number.isNaN(n) ? null : n;
+}
+
+// Plain-language spread label from the per-paper values. We deliberately speak
+// in the metric's own points ("agree ±2 pts" / "differ 27 pts"), NOT "CV 4%" —
+// cv is kept only as an internal sort key on the row data.
+function spreadLabel(vals, verdict) {
+  if (!vals || vals.length < 2) return 'single source — not yet contested';
+  const lo = Math.min(...vals);
+  const hi = Math.max(...vals);
+  const range = hi - lo;
+  const half = range / 2;
+  const fmt = (n) => {
+    const r = Math.round(n * 10) / 10;
+    return Number.isInteger(r) ? String(r) : r.toFixed(1);
+  };
+  if (verdict === 'agree') return `agree ±${fmt(half)} pts`;
+  return `differ ${fmt(range)} pts`;
+}
+
+// Visual weight of a single paper's dot from its grade (or per-report
+// confidence): trust → opacity + radius. A is bold/opaque, C is small/pale.
+function dotWeight(grade, confidence) {
+  let t; // 0 (weak) .. 1 (strong)
+  const g = (grade || '').toUpperCase();
+  if (g === 'A') t = 1;
+  else if (g === 'B') t = 0.66;
+  else if (g === 'C') t = 0.33;
+  else if (typeof confidence === 'number') t = Math.max(0, Math.min(1, confidence));
+  else t = 0.66;
+  return {
+    r: 2.6 + t * 2.2,          // 2.6 .. 4.8 px
+    opacity: 0.45 + t * 0.55,  // 0.45 .. 1.0
+  };
+}
 
 // A single per-paper report value, with optional crop provenance.
 function ReportRow({ r }) {
@@ -60,7 +109,7 @@ function ReportRow({ r }) {
             onClick={(e) => { e.stopPropagation(); setShowCrop(s => !s); }}
             aria-expanded={showCrop}
           >
-            Source
+            ⊙ Source
           </button>
         )}
       </div>
@@ -81,7 +130,7 @@ function ReportRow({ r }) {
 }
 
 // Per-entry source provenance (re-used from a leaderboard entry's `sources`),
-// so a not-yet-reproduced number is still traceable to its exact table cell,
+// so a single-source number is still traceable to its exact table cell,
 // caption, and crop on the landing view.
 function EntrySource({ entry }) {
   const [show, setShow] = useState(false);
@@ -94,7 +143,7 @@ function EntrySource({ entry }) {
         onClick={(e) => { e.stopPropagation(); setShow(s => !s); }}
         aria-expanded={show}
       >
-        Source
+        ⊙ Source
       </button>
       {show && (
         <div className="benchmarks-source-panel benchmarks-source-panel-inline">
@@ -128,29 +177,23 @@ function EntrySource({ entry }) {
   );
 }
 
-// Coerce a report's value to a finite number, or null.
-function numVal(r) {
-  const n = typeof r.value === 'number' ? r.value : parseFloat(r.value);
-  return Number.isNaN(n) ? null : n;
-}
+// ── The dumbbell mark ───────────────────────────────────────────────────────
+// One dot per paper on a per-metric SHARED x-domain, so segment length reads as
+// true agreement. A connecting segment runs from the lowest to the highest dot;
+// its length + color encode disagreement. A thin neutral tick marks the mean
+// (NOT a diamond — a midpoint-of-2 diamond would falsely imply pooling).
+// `points` = [{ v, weight:{r,opacity} }]. A single point shows just one dot.
+const DB_W = 168;
+const DB_H = 22;
+const DB_PAD = 6; // left/right inset so edge dots aren't clipped
 
-// Inline SVG forest strip for ONE entry, mapped onto a domain SHARED by its
-// metric group so spread width reads as true agreement/disagreement: a faint
-// axis line, a light min→max spread segment, a small dot per paper report, and
-// a distinct diamond MEAN marker. Color (teal vs amber) is driven by status.
-// Per-paper values are rendered as TEXT elsewhere in the row, not here — this
-// strip is the at-a-glance visual only.
-const FOREST_W = 180;
-const FOREST_H = 22;
-const FOREST_PAD = 6; // left/right inset so edge dots aren't clipped
-
-function ForestStrip({ reports, mean, domain, tone }) {
+function Dumbbell({ points, mean, domain, verdict }) {
   const [lo, hi] = domain;
   const span = hi - lo || 1;
-  const x = (v) => FOREST_PAD + ((v - lo) / span) * (FOREST_W - 2 * FOREST_PAD);
-  const cy = FOREST_H / 2;
+  const x = (v) => DB_PAD + ((v - lo) / span) * (DB_W - 2 * DB_PAD);
+  const cy = DB_H / 2;
 
-  const vals = (reports || []).map(numVal).filter(v => v != null);
+  const vals = points.map(p => p.v);
   const segMin = vals.length ? Math.min(...vals) : null;
   const segMax = vals.length ? Math.max(...vals) : null;
   const meanN = typeof mean === 'number' ? mean : parseFloat(mean);
@@ -158,113 +201,139 @@ function ForestStrip({ reports, mean, domain, tone }) {
 
   return (
     <svg
-      className={`benchmarks-forest-svg tone-${tone}`}
-      width={FOREST_W}
-      height={FOREST_H}
-      viewBox={`0 0 ${FOREST_W} ${FOREST_H}`}
+      className={`benchmarks-dumbbell-svg verdict-${verdict}`}
+      width={DB_W}
+      height={DB_H}
+      viewBox={`0 0 ${DB_W} ${DB_H}`}
       role="presentation"
       aria-hidden="true"
     >
-      {/* faint axis line */}
+      {/* faint baseline so a lone dot still sits on an axis */}
       <line
-        className="benchmarks-forest-axis"
-        x1={FOREST_PAD} y1={cy} x2={FOREST_W - FOREST_PAD} y2={cy}
+        className="benchmarks-dumbbell-axis"
+        x1={DB_PAD} y1={cy} x2={DB_W - DB_PAD} y2={cy}
       />
-      {/* light min→max spread segment */}
+      {/* connecting segment: low → high. Length + color encode disagreement. */}
       {segMin != null && segMax != null && segMax > segMin && (
         <line
-          className="benchmarks-forest-segment"
+          className="benchmarks-dumbbell-connector"
           x1={x(segMin)} y1={cy} x2={x(segMax)} y2={cy}
         />
       )}
-      {/* one dot per paper report */}
-      {vals.map((v, i) => (
-        <circle key={i} className="benchmarks-forest-dot" cx={x(v)} cy={cy} r={3} />
-      ))}
-      {/* mean marker — a filled diamond */}
-      {hasMean && (
-        <rect
-          className="benchmarks-forest-mean"
-          x={x(meanN) - 4} y={cy - 4}
-          width={8} height={8}
-          transform={`rotate(45 ${x(meanN)} ${cy})`}
+      {/* thin neutral mean tick (only when 2+ points — never a diamond) */}
+      {hasMean && vals.length > 1 && (
+        <line
+          className="benchmarks-dumbbell-mean-tick"
+          x1={x(meanN)} y1={cy - 5} x2={x(meanN)} y2={cy + 5}
         />
       )}
+      {/* one dot per paper, sized + faded by its trust weight */}
+      {points.map((p, i) => (
+        <circle
+          key={i}
+          className="benchmarks-dumbbell-dot"
+          cx={x(p.v)} cy={cy}
+          r={p.weight.r}
+          opacity={p.weight.opacity}
+        />
+      ))}
     </svg>
   );
 }
 
-// One reproducibility forest ROW: the per-paper spread for a (method × metric ×
-// condition), mapped onto its metric group's shared x-domain. Clicking opens the
-// cell-scoped comparison for its (metric × condition) cell.
-//   left   = method · condition + status + grade badges
-//   center = the forest strip + a compact per-paper value list (as TEXT)
-//   right  = mean, CV%, N papers (as TEXT)
-function ForestRow({ v, onOpenCell, domain, tone }) {
+// ── ONE uniform Agreement Row ─────────────────────────────────────────────────
+// Renders consistent, contested, AND single-source results identically:
+//   [verdict glyph] · method · condition · grade chip
+//   · dumbbell mark · readable per-paper values (TEXT)
+//   · headline value (mono, right-aligned) + plain-language spread label
+//   · ⊙ source affordance (expands per-paper / per-source provenance)
+// `row` is a normalized shape: { method, condition, grade, verdict, domain,
+//   points:[{v,weight,label,grade,...}], headline, spread, reports?, entry? }.
+function AgreementRow({ row, onOpenCell }) {
   const [showReports, setShowReports] = useState(false);
-  const sm = STATUS_META[v.status] || { label: v.status, cls: 'different-setup' };
-  const cellKey = CELL_KEY(v.metric_id, v.condition);
-  const hasReports = v.reports && v.reports.length > 0;
+  const v = VERDICT[row.verdict] || VERDICT.single;
+  const hasReports = row.reports && row.reports.length > 0;
+  const hasEntrySource = row.entry && row.entry.sources && row.entry.sources.length > 0;
+  const canExpand = hasReports;
 
   return (
     <div
-      className={`benchmarks-forest-row benchmarks-cv-card-clickable ${sm.cls} tone-${tone}`}
-      onClick={() => onOpenCell && onOpenCell(cellKey)}
+      className={`benchmarks-agreement-row benchmarks-cv-card-clickable verdict-${v.cls}`}
+      onClick={() => onOpenCell && row.cellKey && onOpenCell(row.cellKey)}
     >
-      {/* left: method · condition + badges */}
-      <div className="benchmarks-forest-label">
-        <div className="benchmarks-forest-method-line">
-          <span className="benchmarks-cv-method">{v.method}</span>
-          {v.condition && (
-            <span className="benchmarks-forest-cond">· {v.condition}</span>
+      {/* leftmost scan column: the verdict glyph (redundant color + symbol) */}
+      <span
+        className={`benchmarks-agreement-verdict verdict-${v.cls}`}
+        title={row.verdict === 'agree' ? 'papers agree' : row.verdict === 'contested' ? 'papers disagree' : 'single source — not yet contested'}
+        aria-hidden="true"
+      >
+        {v.glyph}
+      </span>
+
+      {/* method · condition + grade chip (grade kept visually separate from verdict) */}
+      <div className="benchmarks-agreement-label">
+        <div className="benchmarks-agreement-method-line">
+          <span className="benchmarks-cv-method">{row.method}</span>
+          {row.condition && (
+            <span className="benchmarks-agreement-cond">· {row.condition}</span>
           )}
-        </div>
-        <div className="benchmarks-cv-badges">
-          <span className={`benchmarks-cv-badge ${sm.cls}`}>{sm.label}</span>
-          {v.grade && (
-            <span className={`benchmarks-grade-badge ${gradeClass(v.grade)}`}>{v.grade}</span>
+          {row.grade && (
+            <span className={`benchmarks-agreement-grade-chip ${gradeClass(row.grade)}`}>{row.grade}</span>
           )}
         </div>
       </div>
 
-      {/* center: the forest strip + readable per-paper value list */}
-      <div className="benchmarks-forest-plot">
-        <ForestStrip reports={v.reports} mean={v.mean} domain={domain} tone={tone} />
-        {hasReports && (
-          <div className="benchmarks-forest-values" title="per-paper reported values">
-            {v.reports.map((r, j) => (
-              <span key={j} className="benchmarks-forest-value">
-                {r.value_str || r.value}
-                {j < v.reports.length - 1 && <span className="benchmarks-forest-value-sep"> · </span>}
+      {/* the dumbbell mark + the readable per-paper value list (as TEXT) */}
+      <div className="benchmarks-agreement-mark">
+        <Dumbbell
+          points={row.points}
+          mean={row.mean}
+          domain={row.domain}
+          verdict={v.cls}
+        />
+        {row.points.length > 0 && (
+          <div className="benchmarks-agreement-values" title="per-paper reported values">
+            {row.points.map((p, j) => (
+              <span key={j} className="benchmarks-agreement-value">
+                {p.label}
+                {j < row.points.length - 1 && <span className="benchmarks-agreement-value-sep"> · </span>}
               </span>
             ))}
           </div>
         )}
       </div>
 
-      {/* right: mean / CV% / N papers */}
-      <div className="benchmarks-forest-stats">
-        <span className="benchmarks-forest-mean-val">{v.mean}</span>
-        <span className="benchmarks-forest-stat-sub">
-          {v.cv !== undefined && <>CV {Math.round(v.cv * 100)}% · </>}
-          {v.n_papers} paper{v.n_papers !== 1 ? 's' : ''}
+      {/* headline value + plain-language spread label (mono, right-aligned) */}
+      <div className="benchmarks-agreement-stats">
+        {row.headline != null && (
+          <span className="benchmarks-agreement-headline">{row.headline}</span>
+        )}
+        <span className={`benchmarks-agreement-spread verdict-${v.cls}`}>{row.spread}</span>
+        <span className="benchmarks-agreement-npapers">
+          {row.nPapers} paper{row.nPapers !== 1 ? 's' : ''}
         </span>
-        {hasReports && (
+      </div>
+
+      {/* source affordance: expands per-paper provenance (reports) or, for a
+          single-source row, the entry's own source panel inline */}
+      <div className="benchmarks-agreement-source" onClick={(e) => e.stopPropagation()}>
+        {canExpand && (
           <button
             type="button"
-            className={`benchmarks-source-btn benchmarks-forest-src-btn${showReports ? ' active' : ''}`}
+            className={`benchmarks-source-btn benchmarks-agreement-src-btn${showReports ? ' active' : ''}`}
             onClick={(e) => { e.stopPropagation(); setShowReports(s => !s); }}
             aria-expanded={showReports}
           >
-            Source
+            ⊙ Source
           </button>
         )}
+        {!canExpand && hasEntrySource && <EntrySource entry={row.entry} />}
       </div>
 
       {/* expandable per-paper provenance (paper · value_str · crop) */}
       {showReports && hasReports && (
-        <div className="benchmarks-forest-reports" onClick={(e) => e.stopPropagation()}>
-          {v.reports.map((r, j) => (
+        <div className="benchmarks-agreement-reports" onClick={(e) => e.stopPropagation()}>
+          {row.reports.map((r, j) => (
             <ReportRow key={j} r={r} />
           ))}
         </div>
@@ -273,50 +342,112 @@ function ForestRow({ v, onOpenCell, domain, tone }) {
   );
 }
 
-// Group a section's entries by metric_label, compute a shared x-domain per group
-// (padded ~5%), and sort rows by cv (ascending = tightest first, or descending =
-// most-disagreeing first). Different metrics have different scales, so they never
-// share an axis.
-function buildMetricGroups(entries, sortDir) {
+// Normalize a cross_validation into the uniform AgreementRow shape.
+function rowFromCrossValidation(v) {
+  const verdict = verdictForStatus(v.status);
+  const reports = v.reports || [];
+  const points = reports
+    .map(r => {
+      const n = numVal(r);
+      if (n == null) return null;
+      // per-report grade falls back to the row grade; confidence if present
+      return {
+        v: n,
+        label: r.value_str || r.value,
+        weight: dotWeight(r.grade || v.grade, r.confidence),
+      };
+    })
+    .filter(Boolean);
+  const vals = points.map(p => p.v);
+  return {
+    kind: 'cv',
+    method: v.method,
+    condition: v.condition,
+    grade: v.grade,
+    verdict,
+    cellKey: CELL_KEY(v.metric_id, v.condition),
+    metricLabel: v.metric_label || v.metric_id || 'metric',
+    points,
+    vals,
+    mean: v.mean,
+    headline: v.mean,
+    spread: spreadLabel(vals, verdict),
+    nPapers: v.n_papers != null ? v.n_papers : reports.length,
+    reports,
+    cv: typeof v.cv === 'number' ? v.cv : 0,
+  };
+}
+
+// Normalize a single-method leaderboard cell into uniform AgreementRow shapes —
+// one row per method entry, each an ○ "single source — not yet contested" row.
+function rowsFromUnreproducedCell(cell, showMetric) {
+  const condition = cell.condition || (showMetric ? '' : 'all conditions');
+  return (cell.entries || []).map((e) => {
+    const n = numVal(e);
+    const points = n == null ? [] : [{
+      v: n,
+      label: e.value_str || e.value,
+      weight: dotWeight(e.grade, e.confidence),
+    }];
+    return {
+      kind: 'single',
+      method: e.method,
+      condition,
+      grade: e.grade,
+      verdict: 'single',
+      cellKey: cell.key,
+      metricLabel: cell.metric_label || cell.metric_id || 'metric',
+      points,
+      vals: n == null ? [] : [n],
+      mean: n,
+      headline: e.value,
+      spread: 'single source — not yet contested',
+      nPapers: 1,
+      reports: null,
+      entry: e,
+      cv: -1, // sort single-source rows last within a metric group
+    };
+  });
+}
+
+// Group normalized rows by metric, compute a shared x-domain per group (padded
+// ~5%), and sort by cv. Different metrics never share an axis.
+function buildGroups(rows, sortDir) {
   const byMetric = new Map();
-  for (const v of entries) {
-    const key = v.metric_label || v.metric_id || 'metric';
+  for (const r of rows) {
+    const key = r.metricLabel || 'metric';
     if (!byMetric.has(key)) byMetric.set(key, []);
-    byMetric.get(key).push(v);
+    byMetric.get(key).push(r);
   }
   const groups = [];
-  for (const [label, rows] of byMetric.entries()) {
-    // Shared domain = [min, max] of every report value across the group.
-    const allVals = rows.flatMap(v => (v.reports || []).map(numVal)).filter(x => x != null);
+  for (const [label, groupRows] of byMetric.entries()) {
+    const allVals = groupRows.flatMap(r => r.vals);
     let lo = allVals.length ? Math.min(...allVals) : 0;
     let hi = allVals.length ? Math.max(...allVals) : 1;
     if (hi === lo) { hi = lo + 1; }
     const pad = (hi - lo) * 0.05;
     const domain = [lo - pad, hi + pad];
-    const cvOf = (v) => (typeof v.cv === 'number' ? v.cv : 0);
-    const sorted = [...rows].sort((a, b) =>
-      sortDir === 'asc' ? cvOf(a) - cvOf(b) : cvOf(b) - cvOf(a)
+    const sorted = [...groupRows].sort((a, b) =>
+      sortDir === 'asc' ? a.cv - b.cv : b.cv - a.cv
     );
     groups.push({ label, rows: sorted, domain });
   }
   return groups;
 }
 
-// One metric sub-group: a small metric sub-heading + its forest rows, all sharing
-// the group's x-domain. The sub-heading is suppressed when the whole domain has a
-// single metric (stated once in the spine), so the label isn't duplicated.
-function ForestMetricGroup({ group, onOpenCell, tone, keyPrefix, showMetric }) {
+// One metric sub-group: a small metric sub-heading + its agreement rows, all
+// sharing the group's x-domain. The sub-heading is suppressed when the whole
+// domain has a single metric (stated once in the spine), to avoid duplication.
+function MetricGroup({ group, onOpenCell, keyPrefix, showMetric }) {
   return (
-    <div className="benchmarks-forest-group">
-      {showMetric && <div className="benchmarks-forest-group-title">{group.label}</div>}
-      <div className="benchmarks-forest-rows">
-        {group.rows.map((v, i) => (
-          <ForestRow
+    <div className="benchmarks-agreement-group">
+      {showMetric && <div className="benchmarks-agreement-group-title">{group.label}</div>}
+      <div className="benchmarks-agreement-rows">
+        {group.rows.map((row, i) => (
+          <AgreementRow
             key={`${keyPrefix}-${i}`}
-            v={v}
+            row={{ ...row, domain: group.domain }}
             onOpenCell={onOpenCell}
-            domain={group.domain}
-            tone={tone}
           />
         ))}
       </div>
@@ -346,10 +477,16 @@ export default function ReproducibilityView({
   const consistent = crossValidations.filter(v => v.status === 'consistent');
   const contested  = crossValidations.filter(v => v.status !== 'consistent');
 
+  // Normalize every bucket into the SAME uniform row shape.
+  const consistentRows = consistent.map(rowFromCrossValidation);
+  const contestedRows  = contested.map(rowFromCrossValidation);
+  const singleRows     = unreproducedCells.flatMap(c => rowsFromUnreproducedCell(c, showMetric));
+
   // Group each bucket by metric (shared x-domain per metric group). Consistent
   // sorts tightest-first (cv asc); contested sorts most-disagreeing-first (cv desc).
-  const consistentGroups = buildMetricGroups(consistent, 'asc');
-  const contestedGroups  = buildMetricGroups(contested, 'desc');
+  const consistentGroups = buildGroups(consistentRows, 'asc');
+  const contestedGroups  = buildGroups(contestedRows, 'desc');
+  const singleGroups     = buildGroups(singleRows, 'asc');
 
   // Everything filtered out by the confidence threshold (and no fallback cells).
   if (crossValidations.length === 0 && unreproducedCells.length === 0) {
@@ -379,10 +516,24 @@ export default function ReproducibilityView({
         </div>
         <p className="benchmarks-agreement-caption">
           One method across papers: consistent vs contested. Only a
-          (method × metric × condition) measured by 2+ independent papers appears in these
-          buckets, because that is the one comparison the conditions sanction. This is an
-          agreement check, not a global rank. Click any card to compare within its cell.
+          (method × metric × condition) measured by 2+ independent papers can be
+          agreement-checked, because that is the one comparison the conditions sanction. Each row
+          is a dumbbell — one dot per paper, a connector whose length and colour show how far the
+          papers disagree. This is an agreement check, not a global rank. Click any row to compare
+          within its cell.
         </p>
+        {/* compact legend: verdict glyphs are redundant color + symbol */}
+        <div className="benchmarks-agreement-legend" aria-hidden="true">
+          <span className="benchmarks-agreement-legend-item verdict-agree">
+            <span className="benchmarks-agreement-verdict verdict-agree">✓</span> papers agree
+          </span>
+          <span className="benchmarks-agreement-legend-item verdict-contested">
+            <span className="benchmarks-agreement-verdict verdict-contested">⚠</span> papers disagree
+          </span>
+          <span className="benchmarks-agreement-legend-item verdict-single">
+            <span className="benchmarks-agreement-verdict verdict-single">○</span> single source
+          </span>
+        </div>
       </div>
 
       {/* ── Consistent (reproduced) ──────────────────────────────────────── */}
@@ -396,13 +547,12 @@ export default function ReproducibilityView({
             No independently-reproduced results above the current confidence threshold.
           </div>
         ) : (
-          <div className="benchmarks-forest">
+          <div className="benchmarks-agreement-table">
             {consistentGroups.map((group, gi) => (
-              <ForestMetricGroup
+              <MetricGroup
                 key={`cg-${gi}`}
                 group={group}
                 onOpenCell={onOpenCell}
-                tone="consistent"
                 keyPrefix={`c-${gi}`}
                 showMetric={showMetric}
               />
@@ -422,13 +572,12 @@ export default function ReproducibilityView({
             No contested results above the current confidence threshold.
           </div>
         ) : (
-          <div className="benchmarks-forest">
+          <div className="benchmarks-agreement-table">
             {contestedGroups.map((group, gi) => (
-              <ForestMetricGroup
+              <MetricGroup
                 key={`xg-${gi}`}
                 group={group}
                 onOpenCell={onOpenCell}
-                tone="contested"
                 keyPrefix={`x-${gi}`}
                 showMetric={showMetric}
               />
@@ -437,45 +586,22 @@ export default function ReproducibilityView({
         )}
       </section>
 
-      {/* ── Not yet reproduced (single-paper leaderboard cells) ──────────── */}
-      {unreproducedCells.length > 0 && (
-        <section className="benchmarks-agreement-bucket benchmarks-agreement-unreproduced">
-          <h3 className="benchmarks-agreement-bucket-title">Not yet reproduced</h3>
+      {/* ── Single source (not yet contested) — SAME uniform row component ─── */}
+      {singleRows.length > 0 && (
+        <section className="benchmarks-agreement-bucket benchmarks-agreement-single">
+          <h3 className="benchmarks-agreement-bucket-title">Single source</h3>
           <div className="benchmarks-agreement-bucket-sub">
-            {unreproducedCells.length} cell{unreproducedCells.length !== 1 ? 's' : ''} with results from a single paper — open one to compare within its conditions
+            {singleRows.length} result{singleRows.length !== 1 ? 's' : ''} from a single paper — not yet contested; open one to compare within its conditions
           </div>
-          <div className="benchmarks-cv-grid">
-            {unreproducedCells.map((cell) => (
-              <div
-                key={cell.key}
-                className="benchmarks-cv-card benchmarks-cv-card-clickable benchmarks-cv-card-single"
-                onClick={() => onOpenCell && onOpenCell(cell.key)}
-              >
-                <div className="benchmarks-cv-header">
-                  <span className="benchmarks-cv-metric">
-                    {showMetric && (cell.metric_label || cell.metric_id)}
-                    {cell.condition
-                      ? <span className="benchmarks-cv-cond-tag">{showMetric ? ' · ' : ''}{cell.condition}</span>
-                      : (!showMetric ? <span className="benchmarks-cv-cond-tag">all conditions</span> : null)}
-                  </span>
-                  <span className="benchmarks-cv-badge different-setup">
-                    {cell.n_methods} method{cell.n_methods !== 1 ? 's' : ''}
-                  </span>
-                </div>
-                <div className="benchmarks-cv-single-methods">
-                  {(cell.entries || []).map((e) => (
-                    <span key={e.method} className="benchmarks-cv-single-method">
-                      <span className="benchmarks-method">{e.method}</span>
-                      <span className="benchmarks-score"> {e.value}</span>
-                      {e.grade && (
-                        <span className={`benchmarks-grade-badge ${gradeClass(e.grade)}`}>{e.grade}</span>
-                      )}
-                      <EntrySource entry={e} />
-                    </span>
-                  ))}
-                </div>
-                <div className="benchmarks-cv-drill">Compare within this cell →</div>
-              </div>
+          <div className="benchmarks-agreement-table">
+            {singleGroups.map((group, gi) => (
+              <MetricGroup
+                key={`sg-${gi}`}
+                group={group}
+                onOpenCell={onOpenCell}
+                keyPrefix={`s-${gi}`}
+                showMetric={showMetric}
+              />
             ))}
           </div>
         </section>

@@ -6287,18 +6287,36 @@ body {
 }
 .benchmarks-cv-card-clickable:hover .benchmarks-cv-drill { opacity: 1; }
 
-/* ── Forest-plot rows (reproducibility entries) ───────────────────────────────
- * Each cross-validation entry is one thin row grouped under its metric sub-head.
- * Within a metric group all rows share an x-domain, so spread width reads as true
- * agreement (tight) vs disagreement (wide). Palette is calm: teal for consistent,
- * amber/slate for contested — never alarm red. */
-.benchmarks-forest {
+/* ── Agreement Rows — Cleveland dumbbell dot-strip (reproducibility) ───────────
+ * ONE uniform row component for every result: consistent, contested, AND
+ * single-source. A calm, dense, spreadsheet-grade table. The mark is a dumbbell
+ * (one dot per paper on a shared per-metric x-axis + a connector whose length
+ * and colour encode disagreement) — never a forest plot, never a mean diamond.
+ * Palette is SEMANTIC ONLY: teal/green = agree, amber = contested, slate = single
+ * source. The grade chip is kept visually separate from the verdict hue, because
+ * extraction-grade and paper-agreement are orthogonal. */
+
+/* Semantic verdict palette — the ONLY hues used in these rows. */
+:root {
+  --bm-agree:       #1a7a42;  /* teal/green */
+  --bm-agree-soft:  #9ed6b6;
+  --bm-agree-rail:  #47a36d;
+  --bm-contested:   #b06a00;  /* amber */
+  --bm-contested-soft: #e3c98f;
+  --bm-contested-rail: #d3a049;
+  --bm-single:      #64748b;  /* slate/gray */
+  --bm-single-soft: #c7cdd6;
+  --bm-single-rail: #aab2bf;
+  --bm-source-link: #1155CC;  /* one muted blue, source link only */
+}
+
+.benchmarks-agreement-table {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1rem;
 }
-.benchmarks-forest-group { display: flex; flex-direction: column; }
-.benchmarks-forest-group-title {
+.benchmarks-agreement-group { display: flex; flex-direction: column; }
+.benchmarks-agreement-group-title {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -6306,7 +6324,7 @@ body {
   text-transform: uppercase;
   margin: 0 0 0.35rem;
 }
-.benchmarks-forest-rows {
+.benchmarks-agreement-rows {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
@@ -6315,134 +6333,181 @@ body {
   background: var(--card);
 }
 
-/* One thin row: label | plot | stats, with a collapsible source panel below. */
-.benchmarks-forest-row {
+/* One dense row: [verdict] | label | dumbbell+values | stats | source. */
+.benchmarks-agreement-row {
   display: grid;
-  grid-template-columns: minmax(150px, 1.1fr) auto minmax(96px, 0.8fr);
+  grid-template-columns: 18px minmax(150px, 1.1fr) auto minmax(108px, 0.8fr) auto;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.5rem 0.7rem;
+  gap: 0.7rem;
+  padding: 0.45rem 0.7rem;
   border-bottom: 1px solid var(--border-light);
   border-left: 3px solid transparent;
 }
-.benchmarks-forest-rows .benchmarks-forest-row:last-child { border-bottom: none; }
-.benchmarks-forest-row.tone-consistent { border-left-color: #47a36d; }
-.benchmarks-forest-row.tone-contested { border-left-color: #d3a049; }
-.benchmarks-forest-row.benchmarks-cv-card-clickable:hover {
+.benchmarks-agreement-rows .benchmarks-agreement-row:last-child { border-bottom: none; }
+.benchmarks-agreement-row.verdict-agree     { border-left-color: var(--bm-agree-rail); }
+.benchmarks-agreement-row.verdict-contested { border-left-color: var(--bm-contested-rail); }
+.benchmarks-agreement-row.verdict-single    { border-left-color: var(--bm-single-rail); }
+.benchmarks-agreement-row.benchmarks-cv-card-clickable:hover {
   box-shadow: inset 0 0 0 100vmax rgba(22, 101, 125, 0.035);
 }
 
-/* left: method · condition + status/grade badges */
-.benchmarks-forest-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
+/* leftmost scan column: the verdict glyph (redundant colour + symbol) */
+.benchmarks-agreement-verdict {
+  font-size: 0.92rem;
+  line-height: 1;
+  text-align: center;
+  font-weight: 700;
 }
-.benchmarks-forest-method-line {
+.benchmarks-agreement-verdict.verdict-agree     { color: var(--bm-agree); }
+.benchmarks-agreement-verdict.verdict-contested { color: var(--bm-contested); }
+.benchmarks-agreement-verdict.verdict-single    { color: var(--bm-single); }
+
+/* method · condition + grade chip */
+.benchmarks-agreement-label { min-width: 0; }
+.benchmarks-agreement-method-line {
   display: flex;
   align-items: baseline;
-  gap: 0.35rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
-.benchmarks-forest-cond {
+.benchmarks-agreement-cond {
   font-size: 0.72rem;
   font-style: italic;
   color: var(--text-muted);
 }
+/* Grade chip: OUTLINE / desaturated — never tinted with the verdict hue. */
+.benchmarks-agreement-grade-chip {
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-mid);
+  letter-spacing: 0.2px;
+}
+.benchmarks-agreement-grade-chip.benchmarks-grade-a { border-color: #b7c3cc; color: #44515c; }
+.benchmarks-agreement-grade-chip.benchmarks-grade-b { border-color: #c7ced6; color: #5a6675; }
+.benchmarks-agreement-grade-chip.benchmarks-grade-c { border-color: var(--border); color: var(--text-muted); }
 
-/* center: the SVG strip + the readable per-paper value list */
-.benchmarks-forest-plot {
+/* the dumbbell mark + the readable per-paper value list */
+.benchmarks-agreement-mark {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
+  gap: 0.1rem;
 }
-.benchmarks-forest-svg { display: block; }
-.benchmarks-forest-axis { stroke: var(--border); stroke-width: 1; }
-.benchmarks-forest-segment {
-  stroke-width: 3;
-  stroke-linecap: round;
-  opacity: 0.45;
-}
-.benchmarks-forest-svg.tone-consistent .benchmarks-forest-segment { stroke: #9ed6b6; }
-.benchmarks-forest-svg.tone-consistent .benchmarks-forest-dot { fill: #1e7e3e; }
-.benchmarks-forest-svg.tone-consistent .benchmarks-forest-mean { fill: #16657d; }
-.benchmarks-forest-svg.tone-contested .benchmarks-forest-segment { stroke: #e3c98f; }
-.benchmarks-forest-svg.tone-contested .benchmarks-forest-dot { fill: #b06a00; }
-.benchmarks-forest-svg.tone-contested .benchmarks-forest-mean { fill: #64748b; }
-.benchmarks-forest-dot {
-  stroke: var(--card);
-  stroke-width: 1;
-}
-.benchmarks-forest-values {
+.benchmarks-dumbbell-svg { display: block; }
+.benchmarks-dumbbell-axis { stroke: var(--border-light); stroke-width: 1; }
+.benchmarks-dumbbell-connector { stroke-width: 4; stroke-linecap: round; opacity: 0.55; }
+.benchmarks-dumbbell-mean-tick { stroke-width: 1; opacity: 0.5; }
+.benchmarks-dumbbell-dot { stroke: var(--card); stroke-width: 1; }
+/* agree: short + teal */
+.benchmarks-dumbbell-svg.verdict-agree .benchmarks-dumbbell-connector { stroke: var(--bm-agree-soft); }
+.benchmarks-dumbbell-svg.verdict-agree .benchmarks-dumbbell-dot { fill: var(--bm-agree); }
+.benchmarks-dumbbell-svg.verdict-agree .benchmarks-dumbbell-mean-tick { stroke: var(--text-muted); }
+/* contested: long + amber */
+.benchmarks-dumbbell-svg.verdict-contested .benchmarks-dumbbell-connector { stroke: var(--bm-contested-soft); }
+.benchmarks-dumbbell-svg.verdict-contested .benchmarks-dumbbell-dot { fill: var(--bm-contested); }
+.benchmarks-dumbbell-svg.verdict-contested .benchmarks-dumbbell-mean-tick { stroke: var(--text-muted); }
+/* single source: slate */
+.benchmarks-dumbbell-svg.verdict-single .benchmarks-dumbbell-connector { stroke: var(--bm-single-soft); }
+.benchmarks-dumbbell-svg.verdict-single .benchmarks-dumbbell-dot { fill: var(--bm-single); }
+
+.benchmarks-agreement-values {
   font-size: 0.68rem;
   color: var(--text-mid);
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.1px;
   text-align: center;
   max-width: 200px;
 }
-.benchmarks-forest-value { white-space: nowrap; }
-.benchmarks-forest-value-sep { color: var(--text-muted); }
+.benchmarks-agreement-value { white-space: nowrap; }
+.benchmarks-agreement-value-sep { color: var(--text-muted); }
 
-/* right: mean / CV% / N papers + the source toggle */
-.benchmarks-forest-stats {
+/* headline value + plain-language spread label + N papers (right-aligned, mono) */
+.benchmarks-agreement-stats {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.1rem;
+  gap: 0.05rem;
   text-align: right;
 }
-.benchmarks-forest-mean-val {
+.benchmarks-agreement-headline {
   font-size: 0.92rem;
   font-weight: 700;
   color: var(--text);
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
   font-variant-numeric: tabular-nums;
 }
-.benchmarks-forest-stat-sub {
+.benchmarks-agreement-spread {
   font-size: 0.66rem;
+  font-weight: 600;
+}
+.benchmarks-agreement-spread.verdict-agree     { color: var(--bm-agree); }
+.benchmarks-agreement-spread.verdict-contested { color: var(--bm-contested); }
+.benchmarks-agreement-spread.verdict-single    { color: var(--bm-single); }
+.benchmarks-agreement-npapers {
+  font-size: 0.62rem;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
-.benchmarks-forest-src-btn { margin-top: 0.15rem; }
+
+/* source column (the ⊙ affordance) */
+.benchmarks-agreement-source { display: flex; justify-content: flex-end; }
+.benchmarks-agreement-src-btn { white-space: nowrap; }
 
 /* collapsible per-paper provenance, spans the full row width */
-.benchmarks-forest-reports {
+.benchmarks-agreement-reports {
   grid-column: 1 / -1;
   margin-top: 0.4rem;
   padding-top: 0.4rem;
   border-top: 1px dashed var(--border);
 }
 
-@media (max-width: 640px) {
-  .benchmarks-forest-row {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "label stats"
-      "plot  plot";
-  }
-  .benchmarks-forest-label { grid-area: label; }
-  .benchmarks-forest-stats { grid-area: stats; }
-  .benchmarks-forest-plot { grid-area: plot; align-items: flex-start; }
+/* compact legend under the hero (redundant colour + symbol key) */
+.benchmarks-agreement-legend {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.68rem;
+  color: var(--text-mid);
+}
+.benchmarks-agreement-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.benchmarks-agreement-legend-item .benchmarks-agreement-verdict { font-size: 0.8rem; }
+
+/* single-source bucket heading reads as the calmest (slate) */
+.benchmarks-agreement-single .benchmarks-agreement-bucket-title { color: var(--bm-single); }
+
+/* source links in these rows use the one muted blue */
+.benchmarks-agreement-row .benchmarks-source-btn:hover,
+.benchmarks-agreement-row .benchmarks-source-btn.active {
+  color: var(--bm-source-link);
+  border-color: var(--bm-source-link);
 }
 
-/* Not-yet-reproduced (single-paper leaderboard) cards */
-.benchmarks-agreement-unreproduced .benchmarks-agreement-bucket-title { color: var(--text-mid); }
-.benchmarks-cv-card-single { border-left-color: #c9b27a; }
-.benchmarks-cv-single-methods {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-top: 0.3rem;
+@media (max-width: 640px) {
+  .benchmarks-agreement-row {
+    grid-template-columns: 18px 1fr auto;
+    grid-template-areas:
+      "verdict label  stats"
+      "verdict mark   mark"
+      "verdict source source";
+    row-gap: 0.3rem;
+  }
+  .benchmarks-agreement-verdict { grid-area: verdict; align-self: start; }
+  .benchmarks-agreement-label { grid-area: label; }
+  .benchmarks-agreement-stats { grid-area: stats; }
+  .benchmarks-agreement-mark { grid-area: mark; align-items: flex-start; }
+  .benchmarks-agreement-source { grid-area: source; justify-content: flex-start; }
 }
-.benchmarks-cv-single-method {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  flex-wrap: wrap;
-  font-size: 0.8rem;
-}
+
 .benchmarks-cv-entry-source { position: relative; display: inline-flex; }
 .benchmarks-source-panel-inline {
   margin-top: 0.4rem;
