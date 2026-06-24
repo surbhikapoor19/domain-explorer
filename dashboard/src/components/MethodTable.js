@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useDomainConfig } from '../DomainContext';
 
 function getUniqueValues(data, col) {
@@ -81,6 +81,24 @@ export default function MethodTable({
     });
   }, [filteredData, hasHighlights, highlightedMethods]);
 
+  // Cross-surface hover sync: when a method is hovered from ELSEWHERE (the KG
+  // graph or the scatter), bring its row into view at the top of the table — but
+  // ONLY if it's currently off-screen, so hovering a visible table row never yanks
+  // the list out from under the cursor. This makes a KG-node hover actually show
+  // the highlighted row instead of it sitting scrolled out of sight.
+  const scrollRef = useRef(null);
+  useEffect(() => {
+    const cont = scrollRef.current;
+    if (!cont || hoveredIndex == null) return;
+    const row = cont.querySelector('tr.row-hov');
+    if (!row) return;
+    const r = row.getBoundingClientRect();
+    const c = cont.getBoundingClientRect();
+    if (r.top < c.top || r.bottom > c.bottom) {
+      cont.scrollTop += (r.top - c.top); // bring the hovered row to the top of the visible area
+    }
+  }, [hoveredIndex, tableData]);
+
   const activeFilterCount = Object.values(filters).filter(Boolean).length + (searchText ? 1 : 0);
 
   const handleFilterChange = (col, val) => {
@@ -138,7 +156,7 @@ export default function MethodTable({
         </div>
       )}
 
-      <div className="table-scroll">
+      <div className="table-scroll" ref={scrollRef}>
         <table className="data-table">
           <thead>
             <tr>
