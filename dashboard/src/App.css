@@ -6938,3 +6938,15 @@ body {
 }
 .benchmarks-help-close:hover { border-color: var(--primary); color: var(--primary); }
 .benchmarks-help-panel iframe { width: 100%; height: 100%; border: 0; }
+
+/* QueryComposer — live counts + zero-disabled options + footer */
+.benchmarks-composer-count { color: var(--text-muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+.benchmarks-composer-chip.active .benchmarks-composer-count { color: inherit; }
+.benchmarks-composer-chip.is-empty,
+.benchmarks-composer-chip:disabled { opacity: 0.38; cursor: not-allowed; }
+.benchmarks-composer-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; margin-top: 1rem;
+  border-top: 1px solid var(--border-light); padding-top: 0.7rem;
+}
+.benchmarks-composer-total { font-size: 0.82rem; font-weight: 600; color: var(--text-mid); font-variant-numeric: tabular-nums; }

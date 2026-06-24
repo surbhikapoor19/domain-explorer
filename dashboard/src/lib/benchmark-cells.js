@@ -49,6 +49,33 @@ const SUCCESS_CRITERION_TOKENS = {
   sr: 'sr', // success rate
 };
 
+// Human-readable labels for condition facet tokens, so the UI NEVER shows raw
+// extraction shorthand (e.g. "gsr"/"dr") to a researcher. The paper-native
+// abbreviation is kept in parens for those who recognise it.
+const FACET_LABELS = {
+  gsr: 'Grasp success rate (GSR)',
+  dr: 'Declutter rate (DR)',
+  sr: 'Success rate (SR)',
+  packed: 'Packed',
+  pile: 'Pile',
+  real: 'Real-world',
+  isolated: 'Isolated',
+  cluttered: 'Cluttered',
+  sim: 'Simulation',
+};
+
+/**
+ * humanizeFacet(token) -> a readable label for a condition facet token (scene or
+ * success_criterion). Unknown tokens are title-cased; raw lowercase shorthand is
+ * never shown to the user.
+ */
+export function humanizeFacet(token) {
+  if (token == null) return '';
+  const key = String(token).trim().toLowerCase();
+  if (FACET_LABELS[key]) return FACET_LABELS[key];
+  return key.charAt(0).toUpperCase() + key.slice(1);
+}
+
 /**
  * CELL_KEY(metricId, condition) -> canonical cell id string in the SAME format
  * as the leaderboard map keys: `${metric_id}${SEP}${condition}`. A null/empty/
@@ -718,4 +745,33 @@ export function facetCounts(cells, methodsIndex) {
     sensor: toList(maps.sensor),
     learning_paradigm: toList(maps.learning_paradigm),
   };
+}
+
+/**
+ * filterCells(cells, selection, methodsIndex) -> the subset of `cells` matching
+ * the selection. THE single source of truth for both the QueryComposer's live
+ * counts and the page's visible results, so a bracket count can never disagree
+ * with what actually shows. selection = { metricId?, scene?, success_criterion?,
+ * gripper?, sensor?, learning_paradigm? }. A facet that isn't set doesn't narrow.
+ */
+export function filterCells(cells, selection, methodsIndex) {
+  const sel = selection || {};
+  let out = Array.isArray(cells) ? cells : [];
+  if (sel.metricId) out = out.filter((c) => c.metric_id === sel.metricId);
+  if (sel.scene) out = out.filter((c) => c.facets && c.facets.scene === sel.scene);
+  if (sel.success_criterion) out = out.filter((c) => c.facets && c.facets.success_criterion === sel.success_criterion);
+  const attrKeys = ['gripper', 'sensor', 'learning_paradigm'].filter((k) => sel[k]);
+  if (attrKeys.length) {
+    const idx = methodsIndex || new Map();
+    out = out.filter((cell) => {
+      const attrs = cellAttributes(cell, idx);
+      return Object.values(attrs).some((m) => attrKeys.every((k) => m[k] && m[k].value === sel[k]));
+    });
+  }
+  return out;
+}
+
+/** matchCells(benchmarkData, selection, methodsIndex) — filterCells over freshly built cells. */
+export function matchCells(benchmarkData, selection, methodsIndex) {
+  return filterCells(buildCells(benchmarkData), selection, methodsIndex);
 }

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { buildCells, coverageGaps } from '../lib/benchmark-cells';
+import { buildCells, coverageGaps, humanizeFacet } from '../lib/benchmark-cells';
 
 /* ──────────────────────────────────────────────────────────────────────────
  * ConditionSpine (Phase 2a)
@@ -124,7 +124,7 @@ export default function ConditionSpine({ benchmarkData, value, onChange }) {
                 aria-pressed={filter.scene === s}
                 onClick={() => toggle('scene', s)}
               >
-                {s}
+                {humanizeFacet(s)}
               </button>
             ))}
           </div>
@@ -145,7 +145,7 @@ export default function ConditionSpine({ benchmarkData, value, onChange }) {
                 onClick={() => toggle('success_criterion', c)}
                 title={c === 'gsr' ? 'grasp success rate' : c === 'dr' ? 'declutter rate' : c === 'sr' ? 'success rate' : c}
               >
-                {CRITERION_LABELS[c] || c}
+                {humanizeFacet(c)}
               </button>
             ))}
           </div>

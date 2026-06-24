@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { humanizeFacet } from '../lib/benchmark-cells';
 
 /* ──────────────────────────────────────────────────────────────────────────
  * ComparisonsView (Phase 2a)
@@ -42,10 +43,10 @@ function CellFacetBadges({ facets }) {
   return (
     <span className="benchmarks-cell-facets">
       {facets.scene && (
-        <span className="benchmarks-cell-facet benchmarks-cell-facet-scene">{facets.scene}</span>
+        <span className="benchmarks-cell-facet benchmarks-cell-facet-scene">{humanizeFacet(facets.scene)}</span>
       )}
       {facets.success_criterion && (
-        <span className="benchmarks-cell-facet benchmarks-cell-facet-criterion">{facets.success_criterion}</span>
+        <span className="benchmarks-cell-facet benchmarks-cell-facet-criterion">{humanizeFacet(facets.success_criterion)}</span>
       )}
       {(facets.raw || []).map((r, i) => (
         <span key={i} className="benchmarks-cell-facet benchmarks-cell-facet-raw">{r}</span>

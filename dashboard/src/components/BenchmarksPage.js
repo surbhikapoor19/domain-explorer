@@ -6,7 +6,7 @@ import PaperTrailDrawer from './PaperTrailDrawer';
 import ConditionSpine from './ConditionSpine';
 import QueryComposer from './QueryComposer';
 import { loadBenchmarkComparisons, loadMethods } from '../lib/data-loader';
-import { buildCells, findCells, buildMethodsIndex, cellAttributes } from '../lib/benchmark-cells';
+import { buildCells, filterCells, buildMethodsIndex } from '../lib/benchmark-cells';
 
 // Reusable help affordance, matching the rest of the app's "?" tooltips.
 const Help = ({ text }) => (
@@ -92,29 +92,21 @@ export default function BenchmarksPage({
     return ids.size > 1;
   }, [allCells]);
 
-  // The spine filter narrows the visible cells via findCells(). With no facets
-  // selected, every cell is in scope.
+  // THE single filter — identical to the composer's live counts (both call
+  // filterCells), so a bracket count can never disagree with what the page shows.
+  // Combines the condition facets (metric/scene/criterion) with the method-attribute
+  // facets (gripper/sensor/learning_paradigm). No facets selected => every cell.
   const visibleCells = useMemo(() => {
     if (!benchmarkData) return [];
-    const hasFacets =
-      (conditionFilter.metricId != null && conditionFilter.metricId !== '') ||
-      (conditionFilter.scene != null && conditionFilter.scene !== '') ||
-      (conditionFilter.success_criterion != null && conditionFilter.success_criterion !== '');
-    const cells = !hasFacets ? allCells : findCells(benchmarkData, {
+    const selection = {
       metricId: conditionFilter.metricId,
-      facets: {
-        scene: conditionFilter.scene,
-        success_criterion: conditionFilter.success_criterion,
-      },
-    }).matched;
-    // Method-attribute narrowing (gripper/sensor/learning_paradigm via KG join).
-    const af = attrFilter || {};
-    const attrKeys = ['gripper', 'sensor', 'learning_paradigm'].filter((k) => af[k]);
-    const filtered = attrKeys.length === 0 ? cells : cells.filter((cell) => {
-      const attrs = cellAttributes(cell, methodsIndex || new Map());
-      return Object.values(attrs).some((m) => attrKeys.every((k) => m[k] && m[k].value === af[k]));
-    });
-    return filtered;
+      scene: conditionFilter.scene,
+      success_criterion: conditionFilter.success_criterion,
+      gripper: attrFilter.gripper,
+      sensor: attrFilter.sensor,
+      learning_paradigm: attrFilter.learning_paradigm,
+    };
+    return filterCells(allCells, selection, methodsIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [benchmarkData, allCells, conditionFilter, attrFilter, methodsIndex]);
 

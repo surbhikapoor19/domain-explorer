@@ -90,7 +90,7 @@ describe('BenchmarksPage — view toggle + copilot draft-apply', () => {
     fireEvent.click(screen.getByRole('button', { name: /^apply/i }));
     await waitFor(() => expect(container.querySelector('.benchmarks-papertrail-drawer')).toBeTruthy());
     const activeChips = [...container.querySelectorAll('.benchmarks-spine-chip.active')].map((c) => c.textContent);
-    expect(activeChips).toContain('packed');
+    expect(activeChips.join(' ')).toMatch(/packed/i); // humanized label is "Packed"
   });
 
   test('Dismiss clears the banner and leaves the view unchanged', async () => {
