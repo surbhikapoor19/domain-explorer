@@ -1,6 +1,6 @@
 import { chat as llmChat } from './llm-client';
 import { loadRagChunks, loadKgFull, loadBenchmarkComparisons } from './data-loader';
-import { buildBenchmarkContext } from './benchmark-context';
+import { buildBenchmarkContext, benchmarkPageRef } from './benchmark-context';
 import { runQueryPipeline } from './query-engine';
 import { spellCorrectQuery } from './spell-correct';
 import { GRASP_DEFAULTS } from '../DomainContext';
@@ -131,11 +131,15 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   // Step 5: LLM insight — ground it in the verified benchmark leaderboards when
   // the query is about performance/rankings/comparisons.
   let benchmarkText = '';
+  let bmPageRef = null;
   try {
     const bench = await loadBenchmarkComparisons();
     // knownMethods lets the benchmark grounding fire on comparison intent
     // ("compare GPD and VGN") even when no metric keyword is present.
     benchmarkText = buildBenchmarkContext(effectiveQuery, bench, { knownMethods: methodNames });
+    // A serializable deep-link to the REAL benchmark cell the answer rests on
+    // (or null when no metric/cell resolves — the gap, not a fabricated cell).
+    bmPageRef = benchmarkPageRef(effectiveQuery, bench, { knownMethods: methodNames, methods: allMethods });
   } catch (e) { /* benchmarks optional */ }
 
   let insightText = '';
@@ -204,6 +208,7 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     grounding,
     ragCitations,
     ragAnalytics,
+    benchmarkPageRef: bmPageRef,
     methodRelevance,
     kgContext,
     kgTraversal,

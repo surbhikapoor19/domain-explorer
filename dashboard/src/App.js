@@ -524,6 +524,7 @@ function App() {
           selectedPoint={selectedPoint}
           onSelect={setSelectedPoint}
           minConfidence={minConfidence}
+          incomingPageRef={suggestion?.benchmarkPageRef || null}
         />
 
         {selectedPoint && <DetailPanel point={selectedPoint} onClose={() => setSelectedPoint(null)} minConfidence={minConfidence} />}

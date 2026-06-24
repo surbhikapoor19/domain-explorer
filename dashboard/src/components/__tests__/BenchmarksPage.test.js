@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BenchmarksPage from '../BenchmarksPage';
 import * as loader from '../../lib/data-loader';
 
@@ -20,10 +20,14 @@ const V2 = {
           n_cross_validations: 1, n_grade_a: 1, n_quarantined: 156},
 };
 
-test('renders v2 leaderboard with grade badge and quarantine count', async () => {
+// Hard gate: the page opens as a query builder; compose a facet to reveal metrics.
+test('after composing a query, renders the leaderboard method + quarantine count', async () => {
   jest.spyOn(loader, 'loadBenchmarkComparisons').mockResolvedValue(V2);
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
-  expect(await screen.findByText(/Success Rate/)).toBeInTheDocument();
-  expect(screen.getByText('AnyGrasp')).toBeInTheDocument();
+  jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
+  const { container } = render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  await waitFor(() => expect(container.querySelector('.benchmarks-composer')).toBeTruthy());
+  fireEvent.click(container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
+  fireEvent.click(container.querySelector('.benchmarks-composer-apply'));
+  expect(await screen.findByText('AnyGrasp')).toBeInTheDocument();
   expect(screen.getByText(/156/)).toBeInTheDocument();   // quarantine count
 });

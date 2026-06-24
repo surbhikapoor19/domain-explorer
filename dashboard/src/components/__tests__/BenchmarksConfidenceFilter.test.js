@@ -1,7 +1,7 @@
 /* Min-confidence filter — AUTHORED BY ORCHESTRATOR. Implementers must NOT modify.
  * Extracted metrics below the threshold (grade C / weak / disputed) must be hidden,
  * and reappear when the threshold is lowered. */
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BenchmarksPage from '../BenchmarksPage';
 import * as loader from '../../lib/data-loader';
 
@@ -20,15 +20,28 @@ const DATA = {
   stats: { n_comparisons: 0, n_leaderboards: 1, n_methods_indexed: 0, n_cross_validations: 0, n_grade_a: 1, n_quarantined: 0 },
 };
 
+beforeEach(() => {
+  jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
+});
+
+// Hard gate: render + compose the (single) metric facet to reveal the metrics.
+async function composed(props = {}) {
+  const utils = render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} {...props} />);
+  await waitFor(() => expect(utils.container.querySelector('.benchmarks-composer')).toBeTruthy());
+  fireEvent.click(utils.container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
+  fireEvent.click(utils.container.querySelector('.benchmarks-composer-apply'));
+  return utils;
+}
+
 test('hides entries below the min-confidence threshold', async () => {
   jest.spyOn(loader, 'loadBenchmarkComparisons').mockResolvedValue(DATA);
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} minConfidence={0.70} />);
+  await composed({ minConfidence: 0.70 });
   expect(await screen.findByText('StrongMethod')).toBeInTheDocument();
   expect(screen.queryByText('WeakMethod')).not.toBeInTheDocument();   // 0.40 < 0.70 -> hidden
 });
 
 test('low-confidence entries reappear when the threshold is lowered', async () => {
   jest.spyOn(loader, 'loadBenchmarkComparisons').mockResolvedValue(DATA);
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} minConfidence={0.30} />);
+  await composed({ minConfidence: 0.30 });
   expect(await screen.findByText('WeakMethod')).toBeInTheDocument();   // 0.40 >= 0.30 -> shown
 });

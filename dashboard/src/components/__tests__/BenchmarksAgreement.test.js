@@ -10,7 +10,7 @@
  *
  * This intentionally FAILS against the current implementation, which defaults to the
  * "leaderboards" tab — correct TDD red. */
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent, waitFor } from '@testing-library/react';
 import BenchmarksPage from '../BenchmarksPage';
 import * as loader from '../../lib/data-loader';
 
@@ -72,11 +72,21 @@ const CONTESTED = DATA.cross_validations.filter(v => v.status !== 'consistent');
 
 beforeEach(() => {
   jest.spyOn(loader, 'loadBenchmarkComparisons').mockResolvedValue(DATA);
+  jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
 });
+
+// Hard gate: render + compose the (single) metric facet to reveal the metrics.
+async function composed(props = {}) {
+  const utils = render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} {...props} />);
+  await waitFor(() => expect(utils.container.querySelector('.benchmarks-composer')).toBeTruthy());
+  fireEvent.click(utils.container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
+  fireEvent.click(utils.container.querySelector('.benchmarks-composer-apply'));
+  return utils;
+}
 
 // (a) The Agreement / Reproducibility view renders by DEFAULT — no tab click needed.
 test('lands on the agreement/reproducibility view by default', async () => {
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  await composed();
   // The view's framing words must be visible without any interaction.
   expect(await screen.findByText('AnyGrasp')).toBeInTheDocument();
   // The active tab is the agreement view, not the leaderboards tab.
@@ -90,7 +100,7 @@ test('lands on the agreement/reproducibility view by default', async () => {
 
 // (b) The hero reproduced-count equals the number of consistent entries.
 test('hero count equals the number of consistent (reproduced) entries', async () => {
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  await composed();
   await screen.findByText('AnyGrasp');
 
   // The hero leads with "N results independently reproduced under matched conditions".
@@ -108,7 +118,7 @@ test('hero count equals the number of consistent (reproduced) entries', async ()
 
 // (c) Both a CONSISTENT section and a CONTESTED section render with their entries.
 test('renders both a consistent section and a contested section with their entries', async () => {
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  await composed();
   await screen.findByText('AnyGrasp');
 
   // Section headings for each bucket.
@@ -125,7 +135,7 @@ test('renders both a consistent section and a contested section with their entri
 
 // (d) A high_variance entry is presented as CONTESTED, not consistent.
 test('a high_variance entry is grouped under contested, not consistent', async () => {
-  const { container } = render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  const { container } = await composed();
   await screen.findByText('AnyGrasp');
 
   // Locate the contested section by its heading and assert GPD lives inside it.
@@ -146,7 +156,7 @@ test('a high_variance entry is grouped under contested, not consistent', async (
 
 // (e) The per-paper report values appear (the spread, not just the mean).
 test('shows the per-paper report values for each entry', async () => {
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  await composed();
   await screen.findByText('AnyGrasp');
 
   // Consistent entry: both papers' values are printed (a value may also appear in

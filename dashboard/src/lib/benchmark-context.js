@@ -2,6 +2,8 @@
 // renders the ranked, evidence-graded, source-linked rows for the copilot's LLM
 // prompt — so "best method on simulated scenes" answers with verified numbers.
 
+import { findCells, pageRef } from './benchmark-cells';
+
 // Fallback keyword maps (grasp-planning) used ONLY when the benchmark data does
 // not carry a domain-derived `copilot` block. For any domain built by the
 // current pipeline, build_benchmarks.py emits benchmarkData.copilot.{metric,
@@ -150,4 +152,73 @@ function buildComparisonContext(q, benchmarkData, opts) {
     return `${head}:\n${rows}`;
   });
   return blocks.join('\n\n');
+}
+
+/**
+ * benchmarkPageRef(query, benchmarkData, opts) -> a serializable pageRef deep-link
+ * { view, cellKey, conditionFilter } pointing at a REAL benchmark cell, or null
+ * when the query resolves no metric OR no matching cell exists (the gap is the
+ * answer — never a fabricated/wrong cell). Reuses the SAME metric/condition
+ * keyword routing buildBenchmarkContext uses and the SAME findCells alignment
+ * core the page renders.
+ */
+export function benchmarkPageRef(query, benchmarkData, opts = {}) {
+  if (!benchmarkData || !benchmarkData.leaderboards) return null;
+  const q = ' ' + (query || '').toLowerCase() + ' ';
+
+  // Same keyword-map selection as buildBenchmarkContext (copilot block or grasp defaults).
+  const cp = benchmarkData.copilot;
+  const hasCopilot = cp && cp.metric_keywords && Object.keys(cp.metric_keywords).length > 0;
+  const metricKeywords = hasCopilot ? cp.metric_keywords : DEFAULT_METRIC_KEYWORDS;
+  const conditionKeywords = hasCopilot ? (cp.condition_keywords || {}) : DEFAULT_CONDITION_KEYWORDS;
+
+  // Longest-match metric scoring (identical to buildBenchmarkContext).
+  let metric = null, bestScore = 0;
+  for (const [mid, kws] of Object.entries(metricKeywords)) {
+    let hits = 0, maxLen = 0;
+    for (const k of kws) { if (k && q.includes(k)) { hits++; if (k.length > maxLen) maxLen = k.length; } }
+    if (!hits) continue;
+    const score = maxLen * 100 + hits;
+    if (score > bestScore) { bestScore = score; metric = mid; }
+  }
+  if (!metric) return null;
+
+  let condition = null;
+  for (const [cid, kws] of Object.entries(conditionKeywords)) {
+    if (kws.some(k => q.includes(k))) { condition = cid; break; }
+  }
+
+  // Find a REAL cell via the shared core: try metric + scene first, then fall
+  // back to metric-only (so a resolved-but-unmatched scene still lands on the
+  // metric's closest real cell rather than nothing).
+  const facets = condition ? { scene: condition } : undefined;
+  let { matched } = findCells(benchmarkData, { metricId: metric, facets });
+  if (!matched.length && facets) {
+    ({ matched } = findCells(benchmarkData, { metricId: metric }));
+  }
+  if (!matched.length) return null;
+
+  const cell = matched[0];
+  const ref = pageRef('comparisons', { cellKey: cell.key, facets: cell.facets });
+
+  // Method-attribute facet resolution (gripper/sensor) — values come ONLY from opts.methods.
+  const q2 = ' ' + (query || '').toLowerCase() + ' ';
+  const methods = Array.isArray(opts.methods) ? opts.methods : [];
+  const pickAttr = (fields) => {
+    for (const m of methods) {
+      for (const f of fields) {
+        const v = m && m[f];
+        if (v && typeof v === 'string' && q2.includes(v.toLowerCase())) return v;
+      }
+    }
+    return null;
+  };
+  const gripper = pickAttr(['Gripper Type', 'End-effector Hardware']);
+  const sensor = pickAttr(['Input Data', 'Sensor Complexity']);
+  if (ref && (gripper || sensor)) {
+    ref.conditionFilter = { ...(ref.conditionFilter || {}) };
+    if (gripper) ref.conditionFilter.gripper = gripper;
+    if (sensor) ref.conditionFilter.sensor = sensor;
+  }
+  return ref;
 }

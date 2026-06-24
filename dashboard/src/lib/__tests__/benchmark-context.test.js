@@ -1,7 +1,8 @@
 /* Copilot benchmark grounding — AUTHORED BY ORCHESTRATOR. Implementers must NOT modify.
  * A performance/ranking query must surface the matching leaderboard with exact
  * values, grades, and source papers; a non-quantitative query gets nothing. */
-import { buildBenchmarkContext } from '../benchmark-context';
+import { buildBenchmarkContext, benchmarkPageRef } from '../benchmark-context';
+import { CELL_KEY } from '../benchmark-cells';
 
 const BENCH = {
   leaderboards: {
@@ -198,4 +199,64 @@ test('motion-gap: a routed metric with no leaderboard entries returns the explic
   const out = buildBenchmarkContext('which method has the highest success rate?', EMPTY_BOARD);
   expect(out).not.toBe('');
   expect(out).toContain('No leaderboard rows for that metric in this domain.');
+});
+
+// ── Task 7: benchmarkPageRef — copilot deep-link to a REAL cell or null ────────
+// Reuses the SAME metric/condition keyword routing above + the findCells/CELL_KEY
+// alignment core the page renders, so the copilot can only ever cite a cell that
+// exists. Uses the module-level BENCH fixture (success_rate||sim, success_rate||
+// real, latency||); declutter_rate is absent → the no-match path.
+describe('benchmarkPageRef', () => {
+  test('a query naming a metric + scene returns a ref whose cellKey is a real leaderboard', () => {
+    const ref = benchmarkPageRef('the best success rate in simulation', BENCH);
+    expect(ref).not.toBeNull();
+    expect(ref.cellKey).toBe(CELL_KEY('success_rate', 'sim'));
+    expect(BENCH.leaderboards[ref.cellKey]).toBeDefined();
+    expect(typeof ref.view).toBe('string');
+  });
+
+  test('a metric-only query still resolves to one of that metric\'s real cells', () => {
+    const ref = benchmarkPageRef('which method has the highest success rate?', BENCH);
+    expect(ref).not.toBeNull();
+    expect(ref.cellKey.startsWith('success_rate||')).toBe(true);
+    expect(BENCH.leaderboards[ref.cellKey]).toBeDefined();
+  });
+
+  test('a query whose metric has no leaderboard returns null (the gap is the answer)', () => {
+    // "declutter rate" routes to declutter_rate, which this fixture does NOT have.
+    expect(benchmarkPageRef('which method has the best declutter rate?', BENCH)).toBeNull();
+  });
+
+  test('a query with no metric keyword at all returns null', () => {
+    expect(benchmarkPageRef('how does diffusion-based grasping work?', BENCH)).toBeNull();
+  });
+
+  test('the returned ref is pure JSON (round-trips through stringify)', () => {
+    const ref = benchmarkPageRef('best success rate in simulation', BENCH);
+    expect(JSON.parse(JSON.stringify(ref))).toEqual(ref);
+  });
+
+  test('is defensive on empty/missing data', () => {
+    expect(benchmarkPageRef('best success rate', null)).toBeNull();
+    expect(benchmarkPageRef('', BENCH)).toBeNull();
+  });
+
+  // Task 10: the copilot resolves a method-attribute facet (gripper/sensor) from
+  // the query so its pageRef can pre-fill the composer's attribute facets. The
+  // attribute values come ONLY from the provided methods (methods.json), never invented.
+  test('resolves a gripper attribute facet from the query when methods are provided', () => {
+    const methods = [
+      { Name: 'AnyGrasp', 'Gripper Type': 'Multi-finger' },
+      { Name: 'Contact-GraspNet', 'Gripper Type': 'Parallel-jaw' },
+    ];
+    const ref = benchmarkPageRef('best success rate for multi-finger grippers in simulation', BENCH, { methods });
+    expect(ref).not.toBeNull();
+    expect(ref.conditionFilter.gripper).toBe('Multi-finger');
+  });
+
+  test('omits the attribute facet gracefully when no methods are provided', () => {
+    const ref = benchmarkPageRef('best success rate for multi-finger grippers in simulation', BENCH);
+    expect(ref).not.toBeNull();
+    expect(ref.conditionFilter == null || ref.conditionFilter.gripper == null).toBe(true);
+  });
 });

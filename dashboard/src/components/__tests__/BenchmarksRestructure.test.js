@@ -1,26 +1,23 @@
-/* Benchmarks PAGE restructure (Phase 2a) — AUTHORED BY ORCHESTRATOR. Implementers must NOT modify.
+/* Benchmarks PAGE structure — AUTHORED BY ORCHESTRATOR. Implementers must NOT modify.
  *
- * The Benchmarks page is being restructured per round-3 research from three co-equal tabs
- * (Agreement / Leaderboards / Head-to-Head) into:
+ * Updated 2026-06-17 for the redesign (see docs/superpowers/specs/2026-06-17-
+ * benchmarks-page-redesign-design.md). The page now offers:
  *
- *   1) A default "Reproducibility" view (the renamed Agreement view): one method across
- *      papers, split consistent vs contested.
- *   2) A persistent CONDITION SPINE — a facet filter bar (metric / scene / success_criterion)
- *      whose values are derived from the actual cells (buildCells + parseConditionFacets) and
- *      which FILTERS the visible cells/results via findCells().
- *   3) A cell-scoped COMPARISONS drill-down: clicking a result (a method in a metric × condition
- *      cell) opens a comparison scoped to that ONE cell — head-to-head with a delta when the cell
- *      has 2 methods, a within-cell ranking when it has N — each row badged with the cell facets,
- *      under a caption that the ranking is valid ONLY within this cell.
- *   4) An incomingPageRef prop { view, cellKey, conditionFilter } that deep-links the page.
+ *   1) A default "Agreement" view (dumbbell rows: one method across papers, split
+ *      consistent vs contested) with an Agreement ⇄ Coverage toggle.
+ *   2) A persistent CONDITION SPINE — a facet filter bar (metric / scene /
+ *      success_criterion) whose values are DERIVED from the actual cells and which
+ *      FILTERS the visible cells/results via findCells().
+ *   3) A cell-scoped PaperTrail DRAWER: clicking a result opens a drawer scoped to
+ *      that ONE (metric × condition) cell — head-to-head with a delta for 2 methods,
+ *      a within-cell ranking for N — each row badged with the cell facets, under a
+ *      caption that the ranking is valid ONLY within this cell.
+ *   4) An incomingPageRef { view, cellKey, conditionFilter } that the copilot emits.
+ *      The page stages it as a DRAFT (a "Copilot applied: …" banner) and only moves
+ *      the view when the user clicks Apply (draft-before-apply).
  *
- * The old standalone Leaderboards and Head-to-Head TABS are REMOVED (their data is reachable
- * via spine -> cell -> Comparisons).
- *
- * These assertions intentionally FAIL against the current implementation (which renders three
- * tabs, defaults to "Agreement", has no condition spine, no cell-scoped Comparisons view, and
- * ignores incomingPageRef) — correct TDD red. */
-import { render, screen, fireEvent, within } from '@testing-library/react';
+ * The old standalone Leaderboards and Head-to-Head TABS are REMOVED. */
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import BenchmarksPage from '../BenchmarksPage';
 import * as loader from '../../lib/data-loader';
 import { CELL_KEY } from '../../lib/benchmark-cells';
@@ -33,8 +30,7 @@ jest.mock('react-plotly.js', () => () => null);
  *   - success_rate || pile:gsr   -> 2 methods (head-to-head cell, has a comparison row)
  *   - success_rate || packed:dr  -> 3 methods (within-cell ranking cell)
  *   - success_rate || real:sr    -> 1 method  (single-method / coverage-gap cell)
- * cross_validations: one consistent (pile:gsr) + one high_variance (packed:dr).
- * One comparison row scoped to the pile:gsr cell with winner/loser/margin/crop_image. */
+ * cross_validations: one consistent (pile:gsr) + one high_variance (packed:dr). */
 const PILE_KEY   = CELL_KEY('success_rate', 'pile:gsr');    // success_rate||pile:gsr
 const PACKED_KEY = CELL_KEY('success_rate', 'packed:dr');   // success_rate||packed:dr
 
@@ -113,55 +109,52 @@ const DATA = {
 
 beforeEach(() => {
   jest.spyOn(loader, 'loadBenchmarkComparisons').mockResolvedValue(DATA);
+  jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
 });
 
-// Wait for the page to finish loading (data resolved).
+// The page opens as a hard-gate query builder; wait for the composer to load.
 async function renderPage(props = {}) {
   const utils = render(
     <BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} {...props} />
   );
-  await screen.findByText(/reproducib/i);
+  await waitFor(() => expect(utils.container.querySelector('.benchmarks-composer')).toBeTruthy());
   return utils;
 }
 
-// ── (a) Reproducibility view is the DEFAULT landing ──────────────────────────
-test('(a) the Reproducibility view is the default landing (renamed from Agreement)', async () => {
-  await renderPage();
+// Cross the hard gate: compose the metric facet (reveals all cells for that metric).
+async function compose(container) {
+  fireEvent.click(container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
+  fireEvent.click(container.querySelector('.benchmarks-composer-apply'));
+  await waitFor(() => expect(container.querySelector('.benchmarks-agreement-row')).toBeTruthy());
+}
 
-  // The view's label/heading uses "Reproducibility" wording, visible without interaction.
-  expect(screen.getByText(/reproducib/i)).toBeInTheDocument();
+// ── (a) Hard gate: query-builder landing, metrics revealed on compose ────────
+test('(a) opens as a query builder; composing reveals the consistent/contested split', async () => {
+  const { container } = await renderPage();
 
-  // The active tab is the reproducibility view (NOT something called only "agreement").
-  const activeTab = document.querySelector('.benchmarks-tab.active');
-  expect(activeTab).toBeTruthy();
-  expect(activeTab.textContent).toMatch(/reproducib/i);
+  // Hard gate: NO agreement rows until a facet is composed.
+  expect(container.querySelector('.benchmarks-agreement-row')).toBeNull();
 
-  // Its consistent/contested split survives the rename: both buckets render.
+  await compose(container);
+
+  // The consistent/contested split + the consistent method now appear.
   expect(screen.getByText(/^consistent$/i)).toBeInTheDocument();
   expect(screen.getByText(/^contested$/i)).toBeInTheDocument();
-
-  // The consistent method is on screen straight away, and the subtitle frames the view
-  // as "one method across papers".
   expect(screen.getByText('NeuGraspNet')).toBeInTheDocument();
-  expect(
-    screen.getByText(/one method across papers|consistent vs contested/i)
-  ).toBeInTheDocument();
 });
 
 // ── (b) Condition spine renders facet controls for metric and scene ──────────
 test('(b) a condition spine renders facet controls for metric and scene (data-derived)', async () => {
   const { container } = await renderPage();
+  await compose(container);
 
-  // A persistent facet bar exists.
   const spine = container.querySelector('.benchmarks-condition-spine');
   expect(spine).toBeTruthy();
 
-  // It surfaces a metric facet control and a scene facet control.
   expect(within(spine).getByText(/metric/i)).toBeInTheDocument();
   expect(within(spine).getByText(/scene/i)).toBeInTheDocument();
 
-  // The scene facet values are DERIVED from the actual cells (pile / packed / real),
-  // not hardcoded — every parsed scene in the data is offered as a selectable facet.
+  // The scene facet values are DERIVED from the actual cells (pile / packed / real).
   expect(within(spine).getByText(/\bpile\b/i)).toBeInTheDocument();
   expect(within(spine).getByText(/\bpacked\b/i)).toBeInTheDocument();
   expect(within(spine).getByText(/\breal\b/i)).toBeInTheDocument();
@@ -173,61 +166,58 @@ test('(b) a condition spine renders facet controls for metric and scene (data-de
 // ── (c) Selecting a scene facet narrows the visible cells (findCells-driven) ──
 test('(c) selecting a scene facet narrows the visible cells via findCells', async () => {
   const { container } = await renderPage();
+  await compose(container);
 
-  // Before filtering, methods from multiple scenes are reachable in the reproducibility view.
   expect(screen.getByText('NeuGraspNet')).toBeInTheDocument(); // pile cell (consistent)
   expect(screen.getByText('GPD')).toBeInTheDocument();         // packed cell (contested)
 
-  // Select the "packed" scene facet in the spine.
   const spine = container.querySelector('.benchmarks-condition-spine');
-  const packedControl = within(spine).getByText(/\bpacked\b/i);
-  fireEvent.click(packedControl);
+  fireEvent.click(within(spine).getByText(/\bpacked\b/i));
 
-  // Now only packed-scene results remain — the pile cell's consistent entry is gone,
-  // while the packed cell's contested entry stays.
+  // Now only packed-scene results remain.
   expect(screen.queryByText('NeuGraspNet')).not.toBeInTheDocument();
   expect(screen.getByText('GPD')).toBeInTheDocument();
 });
 
-// ── (d) Clicking a result opens a cell-scoped Comparisons view ───────────────
-test('(d) clicking a result opens the cell-scoped Comparisons view with caption + facet badge', async () => {
-  await renderPage();
+// ── (d) Clicking a result opens the cell-scoped PaperTrail DRAWER ─────────────
+test('(d) clicking a result opens the cell-scoped drawer with caption + facet badge + delta', async () => {
+  const { container } = await renderPage();
+  await compose(container);
 
-  // Click a reproducibility result to drill into its (metric × condition) cell.
   fireEvent.click(screen.getByText('NeuGraspNet'));
 
-  // The cell-scoped caption appears verbatim — the ranking is valid ONLY within this cell.
-  expect(
-    await screen.findByText(/valid only within this cell/i)
-  ).toBeInTheDocument();
+  const drawer = await waitFor(() => {
+    const d = container.querySelector('.benchmarks-papertrail-drawer');
+    expect(d).toBeTruthy();
+    return d;
+  });
 
-  // Both methods of the pile:gsr cell are shown in the comparison.
-  expect(screen.getByText('NeuGraspNet')).toBeInTheDocument();
-  expect(screen.getByText('PointNetGPD')).toBeInTheDocument();
-
-  // The cell facets are badged so it can never read as a global rank — the scene (pile)
-  // and success criterion (gsr) of this cell are surfaced.
-  expect(screen.getByText(/\bpile\b/i)).toBeInTheDocument();
-  expect(screen.getByText(/\bgsr\b/i)).toBeInTheDocument();
-
-  // A 2-method cell renders a head-to-head with the delta/margin from the comparison row.
-  expect(screen.getByText(/6\.72/)).toBeInTheDocument();
+  // Scope to the comparison subsection (the drawer also stacks per-method
+  // Reproducibility Cards, which repeat the method names + facet values).
+  const cmp = drawer.querySelector('.benchmarks-comparisons-section');
+  expect(within(cmp).getByText(/valid only within this cell/i)).toBeInTheDocument();
+  expect(within(cmp).getByText('NeuGraspNet')).toBeInTheDocument();
+  expect(within(cmp).getByText('PointNetGPD')).toBeInTheDocument();
+  // The cell facets are badged so it can never read as a global rank.
+  expect(within(cmp).getByText(/\bpile\b/i)).toBeInTheDocument();
+  expect(within(cmp).getByText(/\bgsr\b/i)).toBeInTheDocument();
+  // A 2-method cell renders the delta/margin from the comparison row.
+  expect(within(cmp).getByText(/6\.72/)).toBeInTheDocument();
 });
 
 // ── (e) The old standalone Leaderboards and Head-to-Head TABS are gone ───────
 test('(e) the old standalone Leaderboards and Head-to-Head tabs are removed', async () => {
-  await renderPage();
+  const { container } = await renderPage();
+  await compose(container);
 
   const tabBar = document.querySelector('.benchmarks-tabs');
   expect(tabBar).toBeTruthy();
   const tabLabels = Array.from(tabBar.querySelectorAll('.benchmarks-tab'))
     .map(t => (t.textContent || '').trim());
 
-  // No tab is labelled "Leaderboards" or "Head-to-Head" any more.
   expect(tabLabels.some(l => /leaderboard/i.test(l))).toBe(false);
   expect(tabLabels.some(l => /head[\s-]*to[\s-]*head/i.test(l))).toBe(false);
 
-  // There is no tab BUTTON for them either (they merged into the cell-scoped Comparisons surface).
   expect(
     within(tabBar).queryByRole('button', { name: /^leaderboards$/i })
   ).not.toBeInTheDocument();
@@ -236,18 +226,28 @@ test('(e) the old standalone Leaderboards and Head-to-Head tabs are removed', as
   ).not.toBeInTheDocument();
 });
 
-// ── (f) incomingPageRef opens the named cell directly ────────────────────────
-test('(f) incomingPageRef { view:"comparisons", cellKey } opens that cell directly', async () => {
-  await renderPage({ incomingPageRef: { view: 'comparisons', cellKey: PILE_KEY, conditionFilter: null } });
+// ── (f) incomingPageRef DRAFTS a banner; Apply opens that exact cell ──────────
+test('(f) incomingPageRef stages a draft banner; Apply opens the named cell', async () => {
+  const { container } = await renderPage({
+    incomingPageRef: { view: 'comparisons', cellKey: PILE_KEY, conditionFilter: null },
+  });
 
-  // The page opens straight into the cell-scoped Comparisons view for the pile:gsr cell,
-  // without any user interaction — the caption and both methods are present.
-  expect(
-    await screen.findByText(/valid only within this cell/i)
-  ).toBeInTheDocument();
-  expect(screen.getByText('NeuGraspNet')).toBeInTheDocument();
-  expect(screen.getByText('PointNetGPD')).toBeInTheDocument();
+  // Draft-before-apply: the banner is staged, the drawer is NOT open yet.
+  expect(container.querySelector('.benchmarks-copilot-banner')).toBeTruthy();
+  expect(container.querySelector('.benchmarks-papertrail-drawer')).toBeNull();
 
-  // And it scoped to the RIGHT cell: the unrelated packed-cell-only method is not shown.
+  fireEvent.click(screen.getByRole('button', { name: /^apply/i }));
+
+  const drawer = await waitFor(() => {
+    const d = container.querySelector('.benchmarks-papertrail-drawer');
+    expect(d).toBeTruthy();
+    return d;
+  });
+
+  const cmp = drawer.querySelector('.benchmarks-comparisons-section');
+  expect(within(cmp).getByText(/valid only within this cell/i)).toBeInTheDocument();
+  expect(within(cmp).getByText('NeuGraspNet')).toBeInTheDocument();
+  expect(within(cmp).getByText('PointNetGPD')).toBeInTheDocument();
+  // Scoped to the RIGHT cell: the packed-only method is absent everywhere.
   expect(screen.queryByText('AnyGrasp')).not.toBeInTheDocument();
 });

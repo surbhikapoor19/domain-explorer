@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Tooltip from './Tooltip';
 import ReproducibilityView from './ReproducibilityView';
-import ComparisonsView from './ComparisonsView';
+import CoverageMatrix from './CoverageMatrix';
+import PaperTrailDrawer from './PaperTrailDrawer';
 import ConditionSpine from './ConditionSpine';
-import { loadBenchmarkComparisons } from '../lib/data-loader';
-import { buildCells, findCells } from '../lib/benchmark-cells';
+import QueryComposer from './QueryComposer';
+import { loadBenchmarkComparisons, loadMethods } from '../lib/data-loader';
+import { buildCells, findCells, buildMethodsIndex, cellAttributes } from '../lib/benchmark-cells';
 
 // Reusable help affordance, matching the rest of the app's "?" tooltips.
 const Help = ({ text }) => (
@@ -23,13 +25,23 @@ export default function BenchmarksPage({
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [loading, setLoading]             = useState(true);
   const [showLowConf, setShowLowConf]     = useState(false);  // "Show all" confidence escape hatch
-  // The page has two views: the default "reproducibility" landing and the
-  // cell-scoped "comparisons" drill-down. activeView starts on reproducibility.
-  const [activeView, setActiveView]       = useState('reproducibility');
+  // The page has two top-level modes: the default "agreement" landing and the
+  // "coverage" gap-finder matrix. The cell drill-down is a DRAWER, not a tab.
+  const [viewMode, setViewMode]           = useState('agreement'); // 'agreement' | 'coverage'
+  const [drawerOpen, setDrawerOpen]       = useState(false);
+  const [pendingRef, setPendingRef]       = useState(null); // copilot draft, applied on confirm
   // The cell-scoped drill-down targets ONE (metric × condition) cell by key.
   const [activeCellKey, setActiveCellKey] = useState(null);
   // The condition spine's facet filter: { metricId?, scene?, success_criterion? }.
   const [conditionFilter, setConditionFilter] = useState({});
+  // The composed query (null until the user crosses the hard gate).
+  const [composed, setComposed]               = useState(null);
+  // Method-attribute filter ({ gripper?, sensor?, learning_paradigm? }).
+  const [attrFilter, setAttrFilter]           = useState({});
+  // The methods.json index (KG/CSV join) for method-attribute facets.
+  const [methodsIndex, setMethodsIndex]       = useState(null);
+  // The in-app walkthrough help modal.
+  const [helpOpen, setHelpOpen]               = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,38 +57,37 @@ export default function BenchmarksPage({
     return () => { cancelled = true; };
   }, []);
 
-  // ── Deep-link handshake: incomingPageRef opens a view / cell / filter. ──────
-  // pageRef shape: { view: "reproducibility"|"comparisons", cellKey, conditionFilter }.
+  // Load the methods index for the KG/CSV method-attribute join.
   useEffect(() => {
-    if (!incomingPageRef) return;
-    const { view, cellKey, conditionFilter: cf } = incomingPageRef;
-    if (cf && typeof cf === 'object') {
-      // conditionFilter from a pageRef uses facet names (scene / success_criterion).
-      const next = {};
-      if (cf.metricId != null) next.metricId = cf.metricId;
-      if (cf.scene != null) next.scene = cf.scene;
-      if (cf.success_criterion != null) next.success_criterion = cf.success_criterion;
-      setConditionFilter(next);
-    }
-    if (cellKey != null) setActiveCellKey(cellKey);
-    if (view === 'comparisons') {
-      setActiveView('comparisons');
-    } else if (view === 'reproducibility') {
-      setActiveView('reproducibility');
-    }
+    loadMethods()
+      .then((m) => setMethodsIndex(buildMethodsIndex(m)))
+      .catch(() => setMethodsIndex(new Map()));
+  }, []);
+
+  // ── Deep-link handshake: incomingPageRef stages a DRAFT (no immediate apply). ──
+  // The copilot's pageRef stages an editable "Copilot applied: …" banner; the
+  // view only moves once the user clicks Apply.
+  useEffect(() => {
+    setPendingRef(incomingPageRef || null);
   }, [incomingPageRef]);
 
   const crossValidations = benchmarkData?.cross_validations || [];
   const stats            = benchmarkData?.stats || {};
   const quarantine       = benchmarkData?.quarantine || {};
+  const cellContext      = benchmarkData?.cell_context || {};
 
   // All merged cells (metric × condition) from the shared alignment module.
   const allCells = useMemo(() => buildCells(benchmarkData), [benchmarkData]);
 
-  // When the whole domain has a single metric, the metric is a constant — it is
-  // stated once in the spine and we don't repeat it on every card (which also
-  // keeps each metric label in one canonical place on the page).
+  // The condition spine is now persistent across BOTH the Agreement and Coverage
+  // modes, so the metric label is always stated canonically in the spine. We
+  // therefore never repeat it on the agreement cards — keeping each metric label
+  // in exactly one canonical place on the page (the spine) and avoiding a
+  // duplicated metric token between the spine chip and the card group title.
   const showMetricOnCards = useMemo(() => {
+    // Multiple metrics in scope → label each agreement group by its metric (a
+    // useful inline section divider when scrolling). A single-metric domain
+    // states the metric once in the spine and keeps the rows metric-free.
     const ids = new Set(allCells.map(c => c.metric_id));
     return ids.size > 1;
   }, [allCells]);
@@ -89,17 +100,23 @@ export default function BenchmarksPage({
       (conditionFilter.metricId != null && conditionFilter.metricId !== '') ||
       (conditionFilter.scene != null && conditionFilter.scene !== '') ||
       (conditionFilter.success_criterion != null && conditionFilter.success_criterion !== '');
-    if (!hasFacets) return allCells;
-    const { matched } = findCells(benchmarkData, {
+    const cells = !hasFacets ? allCells : findCells(benchmarkData, {
       metricId: conditionFilter.metricId,
       facets: {
         scene: conditionFilter.scene,
         success_criterion: conditionFilter.success_criterion,
       },
+    }).matched;
+    // Method-attribute narrowing (gripper/sensor/learning_paradigm via KG join).
+    const af = attrFilter || {};
+    const attrKeys = ['gripper', 'sensor', 'learning_paradigm'].filter((k) => af[k]);
+    const filtered = attrKeys.length === 0 ? cells : cells.filter((cell) => {
+      const attrs = cellAttributes(cell, methodsIndex || new Map());
+      return Object.values(attrs).some((m) => attrKeys.every((k) => m[k] && m[k].value === af[k]));
     });
-    return matched;
+    return filtered;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [benchmarkData, allCells, conditionFilter]);
+  }, [benchmarkData, allCells, conditionFilter, attrFilter, methodsIndex]);
 
   // Set of cell keys currently in scope (for filtering cross-validations).
   const visibleCellKeys = useMemo(
@@ -167,15 +184,17 @@ export default function BenchmarksPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCellKey, allCells, showLowConf, minConfidence]);
 
-  // Open the cell-scoped Comparisons view for a given cell key.
-  const openCell = (cellKey) => {
-    setActiveCellKey(cellKey);
-    setActiveView('comparisons');
-  };
+  // Open the cell-scoped PaperTrail drawer for a given cell key.
+  const openCell = (cellKey) => { setActiveCellKey(cellKey); setDrawerOpen(true); };
+  const closeDrawer = () => setDrawerOpen(false);
 
-  const backToReproducibility = () => {
-    setActiveView('reproducibility');
+  // ── Hard gate: compose a query (facets) → reveal the scoped metrics. ───────
+  const handleCompose = (facets) => {
+    setConditionFilter({ metricId: facets.metricId, scene: facets.scene, success_criterion: facets.success_criterion });
+    setAttrFilter({ gripper: facets.gripper, sensor: facets.sensor, learning_paradigm: facets.learning_paradigm });
+    setComposed(facets);
   };
+  const changeQuery = () => setComposed(null);
 
   // -------------------------------------------------------------------------
   // Loading / empty states
@@ -198,113 +217,178 @@ export default function BenchmarksPage({
     );
   }
 
+  // ── Copilot draft (pendingRef) — staged but not applied until "Apply". ──────
+  // Map a pageRef.conditionFilter into the spine's filter shape.
+  const pendingFilter = (() => {
+    const cf = pendingRef && pendingRef.conditionFilter;
+    if (!cf || typeof cf !== 'object') return {};
+    const next = {};
+    for (const k of ['metricId', 'scene', 'success_criterion', 'gripper', 'sensor', 'learning_paradigm']) {
+      if (cf[k] != null) next[k] = cf[k];
+    }
+    return next;
+  })();
+  // Does the draft's cell actually exist? (null cellKey = filter-only draft = resolves.)
+  const pendingCellResolves = pendingRef && pendingRef.cellKey
+    ? allCells.some(c => c.key === pendingRef.cellKey)
+    : Boolean(pendingRef);
+  // Human summary of the draft (metric label + scene + criterion).
+  const pendingSummary = (() => {
+    if (!pendingRef) return '';
+    const parts = [];
+    if (pendingFilter.metricId) {
+      const m = allCells.find(c => c.metric_id === pendingFilter.metricId);
+      parts.push(m ? (m.metric_label || pendingFilter.metricId) : pendingFilter.metricId);
+    }
+    if (pendingFilter.scene) parts.push(pendingFilter.scene);
+    if (pendingFilter.success_criterion) parts.push(pendingFilter.success_criterion);
+    return parts.join(' · ');
+  })();
+  const applyPendingRef = () => {
+    if (!pendingRef) return;
+    // Cross the hard gate first: reveal the scoped metrics, then open the cell.
+    handleCompose(pendingFilter);
+    if (pendingRef.cellKey && pendingCellResolves) openCell(pendingRef.cellKey);
+    setPendingRef(null);
+  };
+  const dismissPendingRef = () => setPendingRef(null);
+
   return (
     <div className="benchmarks-page">
 
-      {/* ── Stats bar ──────────────────────────────────────────────────── */}
-      <div className="benchmarks-stats-bar">
-        <div className="benchmarks-stat">
-          <span className="benchmarks-stat-value">{stats.n_comparisons ?? '—'}</span>
-          <span className="benchmarks-stat-label">comparisons <Help text="Head-to-head results extracted from papers where one method directly outperformed another on the same metric and condition." /></span>
-        </div>
-        <div className="benchmarks-stat">
-          <span className="benchmarks-stat-value">{stats.n_leaderboards ?? '—'}</span>
-          <span className="benchmarks-stat-label">benchmarks <Help text="Distinct metric + condition cells (e.g. success rate on pile scenes). Drill into one to compare the methods measured under those exact conditions." /></span>
-        </div>
-        <div className="benchmarks-stat">
-          <span className="benchmarks-stat-value">{stats.n_methods_indexed ?? '—'}</span>
-          <span className="benchmarks-stat-label">methods</span>
-        </div>
-        <div className="benchmarks-stat">
-          <span className="benchmarks-stat-value">{stats.n_cross_validations ?? '—'}</span>
-          <span className="benchmarks-stat-label">cross-paper <Help text="Numbers reported for the same method + metric by 2+ independent papers — the basis for the reproducibility consistency check." /></span>
-        </div>
+      {/* ── Page toolbar — always present (the "?" help affordance lives here). */}
+      <div className="benchmarks-page-toolbar">
+        <button type="button" className="benchmarks-help-btn" aria-label="How to use this page" title="How to use this page" onClick={() => setHelpOpen(true)}>?</button>
       </div>
 
-      {/* ── Tabs (views) ───────────────────────────────────────────────── */}
-      <div className="benchmarks-tabs">
-        <button
-          className={`benchmarks-tab ${activeView === 'reproducibility' ? 'active' : ''}`}
-          onClick={() => setActiveView('reproducibility')}
-        >
-          Reproducibility
-        </button>
-        <button
-          className={`benchmarks-tab ${activeView === 'comparisons' ? 'active' : ''}`}
-          onClick={() => setActiveView('comparisons')}
-          disabled={!activeCellKey}
-          title={activeCellKey ? '' : 'Pick a cell from the spine or a result to compare'}
-        >
-          Comparisons
-        </button>
-      </div>
-
-      {/* ── Condition spine (persistent facet filter bar) ──────────────────
-       * Persists across the reproducibility landing, where it picks among the
-       * (metric × condition) cells. Inside a single cell-scoped Comparisons
-       * drill-down the spine is hidden, because the cell header already states
-       * the exact conditions — re-showing the facet chips there would be
-       * redundant (and would double the scene/criterion tokens on screen). */}
-      {activeView === 'reproducibility' && (
-        <ConditionSpine
-          benchmarkData={benchmarkData}
-          value={conditionFilter}
-          onChange={setConditionFilter}
-        />
+      {/* ── Copilot draft banner — staged pageRef, applied on confirm. ─────
+       * Always rendered (even in the gate state) so a copilot deep-link can be
+       * surfaced; Apply crosses the gate via applyPendingRef → handleCompose. */}
+      {pendingRef && (
+        <div className="benchmarks-copilot-banner">
+          <span className="benchmarks-copilot-banner-label">
+            Copilot applied: <strong>{pendingSummary || 'this view'}</strong>
+          </span>
+          {!pendingCellResolves && (
+            <span className="benchmarks-copilot-nomatch">no matched comparison available</span>
+          )}
+          <span className="benchmarks-copilot-banner-actions">
+            <button type="button" className="benchmarks-tab" onClick={applyPendingRef}>Apply</button>
+            <button type="button" className="benchmarks-tab" onClick={dismissPendingRef}>Dismiss</button>
+          </span>
+        </div>
       )}
 
-      {/* ── Confidence filter (driven by the global Min-confidence control) ─── */}
-      <div className="benchmarks-confidence-toggle">
-        <label>
-          <input
-            type="checkbox"
-            checked={showLowConf}
-            onChange={e => setShowLowConf(e.target.checked)}
-          />
-          Show all (including below {Math.round(minConfidence * 100)}% confidence)
-        </label>
-      </div>
+      {/* ── The hard gate: NO metrics until a query is composed. ───────────── */}
+      {!composed ? (
+        <QueryComposer benchmarkData={benchmarkData} methodsIndex={methodsIndex} onApply={handleCompose} />
+      ) : (
+        <>
+          <div className="benchmarks-results-header">
+            <button type="button" className="benchmarks-changequery" onClick={changeQuery}>← Change query</button>
+          </div>
 
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* REPRODUCIBILITY VIEW — default landing                          */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {activeView === 'reproducibility' && (
-        <ReproducibilityView
-          crossValidations={visibleCrossValidations}
-          totalCrossValidations={crossValidations.length}
-          minConfidence={minConfidence}
-          unreproducedCells={unreproducedCells}
-          onOpenCell={openCell}
-          showMetric={showMetricOnCards}
-        />
+          {/* ── Stats bar ──────────────────────────────────────────────── */}
+          <div className="benchmarks-stats-bar">
+            <div className="benchmarks-stat">
+              <span className="benchmarks-stat-value">{stats.n_comparisons ?? '—'}</span>
+              <span className="benchmarks-stat-label">comparisons <Help text="Head-to-head results extracted from papers where one method directly outperformed another on the same metric and condition." /></span>
+            </div>
+            <div className="benchmarks-stat">
+              <span className="benchmarks-stat-value">{stats.n_leaderboards ?? '—'}</span>
+              <span className="benchmarks-stat-label">benchmarks <Help text="Distinct metric + condition cells (e.g. success rate on pile scenes). Drill into one to compare the methods measured under those exact conditions." /></span>
+            </div>
+            <div className="benchmarks-stat">
+              <span className="benchmarks-stat-value">{stats.n_methods_indexed ?? '—'}</span>
+              <span className="benchmarks-stat-label">methods</span>
+            </div>
+            <div className="benchmarks-stat">
+              <span className="benchmarks-stat-value">{stats.n_cross_validations ?? '—'}</span>
+              <span className="benchmarks-stat-label">cross-paper <Help text="Numbers reported for the same method + metric by 2+ independent papers — the basis for the reproducibility consistency check." /></span>
+            </div>
+          </div>
+
+          {/* ── View toggle: Agreement ⇄ Coverage ──────────────────────── */}
+          <div className="benchmarks-tabs benchmarks-viewtoggle">
+            <button className={`benchmarks-tab ${viewMode === 'agreement' ? 'active' : ''}`} onClick={() => setViewMode('agreement')}>Agreement</button>
+            <button className={`benchmarks-tab ${viewMode === 'coverage' ? 'active' : ''}`} onClick={() => setViewMode('coverage')}>Coverage</button>
+          </div>
+
+          {/* ── Condition spine (persistent facet filter bar) ────────────── */}
+          <ConditionSpine benchmarkData={benchmarkData} value={conditionFilter} onChange={setConditionFilter} />
+
+          {/* ── Confidence filter (driven by the global Min-confidence control). */}
+          <div className="benchmarks-confidence-toggle">
+            <label>
+              <input
+                type="checkbox"
+                checked={showLowConf}
+                onChange={e => setShowLowConf(e.target.checked)}
+              />
+              Show all (including below {Math.round(minConfidence * 100)}% confidence)
+            </label>
+          </div>
+
+          {/* AGREEMENT VIEW — default landing */}
+          {viewMode === 'agreement' && (
+            <ReproducibilityView
+              crossValidations={visibleCrossValidations}
+              totalCrossValidations={crossValidations.length}
+              minConfidence={minConfidence}
+              unreproducedCells={unreproducedCells}
+              onOpenCell={openCell}
+              showMetric={showMetricOnCards}
+            />
+          )}
+
+          {/* COVERAGE VIEW — condition × metric gap-finder matrix */}
+          {viewMode === 'coverage' && (
+            <CoverageMatrix
+              benchmarkData={benchmarkData}
+              conditionFilter={conditionFilter}
+              onOpenCell={openCell}
+            />
+          )}
+
+          {/* ── Quarantine footnote ──────────────────────────────────── */}
+          {(stats.n_quarantined > 0 || quarantine.n_records > 0) && (
+            <div className="benchmarks-quarantine-note">
+              <strong>{stats.n_quarantined ?? quarantine.n_records}</strong> record{(stats.n_quarantined ?? quarantine.n_records) !== 1 ? 's' : ''} withheld (low quality)
+              {quarantine.reasons && Object.keys(quarantine.reasons).length > 0 && (
+                <span className="benchmarks-quarantine-reasons">
+                  {' — '}
+                  {Object.entries(quarantine.reasons)
+                    .map(([reason, count]) => `${count} ${reason.replace(/_/g, ' ')}`)
+                    .join(', ')}
+                </span>
+              )}
+              . These rows had unresolvable headers or unmatched method names and were excluded from all analysis.
+            </div>
+          )}
+        </>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* COMPARISONS VIEW — cell-scoped drill-down                       */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {activeView === 'comparisons' && (
-        <ComparisonsView
+      {/* ── Cell drill-down drawer (overlay) ────────────────────────────── */}
+      {drawerOpen && activeCell && (
+        <PaperTrailDrawer
           cell={activeCell}
+          cellContext={cellContext}
+          methodsIndex={methodsIndex}
           data={data}
           selectedPoint={selectedPoint}
           onSelect={onSelect}
-          onBack={backToReproducibility}
+          onClose={closeDrawer}
         />
       )}
 
-      {/* ── Quarantine footnote ─────────────────────────────────────── */}
-      {(stats.n_quarantined > 0 || quarantine.n_records > 0) && (
-        <div className="benchmarks-quarantine-note">
-          <strong>{stats.n_quarantined ?? quarantine.n_records}</strong> record{(stats.n_quarantined ?? quarantine.n_records) !== 1 ? 's' : ''} withheld (low quality)
-          {quarantine.reasons && Object.keys(quarantine.reasons).length > 0 && (
-            <span className="benchmarks-quarantine-reasons">
-              {' — '}
-              {Object.entries(quarantine.reasons)
-                .map(([reason, count]) => `${count} ${reason.replace(/_/g, ' ')}`)
-                .join(', ')}
-            </span>
-          )}
-          . These rows had unresolvable headers or unmatched method names and were excluded from all analysis.
+      {/* ── In-app walkthrough help modal ───────────────────────────────── */}
+      {helpOpen && (
+        <div className="benchmarks-help-modal" role="dialog" aria-modal="true">
+          <div className="benchmarks-help-backdrop" onClick={() => setHelpOpen(false)} aria-hidden="true" />
+          <div className="benchmarks-help-panel">
+            <button type="button" className="benchmarks-help-close" aria-label="Close" onClick={() => setHelpOpen(false)}>×</button>
+            <iframe title="Benchmarks walkthrough" src="/benchmark-walkthrough.html" />
+          </div>
         </div>
       )}
     </div>

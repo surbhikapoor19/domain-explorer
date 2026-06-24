@@ -74,22 +74,6 @@ function spreadLabel(vals, verdict) {
   return `differ ${fmt(range)} pts`;
 }
 
-// Visual weight of a single paper's dot from its grade (or per-report
-// confidence): trust → opacity + radius. A is bold/opaque, C is small/pale.
-function dotWeight(grade, confidence) {
-  let t; // 0 (weak) .. 1 (strong)
-  const g = (grade || '').toUpperCase();
-  if (g === 'A') t = 1;
-  else if (g === 'B') t = 0.66;
-  else if (g === 'C') t = 0.33;
-  else if (typeof confidence === 'number') t = Math.max(0, Math.min(1, confidence));
-  else t = 0.66;
-  return {
-    r: 2.6 + t * 2.2,          // 2.6 .. 4.8 px
-    opacity: 0.45 + t * 0.55,  // 0.45 .. 1.0
-  };
-}
-
 // A single per-paper report value, with optional crop provenance.
 function ReportRow({ r }) {
   const [showCrop, setShowCrop] = useState(false);
@@ -177,70 +161,6 @@ function EntrySource({ entry }) {
   );
 }
 
-// ── The dumbbell mark ───────────────────────────────────────────────────────
-// One dot per paper on a per-metric SHARED x-domain, so segment length reads as
-// true agreement. A connecting segment runs from the lowest to the highest dot;
-// its length + color encode disagreement. A thin neutral tick marks the mean
-// (NOT a diamond — a midpoint-of-2 diamond would falsely imply pooling).
-// `points` = [{ v, weight:{r,opacity} }]. A single point shows just one dot.
-const DB_W = 168;
-const DB_H = 22;
-const DB_PAD = 6; // left/right inset so edge dots aren't clipped
-
-function Dumbbell({ points, mean, domain, verdict }) {
-  const [lo, hi] = domain;
-  const span = hi - lo || 1;
-  const x = (v) => DB_PAD + ((v - lo) / span) * (DB_W - 2 * DB_PAD);
-  const cy = DB_H / 2;
-
-  const vals = points.map(p => p.v);
-  const segMin = vals.length ? Math.min(...vals) : null;
-  const segMax = vals.length ? Math.max(...vals) : null;
-  const meanN = typeof mean === 'number' ? mean : parseFloat(mean);
-  const hasMean = !Number.isNaN(meanN);
-
-  return (
-    <svg
-      className={`benchmarks-dumbbell-svg verdict-${verdict}`}
-      width={DB_W}
-      height={DB_H}
-      viewBox={`0 0 ${DB_W} ${DB_H}`}
-      role="presentation"
-      aria-hidden="true"
-    >
-      {/* faint baseline so a lone dot still sits on an axis */}
-      <line
-        className="benchmarks-dumbbell-axis"
-        x1={DB_PAD} y1={cy} x2={DB_W - DB_PAD} y2={cy}
-      />
-      {/* connecting segment: low → high. Length + color encode disagreement. */}
-      {segMin != null && segMax != null && segMax > segMin && (
-        <line
-          className="benchmarks-dumbbell-connector"
-          x1={x(segMin)} y1={cy} x2={x(segMax)} y2={cy}
-        />
-      )}
-      {/* thin neutral mean tick (only when 2+ points — never a diamond) */}
-      {hasMean && vals.length > 1 && (
-        <line
-          className="benchmarks-dumbbell-mean-tick"
-          x1={x(meanN)} y1={cy - 5} x2={x(meanN)} y2={cy + 5}
-        />
-      )}
-      {/* one dot per paper, sized + faded by its trust weight */}
-      {points.map((p, i) => (
-        <circle
-          key={i}
-          className="benchmarks-dumbbell-dot"
-          cx={x(p.v)} cy={cy}
-          r={p.weight.r}
-          opacity={p.weight.opacity}
-        />
-      ))}
-    </svg>
-  );
-}
-
 // ── ONE uniform Agreement Row ─────────────────────────────────────────────────
 // Renders consistent, contested, AND single-source results identically:
 //   [verdict glyph] · method · condition · grade chip
@@ -283,14 +203,8 @@ function AgreementRow({ row, onOpenCell }) {
         </div>
       </div>
 
-      {/* the dumbbell mark + the readable per-paper value list (as TEXT) */}
+      {/* the readable per-paper value list (as TEXT) — numbers-forward, no chart */}
       <div className="benchmarks-agreement-mark">
-        <Dumbbell
-          points={row.points}
-          mean={row.mean}
-          domain={row.domain}
-          verdict={v.cls}
-        />
         {row.points.length > 0 && (
           <div className="benchmarks-agreement-values" title="per-paper reported values">
             {row.points.map((p, j) => (
@@ -350,12 +264,7 @@ function rowFromCrossValidation(v) {
     .map(r => {
       const n = numVal(r);
       if (n == null) return null;
-      // per-report grade falls back to the row grade; confidence if present
-      return {
-        v: n,
-        label: r.value_str || r.value,
-        weight: dotWeight(r.grade || v.grade, r.confidence),
-      };
+      return { v: n, label: r.value_str || r.value };
     })
     .filter(Boolean);
   const vals = points.map(p => p.v);
@@ -384,11 +293,7 @@ function rowsFromUnreproducedCell(cell, showMetric) {
   const condition = cell.condition || (showMetric ? '' : 'all conditions');
   return (cell.entries || []).map((e) => {
     const n = numVal(e);
-    const points = n == null ? [] : [{
-      v: n,
-      label: e.value_str || e.value,
-      weight: dotWeight(e.grade, e.confidence),
-    }];
+    const points = n == null ? [] : [{ v: n, label: e.value_str || e.value }];
     return {
       kind: 'single',
       method: e.method,

@@ -1,7 +1,7 @@
 /* Proof / view-source UI test — AUTHORED BY ORCHESTRATOR. Implementers must NOT modify.
  * Every published number must be traceable to its source: the exact printed cell text,
  * the table caption, and the rendered table-crop image. */
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import BenchmarksPage from '../BenchmarksPage';
 import * as loader from '../../lib/data-loader';
 
@@ -32,16 +32,26 @@ const V2 = {
 
 beforeEach(() => {
   jest.spyOn(loader, 'loadBenchmarkComparisons').mockResolvedValue(V2);
+  jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
 });
 
+// Hard gate: render + compose the (single) metric facet to reveal the metrics.
+async function composed(props = {}) {
+  const utils = render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} {...props} />);
+  await waitFor(() => expect(utils.container.querySelector('.benchmarks-composer')).toBeTruthy());
+  fireEvent.click(utils.container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
+  fireEvent.click(utils.container.querySelector('.benchmarks-composer-apply'));
+  return utils;
+}
+
 test('every number exposes a view-source control', async () => {
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  await composed();
   await screen.findByText('AnyGrasp');
   expect(screen.getByRole('button', { name: /source|proof/i })).toBeInTheDocument();
 });
 
 test('view-source reveals raw cell text, caption, and the table crop image', async () => {
-  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
+  await composed();
   await screen.findByText('AnyGrasp');
   fireEvent.click(screen.getByRole('button', { name: /source|proof/i }));
 

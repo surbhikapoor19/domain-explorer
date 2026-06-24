@@ -3,6 +3,29 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from benchmarks.normalize.registries import load_config
 from benchmarks.adapters.v4_results import records_from_v4
 from benchmarks.aggregate.build_benchmarks import build_benchmark_json
+from benchmarks.aggregate.cell_context import build_cell_context
+
+
+def _attach_cell_context(out, output_dir):
+    """Defensively enrich the benchmark dict with per-cell context, joining each
+    leaderboard to its methods' attributes and its papers' KG relations.
+
+    Loads sibling artifacts (kg-full.json, kg-predictions.json, methods.json)
+    from the SAME output dir as the benchmark JSON. If any artifact is missing
+    or anything errors, sets cell_context to {} and never crashes the build."""
+    try:
+        def _load(name):
+            p = os.path.join(output_dir, name)
+            with open(p) as f:
+                return json.load(f)
+        kg = _load('kg-full.json')
+        predictions = _load('kg-predictions.json')
+        methods = _load('methods.json')
+        out['cell_context'] = build_cell_context(out, kg, predictions, methods)
+    except Exception as e:
+        print(f"  cell_context skipped ({type(e).__name__}: {e})")
+        out['cell_context'] = {}
+    return out
 
 
 def _write_benchmark_json(out, output_dir):
@@ -10,6 +33,7 @@ def _write_benchmark_json(out, output_dir):
     data with an empty build (e.g. a failed/empty extraction). This is the
     overwrite hazard guard: a Docling crash that yields 0 records must not wipe
     the live page. Returns True if written, False if the write was refused."""
+    _attach_cell_context(out, output_dir)
     path = os.path.join(output_dir, 'benchmark-comparisons.json')
     s = out.get('stats', {})
     new_empty = s.get('n_comparisons', 0) == 0 and s.get('n_leaderboards', 0) == 0

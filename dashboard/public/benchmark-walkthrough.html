@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Benchmarks — Interactive Walkthrough · Domain Explorer</title>
+<style>
+  :root{
+    --teal:#16657d; --teal-deep:#0e4457; --accent:#d95a3e; --ink:#1c2528;
+    --muted:#5a6b70; --line:#dce6e9; --bg:#f5f8f9; --card:#ffffff;
+    --good:#2f9e6f; --warn:#d9883e; --soft:#eef6f8;
+    /* Benchmark-page semantic colors (used ONLY inside the mockups) */
+    --b-ink:#202124; --b-blue:#1155CC;
+    --agree:#16857a; --contested:#c9821f; --single:#7a8a90;
+    --agree-bg:#e3f3f0; --contested-bg:#fbf0dc; --single-bg:#eef1f2;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.55;font-size:15px}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;background:#eef4f6;padding:1px 5px;border-radius:4px;font-size:.86em;color:var(--teal-deep)}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+  .layout{display:grid;grid-template-columns:262px 1fr;max-width:1180px;margin:0 auto;gap:0}
+  /* Sidebar */
+  .sidebar{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:22px 16px;
+    border-right:1px solid var(--line);background:var(--card)}
+  .brandmark{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+  .brandmark .dot{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--teal),var(--teal-deep));
+    display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px}
+  .brandmark b{font-size:15px}
+  .sidebar .sub{font-size:11.5px;color:var(--muted);margin:0 0 16px 35px}
+  .toc a{display:block;padding:6px 10px;border-radius:7px;color:var(--muted);font-size:13.5px;font-weight:600;border-left:2px solid transparent}
+  .toc a:hover{background:var(--soft);text-decoration:none;color:var(--teal-deep)}
+  .toc a.active{background:var(--soft);color:var(--teal-deep);border-left-color:var(--accent)}
+  .toc .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#9aa9ad;margin:14px 10px 4px;font-weight:700}
+  .toc .home{display:block;margin:2px 10px 8px;font-size:12px;color:var(--teal)}
+  /* Content */
+  .content{padding:0 40px 80px;min-width:0}
+  .hero{padding:46px 0 26px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .hero .tag{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+  .hero h1{font-size:34px;margin:14px 0 6px;letter-spacing:-.5px}
+  .hero p{font-size:17px;color:var(--muted);max-width:64ch;margin:0}
+  section{padding:34px 0;border-bottom:1px solid var(--line);scroll-margin-top:18px}
+  section>h2{font-size:29px;font-weight:800;color:var(--teal-deep);letter-spacing:-.4px;margin:0 0 16px;
+    padding-bottom:11px;border-bottom:3px solid var(--teal);display:flex;align-items:center;gap:12px}
+  section>h2 .n{background:var(--teal);color:#fff;font-size:16px;font-weight:800;width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;flex:none}
+  section>.lede{color:var(--muted);margin:2px 0 18px;max-width:72ch}
+  h3{font-size:15.5px;color:var(--accent);font-weight:700;margin:28px 0 7px}
+  section>h3{border-left:4px solid var(--accent);padding-left:11px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:15px 17px}
+  .card.accent{border-left:4px solid var(--teal)}
+  .card h4{margin:0 0 5px;color:var(--teal-deep);font-size:14.5px}
+  .card p{margin:0;font-size:13.6px;color:#384a4f}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:5px}
+  .pill.a{background:#e4f4ec;color:var(--good)} .pill.b{background:#e7f0f4;color:var(--teal)} .pill.c{background:#fdf0e4;color:var(--warn)}
+  .callout{background:var(--soft);border:1px solid #cfe2e8;border-left:4px solid var(--teal);border-radius:8px;padding:12px 15px;margin:14px 0;font-size:13.8px}
+  .callout.tip{border-left-color:var(--accent);background:#fdf3f0;border-color:#f2d8cf}
+  .callout .lab{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);display:block;margin-bottom:3px}
+  .callout.tip .lab{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.4px}
+  th{background:var(--teal);color:#fff;text-align:left;padding:7px 11px;font-weight:600}
+  td{padding:7px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#f7fafb}
+  td b{color:var(--teal-deep)}
+  /* Tabs */
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+  .tab{padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);cursor:pointer;
+    font-weight:600;font-size:13.5px;color:var(--muted)}
+  .tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .panel{display:none;animation:fade .25s ease} .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:8px 0}
+  .steps li{counter-increment:s;position:relative;padding:6px 0 6px 38px;font-size:14px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:24px;height:24px;border-radius:50%;
+    background:var(--teal);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+  /* Collapsible */
+  details{border:1px solid var(--line);border-radius:9px;margin:9px 0;background:var(--card);overflow:hidden}
+  summary{cursor:pointer;padding:11px 15px;font-weight:650;color:var(--teal-deep);font-size:14px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸";color:var(--accent);margin-right:9px;display:inline-block;transition:.15s}
+  details[open] summary::before{transform:rotate(90deg)}
+  summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  details .body{padding:0 15px 13px;font-size:13.6px;color:#384a4f}
+  figure{margin:16px 0}
+  figcaption{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic;text-align:center}
+  svg{max-width:100%;height:auto}
+  footer{padding:26px 0 0;color:var(--muted);font-size:12.5px}
+  .agnostic{background:linear-gradient(100deg,#16657d,#0e4457);color:#fff;border-radius:12px;padding:18px 22px;margin:6px 0 0}
+  .agnostic h3{color:#fff;margin:0 0 6px;border:none;padding:0}
+  .agnostic p{margin:0;color:#d7eef4;font-size:14px}
+  /* Inline hover-tooltip term (keyboard-focusable) */
+  .term{border-bottom:1px dotted var(--accent);cursor:help;position:relative;font-weight:600;color:var(--teal-deep);outline:none}
+  .term:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+  .term .tt{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);
+    width:260px;background:var(--ink);color:#fff;font-weight:400;font-size:12.5px;line-height:1.45;
+    padding:9px 11px;border-radius:8px;box-shadow:0 6px 22px rgba(0,0,0,.22);
+    opacity:0;visibility:hidden;transition:.13s;z-index:30;text-align:left}
+  .term .tt::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:var(--ink)}
+  .term:hover .tt,.term:focus-visible .tt,.term:focus .tt{opacity:1;visibility:visible}
+  /* ── Benchmark mockup frame (renders the app's own white/near-black/blue palette) ── */
+  .mock{background:#fff;border:1px solid #e6e8ea;border-radius:12px;padding:16px 18px;margin:14px 0;
+    color:var(--b-ink);box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .mock-cap{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#80898d;margin:0 0 12px}
+  .mock-frame-note{font-size:11.5px;color:var(--muted);font-style:italic;margin:-6px 0 14px}
+  /* Agreement row mock */
+  .agrow{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:14px;
+    border:1px solid #ececec;border-radius:10px;padding:11px 14px;margin:8px 0;background:#fff}
+  .agrow.agree{border-left:4px solid var(--agree)}
+  .agrow.contested{border-left:4px solid var(--contested)}
+  .agrow.single{border-left:4px solid var(--single)}
+  .agv{font-size:19px;font-weight:800;text-align:center}
+  .agv.agree{color:var(--agree)} .agv.contested{color:var(--contested)} .agv.single{color:var(--single)}
+  .agrow .meth{font-weight:700;font-size:14.5px;color:var(--b-ink)}
+  .agrow .cond{color:#7a8a90;font-weight:500;font-size:12.5px}
+  .agrow .vals{font-family:"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;
+    font-size:13px;color:#3a4044;margin-top:3px}
+  .gchip{display:inline-block;font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:5px;margin-left:7px;vertical-align:1px}
+  .gchip.A{background:#e4f4ec;color:var(--good)} .gchip.B{background:#e7f0f4;color:var(--teal)} .gchip.C{background:#fdf0e4;color:var(--warn)}
+  .ag-stats{text-align:right}
+  .ag-head{font-family:"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-size:18px;font-weight:700;color:var(--b-ink)}
+  .ag-spread{display:block;font-size:11.5px;font-weight:700;margin-top:2px}
+  .ag-spread.agree{color:var(--agree)} .ag-spread.contested{color:var(--contested)} .ag-spread.single{color:var(--single)}
+  .ag-prov{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--b-blue);
+    border:1px solid #c9d8f5;background:#f2f6fe;border-radius:20px;padding:2px 9px;white-space:nowrap}
+  /* callout pointer line for annotated mocks */
+  .annot{display:grid;grid-template-columns:1fr;gap:0}
+  .annot-row{display:grid;grid-template-columns:200px 1fr;gap:0;align-items:start;font-size:12.5px}
+  .annot-row .lbl{color:var(--accent);font-weight:700;text-align:right;padding:5px 12px 5px 0;border-right:2px solid var(--accent)}
+  .annot-row .desc{padding:5px 0 5px 12px;color:#384a4f}
+  /* Coverage matrix mock */
+  .covgrid{border-collapse:separate;border-spacing:5px;margin:6px 0;font-size:12.5px}
+  .covgrid th{background:transparent;color:var(--b-ink);font-weight:700;padding:4px 8px;font-size:12px}
+  .covgrid td{padding:0;border:none}
+  .covcell{border-radius:7px;padding:11px 8px;text-align:center;min-width:96px;font-weight:600;font-size:12px}
+  .covcell.filled{background:#eef4f3;border:1px solid #cfe2dd;color:#2c3a3c}
+  .covcell.gap{background:repeating-linear-gradient(45deg,#fafbfb,#fafbfb 6px,#f1f3f4 6px,#f1f3f4 12px);
+    border:1px dashed #cdd4d7;color:#9aa3a7;font-style:italic}
+  .covcell.gap.hl{background:repeating-linear-gradient(45deg,#fff4ef,#fff4ef 6px,#ffe7dd 6px,#ffe7dd 12px);
+    border:2px dashed var(--accent);color:var(--accent);font-weight:800}
+  .covdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--agree);margin:0 2px}
+  .covrowh{font-weight:700;color:var(--b-ink);text-align:right;padding-right:8px;white-space:nowrap}
+  /* drawer mock */
+  .drawer{border:1px solid #e6e8ea;border-radius:12px;overflow:hidden}
+  .drawer-sec{padding:13px 16px;border-bottom:1px solid #eef0f1}
+  .drawer-sec:last-child{border-bottom:none}
+  .drawer-sec h5{margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#80898d}
+  .diff-axis{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:5px 0;font-size:13px}
+  .diff-axis .axl{font-weight:700;color:var(--b-ink);min-width:78px}
+  .diff-chip{font-size:12px;background:#f4f5f6;border:1px solid #e3e5e7;border-radius:6px;padding:2px 8px;color:#3a4044}
+  .srctag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;margin-left:5px}
+  .srctag.kg{background:#eef1fb;color:#3b53b8}
+  .srctag.run{background:#e4f4ec;color:var(--good)}
+  .srctag.nr{background:#f1f3f4;color:#9aa3a7}
+  .lineage{font-size:12.5px;color:#384a4f;background:#f7f9fa;border-radius:7px;padding:7px 10px;margin:4px 0}
+  .stance{font-size:12.5px;color:#384a4f;margin:4px 0}
+  .stance em{color:var(--contested);font-style:normal;font-weight:700}
+  .repcard{border:1px solid #e6e8ea;border-radius:9px;padding:10px 12px;margin:6px 0;background:#fff}
+  .repcard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+  .repcard-head .m{font-weight:700;color:var(--b-ink);font-size:13.5px}
+  .repcard-head .tier{font-size:10.5px;font-weight:700;color:var(--single);background:var(--single-bg);border-radius:5px;padding:2px 8px}
+  .repfac{display:grid;grid-template-columns:120px 1fr;gap:2px 10px;font-size:12px}
+  .repfac .k{color:#80898d}
+  .repfac .v{color:#3a4044}
+  .repfac .v.nr{color:#b3babd;font-style:italic}
+  .cropmock{display:flex;gap:12px;align-items:flex-start}
+  .cropimg{flex:none;width:150px;height:88px;border:1px solid #d8dcdf;border-radius:6px;
+    background:repeating-linear-gradient(0deg,#fbfcfc,#fbfcfc 13px,#eef1f2 13px,#eef1f2 14px);position:relative}
+  .cropimg .hi{position:absolute;left:16px;top:38px;width:64px;height:14px;border:2px solid var(--accent);border-radius:2px;background:rgba(217,90,62,.08)}
+  .cropmeta{font-size:12px;color:#384a4f}
+  .cropmeta a{color:var(--b-blue);font-weight:700}
+  /* copilot mock */
+  .cop{border:1px solid #e6e8ea;border-radius:12px;overflow:hidden}
+  .cop-q{background:#f6f8f9;padding:11px 15px;font-size:13.5px;border-bottom:1px solid #eef0f1}
+  .cop-q .lab{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#80898d;display:block;margin-bottom:3px}
+  .cop-q .qtext{font-style:italic;color:#2c3a3c}
+  .cop-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 15px;background:#fff7f4;border-bottom:1px solid #f3ddd3}
+  .cop-banner .blab{font-size:12.5px;color:#7a4632}
+  .chip{font-size:12px;font-weight:700;background:#eef4f6;border:1px solid #cfe2e8;border-radius:20px;padding:3px 11px;color:var(--teal-deep)}
+  .cop-btn{font-size:12px;font-weight:700;border:1px solid var(--teal);background:var(--teal);color:#fff;border-radius:7px;padding:4px 12px;cursor:pointer}
+  .cop-btn.ghost{background:#fff;color:var(--teal)}
+  .cop-a{padding:13px 15px;font-size:13.5px;color:#2c3a3c}
+  .cop-a .cite{font-size:11px;font-weight:700;color:var(--b-blue);background:#f2f6fe;border:1px solid #c9d8f5;border-radius:20px;padding:1px 8px;white-space:nowrap}
+  .principles{list-style:none;padding:0;margin:8px 0 0}
+  .principles li{position:relative;padding:8px 0 8px 30px;font-size:14px;border-bottom:1px dashed var(--line)}
+  .principles li:last-child{border-bottom:none}
+  .principles li::before{content:"✓";position:absolute;left:0;top:7px;width:22px;height:22px;border-radius:50%;
+    background:var(--good);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .principles li.no::before{content:"✕";background:var(--accent)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 2px;font-size:12.5px}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+  .swatch{width:13px;height:13px;border-radius:4px;display:inline-block}
+  @media(max-width:880px){
+    .layout{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+    .toc{display:flex;flex-wrap:wrap;gap:4px} .toc .grp{width:100%}
+    .content{padding:0 18px 60px}.grid2,.grid3{grid-template-columns:1fr}
+    .agrow{grid-template-columns:26px 1fr;row-gap:8px}
+    .annot-row{grid-template-columns:1fr}
+    .annot-row .lbl{text-align:left;border-right:none;border-left:2px solid var(--accent);padding:5px 0 5px 10px}
+  }
+  @media print{.sidebar{display:none}.layout{display:block}.panel{display:block!important}.tab{display:none}.term .tt{display:none}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="brandmark"><span class="dot">DX</span><b>Domain Explorer</b></div>
+    <p class="sub">Benchmarks — interactive walkthrough</p>
+    <a class="home" href="dashboard-manual.html">← Full manual</a>
+    <div class="toc" id="toc">
+      <div class="grp">Walkthrough</div>
+      <a href="#why">1 · What this page is for</a>
+      <a href="#row">2 · Reading an Agreement row</a>
+      <a href="#conditions">3 · Composing a fair comparison</a>
+      <a href="#coverage">4 · Finding gaps (Coverage)</a>
+      <a href="#trail">5 · Verifying a number</a>
+      <a href="#differ">6 · Why two papers differ</a>
+      <a href="#copilot">7 · Asking the copilot</a>
+      <div class="grp">Remember</div>
+      <a href="#honesty">Honesty principles</a>
+    </div>
+  </nav>
+
+  <main class="content">
+    <header class="hero">
+      <span class="tag">Benchmarks &middot; Confound-honest</span>
+      <h1>Reading the Benchmarks page</h1>
+      <p>This page is <b>not a leaderboard.</b> It answers one question well — <i>“do independent papers
+      <b>agree</b> when measured under the <b>same</b> conditions, and can I verify every number myself?”</i>
+      Work through the seven steps below; each has an annotated mockup of the real interface.</p>
+    </header>
+
+    <!-- ───────────── 1 · WHY ───────────── -->
+    <section id="why">
+      <h2><span class="n">1</span> What this page is for</h2>
+      <p class="lede">In robotics, a raw success-rate number means almost nothing on its own. The same method
+      scores differently depending on a dozen things the paper chose. So the page refuses to rank globally and
+      instead surfaces <b>agreement under matched conditions</b> and <b>where the field hasn't measured yet.</b></p>
+
+      <h3>Why “who's #1?” is the wrong question</h3>
+      <p>Two papers reporting “92% success” and “61% success” are usually <em>not</em> comparable — they almost
+      never ran the same setup. Every number is <span class="term" tabindex="0">confounded<span class="tt"><b>Confound:</b> a hidden variable that changes the result independently of the method's quality — so two numbers can't be compared unless it's held constant.</span></span> by all of these:</p>
+      <div class="grid3">
+        <div class="card"><h4>The objects</h4><p>Which object set (YCB? a custom pile?), how many, how cluttered the scene.</p></div>
+        <div class="card"><h4>The hardware</h4><p>Gripper (two-finger vs multi-finger), arm, and the depth/RGB sensor used.</p></div>
+        <div class="card"><h4>The protocol</h4><p>Sim vs real, what counts as “success,” and how many trials were run.</p></div>
+      </div>
+      <div class="callout"><span class="lab">The reframe</span>
+        Because of those confounds, the page <b>never</b> computes a global rank or a cross-condition average.
+        It groups numbers into <b>cells</b> — one per <code>(metric × condition)</code> — and only ever compares
+        <i>within</i> a cell, where the setup is matched. The whole UI is built to keep that promise.</div>
+
+      <h3>The three things the page gives you</h3>
+      <div class="grid3">
+        <div class="card accent"><h4>① Agreement</h4><p>Per cell: do the papers agree, disagree, or is there only one source? With a plain-language spread.</p></div>
+        <div class="card accent"><h4>② Coverage</h4><p>A condition×metric grid where the <b>empty</b> cells show you exactly what nobody has tested yet.</p></div>
+        <div class="card accent"><h4>③ Provenance</h4><p>Every number deep-links to a crop of the exact source table, plus a “why they differ” explanation.</p></div>
+      </div>
+    </section>
+
+    <!-- ───────────── 2 · AGREEMENT ROW ───────────── -->
+    <section id="row">
+      <h2><span class="n">2</span> Reading an Agreement row</h2>
+      <p class="lede">The default <b>Agreement</b> view is a numbers-forward table: <b>one row per cell</b>
+      (a metric measured under one condition). Consistent, contested, and single-source results all use the
+      <i>same</i> row shape, so the whole landing speaks one language. Here is one row, annotated:</p>
+
+      <div class="mock">
+        <div class="mock-cap">Agreement view — one row</div>
+        <div class="agrow contested">
+          <div class="agv contested" title="papers disagree">⚠</div>
+          <div>
+            <div class="meth">Grasp success rate <span class="cond">· pile · grasp-success</span><span class="gchip C">C</span></div>
+            <div class="vals">papers: 78 · 40</div>
+          </div>
+          <div class="ag-prov">▦ 2 source crops</div>
+          <div class="ag-stats">
+            <span class="ag-head">59</span>
+            <span class="ag-spread contested">differ 38 pts</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="annot">
+        <div class="annot-row"><div class="lbl">Verdict glyph</div><div class="desc">The leftmost scan column. <b>✓ agree</b> (teal), <b>⚠ contested</b> (amber), <b>○ single source</b> (slate). Color is <i>always</i> paired with a symbol, so the verdict survives grayscale and colorblindness.</div></div>
+        <div class="annot-row"><div class="lbl">Metric · condition</div><div class="desc">What was measured and under which matched setup (here: grasp-success rate on a <code>pile</code> scene). The metric label also lives once in the condition spine, so it isn't repeated when a single metric is in scope.</div></div>
+        <div class="annot-row"><div class="lbl">Grade chip</div><div class="desc">The evidence grade <span class="pill a">A</span><span class="pill b">B</span><span class="pill c">C</span> kept visually separate from the verdict. Reframed as a <i>replication signal</i>, not a quality medal.</div></div>
+        <div class="annot-row"><div class="lbl">Per-paper values</div><div class="desc">Each paper's actual reported number, inline (<span class="mono">78 · 40</span>). You see the spread of opinion, not a single blended number.</div></div>
+        <div class="annot-row"><div class="lbl">Headline + spread</div><div class="desc">A representative value (<span class="mono">59</span>) and a plain-language <span class="term" tabindex="0">spread<span class="tt"><b>Spread:</b> the disagreement in the metric's own points — <code>agree ±N pts</code> when papers agree, <code>differ N pts</code> when they don't. (CV % is kept only as a hidden sort key.)</span></span> — <span class="mono">differ 38 pts</span>. There is deliberately <b>no pooled mean diamond.</b></div></div>
+        <div class="annot-row"><div class="lbl">Provenance pill</div><div class="desc">Jumps you to the source crops — every value is traceable. Clicking anywhere on the row opens the full <a href="#trail">PaperTrail drawer</a>.</div></div>
+      </div>
+
+      <h3>The three verdicts side by side</h3>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--agree)"></i>✓ agree — papers consistent</span>
+        <span><i class="swatch" style="background:var(--contested)"></i>⚠ contested — papers disagree</span>
+        <span><i class="swatch" style="background:var(--single)"></i>○ single source — nothing to compare yet</span>
+      </div>
+      <div class="mock">
+        <div class="mock-cap">Same row shape, three outcomes</div>
+        <div class="agrow agree">
+          <div class="agv agree" title="papers agree">✓</div>
+          <div><div class="meth">Success rate <span class="cond">· packed · sr</span><span class="gchip A">A</span></div><div class="vals">papers: 91 · 89 · 90</div></div>
+          <div class="ag-prov">▦ 3 source crops</div>
+          <div class="ag-stats"><span class="ag-head">90</span><span class="ag-spread agree">agree ±1 pts</span></div>
+        </div>
+        <div class="agrow contested">
+          <div class="agv contested" title="papers disagree">⚠</div>
+          <div><div class="meth">Grasp success rate <span class="cond">· pile · grasp-success</span><span class="gchip C">C</span></div><div class="vals">papers: 78 · 40</div></div>
+          <div class="ag-prov">▦ 2 source crops</div>
+          <div class="ag-stats"><span class="ag-head">59</span><span class="ag-spread contested">differ 38 pts</span></div>
+        </div>
+        <div class="agrow single">
+          <div class="agv single" title="single source — not yet contested">○</div>
+          <div><div class="meth">Declutter rate <span class="cond">· cluttered · dr</span><span class="gchip B">B</span></div><div class="vals">papers: 67</div></div>
+          <div class="ag-prov">▦ 1 source crop</div>
+          <div class="ag-stats"><span class="ag-head">67</span><span class="ag-spread single">single source — not yet contested</span></div>
+        </div>
+      </div>
+      <div class="callout tip"><span class="lab">Read it like this</span>
+        A <b>✓ agree</b> with a tight spread is a number you can lean on. A <b>⚠ contested</b> row is a flag to go
+        read <i>why</i> (step 6), not a tie-breaker to pick a winner. An <b>○ single-source</b> row isn't
+        “unverified bad” — it just means nobody has independently re-measured it yet (a coverage opportunity).</div>
+    </section>
+
+    <!-- ───────────── 3 · CONDITIONS ───────────── -->
+    <section id="conditions">
+      <h2><span class="n">3</span> Composing a fair comparison</h2>
+      <p class="lede">Before you trust any comparison you have to <b>match the setup.</b> The <b>condition spine</b>
+      is the chip bar that narrows the table to one matched slice. The page is also moving toward a
+      <b>condition-first</b> flow — you define the setup, <i>then</i> the metrics appear.</p>
+
+      <div class="mock">
+        <div class="mock-cap">Condition spine — facet chips (the live filter)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+          <div><span style="font-size:11px;font-weight:800;text-transform:uppercase;color:#80898d;margin-right:8px">Metric</span>
+            <span class="chip" style="background:var(--teal);color:#fff;border-color:var(--teal)">grasp-success</span>
+            <span class="chip">declutter rate</span></div>
+          <div><span style="font-size:11px;font-weight:800;text-transform:uppercase;color:#80898d;margin-right:8px">Scene</span>
+            <span class="chip" style="background:var(--teal);color:#fff;border-color:var(--teal)">pile</span>
+            <span class="chip">packed</span><span class="chip">isolated</span><span class="chip">real</span></div>
+          <div><span style="font-size:11px;font-weight:800;text-transform:uppercase;color:#80898d;margin-right:8px">Criterion</span>
+            <span class="chip">gsr</span><span class="chip">sr</span><span class="chip">dr</span></div>
+          <div style="font-size:11.5px;color:var(--muted);font-style:italic;margin-left:auto">4 of 12 cells have only one method — gaps</div>
+        </div>
+      </div>
+
+      <div class="annot">
+        <div class="annot-row"><div class="lbl">Data-derived chips</div><div class="desc">Every chip value comes from the actual cells — a domain that only has <code>pile</code> and <code>packed</code> never shows <code>isolated</code>. Nothing is hard-coded.</div></div>
+        <div class="annot-row"><div class="lbl">Click to scope</div><div class="desc">Selecting <b>Scene → pile</b> (highlighted) narrows the Agreement table to only the matched cells. Click the active chip again to clear it; <b>All</b> resets everything.</div></div>
+        <div class="annot-row"><div class="lbl">Coverage hint</div><div class="desc">The trailing note counts cells where only one method reported — under-studied conditions read as <i>gaps</i>, not as a clean comparison.</div></div>
+      </div>
+
+      <div class="callout"><span class="lab">Condition-first direction</span>
+        The approved next step is a <b>hard-gate query builder</b>: the page opens as a composer with
+        counted facets — Scene, Criterion, Metric, <b>plus method attributes</b> like Gripper, Sensor, and
+        Learning-paradigm — and <b>no metric appears until you pick at least one facet.</b> Each value shows a
+        live match count, so a query can never come back empty. You assemble the matched setup first; the numbers
+        follow. (Today's spine is the same idea as a persistent filter bar.)</div>
+      <div class="callout tip"><span class="lab">Why this matters</span>
+        Filtering isn't cosmetic here — it's how you <i>earn</i> a fair comparison. Two numbers are only
+        comparable once they share a cell, and the spine/composer is the tool that puts them there.</div>
+    </section>
+
+    <!-- ───────────── 4 · COVERAGE ───────────── -->
+    <section id="coverage">
+      <h2><span class="n">4</span> Finding gaps with the Coverage view</h2>
+      <p class="lede">Toggle from <b>Agreement</b> to <b>Coverage</b> and the same cells re-lay as a
+      <code>condition × metric</code> grid. The point isn't the filled cells — it's the <b>empty</b> ones.
+      Whitespace = where nobody has measured yet = where to publish.</p>
+
+      <div class="mock">
+        <div class="mock-cap">Coverage matrix — condition × metric</div>
+        <table class="covgrid">
+          <tr><th></th><th>grasp-success</th><th>declutter rate</th><th>success rate</th></tr>
+          <tr>
+            <td class="covrowh">pile</td>
+            <td><div class="covcell filled"><span class="covdot"></span><span class="covdot"></span></div></td>
+            <td><div class="covcell filled"><span class="covdot"></span></div></td>
+            <td><div class="covcell gap hl">untested</div></td>
+          </tr>
+          <tr>
+            <td class="covrowh">packed</td>
+            <td><div class="covcell filled"><span class="covdot"></span><span class="covdot"></span><span class="covdot"></span></div></td>
+            <td><div class="covcell gap">untested</div></td>
+            <td><div class="covcell filled"><span class="covdot"></span><span class="covdot"></span></div></td>
+          </tr>
+          <tr>
+            <td class="covrowh">real</td>
+            <td><div class="covcell gap">untested</div></td>
+            <td><div class="covcell gap">untested</div></td>
+            <td><div class="covcell filled"><span class="covdot"></span></div></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="annot">
+        <div class="annot-row"><div class="lbl">Filled cell</div><div class="desc">A micro dot-strip — one dot per paper that reported here; the dot's opacity encodes trust. Click it to open the PaperTrail drawer for that exact cell.</div></div>
+        <div class="annot-row"><div class="lbl">Empty cell = gap</div><div class="desc">The hatched <code>untested</code> tiles (the orange one is highlighted) are a <span class="term" tabindex="0">coverage gap<span class="tt"><b>Coverage gap:</b> a condition×metric intersection no paper in the corpus has measured. It is whitespace/opportunity — explicitly NOT a zero or a failure.</span></span> — an intersection nobody has measured. <b>It is never rendered as a zero.</b></div></div>
+        <div class="annot-row"><div class="lbl">Read down, not across</div><div class="desc">You only ever read <b>down one matched column</b>. Cross-cell comparison is structurally impossible here by design — that's the whole point.</div></div>
+      </div>
+
+      <div class="callout"><span class="lab">Reporting gaps too</span>
+        Below the grid sits a <b>traffic-light companion</b> (rows = papers × columns = confound axes). It marks
+        which confounds each paper actually <i>disclosed</i> — e.g. “is the gripper even reported?” A missing tile
+        is a <i>reporting</i> gap, distinct from an <i>untested</i> gap above.</div>
+    </section>
+
+    <!-- ───────────── 5 · PAPERTRAIL ───────────── -->
+    <section id="trail">
+      <h2><span class="n">5</span> Verifying a number — the PaperTrail drawer</h2>
+      <p class="lede">Click any cell (a row or a filled coverage tile) and a side <b>drawer</b> slides in. It is the
+      page's promise of <span class="term" tabindex="0">provenance<span class="tt"><b>Provenance:</b> the full lineage of a number — which paper, which table, which page, and an image crop of the source cell — so you can verify it with your own eyes.</span></span> made concrete: every number traces to the table it came from.
+      The drawer stacks four parts.</p>
+
+      <div class="mock" style="background:#fbfcfc">
+        <div class="mock-cap">PaperTrail drawer (click a cell)</div>
+        <div class="drawer">
+          <div class="drawer-sec">
+            <h5>1 · Cell comparison</h5>
+            <div style="font-size:13px;color:#2c3a3c">Head-to-head for 2 methods (a delta), or a within-cell rank for N — with overlapping-CI ties. <b>Never a pooled mean across the cell.</b></div>
+          </div>
+          <div class="drawer-sec">
+            <h5>2 · Why they differ</h5>
+            <div style="font-size:12.5px;color:#80898d;font-style:italic">KG-derived — see step 6.</div>
+          </div>
+          <div class="drawer-sec">
+            <h5>3 · Reproducibility card · per method</h5>
+            <div class="repcard">
+              <div class="repcard-head"><span class="m">GIGA</span><span class="tier" title="Replication signal — NOT a quality rank">single-paper full-protocol</span></div>
+              <div class="repfac">
+                <span class="k">Object set</span><span class="v">packed (custom)</span>
+                <span class="k">Gripper</span><span class="v">Two-finger <span class="srctag kg">method-typical (KG/CSV)</span></span>
+                <span class="k">Arm</span><span class="v nr">not reported</span>
+                <span class="k">Sensor</span><span class="v">TSDF / depth <span class="srctag kg">method-typical (KG/CSV)</span></span>
+                <span class="k">Trials</span><span class="v nr">not reported</span>
+              </div>
+              <div style="margin-top:7px;font-size:11.5px;color:var(--accent);font-weight:700">⊘ do-not-compare against: real-world / multi-finger results</div>
+            </div>
+          </div>
+          <div class="drawer-sec">
+            <h5>4 · Provenance crops</h5>
+            <div class="cropmock">
+              <div class="cropimg"><div class="hi"></div></div>
+              <div class="cropmeta">
+                <div style="font-weight:700;color:var(--b-ink)">Table 2 — Grasp success on packed scenes</div>
+                <div style="color:#80898d;margin:2px 0">6 dof graspnet</div>
+                <a href="#">p.7 ↗</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annot">
+        <div class="annot-row"><div class="lbl">Reproducibility card</div><div class="desc">One per method — the IEEE/GRASPA/SceneReplica record schema: object set, gripper, arm, sensor, scene, success criterion, trials, protocol. Fields nobody extracted read <span class="mono">not reported</span> (never invented). It also lists explicit <b>do-not-compare-against</b> setups.</div></div>
+        <div class="annot-row"><div class="lbl">Source tags</div><div class="desc">Each attribute is tagged <span class="srctag kg">method-typical (KG/CSV)</span> <span class="srctag run">as-run (paper)</span> or <span class="srctag nr">not reported</span> — so you always know whether it's the method's usual rig or what the paper actually ran.</div></div>
+        <div class="annot-row"><div class="lbl">Replication tier</div><div class="desc">A label like <i>reproduced ≥2 papers</i> / <i>single-paper full-protocol</i>. It is a <b>replication signal, not a quality rank.</b></div></div>
+        <div class="annot-row"><div class="lbl">Provenance crop</div><div class="desc">The actual image of the source table with the cell highlighted, the caption, the paper, and a <span style="color:var(--b-blue);font-weight:700">page deep-link</span>. This is where “trust the number” becomes “see the number.”</div></div>
+      </div>
+    </section>
+
+    <!-- ───────────── 6 · WHY DIFFER ───────────── -->
+    <section id="differ">
+      <h2><span class="n">6</span> Why two papers differ — the KG panel</h2>
+      <p class="lede">A contested cell raises the question <i>“why?”</i> The drawer's <b>“Why they differ”</b>
+      section answers it from the <b>Knowledge Graph</b> — joining each cell to its methods' attributes and its
+      papers' relations. Every fact is <b>source-tagged</b>; nothing is invented.</p>
+
+      <div class="mock">
+        <div class="mock-cap">“Why they differ” — KG-derived, source-tagged</div>
+        <div class="drawer-sec" style="border:1px solid #eef0f1;border-radius:10px">
+          <h5>Why they differ</h5>
+          <div class="diff-axis"><span class="axl">gripper</span>
+            <span class="diff-chip">GIGA: Two-finger</span>
+            <span class="diff-chip">Contact-GraspNet: Two-finger</span>
+            <span class="srctag kg">method-typical (KG/CSV)</span></div>
+          <div class="diff-axis"><span class="axl">sensor</span>
+            <span class="diff-chip">GIGA: TSDF</span>
+            <span class="diff-chip">Contact-GraspNet: point-cloud</span>
+            <span class="srctag kg">method-typical (KG/CSV)</span></div>
+          <div class="diff-axis"><span class="axl">backbone</span>
+            <span class="diff-chip">GIGA: 3D-CNN</span>
+            <span class="diff-chip">Contact-GraspNet: PointNet</span>
+            <span class="srctag kg">method-typical (KG/CSV)</span></div>
+          <div class="lineage">Shared backbone: <b>CNN</b> &nbsp;·&nbsp; Contact-GraspNet <b>builds-on</b> 6-DoF GraspNet</div>
+          <div class="stance">NeuGraspNet <em>differs-from</em> PointNetGPD <span class="srctag kg">citation stance</span></div>
+          <div class="stance" style="background:#f7f9fa;border-radius:7px;padding:7px 10px">GIGA <b>outperforms</b> baseline — <i>stated in paper:</i> “+12% over the strongest prior on packed scenes” <span class="srctag run">as-run (paper)</span></div>
+        </div>
+      </div>
+
+      <div class="annot">
+        <div class="annot-row"><div class="lbl">Attribute differences</div><div class="desc">One row per differing axis — gripper, sensor, backbone — each value shown for both methods. If the sensors differ, that <i>is</i> a reason two numbers diverge.</div></div>
+        <div class="annot-row"><div class="lbl">Technique lineage</div><div class="desc">Derived from the graph: shared backbones and <code>builds_on</code> citations (“B builds-on A”). Two methods sharing a backbone vs. using different ones is a real explanatory signal.</div></div>
+        <div class="annot-row"><div class="lbl">Citation stance</div><div class="desc">From the <code>cites.sentiment</code> field — e.g. one paper <em>differs-from</em> or <em>builds-on</em> another. It's a <i>relation/claim</i>, labeled as such, not measured truth.</div></div>
+        <div class="annot-row"><div class="lbl">Outperforms (stated only)</div><div class="desc">Only claims the paper actually stated, shown with its own evidence text — <b>no fabricated strength number.</b> Predicted (HGT) links are <b>gated off</b> until those metrics are trusted, so this panel never shows a guessed edge.</div></div>
+      </div>
+      <div class="callout tip"><span class="lab">The honest line</span>
+        “Why they differ” explains a <i>disagreement</i> with grounded, sourced context — it does <b>not</b> pick a
+        winner. Method-typical attributes (the method's usual rig) are tagged differently from as-run facts (what
+        the paper actually reported), so you never mistake one for the other.</div>
+    </section>
+
+    <!-- ───────────── 7 · COPILOT ───────────── -->
+    <section id="copilot">
+      <h2><span class="n">7</span> Asking the copilot</h2>
+      <p class="lede">The same copilot you know from Graph Reasoning works here too — but on this page it is
+      <b>grounded only in the page's own data</b> (the cells + their crops). Ask in natural language; it
+      <b>reshapes the page</b> rather than free-typing an answer.</p>
+
+      <div class="mock">
+        <div class="cop">
+          <div class="cop-q"><span class="lab">You ask</span><span class="qtext">“Which method wins for grasp success on piled scenes?”</span></div>
+          <div class="cop-banner">
+            <span class="blab">Copilot applied:</span>
+            <span class="chip">grasp-success</span><span class="chip">scene · pile</span>
+            <button class="cop-btn">Apply</button><button class="cop-btn ghost">Dismiss</button>
+          </div>
+          <div class="cop-a">
+            On <code>pile</code> scenes the two reporting papers <b>disagree</b> (78 vs 40, differ 38 pts) — there is no
+            clean winner, and the cell is grade C. The values diverge on sensor (TSDF vs point-cloud).
+            <span class="cite">cell: grasp-success·pile ↗</span> <span class="cite">crop p.7 ↗</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="annot">
+        <div class="annot-row"><div class="lbl">Draft before apply</div><div class="desc">A NL query becomes <b>editable condition chips</b> in a “Copilot applied: …” banner. The view <b>never moves silently</b> — you click <b>Apply</b> to scope the table, or <b>Dismiss</b>.</div></div>
+        <div class="annot-row"><div class="lbl">Cites only retrieved cells</div><div class="desc">Every claim carries a <span style="color:var(--b-blue);font-weight:700">cell + crop</span> citation. It computes out of the same shared cell data the page uses — never a parallel computation, never a web fact.</div></div>
+        <div class="annot-row"><div class="lbl">“No matched comparison”</div><div class="desc">If nothing in the corpus matches your conditions, the answer is literally <b>“no matched comparison available.”</b> The gap is the honest answer — it won't fabricate one.</div></div>
+        <div class="annot-row"><div class="lbl">Deep-links back</div><div class="desc">Answers emit a “View on Benchmarks →” permalink to the matching cell, and you can select a cell/column and “ask about selection.”</div></div>
+      </div>
+      <div class="callout"><span class="lab">What it will not do</span>
+        It won't crown a global #1, won't average across conditions, and won't use the (currently distrusted)
+        HGT-predicted links. If you ask “who's best overall?”, the honest answer is that the question doesn't have
+        one — only per-cell comparisons do.</div>
+    </section>
+
+    <!-- ───────────── HONESTY ───────────── -->
+    <section id="honesty">
+      <h2><span class="n">★</span> Honesty principles</h2>
+      <p class="lede">Everything above serves these invariants. If you remember nothing else, remember these:</p>
+      <div class="agnostic">
+        <h3>The page's promises</h3>
+        <ul class="principles" style="margin-top:10px">
+          <li style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">Every number is <b>traceable</b> — it deep-links to a crop of its exact source table and page.</li>
+          <li style="color:#eaf6f9;border-color:rgba(255,255,255,.15)"><b>Agreement is not a win.</b> ✓ means papers concur under matched conditions; it doesn't crown a method.</li>
+          <li style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">Comparisons happen <b>only within a cell</b>, where the conditions are matched.</li>
+          <li style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">An <b>empty cell is a gap</b> (opportunity), never a zero.</li>
+          <li style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">Low-quality rows are <b>flagged, not deleted</b> — quarantined records are counted and revealable.</li>
+          <li class="no" style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">No <b>global rank.</b> No <b>cross-condition average.</b> No <b>pooled mean diamond.</b></li>
+          <li class="no" style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">No <b>invented facts</b> — unextracted fields read “not reported”; distrusted predicted links stay gated off.</li>
+        </ul>
+      </div>
+      <div class="callout tip" style="margin-top:16px"><span class="lab">In one sentence</span>
+        The Benchmarks page trades the false comfort of a leaderboard for something a researcher can actually use:
+        <b>matched, verifiable, gap-aware evidence.</b></div>
+    </section>
+
+    <footer>
+      Benchmarks walkthrough — Domain Explorer. Self-contained HTML; open in any browser or print to PDF.
+      Diagrams are inline HTML/SVG mockups (no external dependencies, no screenshots). ·
+      <a href="dashboard-manual.html">Back to the full manual →</a>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // Scroll-spy: highlight active nav link (mirrors the manual's behavior)
+  var links = [].slice.call(document.querySelectorAll('#toc a[href^="#"]'));
+  var byId = {}; links.forEach(function(a){ byId[a.getAttribute('href').slice(1)] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){a.classList.remove('active')});
+        if(byId[e.target.id]) byId[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  document.querySelectorAll('main section').forEach(function(s){ obs.observe(s); });
+
+  // Make .term spans keyboard-activatable (Enter/Space toggle the tooltip via focus)
+  document.querySelectorAll('.term').forEach(function(t){
+    t.setAttribute('role','button');
+    t.setAttribute('aria-label', t.firstChild.textContent.trim() + ' — definition');
+  });
+</script>
+</body>
+</html>
