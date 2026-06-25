@@ -54,3 +54,13 @@ def test_genuinely_external_methods_stay_unresolved():
     # not in our CSV -> must remain None (never force-matched)
     assert r.resolve("GSNet [14]").method_id is None
     assert r.resolve("SE(3)-Dif [15]").method_id is None
+
+
+def test_empty_normalizing_cells_never_crown_a_method():
+    """A cell that normalizes to NOTHING (markers, citation-only, "baselines",
+    "(n=5)", bare whitespace, a stray "%") must resolve to None — never the first
+    registry method. The fuzzy `n in key` branch treated '' as a substring of every
+    name, silently attributing junk first-column cells to one real method."""
+    r = _r()
+    for junk in ['baselines', 'baseline', '[1, 2]', '✓', '✗', '(n=5)', '*†', '   ', '%']:
+        assert r.resolve(junk).method_id is None, f"{junk!r} must NOT crown a method"

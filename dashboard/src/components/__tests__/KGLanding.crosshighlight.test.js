@@ -110,6 +110,28 @@ test('1b. graph node hover bridges to the table via onHover(rowId)', async () =>
   expect(onUnhover).toHaveBeenCalled();
 });
 
+test('1b-type. a NON-method node (year/institution) never cross-highlights a row', async () => {
+  const { onHover, onUnhover } = renderLanding();
+  await screen.findByTestId('kggraphviz');
+  expect(typeof mockGraphProps.onNodeHover).toBe('function');
+
+  // Type-aware happy path: a METHOD node still bridges to its table row.
+  mockGraphProps.onNodeHover('AnyGrasp', 'method', 'm1');
+  expect(onHover).toHaveBeenCalledWith(7);
+
+  // A YEAR node cannot be a method, so it must suppress to onUnhover — this is the
+  // exact "hovering 2021 highlights the wrong plot" bug the type-aware resolver fixes.
+  onHover.mockClear();
+  mockGraphProps.onNodeHover('2021', 'year', 'y1');
+  expect(onHover).not.toHaveBeenCalled();
+  expect(onUnhover).toHaveBeenCalled();
+
+  // An INSTITUTION node likewise never crowns a method row.
+  onHover.mockClear();
+  mockGraphProps.onNodeHover('MIT', 'institution', 'i1');
+  expect(onHover).not.toHaveBeenCalled();
+});
+
 test('2. graph height is reduced so the lower panels peek', async () => {
   renderLanding();
   await screen.findByTestId('kggraphviz');

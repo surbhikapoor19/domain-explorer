@@ -214,6 +214,44 @@ def test_quarantine_surfaces_distinct_unresolved_headers_and_methods():
     assert methods.get('MysteryNet-X') == 1                 # the dropped method, surfaced
 
 
+def test_no_self_comparison_a_method_never_beats_itself():
+    """An ablation row where the SAME method is both the own-method and a 'baseline'
+    must NOT produce a method-vs-method comparison — it would read as the method
+    beating itself. The real winner-vs-other comparison still survives."""
+    base = dict(metric_raw="Success Rate", metric_id="success_rate", unit="%",
+                higher_is_better=True, condition="pile", extractor="tei_table",
+                extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="p1", method_raw="VGN", method_id="VGN", value=90.0, value_str="90", is_own_method=True, **base),
+        ResultRecord(paper_id="p1", method_raw="VGN (ablation)", method_id="VGN", value=70.0, value_str="70", is_own_method=False, **base),
+        ResultRecord(paper_id="p1", method_raw="GPD", method_id="GPD", value=60.0, value_str="60", is_own_method=False, **base),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    pairs = {(c['winner'], c['loser']) for c in out['comparisons']}
+    assert ('VGN', 'VGN') not in pairs   # a method never beats itself
+    assert ('VGN', 'GPD') in pairs       # the genuine head-to-head survives
+
+
+def test_leaderboard_median_is_true_median_for_even_paper_count():
+    """With an EVEN number of papers the median must be the average of the two middle
+    per-paper values, not the upper-middle index (the old sorted[n//2] bug, which
+    would over-report 30 instead of the true 25 for 10/20/30/40)."""
+    base = dict(metric_raw="Success Rate", metric_id="success_rate", unit="%",
+                higher_is_better=True, condition="pile", is_own_method=False,
+                extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="p1", method_raw="M", method_id="M", value=10.0, value_str="10", **base),
+        ResultRecord(paper_id="p2", method_raw="M", method_id="M", value=20.0, value_str="20", **base),
+        ResultRecord(paper_id="p3", method_raw="M", method_id="M", value=30.0, value_str="30", **base),
+        ResultRecord(paper_id="p4", method_raw="M", method_id="M", value=40.0, value_str="40", **base),
+        ResultRecord(paper_id="p1", method_raw="N", method_id="N", value=5.0, value_str="5", **base),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    lb = next(lb for lb in out['leaderboards'].values() if lb['metric_id'] == 'success_rate')
+    m = next(e for e in lb['entries'] if e['method'] == 'M')
+    assert m['median'] == 25.0, f"true median of 10,20,30,40 is 25, got {m['median']}"
+
+
 def test_per_paper_median_surfaces_outliers_not_hidden_by_best():
     """A paper reporting an outlier (2232) next to a small value (48) must NOT have
     the outlier hidden by taking the best (min). The per-paper MEDIAN surfaces it so

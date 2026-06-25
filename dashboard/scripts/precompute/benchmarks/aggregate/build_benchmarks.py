@@ -135,7 +135,7 @@ def build_benchmark_json(records, cfg):
             paper_reps = [median(vs) for vs in by_paper.values()]
             n_papers = len(by_paper)
             best = max(paper_reps) if hib else min(paper_reps)
-            med = sorted(paper_reps)[len(paper_reps) // 2]
+            med = median(paper_reps)  # true median (the manual [n//2] index was wrong for even n)
             status = classify_consistency(vals, metric_type.get(metric_id, 'default'),
                                           same_condition=True, cv_thresholds=cv_thr) if len(vals) >= 2 else None
             grade = evidence_grade(n_papers, status,
@@ -257,6 +257,8 @@ def _comparisons_and_index(records, cross_validations, metric_type, cv_thr):
         others = [r for r in recs if not r.is_own_method and r.value is not None]
         for own in owners:
             for oth in others:
+                if own.method_id == oth.method_id:
+                    continue  # a method never "beats" itself — ablation rows are not head-to-head wins
                 hib = own.higher_is_better if own.higher_is_better is not None else True
                 win = (own.value > oth.value) if hib else (own.value < oth.value)
                 if not win:

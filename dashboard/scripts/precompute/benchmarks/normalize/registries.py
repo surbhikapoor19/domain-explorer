@@ -82,6 +82,13 @@ class MethodResolver:
 
     def resolve(self, raw):
         n = _norm(raw)
+        # A cell that normalizes to NOTHING (citation refs, "baselines", "(n=5)",
+        # markers like ✓/*†, bare whitespace) must NEVER crown a method. The fuzzy
+        # `n in key` branch below treats '' as a substring of every name, so an
+        # empty n would silently attribute junk cells to the first-listed method
+        # at medium confidence — injecting foreign values into a real leaderboard.
+        if not n:
+            return MethodHit(None, 'low', raw)
         if n in self._exact:
             return MethodHit(self._exact[n], 'high', raw)
         if n in self._alias:
