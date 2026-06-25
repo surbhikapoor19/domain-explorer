@@ -898,14 +898,25 @@ export default function KGLanding({
   // id and reuse the app-level hover channel (onHover/onUnhover) — the same
   // signal table-row hovering uses — so the highlight resolver and the table
   // both react identically regardless of which surface the hover came from.
-  const handleGraphNodeHover = useCallback((label) => {
+  const handleGraphNodeHover = useCallback((label, type, id) => {
     if (!label) { if (onUnhover) onUnhover(); return; }
+    // Resolve the hovered node to a METHOD name we can spotlight in the table/scatter:
+    //   - method node -> its own label
+    //   - paper node  -> the method it implements (via the KG paper->method map)
+    //   - anything else (year, institution, technique, author, …) -> NO cross-plot
+    //     highlight, so hovering a non-method node never yanks the table to a wrong
+    //     row or lights up an unrelated point. (type may be absent on a legacy
+    //     label-only call — treat that as a method label for back-compat.)
+    let methodName = null;
+    if (type === 'paper') methodName = (_kgMaps.paperIdToMethod.get(id) || null);
+    else if (type === 'method' || type == null) methodName = label;
+    if (!methodName) { if (onUnhover) onUnhover(); return; }
     const row = (scatterData || []).find(
-      d => (d.name || '').toLowerCase() === label.toLowerCase()
+      d => (d.name || '').toLowerCase() === methodName.toLowerCase()
     );
     if (row && onHover) onHover(row.id);
     else if (onUnhover) onUnhover();
-  }, [scatterData, onHover, onUnhover]);
+  }, [scatterData, onHover, onUnhover, _kgMaps]);
 
   // Count of populated lower-band panels, for the jump cue's label. Research
   // Gaps (the cross-tab matrix) always renders, the rest are data-gated.

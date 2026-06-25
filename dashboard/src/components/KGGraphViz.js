@@ -456,7 +456,7 @@ export default function KGGraphViz({
         // Bridge the hover up so the parent can spotlight the matching row in
         // the method table above (the reverse of table-row -> node, which the
         // landing's highlight resolver already does via hoveredIndex).
-        if (onNodeHover) onNodeHover(node.data('label'));
+        if (onNodeHover) onNodeHover(node.data('label'), node.data('type'), node.data('id'));
         setTooltipNode({ label: node.data('label'), type: node.data('type'), subtype: node.data('subtype'), degree: node.data('degree'), value: node.data('value') });
       }, HOVER_DELAY);
     });
