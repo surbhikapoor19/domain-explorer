@@ -4563,6 +4563,12 @@ body {
   margin: 0.2rem 0 0.45rem;
   padding-left: 1rem;
 }
+.kgnd-cite-ctx-caption {
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin: 0.15rem 0 0.3rem;
+}
 .kgnd-cite-ctx-quote {
   margin: 0.2rem 0;
   padding: 0.3rem 0.55rem;

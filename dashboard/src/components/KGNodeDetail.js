@@ -15,7 +15,22 @@ import { HighlightedText } from '../highlighter';
 
 function trimToSentence(text) {
   if (!text) return text;
-  const t = text.trim();
+  let t = text.trim();
+  // The extractor grabs a fixed-width window around the citation marker, so the
+  // text often STARTS mid-word ("raining"→training, "pproaches"→approaches). Drop
+  // that leading fragment: if it starts lowercase, jump to the next sentence start
+  // (". A"), or failing that drop the leading partial word — so a quote never
+  // begins mid-word.
+  if (/^[a-z]/.test(t)) {
+    const sent = t.match(/[.?!]\s+(?=[A-Z])/);
+    if (sent && sent.index < t.length * 0.6) {
+      t = t.slice(sent.index + sent[0].length);
+    } else {
+      const sp = t.indexOf(' ');
+      if (sp > 0 && sp < 15) t = t.slice(sp + 1);
+    }
+  }
+  // Trim a trailing partial sentence.
   const lastDot = t.lastIndexOf('.');
   const lastQ  = t.lastIndexOf('?');
   const lastEx = t.lastIndexOf('!');
@@ -1951,6 +1966,7 @@ export default function KGNodeDetail({
                 </div>
                 {hasCtx && ctxExpanded && (
                   <div className="kgnd-cite-ctx">
+                    <div className="kgnd-cite-ctx-caption">Sentence(s) where this citation occurs — the cited paper appears as one of the bracketed [n] reference markers, not by name.</div>
                     {n.contexts.map((c, j) => (
                       <blockquote key={j} className="kgnd-cite-ctx-quote">{trimToSentence(c)}</blockquote>
                     ))}
