@@ -205,8 +205,16 @@ def build_benchmark_json(records, cfg):
     # Counting comparisons therefore always yielded 0 even when multiple papers
     # genuinely corroborate a result. Cross-validations ARE the multi-paper surface
     # where grade A is meaningful, so the headline "grade-A" tally is taken there.
+    # n_methods_indexed = distinct methods with ANY published number (a leaderboard
+    # entry, a cross-validation, or a comparison) — not just those that reached a
+    # pairwise comparison. len(method_index) undercounted (the index is the
+    # comparison/cv surface), reading "11 methods" when 25 actually have data.
+    indexed_methods = {e['method'] for lb in leaderboards.values() for e in lb['entries']}
+    indexed_methods.update(v['method'] for v in cross_validations)
+    for c in comparisons:
+        indexed_methods.add(c['winner']); indexed_methods.add(c['loser'])
     stats = {'n_comparisons': len(comparisons), 'n_leaderboards': len(leaderboards),
-             'n_methods_indexed': len(method_index), 'n_cross_validations': len(cross_validations),
+             'n_methods_indexed': len(indexed_methods), 'n_cross_validations': len(cross_validations),
              'n_grade_a': sum(1 for v in cross_validations if v['grade'] == 'A'),
              'n_quarantined': len(quarantined)}
     q_reasons = defaultdict(int)

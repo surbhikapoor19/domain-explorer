@@ -1,6 +1,6 @@
 from benchmarks.types import ResultRecord
 from benchmarks.normalize.registries import MetricRegistry, ConditionRegistry
-from benchmarks.normalize.units import parse_value
+from benchmarks.normalize.units import parse_value, clean_value_str
 
 
 def _mk(method_id, metric_raw, value, value_str, paper, mreg, creg,
@@ -13,7 +13,7 @@ def _mk(method_id, metric_raw, value, value_str, paper, mreg, creg,
         paper_id=paper, method_raw=method_id, method_id=method_id,
         metric_raw=metric_raw, metric_id=mh.id, unit=mh.unit or unit,
         higher_is_better=mh.higher_is_better, condition=cond,
-        value=value if value is not None else v, value_str=value_str or str(value),
+        value=value if value is not None else v, value_str=clean_value_str(value_str or str(value)),
         std_dev=std, is_own_method=is_own, extractor="tei_table",
         table_caption=caption, extraction_conf="medium", verified=True)
 

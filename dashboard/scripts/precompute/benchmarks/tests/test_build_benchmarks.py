@@ -168,6 +168,24 @@ def test_condition_aliases_merge_near_duplicate_conditions():
     assert m['n_reports'] == 2, f"p1(total)+p2(total-time) must merge to 2 reports, got {m['n_reports']}"
 
 
+def test_n_methods_indexed_counts_leaderboard_only_methods():
+    """n_methods_indexed counts every method with a published number — including
+    methods that appear ONLY in a leaderboard, never in a pairwise comparison or a
+    multi-paper cross-validation. The old len(method_index) undercounted these
+    (it read "11 methods" when 25 actually had data)."""
+    base = dict(metric_raw="Success Rate", metric_id="success_rate", unit="%",
+                higher_is_better=True, condition="pile", is_own_method=False,
+                extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="p1", method_raw="M", method_id="M", value=80.0, value_str="80", **base),
+        ResultRecord(paper_id="p2", method_raw="N", method_id="N", value=70.0, value_str="70", **base),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    # Both methods are in the leaderboard; neither reaches a comparison/cross-validation.
+    assert out['stats']['n_methods_indexed'] == 2
+    assert len(out['method_index']) == 0  # the comparison index is empty here
+
+
 def test_per_paper_median_surfaces_outliers_not_hidden_by_best():
     """A paper reporting an outlier (2232) next to a small value (48) must NOT have
     the outlier hidden by taking the best (min). The per-paper MEDIAN surfaces it so

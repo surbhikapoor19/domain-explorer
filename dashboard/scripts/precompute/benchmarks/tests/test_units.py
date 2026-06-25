@@ -1,7 +1,16 @@
-from benchmarks.normalize.units import parse_value
+from benchmarks.normalize.units import parse_value, clean_value_str
 
 def test_parses_plain_number():
     assert parse_value("84.3") == (84.3, None, None)
+
+def test_clean_value_str_collapses_ocr_decimal_spaces():
+    # OCR/TEI tokenization inserts spaces around the decimal point; cleaning makes
+    # the displayed provenance string match the parsed number, without altering it.
+    assert clean_value_str("17 . 7 ± 2 . 3") == "17.7 ± 2.3"
+    assert clean_value_str("80 . 2") == "80.2"
+    assert clean_value_str("100") == "100"            # nothing to clean
+    assert clean_value_str(None) is None              # falsy passthrough
+    assert clean_value_str("7ms 30ms") == "7ms 30ms"  # no decimal-space artifact
 
 def test_parses_mean_std():
     v, std, unit = parse_value("75.2 ± 2.2")

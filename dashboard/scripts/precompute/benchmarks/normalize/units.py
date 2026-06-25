@@ -31,3 +31,14 @@ def parse_value(value_str):
     if not nums:
         return (None, None, unit)
     return (float(nums[0]), std, unit)
+
+
+def clean_value_str(value_str):
+    """Collapse OCR/TEI decimal-tokenization spaces in a DISPLAYED value string
+    ("17 . 7 ± 2 . 3" -> "17.7 ± 2.3") so the provenance string matches the
+    parsed number. Removes only the spacing the tokenizer inserted around a
+    decimal point — it never alters the reported figure. Returns the input
+    unchanged when falsy or free of the artifact."""
+    if not value_str:
+        return value_str
+    return re.sub(r'(\d)\s*\.\s*(\d)', r'\1.\2', value_str)
