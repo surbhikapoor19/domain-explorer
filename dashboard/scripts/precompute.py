@@ -86,10 +86,14 @@ def compute_derived_features(df):
         method = str(df.at[i, 'Planning Method']) if pd.notna(df.at[i, 'Planning Method']) else ''
         training = str(df.at[i, 'Training Data']) if pd.notna(df.at[i, 'Training Data']) else ''
         method_parts = [p.strip() for p in method.split(',')]
+        # 'Classical' means NO learning, so gate it on training-less. A TRAINED
+        # method is never Classical even if it uses Sampling/Optimization to GENERATE
+        # grasps — a deep sampler (PointNetGPD, 6-DoF GraspNet, GIGA, Edge Grasp...)
+        # is Learning-based, not classical. (The old rule mapped any Sampling method
+        # to Classical, mislabeling ~17 deep nets.)
         if training == 'Training-less': result['Learning Paradigm'][i] = 'Classical'
-        elif all(p in ('Analytical', 'Sampling', 'Optimization') for p in method_parts): result['Learning Paradigm'][i] = 'Classical'
         elif any('Reinforcement' in p for p in method_parts): result['Learning Paradigm'][i] = 'RL-based'
-        elif any(p in ('Direct regression', 'Generative') for p in method_parts): result['Learning Paradigm'][i] = 'Learning-based'
+        elif any(p in ('Direct regression', 'Generative', 'Sampling') for p in method_parts): result['Learning Paradigm'][i] = 'Learning-based'
         else: result['Learning Paradigm'][i] = 'Hybrid'
 
         input_data = str(df.at[i, 'Input Data']) if pd.notna(df.at[i, 'Input Data']) else ''

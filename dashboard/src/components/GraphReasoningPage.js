@@ -3,7 +3,6 @@ import Tooltip from './Tooltip';
 import { HighlightedText } from '../highlighter';
 import KGGraphViz from './KGGraphViz';
 import KGNodeDetail from './KGNodeDetail';
-import ContradictionPanel from './ContradictionPanel';
 import KGLanding from './KGLanding';
 import AnswerBlock, { computeAnchorMethods } from './AnswerBlock';
 import ProofBlock from './ProofBlock';
@@ -483,7 +482,10 @@ export default function GraphReasoningPage({
 
         <div className="gr-right">
           <EquationsPanel equations={equations} />
-          <ContradictionPanel />
+          {/* ContradictionPanel removed: the token-overlap "contradictions" were
+              ~100% false positives (unrelated sentences sharing words like
+              "grasp/6d/pose"), per the domain-expert data audit — it misled more
+              than it informed. Re-introduce only with a real entailment signal. */}
         </div>
       </div>
 
