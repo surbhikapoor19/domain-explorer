@@ -266,7 +266,7 @@ export default function BenchmarksPage({
       <>
           <p className="benchmarks-orientation">
             Every head-to-head result we could extract from the papers, grouped by metric.
-            Browse them all below — or use the filters to narrow to a specific metric or condition.
+            Browse them all below — or use the filters to narrow to a specific metric, condition, or hardware setup.
           </p>
 
           {/* ── Stats bar ──────────────────────────────────────────────── */}
@@ -296,7 +296,14 @@ export default function BenchmarksPage({
           </div>
 
           {/* ── Condition spine (persistent facet filter bar) ────────────── */}
-          <ConditionSpine benchmarkData={benchmarkData} value={conditionFilter} onChange={setConditionFilter} />
+          <ConditionSpine
+            benchmarkData={benchmarkData}
+            value={conditionFilter}
+            onChange={setConditionFilter}
+            methodsIndex={methodsIndex}
+            attrValue={attrFilter}
+            onAttrChange={setAttrFilter}
+          />
 
           {/* ── Confidence filter (driven by the global Min-confidence control). */}
           <div className="benchmarks-confidence-toggle">

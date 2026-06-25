@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { buildCells, coverageGaps, humanizeFacet } from '../lib/benchmark-cells';
+import { buildCells, coverageGaps, humanizeFacet, facetCounts } from '../lib/benchmark-cells';
 
 /* ──────────────────────────────────────────────────────────────────────────
  * ConditionSpine (Phase 2a)
@@ -30,14 +30,27 @@ const CRITERION_LABELS = {
   sr: 'sr',
 };
 
-export default function ConditionSpine({ benchmarkData, value, onChange }) {
+// Method-attribute axes offered as OPTIONAL filters (the KG/CSV join). Only the
+// axes that actually have joined values render — never a hardcoded option list.
+const ATTR_AXES = [
+  { key: 'gripper', label: 'Gripper' },
+  { key: 'sensor', label: 'Sensor' },
+  { key: 'learning_paradigm', label: 'Learning' },
+];
+
+export default function ConditionSpine({ benchmarkData, value, onChange, methodsIndex = null, attrValue, onAttrChange }) {
   const filter = value || {};
+  const attrFilter = attrValue || {};
 
   // Build the cells once, then derive the offered facet values from them.
   const { cells, gaps } = useMemo(() => {
     const c = buildCells(benchmarkData);
     return { cells: c, gaps: coverageGaps(benchmarkData) };
   }, [benchmarkData]);
+
+  // Method-attribute facet values (gripper / sensor / learning paradigm) come from
+  // the methods.json join — empty unless a methodsIndex is provided.
+  const attrFacets = useMemo(() => facetCounts(cells, methodsIndex), [cells, methodsIndex]);
 
   // Distinct metric options (metric_id -> metric_label), preserving first-seen order.
   const metricOptions = useMemo(() => {
@@ -81,10 +94,20 @@ export default function ConditionSpine({ benchmarkData, value, onChange }) {
     onChange(next);
   };
 
-  const hasAny =
+  // Toggle a method-attribute facet (gripper / sensor / learning_paradigm).
+  const toggleAttr = (axis, axisValue) => {
+    const next = { ...attrFilter };
+    if (next[axis] === axisValue) delete next[axis];
+    else next[axis] = axisValue;
+    if (onAttrChange) onAttrChange(next);
+  };
+
+  const hasCondition =
     (filter.metricId != null && filter.metricId !== '') ||
     (filter.scene != null && filter.scene !== '') ||
     (filter.success_criterion != null && filter.success_criterion !== '');
+  const hasAttr = ATTR_AXES.some((a) => attrFilter[a.key] != null && attrFilter[a.key] !== '');
+  const hasAny = hasCondition || hasAttr;
 
   const nGaps = gaps.length;
   const nCells = cells.length;
@@ -152,11 +175,36 @@ export default function ConditionSpine({ benchmarkData, value, onChange }) {
         </div>
       )}
 
+      {/* Method-attribute facets (gripper / sensor / learning paradigm) — the
+          KG/CSV join. Each axis renders ONLY when the join produced real values. */}
+      {ATTR_AXES.map(({ key, label }) => {
+        const opts = attrFacets[key] || [];
+        if (opts.length === 0) return null;
+        return (
+          <div className="benchmarks-spine-facet" key={key}>
+            <span className="benchmarks-spine-facet-label">{label}</span>
+            <div className="benchmarks-spine-chips">
+              {opts.map(({ value: v }) => (
+                <button
+                  key={v}
+                  type="button"
+                  className={`benchmarks-spine-chip${attrFilter[key] === v ? ' active' : ''}`}
+                  aria-pressed={attrFilter[key] === v}
+                  onClick={() => toggleAttr(key, v)}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+
       {/* All / clear */}
       <button
         type="button"
         className={`benchmarks-spine-clear${hasAny ? '' : ' active'}`}
-        onClick={() => onChange({})}
+        onClick={() => { onChange({}); if (onAttrChange) onAttrChange({}); }}
         aria-pressed={!hasAny}
       >
         All

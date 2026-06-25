@@ -138,6 +138,29 @@ test('(a) shows all comparisons on load — the consistent/contested split appea
   expect(screen.getByText('NeuGraspNet')).toBeInTheDocument();
 });
 
+// ── (g) Method-attribute facets (gripper) come from the KG/CSV join ──────────
+test('(g) the spine offers a gripper facet from the join; selecting one narrows the cells', async () => {
+  // Methods carry a gripper attribute so the join produces a real facet axis.
+  loader.loadMethods.mockResolvedValue([
+    { Name: 'NeuGraspNet', 'Gripper Type': 'Parallel-jaw' },
+    { Name: 'PointNetGPD', 'Gripper Type': 'Parallel-jaw' },
+    { Name: 'GPD', 'Gripper Type': 'Suction' },
+  ]);
+  const { container } = await renderPage();
+  await compose(container);
+
+  const spine = container.querySelector('.benchmarks-condition-spine');
+  // The gripper facet + its DERIVED values appear once the join resolves (never hardcoded).
+  expect(await within(spine).findByText(/^gripper$/i)).toBeInTheDocument();
+  expect(within(spine).getByText(/parallel-jaw/i)).toBeInTheDocument();
+  expect(within(spine).getByText(/suction/i)).toBeInTheDocument();
+
+  // Filtering by the suction gripper keeps only the cell whose method uses it.
+  fireEvent.click(within(spine).getByText(/suction/i));
+  expect(screen.getByText('GPD')).toBeInTheDocument();
+  expect(screen.queryByText('NeuGraspNet')).not.toBeInTheDocument();
+});
+
 // ── (b) Condition spine renders facet controls for metric and scene ──────────
 test('(b) a condition spine renders facet controls for metric and scene (data-derived)', async () => {
   const { container } = await renderPage();
