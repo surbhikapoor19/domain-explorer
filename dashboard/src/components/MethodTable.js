@@ -92,10 +92,17 @@ export default function MethodTable({
     if (!cont || hoveredIndex == null) return;
     const row = cont.querySelector('tr.row-hov');
     if (!row) return;
+    // The <thead> is position:sticky (App.css), so the real visible row area starts
+    // BELOW it. Scrolling the row to the bare container top would tuck it behind the
+    // header — the first ROW you actually see ends up ~2 rows lower. Offset by the
+    // measured header height so the highlighted row lands just under the header.
+    const thead = cont.querySelector('thead');
+    const headH = thead ? thead.getBoundingClientRect().height : 0;
     const r = row.getBoundingClientRect();
     const c = cont.getBoundingClientRect();
-    if (r.top < c.top || r.bottom > c.bottom) {
-      cont.scrollTop += (r.top - c.top); // bring the hovered row to the top of the visible area
+    const visibleTop = c.top + headH;
+    if (r.top < visibleTop || r.bottom > c.bottom) {
+      cont.scrollTop += (r.top - visibleTop); // bring the hovered row just below the sticky header
     }
   }, [hoveredIndex, tableData]);
 
