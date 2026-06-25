@@ -1967,7 +1967,7 @@ export default function KGNodeDetail({
                 <div className="kgnd-lineage-section">
                   <div className="kgnd-lineage-label">
                     <span className="kgnd-lineage-arrow">&#8592;</span>
-                    This paper builds on ({totalOut})
+                    This paper cites — earlier work ({totalOut})
                   </div>
                   {/* Stance breakdown for outgoing citations */}
                   {(sc.builds_on + sc.differs_from) > 0 && (
@@ -1997,7 +1997,7 @@ export default function KGNodeDetail({
                 <div className="kgnd-lineage-section">
                   <div className="kgnd-lineage-label">
                     <span className="kgnd-lineage-arrow">&#8594;</span>
-                    Later work that builds on this ({lineage.citesIn.length})
+                    Cited by — later work ({lineage.citesIn.length})
                   </div>
                   {lineage.citesIn
                     .slice(0, expandedGroups.citesIn ? 20 : 4)
