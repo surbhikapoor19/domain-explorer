@@ -639,7 +639,7 @@ body {
   font-size: 0.7rem; line-height: 1.3;
 }
 .cluster-legend-row .cluster-legend-count {
-  color: var(--text-muted); font-size: 0.65rem; font-weight: 700;
+  color: var(--text-muted); font-size: 0.68rem; font-weight: 700;
   flex-shrink: 0;
 }
 
@@ -819,11 +819,11 @@ body {
 }
 .evidence-type-legend { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.2rem; }
 .legend-item {
-  font-size: 0.64rem; color: var(--text-muted);
+  font-size: 0.68rem; color: var(--text-muted);
   display: flex; align-items: center; gap: 0.18rem;
 }
 .legend-dot { width: 7px; height: 7px; border-radius: 1px; flex-shrink: 0; }
-.cited-refs-note { font-size: 0.64rem; color: var(--text-muted); margin-top: 0.2rem; font-style: italic; }
+.cited-refs-note { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem; font-style: italic; }
 
 /* ─── DETAIL PANEL ─── */
 .detail-panel {
@@ -950,7 +950,7 @@ body {
   padding-top: 0.3rem; border-top: 1px solid var(--border-light);
   align-items: center;
 }
-.evidence-keywords-label { font-size: 0.64rem; color: var(--text-muted); font-weight: 500; margin-right: 0.1rem; }
+.evidence-keywords-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; margin-right: 0.1rem; }
 .evidence-keyword-tag {
   font-size: 0.68rem; background: #fef3c7; color: #854d0e;
   padding: 0.08rem 0.3rem; border-radius: 2px; font-weight: 500;
@@ -1113,7 +1113,7 @@ body {
 .paper-grid-item:hover { background: var(--primary-light); }
 .paper-grid-item.active { background: var(--primary-light); font-weight: 700; }
 .paper-grid-name { text-transform: capitalize; color: var(--text); }
-.paper-grid-count { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
+.paper-grid-count { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
 
 @media (max-width: 960px) {
 }
@@ -1143,7 +1143,7 @@ body {
 .rag-query-paper { font-weight: 600; font-size: 0.78rem; color: var(--primary); }
 .rag-query-section { font-size: 0.7rem; color: var(--text-muted); }
 .rag-query-score {
-  font-size: 0.65rem; font-weight: 700; color: var(--primary);
+  font-size: 0.68rem; font-weight: 700; color: var(--primary);
   background: rgba(22,101,125,0.08); padding: 0.1rem 0.35rem; border-radius: 3px;
   margin-left: auto;
 }
@@ -1182,7 +1182,7 @@ body {
   font-family: 'Merriweather', serif; line-height: 1.2;
 }
 .rag-stat-l {
-  font-size: 0.65rem; color: var(--text-muted); font-weight: 700;
+  font-size: 0.68rem; color: var(--text-muted); font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.5px;
 }
 
@@ -1336,7 +1336,7 @@ body {
   background: var(--border-light); padding: 0.06rem 0.25rem;
   border-radius: 2px; color: var(--text-mid); font-weight: 500;
 }
-.rag-anatomy-tok { color: var(--text-muted); margin-left: auto; font-size: 0.65rem; }
+.rag-anatomy-tok { color: var(--text-muted); margin-left: auto; font-size: 0.68rem; }
 .rag-anatomy-text {
   font-family: 'Merriweather', Georgia, serif;
   font-size: 0.78rem; line-height: 1.6; color: var(--text);
@@ -1377,7 +1377,7 @@ body {
 .rag-explainer-step-num {
   width: 22px; height: 22px; border-radius: 50%;
   background: var(--primary); color: white;
-  font-size: 0.65rem; font-weight: 700;
+  font-size: 0.68rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; margin-top: 0.15rem;
 }
@@ -1428,7 +1428,7 @@ body {
 .gr-toolbar-badge {
   display: inline-block; margin-left: 0.35rem; padding: 0 0.35rem;
   background: var(--accent); color: white; border-radius: 8px;
-  font-size: 0.65rem; font-weight: 700;
+  font-size: 0.68rem; font-weight: 700;
 }
 .gr-main-wrap { display: flex; gap: 0.6rem; align-items: flex-start; }
 .gr-main-wrap.with-sidebar .gr-main-content,
@@ -1984,7 +1984,7 @@ body {
 }
 .gr-evidence-paper:hover { color: var(--primary-deep); text-decoration: underline; }
 .gr-evidence-score {
-  font-size: 0.65rem; font-weight: 700; color: #16794e;
+  font-size: 0.68rem; font-weight: 700; color: #16794e;
   background: #e8f5e9; padding: 0.06rem 0.3rem; border-radius: 2px;
   flex-shrink: 0;
 }
@@ -2113,7 +2113,7 @@ body {
   font-weight: 500;
 }
 .gr-guide-card-path {
-  font-size: 0.66rem; color: var(--text-muted);
+  font-size: 0.68rem; color: var(--text-muted);
   padding-top: 0.3rem;
   border-top: 1px solid var(--border-light);
   line-height: 1.4;
@@ -2132,7 +2132,7 @@ body {
 }
 .kg-legend-item {
   display: flex; align-items: center; gap: 0.2rem;
-  font-size: 0.65rem; color: var(--text-muted); font-weight: 600;
+  font-size: 0.68rem; color: var(--text-muted); font-weight: 600;
 }
 .kg-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .kg-subgraph-loading, .kg-subgraph-empty {
@@ -2217,7 +2217,7 @@ body {
 .temporal-detail-label { font-size: 0.72rem; font-weight: 700; color: var(--dark); margin-bottom: 0.2rem; }
 .temporal-methods { display: flex; flex-wrap: wrap; gap: 0.2rem; }
 .temporal-method {
-  font-size: 0.65rem; padding: 0.1rem 0.35rem; background: var(--primary-light);
+  font-size: 0.68rem; padding: 0.1rem 0.35rem; background: var(--primary-light);
   color: var(--primary); border-radius: 2px; font-weight: 600;
 }
 
@@ -2257,7 +2257,7 @@ body {
 }
 .debugger-excluded { display: flex; flex-wrap: wrap; gap: 0.2rem; margin-bottom: 0.3rem; }
 .debugger-excluded-chip {
-  font-size: 0.65rem; padding: 0.12rem 0.35rem; background: #fef2f2;
+  font-size: 0.68rem; padding: 0.12rem 0.35rem; background: #fef2f2;
   color: #b91c1c; border-radius: 2px; cursor: pointer; font-weight: 600;
 }
 .debugger-excluded-chip:hover { background: #fecaca; }
@@ -2607,7 +2607,7 @@ body {
 }
 .kgnd-entity-cooccur { margin-bottom: 0.7rem; display: flex; flex-direction: column; gap: 0.35rem; }
 .kgnd-entity-cooccur-label {
-  font-size: 0.66rem; font-weight: 700; letter-spacing: 1.2px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.2px;
   text-transform: uppercase; color: var(--kgnd-eyebrow-fg);
 }
 /* Per-relation sub-section inside the entity block. Each one carries a
@@ -2629,7 +2629,7 @@ body {
   margin-bottom: 0.25rem;
 }
 .kgnd-entity-rel-title {
-  font-size: 0.66rem; font-weight: 700; letter-spacing: 1.2px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.2px;
   text-transform: uppercase; color: var(--kgnd-eyebrow-fg);
 }
 .kgnd-entity-rel-count {
@@ -2742,7 +2742,7 @@ body {
   background: #fafbfc; border-radius: 1px;
 }
 .kgnd-cite-time-eyebrow {
-  font-size: 0.66rem; font-weight: 700; letter-spacing: 1.2px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.2px;
   text-transform: uppercase; color: var(--kgnd-eyebrow-fg);
   margin-bottom: 0.55rem;
 }
@@ -3260,7 +3260,7 @@ body {
   z-index: 10; pointer-events: none; min-width: 130px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.kgl-cell-tooltip-header { font-weight: 700; font-size: 0.65rem; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.12rem; margin-bottom: 0.15rem; }
+.kgl-cell-tooltip-header { font-weight: 700; font-size: 0.68rem; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.12rem; margin-bottom: 0.15rem; }
 
 /* ── Bar-row cards (Techniques, Top Institutions, Top Authors, Benchmarks,
    Top Cited): every row uses the same 3-column grid so names, bars, and
@@ -3496,7 +3496,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 .kgnd-group-toggle {
-  font-size: 0.65rem; color: var(--text-muted);
+  font-size: 0.68rem; color: var(--text-muted);
   margin-left: 0.2rem;
 }
 .kgnd-conn {
@@ -3698,7 +3698,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 .kgl-stance-v2-item-desc {
-  font-size: 0.66rem; color: var(--text-muted); line-height: 1.35;
+  font-size: 0.68rem; color: var(--text-muted); line-height: 1.35;
 }
 @media (max-width: 520px) {
   .kgl-stance-v2-legend { grid-template-columns: 1fr; }
@@ -3889,14 +3889,14 @@ body {
   margin-bottom: 0.3rem;
 }
 .kgnd-hgt-group-label {
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #2a2e3a;
 }
 .kgnd-hgt-group-count {
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -4123,7 +4123,7 @@ body {
   /* Label column fixed-ish, value spans the rest. */
   grid-template-columns: minmax(110px, 0.55fr) minmax(0, 1fr);
   gap: 0.5rem;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   line-height: 1.35;
   align-items: baseline;
 }
@@ -4240,7 +4240,7 @@ body {
   text-transform: uppercase;
 }
 .kgnd-pred-sub {
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   font-style: italic;
   font-family: Georgia, "Iowan Old Style", serif;
@@ -4308,7 +4308,7 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 26px;
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #0f766e;
   background: #f0fdfa;
@@ -4481,7 +4481,7 @@ body {
   margin: 0.15rem 0 0.35rem;
 }
 .stance-chip {
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -4626,7 +4626,7 @@ body {
   display: inline-flex; align-items: center; gap: 0.2rem;
   padding: 0.15rem 0.4rem; border-radius: 3px;
   border: 1px solid var(--border); background: var(--card);
-  font-size: 0.66rem; font-weight: 600; color: var(--text);
+  font-size: 0.68rem; font-weight: 600; color: var(--text);
   cursor: pointer; font-family: inherit; line-height: 1.3;
   transition: opacity 0.12s, border-color 0.12s;
 }
@@ -4645,7 +4645,7 @@ body {
 .kgv-fit-btn {
   padding: 0.2rem 0.5rem; border-radius: 4px;
   border: 1px solid var(--border); background: var(--card);
-  font-size: 0.66rem; font-weight: 700; color: var(--primary);
+  font-size: 0.68rem; font-weight: 700; color: var(--primary);
   cursor: pointer; font-family: inherit; margin-left: auto;
 }
 .kgv-fit-btn:hover { background: var(--primary); color: white; }
@@ -4683,7 +4683,7 @@ body {
   display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary);
   font-family: 'Merriweather', serif; line-height: 1;
 }
-.kgl-hero-stat-l { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+.kgl-hero-stat-l { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
 
 .kgl-hero-queries { flex: 1; min-width: 0; }
 .kgl-hero-queries-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; font-weight: 600; }
@@ -4757,7 +4757,7 @@ body {
   z-index: 10; pointer-events: none; min-width: 130px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.kgl-cell-tooltip-header { font-weight: 700; font-size: 0.65rem; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.12rem; margin-bottom: 0.15rem; }
+.kgl-cell-tooltip-header { font-weight: 700; font-size: 0.68rem; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.12rem; margin-bottom: 0.15rem; }
 
 /* Duplicate .kgl-tech-row definition removed. The canonical block earlier
    in this file owns the bar-row styling now (grid-based, ellipsis-safe). */
@@ -4766,7 +4766,7 @@ body {
 .kgl-combos-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 0.2rem; }
 .kgl-combo { font-size: 0.78rem; color: var(--primary); font-weight: 600; padding: 0.12rem 0; display: flex; gap: 0.25rem; align-items: center; }
 .kgl-combo-plus { color: var(--text-muted); }
-.kgl-combo-n { font-size: 0.65rem; color: var(--text-muted); margin-left: auto; }
+.kgl-combo-n { font-size: 0.68rem; color: var(--text-muted); margin-left: auto; }
 
 /* ── Timeline (full width, prominent) ── */
 .kgl-timeline-panel { margin-bottom: 0.5rem; }
@@ -6111,7 +6111,7 @@ body {
 }
 
 .benchmarks-source-extractor-badge {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -6178,7 +6178,7 @@ body {
   gap: 0.45rem;
 }
 .benchmarks-spine-facet-label {
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -6253,7 +6253,7 @@ body {
   align-items: center;
   gap: 0.4rem;
   margin: 0.4rem 0 0.1rem;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
 }
 .benchmarks-cv-spread-track {
@@ -6443,7 +6443,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 .benchmarks-agreement-spread {
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 600;
 }
 .benchmarks-agreement-spread.verdict-agree     { color: var(--bm-agree); }
@@ -6756,7 +6756,7 @@ body {
 .benchmarks-card-single-partial { border-left-color: var(--bm-contested-rail); }
 .benchmarks-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; }
 .benchmarks-card-method { font-weight: 700; font-size: 0.84rem; color: var(--text); }
-.benchmarks-card-tier { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-mid); text-align: right; }
+.benchmarks-card-tier { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-mid); text-align: right; }
 .benchmarks-card-reproduced .benchmarks-card-tier     { color: var(--bm-agree); }
 .benchmarks-card-single-partial .benchmarks-card-tier { color: var(--bm-contested); }
 .benchmarks-card-factors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 0.8rem; }
@@ -6826,7 +6826,7 @@ body {
 .benchmarks-composer-group:first-of-type { border-top: none; }
 .benchmarks-composer-group-label {
   flex: 0 0 9.5rem;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
