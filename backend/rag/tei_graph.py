@@ -296,19 +296,35 @@ def extract_in_text_citations(root: ET.Element, bib_to_corpus: dict) -> list:
                     end = min(len(p_text), idx + len(ref_txt) + 200)
                     context = p_text[start:end]
                 else:
+                    start = 0
                     context = p_text[:400]
-                # Snap to sentence boundaries to avoid mid-word cuts
+                # Snap the START to a clean sentence. A +/-200-char window almost
+                # always begins mid-word; the citation sits near the window's MIDDLE,
+                # so the first sentence boundary in the first half is before the ref and
+                # safe to drop. If there is none, drop the leading partial word so the
+                # quote never begins mid-word ("raining" -> "training").
                 if start > 0:
-                    first_dot = context.find('. ')
-                    if first_dot > 0 and first_dot < len(context) * 0.3:
-                        context = context[first_dot + 2:]
+                    m = re.search(r'[.?!]\s+', context)
+                    if m and m.end() < len(context) * 0.5:
+                        context = context[m.end():]
+                    else:
+                        sp = context.find(' ')
+                        if 0 < sp < 20:
+                            context = context[sp + 1:]
                 last_end = max(context.rfind('. '), context.rfind('? '), context.rfind('! '))
                 if last_end > len(context) * 0.5:
                     context = context[:last_end + 1]
+                # Mark THIS citation's own reference marker inside the context (CJK
+                # brackets, which won't collide with English text) so the UI can BOLD
+                # which bracket is the cited paper; the others in the sentence are
+                # co-cited and stay plain.
+                marked = context
+                if ref_txt and ref_txt in context:
+                    marked = context.replace(ref_txt, '【' + ref_txt + '】', 1)
                 out.append({
                     'target_bib': target,
                     'corpus_target': bib_to_corpus.get(target),
-                    'context': context,
+                    'context': marked,
                     'sentiment': _citation_sentiment(context),
                 })
     return out

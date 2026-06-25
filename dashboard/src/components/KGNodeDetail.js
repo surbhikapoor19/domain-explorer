@@ -39,6 +39,20 @@ function trimToSentence(text) {
   return t;
 }
 
+// Render a citation context, BOLDING the cited paper's own bracket. The extractor
+// wraps that one reference in 【…】 so we can show WHICH bracket is this citation
+// (the others in the sentence are co-cited and stay plain). Degrades to plain text
+// when no marker is present (e.g. KG data built before the marker landed).
+function renderCtx(text) {
+  const t = trimToSentence(text);
+  if (!t) return t;
+  const parts = String(t).split(/【([^】]*)】/);
+  if (parts.length === 1) return t;
+  return parts.map((p, i) =>
+    i % 2 === 1 ? <strong key={i} className="kgnd-cite-ref">{p}</strong> : p
+  );
+}
+
 // Module-scoped cache for the full KG. The predictions view only loads ~109
 // nodes into Cytoscape, so when a user clicks a node we still want to surface
 // its observed-edge neighborhood from the full ~5,800-node graph. Fetching
@@ -1968,7 +1982,7 @@ export default function KGNodeDetail({
                   <div className="kgnd-cite-ctx">
                     <div className="kgnd-cite-ctx-caption">Sentence(s) where this citation occurs — the cited paper appears as one of the bracketed [n] reference markers, not by name.</div>
                     {n.contexts.map((c, j) => (
-                      <blockquote key={j} className="kgnd-cite-ctx-quote">{trimToSentence(c)}</blockquote>
+                      <blockquote key={j} className="kgnd-cite-ctx-quote">{renderCtx(c)}</blockquote>
                     ))}
                   </div>
                 )}
