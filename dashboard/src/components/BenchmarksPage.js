@@ -137,6 +137,21 @@ export default function BenchmarksPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [crossValidations, allCells, visibleCellKeys, showLowConf, minConfidence]);
 
+  // How many IN-SCOPE cross-paper results the confidence gate is hiding right now,
+  // surfaced next to the toggle so the filtering is never silent (a researcher
+  // should know N results were withheld, not silently see a thinner list).
+  const hiddenByConf = useMemo(() => {
+    if (showLowConf) return 0;
+    return crossValidations.filter(cv => {
+      const conf = typeof cv?.confidence === 'number' ? cv.confidence : 1;
+      if (conf >= minConfidence) return false;           // not hidden
+      const cond = cv.condition == null ? '' : String(cv.condition);
+      const cell = allCells.find(c => c.metric_id === cv.metric_id && c.condition === cond);
+      return cell ? visibleCellKeys.has(cell.key) : visibleCellKeys.size === allCells.length;
+    }).length;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showLowConf, crossValidations, allCells, visibleCellKeys, minConfidence]);
+
   // Cell keys that already appear as a cross-validation in the buckets — so we
   // don't double-list them under "Not yet reproduced".
   const reproducedCellKeys = useMemo(() => {
@@ -315,6 +330,11 @@ export default function BenchmarksPage({
               />
               Show all (including below {Math.round(minConfidence * 100)}% confidence)
             </label>
+            {!showLowConf && hiddenByConf > 0 && (
+              <span className="benchmarks-confidence-hidden">
+                {hiddenByConf} cross-paper result{hiddenByConf !== 1 ? 's' : ''} hidden below {Math.round(minConfidence * 100)}% confidence
+              </span>
+            )}
           </div>
 
           {/* AGREEMENT VIEW — default landing */}
