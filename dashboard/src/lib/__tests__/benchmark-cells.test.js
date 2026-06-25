@@ -39,7 +39,23 @@ import {
   cellAttributes,
   cellDifferences,
   facetCounts,
+  humanizeCondition,
 } from '../benchmark-cells';
+
+describe('humanizeCondition', () => {
+  test('humanizes compound colon-delimited conditions into readable, typed labels', () => {
+    expect(humanizeCondition('pile:gsr')).toBe('Pile · Grasp success rate (GSR)');
+    expect(humanizeCondition('packed:dr')).toBe('Packed · Declutter rate (DR)');
+  });
+  test('title-cases a measurement-scope so it never reads as a scene token', () => {
+    expect(humanizeCondition('inference-time')).toBe('Inference-time');
+    expect(humanizeCondition('total-time')).toBe('Total-time');
+  });
+  test('labels an empty/null condition as "All conditions"', () => {
+    expect(humanizeCondition('')).toBe('All conditions');
+    expect(humanizeCondition(null)).toBe('All conditions');
+  });
+});
 
 // ── In-memory fixture ────────────────────────────────────────────────────────
 // 2 metrics (success_rate, declutter_rate) across 3 conditions (packed, pile,

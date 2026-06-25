@@ -77,6 +77,23 @@ export function humanizeFacet(token) {
 }
 
 /**
+ * humanizeCondition(condition) -> a readable label for a full (possibly compound)
+ * condition string. Splits the colon-delimited tokens (e.g. "pile:gsr") and
+ * humanizes each, so a Coverage row reads "Pile · Grasp success rate (GSR)"
+ * instead of a raw "pile:gsr", and a measurement-scope like "inference-time"
+ * renders as a proper Title — never masquerading as a scene token. Empty/null
+ * conditions read as "All conditions".
+ */
+export function humanizeCondition(condition) {
+  if (condition == null || String(condition).trim() === '') return 'All conditions';
+  return String(condition)
+    .split(':')
+    .map((t) => humanizeFacet(t.trim()))
+    .filter(Boolean)
+    .join(' · ');
+}
+
+/**
  * CELL_KEY(metricId, condition) -> canonical cell id string in the SAME format
  * as the leaderboard map keys: `${metric_id}${SEP}${condition}`. A null/empty/
  * undefined condition still produces a stable key ending in the separator.

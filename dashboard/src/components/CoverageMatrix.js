@@ -1,5 +1,5 @@
 import React from 'react';
-import { buildCells, CELL_KEY, trustScore, inkWeight, reproducibilityCard } from '../lib/benchmark-cells';
+import { buildCells, CELL_KEY, trustScore, inkWeight, reproducibilityCard, humanizeCondition } from '../lib/benchmark-cells';
 
 /* ──────────────────────────────────────────────────────────────────────────
  * CoverageMatrix (Task 5 — Coverage gap-finder).
@@ -78,7 +78,7 @@ export default function CoverageMatrix({ benchmarkData, conditionFilter = {}, on
       <div className="benchmarks-coverage-grid">
         {/* header row: leading corner cell + one head per metric */}
         <div className="benchmarks-coverage-row benchmarks-coverage-header">
-          <div className="benchmarks-coverage-corner" />
+          <div className="benchmarks-coverage-corner">Condition ↓ / Metric →</div>
           {metrics.map((metric) => (
             <div key={metric.metric_id} className="benchmarks-coverage-col-head">
               {metric.metric_label}
@@ -88,7 +88,7 @@ export default function CoverageMatrix({ benchmarkData, conditionFilter = {}, on
 
         {conditions.map((condition) => (
           <div key={condition || '__all__'} className="benchmarks-coverage-row">
-            <div className="benchmarks-coverage-row-head">{condition || 'all conditions'}</div>
+            <div className="benchmarks-coverage-row-head" title={condition || 'all conditions'}>{humanizeCondition(condition)}</div>
             {metrics.map((metric) => {
               const cell = cells.find((c) => c.key === CELL_KEY(metric.metric_id, condition));
               if (cell) {
@@ -137,7 +137,7 @@ export default function CoverageMatrix({ benchmarkData, conditionFilter = {}, on
           return (
             <div key={ri} className="benchmarks-robvis-row">
               <span className="benchmarks-robvis-rowlabel">
-                {row.method} · {row.cell.condition}
+                {row.method} · {humanizeCondition(row.cell.condition)}
               </span>
               {AXES.map((axis) => (
                 <span

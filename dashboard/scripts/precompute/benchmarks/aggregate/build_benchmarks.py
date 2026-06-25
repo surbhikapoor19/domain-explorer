@@ -218,12 +218,33 @@ def build_benchmark_json(records, cfg):
              'n_grade_a': sum(1 for v in cross_validations if v['grade'] == 'A'),
              'n_quarantined': len(quarantined)}
     q_reasons = defaultdict(int)
+    unresolved_headers = defaultdict(int)   # column text we could not map to a metric
+    unresolved_methods = defaultdict(int)   # method names we could not resolve
     for r in quarantined:
-        q_reasons['unsalvageable_header' if not r.metric_id else 'unresolved_method'] += 1
+        if not r.metric_id:
+            q_reasons['unsalvageable_header'] += 1
+            h = (r.metric_raw or '').strip()
+            if h:
+                unresolved_headers[h] += 1
+        else:
+            q_reasons['unresolved_method'] += 1
+            mname = (r.method_raw or '').strip()
+            if mname:
+                unresolved_methods[mname] += 1
+    # Lumi-style diagnosable failure: instead of an opaque count, surface the
+    # DISTINCT raw headers/methods that were dropped (top 50 by frequency) so the
+    # quarantine can be audited — is a dropped "header" actually an unmapped metric
+    # that just needs a registry alias, or genuinely a non-metric column? Without
+    # this the 3k+ quarantined records are an unexaminable black box.
+    def _top(counter, n=50):
+        return [{'raw': k, 'count': v}
+                for k, v in sorted(counter.items(), key=lambda kv: (-kv[1], kv[0]))[:n]]
     return {'leaderboards': leaderboards, 'cross_validations': cross_validations,
             'comparisons': comparisons, 'method_index': method_index,
             'copilot': _copilot_keywords(cfg),
-            'quarantine': {'n_records': len(quarantined), 'reasons': dict(q_reasons)},
+            'quarantine': {'n_records': len(quarantined), 'reasons': dict(q_reasons),
+                           'unresolved_headers': _top(unresolved_headers),
+                           'unresolved_methods': _top(unresolved_methods)},
             'stats': stats}
 
 def _comparisons_and_index(records, cross_validations, metric_type, cv_thr):

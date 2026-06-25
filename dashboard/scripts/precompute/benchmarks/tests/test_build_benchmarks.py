@@ -186,6 +186,34 @@ def test_n_methods_indexed_counts_leaderboard_only_methods():
     assert len(out['method_index']) == 0  # the comparison index is empty here
 
 
+def test_quarantine_surfaces_distinct_unresolved_headers_and_methods():
+    """Quarantine is diagnosable, not an opaque count: the DISTINCT raw headers and
+    method names that were dropped are surfaced with frequencies, so a maintainer can
+    audit whether a dropped 'header' is really an unmapped metric (add an alias) or a
+    genuine non-metric column. (Lumi: invert silent-drop into diagnosable failure.)"""
+    base = dict(unit=None, higher_is_better=None, is_own_method=False,
+                extractor="tei_table", extraction_conf="low", verified=False)
+    recs = [
+        # metric_id=None -> unsalvageable_header; carries the raw column text twice
+        ResultRecord(paper_id="p1", method_raw="M", method_id="M", metric_raw="Backbone Params (M)",
+                     metric_id=None, condition=None, value=12.0, value_str="12", **base),
+        ResultRecord(paper_id="p2", method_raw="N", method_id="N", metric_raw="Backbone Params (M)",
+                     metric_id=None, condition=None, value=24.0, value_str="24", **base),
+        # method_id=None -> unresolved_method; carries the raw method text
+        ResultRecord(paper_id="p3", method_raw="MysteryNet-X", method_id=None, metric_raw="Success Rate",
+                     metric_id="success_rate", condition="pile", value=80.0, value_str="80", **base),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    q = out['quarantine']
+    assert q['n_records'] == 3
+    assert q['reasons']['unsalvageable_header'] == 2
+    assert q['reasons']['unresolved_method'] == 1
+    headers = {h['raw']: h['count'] for h in q['unresolved_headers']}
+    assert headers.get('Backbone Params (M)') == 2          # the dropped header, surfaced with its count
+    methods = {m['raw']: m['count'] for m in q['unresolved_methods']}
+    assert methods.get('MysteryNet-X') == 1                 # the dropped method, surfaced
+
+
 def test_per_paper_median_surfaces_outliers_not_hidden_by_best():
     """A paper reporting an outlier (2232) next to a small value (48) must NOT have
     the outlier hidden by taking the best (min). The per-paper MEDIAN surfaces it so
