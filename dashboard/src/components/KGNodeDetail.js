@@ -1961,13 +1961,13 @@ export default function KGNodeDetail({
           };
           return (
             <div className="kgnd-lineage">
-              <div className="kgnd-lineage-title">Paper Lineage <Tooltip text="Citation graph for this paper. 'Builds on' = extends prior work, 'differs' = contrasts with it, 'neutral' = references without stance. The N× badge shows how many times this paper is cited in the text — higher counts signal deeper engagement." wide><span className="chart-help">?</span></Tooltip></div>
+              <div className="kgnd-lineage-title">Paper Lineage <Tooltip text="Where this paper sits in the citation chain, read by direction. TOP group = the EARLIER work THIS paper builds on (this paper cites them). BOTTOM group = LATER papers that build on THIS one (they cite it). Per-citation stance: 'builds on' = extends, 'differs' = contrasts, 'neutral' = references without taking a side. The N× badge = how many times it's cited in the text." wide><span className="chart-help">?</span></Tooltip></div>
 
               {totalOut > 0 && (
                 <div className="kgnd-lineage-section">
                   <div className="kgnd-lineage-label">
                     <span className="kgnd-lineage-arrow">&#8592;</span>
-                    Builds on ({totalOut})
+                    This paper builds on ({totalOut})
                   </div>
                   {/* Stance breakdown for outgoing citations */}
                   {(sc.builds_on + sc.differs_from) > 0 && (
@@ -1997,7 +1997,7 @@ export default function KGNodeDetail({
                 <div className="kgnd-lineage-section">
                   <div className="kgnd-lineage-label">
                     <span className="kgnd-lineage-arrow">&#8594;</span>
-                    Influenced ({lineage.citesIn.length})
+                    Later work that builds on this ({lineage.citesIn.length})
                   </div>
                   {lineage.citesIn
                     .slice(0, expandedGroups.citesIn ? 20 : 4)
