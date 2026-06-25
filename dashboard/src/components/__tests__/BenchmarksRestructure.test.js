@@ -112,32 +112,27 @@ beforeEach(() => {
   jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
 });
 
-// The page opens as a hard-gate query builder; wait for the composer to load.
+// Show-all-by-default: the page renders every comparison on load (no gate).
 async function renderPage(props = {}) {
   const utils = render(
     <BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} {...props} />
   );
-  await waitFor(() => expect(utils.container.querySelector('.benchmarks-composer')).toBeTruthy());
+  await waitFor(() => expect(utils.container.querySelector('.benchmarks-condition-spine')).toBeTruthy());
   return utils;
 }
 
-// Cross the hard gate: compose the metric facet (reveals all cells for that metric).
+// Show-all-by-default: agreement rows render on load — just wait for them.
 async function compose(container) {
-  fireEvent.click(container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
-  fireEvent.click(container.querySelector('.benchmarks-composer-apply'));
   await waitFor(() => expect(container.querySelector('.benchmarks-agreement-row')).toBeTruthy());
 }
 
-// ── (a) Hard gate: query-builder landing, metrics revealed on compose ────────
-test('(a) opens as a query builder; composing reveals the consistent/contested split', async () => {
+// ── (a) Show-all: the consistent/contested split is visible on load ──────────
+test('(a) shows all comparisons on load — the consistent/contested split appears without composing', async () => {
   const { container } = await renderPage();
-
-  // Hard gate: NO agreement rows until a facet is composed.
-  expect(container.querySelector('.benchmarks-agreement-row')).toBeNull();
 
   await compose(container);
 
-  // The consistent/contested split + the consistent method now appear.
+  // The consistent/contested split + the consistent method appear immediately.
   expect(screen.getByText(/^consistent$/i)).toBeInTheDocument();
   expect(screen.getByText(/^contested$/i)).toBeInTheDocument();
   expect(screen.getByText('NeuGraspNet')).toBeInTheDocument();

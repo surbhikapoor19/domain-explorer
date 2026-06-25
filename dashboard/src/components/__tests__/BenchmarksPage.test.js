@@ -20,14 +20,11 @@ const V2 = {
           n_cross_validations: 1, n_grade_a: 1, n_quarantined: 156},
 };
 
-// Hard gate: the page opens as a query builder; compose a facet to reveal metrics.
-test('after composing a query, renders the leaderboard method + quarantine count', async () => {
+// Show-all-by-default: the page renders every extracted comparison on load (no gate).
+test('renders the leaderboard method + quarantine count on load', async () => {
   jest.spyOn(loader, 'loadBenchmarkComparisons').mockResolvedValue(V2);
   jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
-  const { container } = render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
-  await waitFor(() => expect(container.querySelector('.benchmarks-composer')).toBeTruthy());
-  fireEvent.click(container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
-  fireEvent.click(container.querySelector('.benchmarks-composer-apply'));
+  render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
   expect(await screen.findByText('AnyGrasp')).toBeInTheDocument();
   expect(screen.getByText(/156/)).toBeInTheDocument();   // quarantine count
 });

@@ -6973,3 +6973,12 @@ textarea:focus-visible,
     scroll-behavior: auto !important;
   }
 }
+
+/* Benchmarks: one-line orientation above the results (show-all-by-default). */
+.benchmarks-orientation {
+  margin: 0 0 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-mid);
+  max-width: 72ch;
+}

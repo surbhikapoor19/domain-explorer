@@ -35,12 +35,10 @@ beforeEach(() => {
   jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
 });
 
-// Hard gate: render + compose the (single) metric facet to reveal the metrics.
+// Show-all-by-default: data renders on load; just wait for it (no gate to cross).
 async function composed(props = {}) {
   const utils = render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} {...props} />);
-  await waitFor(() => expect(utils.container.querySelector('.benchmarks-composer')).toBeTruthy());
-  fireEvent.click(utils.container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
-  fireEvent.click(utils.container.querySelector('.benchmarks-composer-apply'));
+  await waitFor(() => expect(utils.container.querySelector('.benchmarks-condition-spine')).toBeTruthy());
   return utils;
 }
 

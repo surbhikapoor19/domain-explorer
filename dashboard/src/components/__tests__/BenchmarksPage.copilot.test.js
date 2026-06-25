@@ -53,11 +53,9 @@ function renderPage(extraProps = {}) {
   return render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} {...extraProps} />);
 }
 
-// Hard gate: cross it by composing the metric facet (reveals all cells for that metric).
+// Show-all-by-default: agreement rows render on load — just wait for them.
 async function compose(container) {
-  await waitFor(() => expect(container.querySelector('.benchmarks-composer')).toBeTruthy());
-  fireEvent.click(container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
-  fireEvent.click(container.querySelector('.benchmarks-composer-apply'));
+  await waitFor(() => expect(container.querySelector('.benchmarks-agreement-row')).toBeTruthy());
 }
 
 const validRef = () => pageRef('comparisons', { cellKey: 'success_rate||packed', facets: { scene: 'packed' } });

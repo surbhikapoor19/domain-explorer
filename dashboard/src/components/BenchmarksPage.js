@@ -4,7 +4,6 @@ import ReproducibilityView from './ReproducibilityView';
 import CoverageMatrix from './CoverageMatrix';
 import PaperTrailDrawer from './PaperTrailDrawer';
 import ConditionSpine from './ConditionSpine';
-import QueryComposer from './QueryComposer';
 import { loadBenchmarkComparisons, loadMethods } from '../lib/data-loader';
 import { buildCells, filterCells, buildMethodsIndex } from '../lib/benchmark-cells';
 
@@ -34,8 +33,6 @@ export default function BenchmarksPage({
   const [activeCellKey, setActiveCellKey] = useState(null);
   // The condition spine's facet filter: { metricId?, scene?, success_criterion? }.
   const [conditionFilter, setConditionFilter] = useState({});
-  // The composed query (null until the user crosses the hard gate).
-  const [composed, setComposed]               = useState(null);
   // Method-attribute filter ({ gripper?, sensor?, learning_paradigm? }).
   const [attrFilter, setAttrFilter]           = useState({});
   // The methods.json index (KG/CSV join) for method-attribute facets.
@@ -180,14 +177,6 @@ export default function BenchmarksPage({
   const openCell = (cellKey) => { setActiveCellKey(cellKey); setDrawerOpen(true); };
   const closeDrawer = () => setDrawerOpen(false);
 
-  // ── Hard gate: compose a query (facets) → reveal the scoped metrics. ───────
-  const handleCompose = (facets) => {
-    setConditionFilter({ metricId: facets.metricId, scene: facets.scene, success_criterion: facets.success_criterion });
-    setAttrFilter({ gripper: facets.gripper, sensor: facets.sensor, learning_paradigm: facets.learning_paradigm });
-    setComposed(facets);
-  };
-  const changeQuery = () => setComposed(null);
-
   // -------------------------------------------------------------------------
   // Loading / empty states
   // -------------------------------------------------------------------------
@@ -238,8 +227,9 @@ export default function BenchmarksPage({
   })();
   const applyPendingRef = () => {
     if (!pendingRef) return;
-    // Cross the hard gate first: reveal the scoped metrics, then open the cell.
-    handleCompose(pendingFilter);
+    // Apply the copilot's facets to the (optional) filters, then open the cell.
+    setConditionFilter({ metricId: pendingFilter.metricId, scene: pendingFilter.scene, success_criterion: pendingFilter.success_criterion });
+    setAttrFilter({ gripper: pendingFilter.gripper, sensor: pendingFilter.sensor, learning_paradigm: pendingFilter.learning_paradigm });
     if (pendingRef.cellKey && pendingCellResolves) openCell(pendingRef.cellKey);
     setPendingRef(null);
   };
@@ -254,8 +244,8 @@ export default function BenchmarksPage({
       </div>
 
       {/* ── Copilot draft banner — staged pageRef, applied on confirm. ─────
-       * Always rendered (even in the gate state) so a copilot deep-link can be
-       * surfaced; Apply crosses the gate via applyPendingRef → handleCompose. */}
+       * Always rendered so a copilot deep-link can be surfaced; Apply commits
+       * the facets to the (optional) filters via applyPendingRef. */}
       {pendingRef && (
         <div className="benchmarks-copilot-banner">
           <span className="benchmarks-copilot-banner-label">
@@ -271,14 +261,13 @@ export default function BenchmarksPage({
         </div>
       )}
 
-      {/* ── The hard gate: NO metrics until a query is composed. ───────────── */}
-      {!composed ? (
-        <QueryComposer benchmarkData={benchmarkData} methodsIndex={methodsIndex} onApply={handleCompose} />
-      ) : (
-        <>
-          <div className="benchmarks-results-header">
-            <button type="button" className="benchmarks-changequery" onClick={changeQuery}>← Change query</button>
-          </div>
+      {/* ── Show-all-by-default: every extracted comparison is visible; the
+           condition spine below is OPTIONAL refinement, never a gate. ───────── */}
+      <>
+          <p className="benchmarks-orientation">
+            Every head-to-head result we could extract from the papers, grouped by metric.
+            Browse them all below — or use the filters to narrow to a specific metric or condition.
+          </p>
 
           {/* ── Stats bar ──────────────────────────────────────────────── */}
           <div className="benchmarks-stats-bar">
@@ -357,8 +346,7 @@ export default function BenchmarksPage({
               . These rows had unresolvable headers or unmatched method names and were excluded from all analysis.
             </div>
           )}
-        </>
-      )}
+      </>
 
       {/* ── Cell drill-down drawer (overlay) ────────────────────────────── */}
       {drawerOpen && activeCell && (

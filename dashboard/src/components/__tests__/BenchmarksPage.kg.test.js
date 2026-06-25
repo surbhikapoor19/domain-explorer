@@ -54,44 +54,29 @@ function renderPage() {
   return render(<BenchmarksPage data={[]} selectedPoint={null} onSelect={() => {}} />);
 }
 
-// Cross the hard gate: pick the metric facet (keeps all cells) + Apply.
+// Show-all-by-default: agreement rows render on load — just wait for them.
 async function compose(container) {
-  await screen.findByText(/define|compose|pick|choose/i); // composer prompt present
-  fireEvent.click(container.querySelector('.benchmarks-composer-chip[data-facet="metric"][data-value="Success Rate (%)"]'));
-  fireEvent.click(container.querySelector('.benchmarks-composer-apply'));
+  await waitFor(() => expect(container.querySelector('.benchmarks-agreement-row')).toBeTruthy());
 }
 
-describe('BenchmarksPage — hard gate + KG drawer', () => {
-  test('opens as a query builder — NO metrics until a facet is composed', async () => {
+describe('BenchmarksPage — show-all + KG drawer', () => {
+  test('shows all comparisons on load — agreement rows + the Agreement/Coverage toggle are present', async () => {
     const { container } = renderPage();
-    await waitFor(() => expect(container.querySelector('.benchmarks-composer')).toBeTruthy());
-    expect(container.querySelector('.benchmarks-agreement-row')).toBeNull();
-    expect(container.querySelector('.benchmarks-tabs')).toBeNull(); // no Agreement/Coverage toggle yet
+    await waitFor(() => expect(container.querySelector('.benchmarks-agreement-row')).toBeTruthy());
+    expect(container.querySelector('.benchmarks-tabs')).toBeTruthy(); // Agreement/Coverage toggle present
   });
 
-  test('composing a facet reveals the scoped metrics, and opening a cell shows "Why they differ"', async () => {
+  test('opening a cell shows "Why they differ" (KG context in the drawer)', async () => {
     const { container } = renderPage();
-    await waitFor(() => expect(container.querySelector('.benchmarks-composer')).toBeTruthy());
     await compose(container);
-    await waitFor(() => expect(container.querySelector('.benchmarks-agreement-row')).toBeTruthy());
     fireEvent.click(container.querySelector('.benchmarks-agreement-row'));
     await waitFor(() => expect(container.querySelector('.benchmarks-papertrail-drawer')).toBeTruthy());
     expect(container.querySelector('.benchmarks-celldiff')).toBeTruthy(); // KG context wired into the drawer
   });
 
-  test('"Change query" returns to the composer', async () => {
-    const { container } = renderPage();
-    await waitFor(() => expect(container.querySelector('.benchmarks-composer')).toBeTruthy());
-    await compose(container);
-    await waitFor(() => expect(container.querySelector('.benchmarks-agreement-row')).toBeTruthy());
-    fireEvent.click(container.querySelector('.benchmarks-changequery'));
-    expect(container.querySelector('.benchmarks-composer')).toBeTruthy();
-    expect(container.querySelector('.benchmarks-agreement-row')).toBeNull();
-  });
-
   test('a "?" above the table opens the in-app walkthrough help', async () => {
     const { container } = renderPage();
-    await waitFor(() => expect(container.querySelector('.benchmarks-composer')).toBeTruthy());
+    await waitFor(() => expect(container.querySelector('.benchmarks-condition-spine')).toBeTruthy());
     const help = container.querySelector('.benchmarks-help-btn');
     expect(help).toBeTruthy(); // the "?" is present from the start (above the table)
     fireEvent.click(help);
