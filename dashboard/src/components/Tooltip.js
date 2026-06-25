@@ -28,6 +28,14 @@ export default function Tooltip({ children, text, wide = false }) {
     }, 250);
   };
 
+  // Keyboard focus shows the tooltip immediately (no hover delay) — so the "?"
+  // helpers are reachable without a mouse.
+  const showNow = () => {
+    clearTimeout(timeoutRef.current);
+    updatePosition();
+    setVisible(true);
+  };
+
   const hide = () => {
     clearTimeout(timeoutRef.current);
     setVisible(false);
@@ -37,6 +45,7 @@ export default function Tooltip({ children, text, wide = false }) {
 
   const tooltip = visible ? ReactDOM.createPortal(
     <div
+      role="tooltip"
       className={`tooltip-bubble-fixed ${wide ? 'tooltip-wide' : ''}`}
       style={{
         top: coords.showBelow ? coords.top : undefined,
@@ -54,8 +63,14 @@ export default function Tooltip({ children, text, wide = false }) {
     <span
       ref={triggerRef}
       className="tooltip-wrapper"
+      tabIndex={0}
+      role="button"
+      aria-label={typeof text === 'string' ? text : undefined}
       onMouseEnter={show}
       onMouseLeave={hide}
+      onFocus={showNow}
+      onBlur={hide}
+      onKeyDown={(e) => { if (e.key === 'Escape') hide(); }}
     >
       {children}
       {tooltip}

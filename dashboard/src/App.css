@@ -6950,3 +6950,16 @@ body {
   border-top: 1px solid var(--border-light); padding-top: 0.7rem;
 }
 .benchmarks-composer-total { font-size: 0.82rem; font-weight: 600; color: var(--text-mid); font-variant-numeric: tabular-nums; }
+
+/* Accessibility: a visible keyboard-focus ring on every interactive control
+ * (the app previously had none — keyboard users couldn't see where they were). */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
