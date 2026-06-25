@@ -140,6 +140,7 @@ export default function MethodTable({
             type="text"
             className="table-search"
             placeholder="Search methods..."
+            aria-label="Search methods"
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
           />
@@ -167,6 +168,7 @@ export default function MethodTable({
                     <span className="th-label">{shortNames[col] || col}</span>
                     <select
                       className="th-filter"
+                      aria-label={`Filter by ${shortNames[col] || col}`}
                       value={filters[col] || ''}
                       onChange={e => handleFilterChange(col, e.target.value)}
                     >
