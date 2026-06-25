@@ -6990,3 +6990,12 @@ textarea:focus-visible,
   color: var(--text-muted);
   font-style: italic;
 }
+
+/* Benchmarks: the cherry-picked best run, demoted to a muted secondary next to the
+   honest median headline (so the max is shown but never the ranked number). */
+.benchmarks-best {
+  margin-left: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

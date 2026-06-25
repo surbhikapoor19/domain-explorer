@@ -337,7 +337,12 @@ export default function ComparisonsView({ cell, data, selectedPoint, onSelect, o
                 <td className="benchmarks-rank">{i + 1}</td>
                 <td className="benchmarks-method">{entry.method}</td>
                 <td><RowScopeBadge facets={facets} /></td>
-                <td className="benchmarks-score">{entry.value}</td>
+                <td className="benchmarks-score">
+                  {entry.value}
+                  {entry.best != null && entry.best !== entry.value && (
+                    <span className="benchmarks-best" title="best single run reported — the headline is the honest per-paper median"> · best {entry.best}</span>
+                  )}
+                </td>
                 <td className="benchmarks-grade-cell">
                   {entry.grade && (
                     <span className={`benchmarks-grade-badge ${gradeClass(entry.grade)}`}>{entry.grade}</span>

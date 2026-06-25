@@ -252,6 +252,28 @@ def test_leaderboard_median_is_true_median_for_even_paper_count():
     assert m['median'] == 25.0, f"true median of 10,20,30,40 is 25, got {m['median']}"
 
 
+def test_leaderboard_headline_is_median_and_ranks_by_it_not_cherrypicked_max():
+    """The headline `value` is the honest per-paper MEDIAN (max kept as `best`), and
+    methods rank by median — so a method cannot rank #1 on a single best run while its
+    median is mid-pack (the Edge Grasp Network 92.0-vs-median-73.4 problem)."""
+    base = dict(metric_raw="Success Rate", metric_id="success_rate", unit="%",
+                higher_is_better=True, condition="pile", is_own_method=False,
+                extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [
+        # A: two papers 70 & 90 -> median 80, best 90
+        ResultRecord(paper_id="p1", method_raw="A", method_id="A", value=70.0, value_str="70", **base),
+        ResultRecord(paper_id="p2", method_raw="A", method_id="A", value=90.0, value_str="90", **base),
+        # B: steady 85 -> median 85; outranks A on median (85>80) despite A's higher best (90)
+        ResultRecord(paper_id="p1", method_raw="B", method_id="B", value=85.0, value_str="85", **base),
+        ResultRecord(paper_id="p2", method_raw="B", method_id="B", value=85.0, value_str="85", **base),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    lb = next(lb for lb in out['leaderboards'].values() if lb['metric_id'] == 'success_rate')
+    a = next(e for e in lb['entries'] if e['method'] == 'A')
+    assert a['value'] == 80.0 and a['best'] == 90.0   # headline=median, max preserved as best
+    assert lb['entries'][0]['method'] == 'B'          # B (median 85) ranks above A (median 80)
+
+
 def test_per_paper_median_surfaces_outliers_not_hidden_by_best():
     """A paper reporting an outlier (2232) next to a small value (48) must NOT have
     the outlier hidden by taking the best (min). The per-paper MEDIAN surfaces it so

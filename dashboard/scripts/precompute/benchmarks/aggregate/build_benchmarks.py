@@ -142,7 +142,13 @@ def build_benchmark_json(records, cfg):
                                    any(r.verified for r in valid),
                                    max((r.extraction_conf for r in valid), default='low'))
             cv_val = round(coefficient_of_variation(vals), 3)
-            entries.append({'method': method, 'value': round(best, 2),
+            # HEADLINE = the per-paper MEDIAN (honest central estimate), not the
+            # cherry-picked best run. The optimistic max is kept as `best` so it is
+            # not lost, just demoted. This makes leaderboards rank by median (the
+            # sort key is `value`), fixing the "ranks #1 on its best run while its
+            # median is mid-pack" dishonesty.
+            entries.append({'method': method, 'value': round(med, 2),
+                            'best': round(best, 2),
                             'median': round(med, 2), 'n_reports': n_papers,
                             'cv': cv_val, 'grade': grade,
                             'confidence': _confidence(grade, cv_val),
