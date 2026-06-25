@@ -75,6 +75,15 @@ def _copilot_keywords(cfg):
         condition_keywords[c['id']] = sorted(kws)
     return {'metric_keywords': metric_keywords, 'condition_keywords': condition_keywords}
 
+def _suspected_copy(valued):
+    """True when >=2 distinct papers report a byte-identical value AND stddev — a
+    baseline number quoted verbatim (citation copy), not independent corroboration.
+    Such 'agreement' yields cv=0 and would otherwise earn a false grade A."""
+    papers = {r.paper_id for r in valued}
+    sigs = {(r.value, r.std_dev) for r in valued}
+    return len(papers) >= 2 and len(sigs) == 1 and next(iter(sigs))[1] is not None
+
+
 def build_benchmark_json(records, cfg):
     cv_thr = cfg.get('consistency', {}).get('cv_thresholds')
     min_papers = cfg.get('consistency', {}).get('min_papers_for_validation', 2)
@@ -141,6 +150,9 @@ def build_benchmark_json(records, cfg):
             grade = evidence_grade(n_papers, status,
                                    any(r.verified for r in valid),
                                    max((r.extraction_conf for r in valid), default='low'))
+            entry_copied = _suspected_copy(valid)
+            if entry_copied and grade == 'A':
+                grade = 'B'  # identical value+stddev across papers = citation copy, not corroboration
             cv_val = round(coefficient_of_variation(vals), 3)
             # HEADLINE = the per-paper MEDIAN (honest central estimate), not the
             # cherry-picked best run. The optimistic max is kept as `best` so it is
@@ -152,6 +164,7 @@ def build_benchmark_json(records, cfg):
                             'median': round(med, 2), 'n_reports': n_papers,
                             'cv': cv_val, 'grade': grade,
                             'confidence': _confidence(grade, cv_val),
+                            'corroboration': 'identical_values_suspected_copy' if entry_copied else 'independent',
                             'source_papers': sorted({r.paper_id for r in valid}),
                             'sources': [{'paper': r.paper_id, 'value_str': r.value_str,
                                          'metric_raw': r.metric_raw, 'condition': r.condition,
@@ -189,6 +202,9 @@ def build_benchmark_json(records, cfg):
         grade = evidence_grade(len(papers), status, any(r.verified for r in valued),
                                max((r.extraction_conf for r in valued), default='low'))
         cv_val = round(coefficient_of_variation(vals), 3)
+        cv_copied = _suspected_copy(valued)
+        if cv_copied and grade == 'A':
+            grade = 'B'  # identical value+stddev across papers = citation copy, not corroboration
         cross_validations.append({
             'method': method, 'metric_id': metric_id,
             'metric_label': _metric_label(cfg, metric_id), 'dataset_id': dataset_id,
@@ -196,6 +212,7 @@ def build_benchmark_json(records, cfg):
             'mean': round(sum(vals) / len(vals), 2) if vals else None,
             'cv': cv_val, 'status': status, 'grade': grade,
             'confidence': _confidence(grade, cv_val),
+            'corroboration': 'identical_values_suspected_copy' if cv_copied else 'independent',
             'reports': [{'paper': r.paper_id, 'value': r.value, 'value_str': r.value_str,
                          'metric_raw': r.metric_raw, 'condition': r.condition,
                          'table_caption': r.table_caption,

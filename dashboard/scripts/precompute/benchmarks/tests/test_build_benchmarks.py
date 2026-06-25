@@ -274,6 +274,35 @@ def test_leaderboard_headline_is_median_and_ranks_by_it_not_cherrypicked_max():
     assert lb['entries'][0]['method'] == 'B'          # B (median 85) ranks above A (median 80)
 
 
+def test_identical_value_and_stddev_across_papers_is_not_grade_a():
+    """Two 'independent' papers quoting the SAME value AND stddev is citation copying
+    (a baseline number reproduced verbatim), not corroboration — it must NOT earn
+    grade A (it would otherwise get cv=0 -> max confidence on a copied number), and
+    it is flagged with corroboration='identical_values_suspected_copy'."""
+    base = dict(metric_raw="Success Rate", metric_id="success_rate", unit="%",
+                higher_is_better=True, condition="pile", is_own_method=False,
+                extractor="tei_table", extraction_conf="high", verified=True)
+    recs = [
+        ResultRecord(paper_id="edge-grasp-network", method_raw="PointNetGPD", method_id="PointNetGPD",
+                     value=79.3, value_str="79.3 ± 1.8", std_dev=1.8, **base),
+        ResultRecord(paper_id="equivariant-volumetric-grasping", method_raw="PointNetGPD", method_id="PointNetGPD",
+                     value=79.3, value_str="79.3 ± 1.8", std_dev=1.8, **base),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    cv = next(c for c in out['cross_validations'] if c['method'] == 'PointNetGPD')
+    assert cv['corroboration'] == 'identical_values_suspected_copy'
+    assert cv['grade'] != 'A', f"copied baseline must not be grade A, got {cv['grade']}"
+
+    # Genuinely independent papers (different values) stay 'independent' and can be A.
+    recs2 = [
+        ResultRecord(paper_id="p1", method_raw="VGN", method_id="VGN", value=86.0, value_str="86", std_dev=1.0, **base),
+        ResultRecord(paper_id="p2", method_raw="VGN", method_id="VGN", value=85.0, value_str="85", std_dev=1.2, **base),
+    ]
+    out2 = build_benchmark_json(recs2, CFG)
+    cv2 = next(c for c in out2['cross_validations'] if c['method'] == 'VGN')
+    assert cv2['corroboration'] == 'independent'
+
+
 def test_per_paper_median_surfaces_outliers_not_hidden_by_best():
     """A paper reporting an outlier (2232) next to a small value (48) must NOT have
     the outlier hidden by taking the best (min). The per-paper MEDIAN surfaces it so
