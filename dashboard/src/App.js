@@ -340,18 +340,13 @@ function App() {
           >
             Benchmarks
           </button>
-          {/* Admin is an internal surface — keep it out of the public nav. Show
-              it only to power users (Explorer enabled) or when already on /admin
-              (a direct URL visit still works; the page itself is token-gated). */}
-          {(explorerEnabled || page === 'admin') && (
-            <button
-              className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
-              onClick={() => setPage('admin')}
-              title="Domain administration"
-            >
-              Admin
-            </button>
-          )}
+          <button
+            className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
+            onClick={() => setPage('admin')}
+            title="Domain administration"
+          >
+            Admin
+          </button>
           <ManualButton />
           {(recomputing || filterActive || hasHighlights) && (
             <div className="header-status">
