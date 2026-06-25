@@ -1961,7 +1961,7 @@ export default function KGNodeDetail({
           };
           return (
             <div className="kgnd-lineage">
-              <div className="kgnd-lineage-title">Paper Lineage <Tooltip text="Where this paper sits in the citation chain, read by direction. TOP group = the EARLIER work THIS paper builds on (this paper cites them). BOTTOM group = LATER papers that build on THIS one (they cite it). Per-citation stance: 'builds on' = extends, 'differs' = contrasts, 'neutral' = references without taking a side. The N× badge = how many times it's cited in the text." wide><span className="chart-help">?</span></Tooltip></div>
+              <div className="kgnd-lineage-title">Paper Lineage <Tooltip text="Each row is a paper in this one's citation chain (the two lists are labelled by direction). The colored tag is that citation's stance: 'builds on' = extends the work, 'differs' = contrasts with it, 'neutral' = references it without taking a side. The N× badge = how many times it's cited in the text — higher means deeper engagement." wide><span className="chart-help">?</span></Tooltip></div>
 
               {totalOut > 0 && (
                 <div className="kgnd-lineage-section">
