@@ -6996,6 +6996,20 @@ textarea:focus-visible,
   max-width: 72ch;
 }
 
+/* Benchmarks: honest cross-protocol caveat — leaderboards can pool incomparable
+   protocols (view/noise/sim-vs-real/object-set), so rankings are indicative only. */
+.benchmarks-caveat {
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-mid);
+  max-width: 78ch;
+  background: #fff8ec;
+  border: 1px solid #f0d9a8;
+  border-radius: 5px;
+}
+
 /* Benchmarks: "N hidden below X% confidence" — the confidence gate is never silent. */
 .benchmarks-confidence-hidden {
   margin-left: 0.6rem;

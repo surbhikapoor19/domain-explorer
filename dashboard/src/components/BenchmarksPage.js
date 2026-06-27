@@ -283,6 +283,13 @@ export default function BenchmarksPage({
             Every head-to-head result we could extract from the papers, grouped by metric.
             Browse them all below — or use the filters to narrow to a specific metric, condition, or hardware setup.
           </p>
+          <p className="benchmarks-caveat">
+            ⚠ <strong>Read rankings as indicative, not definitive.</strong> A leaderboard can pool
+            numbers that papers measured under <strong>different protocols</strong> — camera view
+            (fixed vs. random), sensor noise, object set (e.g. EGAD), and simulation vs. real-world —
+            which are not strictly comparable. Always confirm a number against its source crop in the
+            drawer before citing it.
+          </p>
 
           {/* ── Stats bar ──────────────────────────────────────────────── */}
           <div className="benchmarks-stats-bar">
