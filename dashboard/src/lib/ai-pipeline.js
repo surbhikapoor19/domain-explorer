@@ -7,6 +7,7 @@ import { GRASP_DEFAULTS } from '../DomainContext';
 import { buildMethodSummaries, formatRagContext, DEFAULT_SUMMARY_COLUMNS, DEFAULT_SHORT_NAMES } from './copilot/rag-context';
 import { retrieveChunks } from './copilot/retrieval';
 import { buildKgContext } from './copilot/kg-context';
+import { computeCorpusFacts } from './copilot/corpus-facts';
 import { buildAnswerPrompt } from './copilot/prompt-builder';
 import { rankCandidates, parseStructuredAnswer, resolveMethods } from './copilot/answer-synthesis';
 
@@ -136,10 +137,11 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     ragCitations, query: effectiveQuery,
   });
   const candMethods = ranked.slice(0, 14).map(name => allMethods.find(m => m.name === name)).filter(Boolean);
-  const candidateBlock = candMethods.map(m => {
+  const fmtCandidate = (m) => {
     const parts = COLS.map(c => { const v = m.metadata?.[c]; return v ? `${SHORTS[c] || c}=${v}` : null; }).filter(Boolean);
     return `- ${m.name}${parts.length ? ' — ' + parts.join('; ') : ''}`;
-  }).join('\n');
+  };
+  let candidateBlock = candMethods.map(fmtCandidate).join('\n');
 
   // Step 5: KG context — verbalized relations (no arrow logs), seeded from the
   // candidates + RAG papers. Supplements the paper text; never the sole source.
@@ -156,11 +158,34 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   // Step 6: Benchmark grounding for quantitative/ranking queries.
   let benchmarkText = '';
   let bmPageRef = null;
+  let benchData = null;
   try {
-    const bench = await loadBenchmarkComparisons();
-    benchmarkText = buildBenchmarkContext(effectiveQuery, bench, { knownMethods: methodNames });
-    bmPageRef = benchmarkPageRef(effectiveQuery, bench, { knownMethods: methodNames, methods: allMethods });
+    benchData = await loadBenchmarkComparisons();
+    benchmarkText = buildBenchmarkContext(effectiveQuery, benchData, { knownMethods: methodNames });
+    bmPageRef = benchmarkPageRef(effectiveQuery, benchData, { knownMethods: methodNames, methods: allMethods });
   } catch (e) { /* benchmarks optional */ }
+
+  // Step 6b: Corpus-level derived facts (top-cited, most-connected, newest,
+  // most-benchmarked) the LLM can't infer from prose alone — so a query like
+  // "the top-cited method" resolves to a real, named item instead of "not
+  // specified". Computed from the already-loaded KG + methods + benchmarks.
+  let corpusFacts = '';
+  try {
+    const factObj = computeCorpusFacts({ methods: allMethods, kg: kgData, benchmarks: benchData });
+    corpusFacts = factObj.factsText;
+    // Make every fact-named method DISCUSSABLE: add any that aren't already
+    // candidates, so the model can answer about "the top-cited method" (not just
+    // name it). Then rebuild the candidate block.
+    const factNames = Object.values(factObj.facts || {}).map(f => f && f.name).filter(Boolean);
+    let added = false;
+    factNames.forEach(name => {
+      if (!candMethods.find(m => m.name === name)) {
+        const m = allMethods.find(mm => mm.name === name);
+        if (m) { candMethods.push(m); added = true; }
+      }
+    });
+    if (added) candidateBlock = candMethods.map(fmtCandidate).join('\n');
+  } catch (e) { /* facts optional */ }
 
   // Step 7: SINGLE structured synthesis — answer markdown + the methods it
   // discusses (by id) + citations, in ONE JSON object. The discussed ids are the
@@ -170,7 +195,7 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   let insightText = '';
   try {
     const { system, user } = buildAnswerPrompt({
-      query: effectiveQuery, ragText, kgContext, benchmarkText,
+      query: effectiveQuery, ragText, kgContext, benchmarkText, corpusFacts,
       candidateBlock, intent, branding: domainBranding,
     });
     const msgs = [{ role: 'system', content: system }, { role: 'user', content: user }];

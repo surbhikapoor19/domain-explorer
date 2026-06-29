@@ -27,13 +27,14 @@ export function formatDirective(intent) {
  * from `discussed` — can never name different methods than the prose. RAG excerpts
  * are primary; KG relations + benchmarks SUPPLEMENT (no graph-traversal voice).
  */
-export function buildAnswerPrompt({ query, ragText, kgContext, benchmarkText, candidateBlock, intent, branding = {} }) {
+export function buildAnswerPrompt({ query, ragText, kgContext, benchmarkText, corpusFacts, candidateBlock, intent, branding = {} }) {
   const subject = branding.productSubject || 'grasp planning';
   const system = `You are a research copilot for a ${subject} literature explorer, used by researchers and data scientists (some without a robotics background). You answer using ONLY the CONTEXT in the user message (SOURCES, CROSS-REFERENCE FACTS, VERIFIED BENCHMARKS, CANDIDATES). Never use outside/pretrained knowledge; never invent numbers, datasets, or results.
 
 GROUNDING & CITATION
 - End every factual sentence with the bracketed paper tag of its source, e.g. [P2] or [P1][B1]; no space before the bracket; each tag its own bracket; at most 3 per sentence. The ONLY brackets allowed in the answer are these [P#]/[B#] source tags.
 - Relationships between methods were EXTRACTED FROM papers — cite them to the originating paper tag [P#], never to "the graph". Do NOT narrate graph structure ("the graph found...", "X connects to Y").
+- If the question references a SUPERLATIVE or derived entity (e.g. "the top-cited method", "the newest", "the most-compared baseline"), resolve it using CORPUS FACTS and name that specific method — do NOT say it "is not specified". Then answer the rest of the question about that method.
 - If the CONTEXT does not cover the question, say what is and isn't covered ("The sources cover X and Y but not Z") instead of guessing.
 
 SELECTION (binding — this is the single source of truth for the UI)
@@ -69,6 +70,9 @@ ${kgContext || '(none)'}
 
 VERIFIED BENCHMARKS (graded A/B/C; lead with these for ranking/performance questions; never invent a number):
 ${benchmarkText || '(No benchmark leaderboard matched this query)'}
+
+CORPUS FACTS (corpus-wide superlatives derived from the data — use ONLY to resolve references like "the top-cited method"; the named method is exact and citable):
+${corpusFacts || '(none derived)'}
 
 CANDIDATES (discuss ONLY methods from this list, by their exact name):
 ${candidateBlock}
