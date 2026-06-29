@@ -35,7 +35,7 @@ function pct(score) {
 }
 
 export default function ProofBlock({
-  suggestion, anchorMethods, query, termDictionary,
+  suggestion, anchorMethods, query, termDictionary, onMethodClick,
 }) {
   const domainCfg = useDomainConfig();
   const PRIORITY_DIMS = (domainCfg.priorityDims && domainCfg.priorityDims.length > 0)
@@ -120,12 +120,15 @@ export default function ProofBlock({
             <ul className="gr-proof-anchors">
               {anchorMethods.map(m => (
                 <li key={m.name}>
-                  <span
+                  <button
+                    type="button"
                     className="gr-proof-anchor-name"
                     style={{ color: clusterColor(m.cluster) }}
+                    onClick={() => onMethodClick && onMethodClick(m.name)}
+                    title={`Highlight ${m.name} everywhere`}
                   >
                     {m.name}
-                  </span>
+                  </button>
                   <span className="gr-proof-anchor-meta">
                     {m.meta['Year (Initial Release)'] && (
                       <>· {String(m.meta['Year (Initial Release)']).split('.')[0]}</>

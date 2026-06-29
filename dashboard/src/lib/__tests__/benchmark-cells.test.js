@@ -206,6 +206,35 @@ describe('parseConditionFacets', () => {
     expect(f.scene).toBeFalsy();
     expect(f.success_criterion).toBeFalsy();
   });
+
+  // #1 protocol facets — decoded additively, existing scene/criterion unchanged.
+  test('decodes protocol tokens (view / noise / object_set / retrain)', () => {
+    const f = parseConditionFacets('packed:fixedview:gammanoise');
+    expect(f.scene).toBe('packed');
+    expect(f.view).toBe('fixedview');
+    expect(f.noise).toBe('gammanoise');
+    const g = parseConditionFacets('gsr:sim:randomview:egad:noretrain');
+    expect(g.success_criterion).toBe('gsr');
+    expect(g.view).toBe('randomview');
+    expect(g.object_set).toBe('egad');
+    expect(g.retrain).toBe('noretrain');
+  });
+
+  test('scene/criterion behavior is unchanged by the protocol additions', () => {
+    expect(parseConditionFacets('real').scene).toBe('real'); // sim/real stays scene
+    expect(parseConditionFacets('packed:gsr').success_criterion).toBe('gsr');
+    expect(parseConditionFacets('packed:weirdtoken').raw).toContain('weirdtoken');
+  });
+});
+
+// ── protocol labels (humanizeCondition / humanizeFacet) ───────────────────────
+describe('humanizeCondition with protocol tokens', () => {
+  test('renders a full protocol cell readably', () => {
+    expect(humanizeCondition('packed:randomview:gaussnoise'))
+      .toBe('Packed · Random camera · Gaussian noise');
+    expect(humanizeCondition('gsr:sim:egad:noretrain'))
+      .toBe('Grasp success rate (GSR) · Simulation · EGAD objects · No retrain (OOD)');
+  });
 });
 
 // ── 3) buildCells ─────────────────────────────────────────────────────────────
@@ -536,6 +565,23 @@ describe('reproducibilityCard', () => {
     expect(card.factors.arm).toBe('not reported');
     expect(card.factors.sensor).toBe('not reported');
     expect(card.factors.object_set).toBe('not reported');
+  });
+
+  // #1: an EGAD no-retrain cell surfaces object_set + the OOD protocol so the
+  // reader is warned not to read it as a like-for-like comparison.
+  test('populates object_set + protocol from a decoded protocol condition', () => {
+    const cell = {
+      condition: 'gsr:sim:egad:noretrain',
+      metric_label: 'Success Rate (%)',
+      facets: parseConditionFacets('gsr:sim:egad:noretrain'),
+      entries: [{ method: 'NeuGraspNet', source_papers: ['neugraspnet'] }],
+      reproducibility: [],
+    };
+    const card = reproducibilityCard(cell, 'NeuGraspNet');
+    expect(card.factors.object_set).toBe('egad');
+    expect(card.factors.protocol).toContain('No retrain (OOD)');
+    // object_set is now reported -> it must NOT appear in the do-not-compare list
+    expect(card.doNotCompare.join(' ')).not.toContain('object_set');
   });
 });
 

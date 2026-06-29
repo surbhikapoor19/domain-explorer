@@ -1,14 +1,16 @@
 /**
- * AnswerBlock — comparison-first answer for the Graph Reasoning page.
+ * AnswerBlock — answer-first response for the Graph Reasoning page.
  *
- * Renders the eight method-comparability dimensions across the methods most
- * relevant to the query (top of `suggestion.paperRelevance`), with extracted
- * CSV values per cell. Below the table, an LLM synthesis paragraph runs
- * through the same highlighter the Copilot Insight uses so method names and
- * domain terms get the cluster-colored / glossary-annotated treatment.
+ * Order (per product direction): the LLM synthesis ANSWER to the question comes
+ * first, then the comparison table (the eight method-comparability dimensions
+ * across the methods most relevant to the query, with extracted CSV values per
+ * cell). The synthesis runs through the same highlighter the Copilot Insight
+ * uses so method names and domain terms get the cluster-colored /
+ * glossary-annotated treatment. The interactive plots/charts (subgraph, proof,
+ * evidence, equations) follow this block on the page.
  */
 import React, { useMemo } from 'react';
-import InsightBullets from './InsightBullets';
+import AnswerMarkdown from './AnswerMarkdown';
 import Tooltip from './Tooltip';
 import { HighlightedText } from '../highlighter';
 import { CLUSTER_COLORS } from '../constants';
@@ -80,7 +82,7 @@ export function computeAnchorMethods(suggestion, data) {
 
 export default function AnswerBlock({
   suggestion, query, anchorMethods, termDictionary,
-  methodClusterMap, clusterLabelMap, onMethodClick,
+  methodClusterMap, clusterLabelMap, onMethodClick, onCiteClick,
 }) {
   const domainCfg = useDomainConfig();
   const PRIORITY_DIMS = (domainCfg.priorityDims && domainCfg.priorityDims.length > 0)
@@ -109,7 +111,9 @@ export default function AnswerBlock({
   if (anchorMethods.length === 0) return null;
 
   const isComparison = anchorMethods.length >= 2;
-  const synthesis = suggestion?.traversalNarrative || suggestion?.insight || '';
+  // The grounded synthesis answer (RAG+KG). The graph-traversal narrative is gone
+  // — the answer is now the model's structured `insight` rendered as markdown.
+  const answer = suggestion?.insight || '';
   const titleNames = anchorMethods.map(m => m.name).join(' · ');
   const title = isComparison
     ? `How ${anchorMethods.length} methods compare on the priority dimensions`
@@ -117,6 +121,25 @@ export default function AnswerBlock({
 
   return (
     <div className="gr-answer-block">
+      {/* ANSWER first — the grounded, formatted synthesis answer (markdown). The
+          methods named here are the SAME set shown in the comparison table below
+          (both come from the model's `discussed` selection -> paperRelevance). */}
+      {answer && (
+        <div className="gr-answer-synthesis">
+          <div className="gr-synthesis-label">Answer</div>
+          <AnswerMarkdown
+            text={answer}
+            termDictionary={termDictionary}
+            query={query}
+            citations={suggestion?.citations}
+            methods={anchorMethods.map(m => m.name)}
+            onMethodClick={onMethodClick}
+            onCiteClick={onCiteClick}
+          />
+        </div>
+      )}
+
+      {/* COMPARISON next — the priority-dimension comparison table. */}
       <div className="gr-card-header">
         <Tooltip text={COMPARISON_TITLE_TOOLTIP} wide>
           <h3 className="gr-card-title">{title}</h3>
@@ -195,20 +218,6 @@ export default function AnswerBlock({
           </tbody>
         </table>
       </div>
-
-      {synthesis && (
-        <div className="gr-synthesis">
-          <div className="gr-synthesis-label">Graph Analysis</div>
-          <InsightBullets
-            text={synthesis}
-            methodClusterMap={methodClusterMap}
-            clusterLabelMap={clusterLabelMap}
-            onMethodClick={onMethodClick}
-            query={query}
-            termDictionary={termDictionary}
-          />
-        </div>
-      )}
     </div>
   );
 }

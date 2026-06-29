@@ -255,7 +255,7 @@ export default function KGGraphViz({
   onNodeClick, selectedNode, height = 420, dataUrl, postData,
   onNodeSelect, onEdgeSelect, onNodeHover, onBackgroundTap, refitTrigger,
   hiddenEdgeTypes, hiddenNodeTypes: extHiddenNodeTypes, highlightedLabels, dimUnhighlighted,
-  minDegree = 0, searchTerm = '', viewName, minConfidence = 0,
+  minDegree = 0, searchTerm = '', viewName, minConfidence = 0, hideTooltip = false,
 }) {
   const cyRef = useRef(null);
   const containerRef = useRef(null);
@@ -810,8 +810,9 @@ export default function KGGraphViz({
         </div>
       )}
 
-      {/* Tooltip */}
-      {tooltipNode && (
+      {/* Tooltip — suppressed while a pinned info box is open (it shares this
+          bottom-left corner; showing both stacks two boxes). */}
+      {!hideTooltip && tooltipNode && (
         <div className="kgv-tooltip">
           <div className="kgv-tooltip-type" style={{ color: TYPE_STYLES[tooltipNode.type]?.color }}>
             {tooltipNode.subtype || tooltipNode.type}
@@ -823,7 +824,7 @@ export default function KGGraphViz({
 
       {/* Edge tooltip — orientation only (≤4 lines). Click opens the full
           comparison side panel; we do not duplicate that detail here. */}
-      {tooltipEdge && !tooltipNode && (
+      {!hideTooltip && tooltipEdge && !tooltipNode && (
         <div className="kgv-tooltip kgv-tooltip-edge">
           <div className="kgv-tooltip-edge-pair">
             <span>{tooltipEdge.src}</span>

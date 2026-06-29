@@ -13,7 +13,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Tooltip from './Tooltip';
 import KGGraphViz from './KGGraphViz';
 import KGNodeDetail from './KGNodeDetail';
-import KGEdgeDetail from './KGEdgeDetail';
+// "uses_technique" -> "Uses Technique"; for the mini info box's node-type / relation label.
+const prettyKind = (t) => String(t || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
 // Grouped by the *kind of signal* each edge carries (not the technical name).
 // Covers every edge type emitted by the current pipeline (TEI + Groq + CSV + similarity).
@@ -427,6 +428,10 @@ export default function KGLanding({
   const [selectedTechnique, setSelectedTechnique] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedGraphNode, setSelectedGraphNode] = useState(null);
+  // Lightweight info for a non-paper node or an edge — shown in a small box at
+  // the graph's bottom-left instead of opening the full side panel (those
+  // surfaces carry only a line or two of info; a panel is overkill).
+  const [miniInfo, setMiniInfo] = useState(null);
   const [nodeSelection, setNodeSelection] = useState(null);
   // Edge selection — populated when the user clicks a predicted edge.
   // Mutually exclusive with nodeSelection: clicking either type clears
@@ -853,6 +858,7 @@ export default function KGLanding({
     setSelectedGraphNode(null);
     setNodeSelection(null);
     setEdgeSelection(null);
+    setMiniInfo(null);
   }, []);
   const handleBackgroundClick = useCallback((e) => {
     // Anything that visually "is a thing" lives inside one of these. If
@@ -1054,8 +1060,19 @@ export default function KGLanding({
               onNodeHover={handleGraphNodeHover}
               onBackgroundTap={clearAllSelections}
               selectedNode={selectedGraphNode}
-              onNodeSelect={(s) => { setEdgeSelection(null); setNodeSelection(s); }}
-              onEdgeSelect={(e) => { setNodeSelection(null); setSelectedGraphNode(null); setEdgeSelection(e); }}
+              onNodeSelect={(s) => {
+                setEdgeSelection(null);
+                // Papers get the full side panel; everything else (technique,
+                // dataset, author, …) just shows the bottom-left mini box.
+                if (s && s.node && s.node.type === 'paper') { setMiniInfo(null); setNodeSelection(s); }
+                else if (s && s.node) { setNodeSelection(null); setMiniInfo({ title: s.node.label, detail: prettyKind(s.node.type) }); }
+                else { setNodeSelection(null); setMiniInfo(null); }
+              }}
+              onEdgeSelect={(e) => {
+                // An edge is a relationship — show it in the mini box, not a panel.
+                setNodeSelection(null); setSelectedGraphNode(null);
+                setMiniInfo({ title: `${e?.src?.label || '?'}  →  ${e?.tgt?.label || '?'}`, detail: prettyKind(e?.edge?.type) });
+              }}
               refitTrigger={`${!!nodeSelection}-${!!edgeSelection}-${searchTerm}-${predTypeFilter}-${panelExpanded}`}
               hiddenEdgeTypes={(() => {
                 if (graphView !== 'predictions' || !predTypeFilter) return hiddenEdgeTypes;
@@ -1081,7 +1098,15 @@ export default function KGLanding({
               minConfidence={graphView === 'predictions' ? predMinConf : 0}
               highlightedLabels={highlightedLabels}
               dimUnhighlighted={hasAnyHighlight}
+              hideTooltip={!!miniInfo}
             />
+            {miniInfo && (
+              <div className="kgl-mini-info">
+                <button className="kgl-mini-close" onClick={() => setMiniInfo(null)} aria-label="Dismiss">×</button>
+                <div className="kgl-mini-title" title={miniInfo.title}>{miniInfo.title}</div>
+                {miniInfo.detail && <div className="kgl-mini-detail">{miniInfo.detail}</div>}
+              </div>
+            )}
             {panelExpanded && nodeSelection && (
               <div ref={bottomPanelRef}>
                 <KGNodeDetail
@@ -1106,14 +1131,6 @@ export default function KGLanding({
                 placement="side"
                 expanded={false}
                 onToggleExpanded={() => setPanelExpanded(true)}
-              />
-            </div>
-          )}
-          {!panelExpanded && edgeSelection && !nodeSelection && (
-            <div className="kgl-side-detail">
-              <KGEdgeDetail
-                selection={edgeSelection}
-                onClose={() => setEdgeSelection(null)}
               />
             </div>
           )}

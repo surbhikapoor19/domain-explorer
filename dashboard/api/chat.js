@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { messages, max_tokens = 1024, temperature = 0.3 } = req.body || {};
+  const { messages, max_tokens = 1024, temperature = 0.3, response_format } = req.body || {};
   if (!messages || !messages.length) {
     return res.status(400).json({ error: 'messages required' });
   }
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${hfToken}`,
           },
-          body: JSON.stringify({ messages, max_tokens, temperature }),
+          body: JSON.stringify({ messages, max_tokens, temperature, ...(response_format ? { response_format } : {}) }),
         }
       );
       if (hfRes.ok) {
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${groqKey}`,
         },
-        body: JSON.stringify({ model: groqModel, messages, max_tokens, temperature }),
+        body: JSON.stringify({ model: groqModel, messages, max_tokens, temperature, ...(response_format ? { response_format } : {}) }),
       });
       if (groqRes.ok) {
         const data = await groqRes.json();

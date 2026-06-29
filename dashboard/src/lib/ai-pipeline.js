@@ -4,10 +4,21 @@ import { buildBenchmarkContext, benchmarkPageRef } from './benchmark-context';
 import { runQueryPipeline } from './query-engine';
 import { spellCorrectQuery } from './spell-correct';
 import { GRASP_DEFAULTS } from '../DomainContext';
-import { buildMethodSummaries, formatRagContext } from './copilot/rag-context';
+import { buildMethodSummaries, formatRagContext, DEFAULT_SUMMARY_COLUMNS, DEFAULT_SHORT_NAMES } from './copilot/rag-context';
 import { retrieveChunks } from './copilot/retrieval';
 import { buildKgContext } from './copilot/kg-context';
-import { buildInsightPrompt } from './copilot/prompt-builder';
+import { buildAnswerPrompt } from './copilot/prompt-builder';
+import { rankCandidates, parseStructuredAnswer, resolveMethods } from './copilot/answer-synthesis';
+
+// Deterministic FORMAT intent from the query (mirrors the answer-engine router):
+// chooses the answer's shape (table vs ranked list vs bullets) before generation.
+function classifyFormatIntent(q) {
+  const s = (q || '').toLowerCase();
+  if (/\b(vs\.?|versus|compare|comparison|difference between|trade-?offs?)\b/.test(s)) return 'comparison';
+  if (/\b(best|fastest|highest|top|rank(ing)?|outperform|state[- ]of[- ]the[- ]art|sota|success rate|accuracy|fastest)\b/.test(s)) return 'ranking';
+  if (/\b(which|recommend|methods? for|approaches? for|list|options?|suitable|suited|good for|use for)\b/.test(s)) return 'recommendation';
+  return 'default';
+}
 
 // buildMethodSummaries is re-exported for backward compatibility — a test imports
 // it from ./ai-pipeline; the implementation now lives in ./copilot/rag-context.
@@ -80,122 +91,133 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     : allMethods;
   const responseData = subset.length ? subset : allMethods;
 
+  // Pre-synthesis default highlight set (overridden after synthesis by the
+  // methods the model actually discusses — see finalHighlight below).
   const highlightMethods = filterMethods || responseData.slice(0, 8).map(m => m.name);
-  // Float the query-relevant methods to the front and cap the dump so the prompt
-  // leads with what matters instead of an unranked wall of all methods.
-  const methodSummaries = buildMethodSummaries(responseData, {
-    summaryColumns: domainOpts.summaryColumns,
-    shortNames: domainOpts.shortNames,
-    prioritize: highlightMethods,
-    limit: 12,
-  });
 
-  // Step 3: RAG retrieval (client-side)
+  // Step 3: RAG retrieval (client-side). Tag each retrieved PAPER with a stable
+  // [P#] id so the answer can cite it inline and the UI can render a chip.
   let ragText = '';
   let ragCitations = [];
   let ragAnalytics = {};
+  let papersById = [];
   try {
     const ragChunks = await loadRagChunks();
     if (ragChunks.length) {
       const scored = await retrieveChunks(effectiveQuery, ragChunks);
-      const formatted = formatRagContext(scored);
-      ragText = formatted.ragText;
-      ragCitations = formatted.ragCitations;
-
-      const paperSet = new Set(scored.map(c => c.metadata?.paper_id).filter(Boolean));
-      ragAnalytics = { papers: [...paperSet], totalChunks: scored.length };
+      ragCitations = formatRagContext(scored).ragCitations;
+      const seen = new Map();
+      scored.forEach(chunk => {
+        const pid = chunk.metadata?.paper_id || chunk.metadata?.paper_title || 'unknown';
+        if (!seen.has(pid) && seen.size < 6) {
+          seen.set(pid, {
+            tag: `P${seen.size + 1}`, paper_id: pid,
+            paper_title: chunk.metadata?.paper_title || pid, chunks: [],
+          });
+        }
+        if (seen.has(pid)) seen.get(pid).chunks.push(chunk);
+      });
+      papersById = [...seen.values()];
+      ragText = papersById.map(p => {
+        const text = p.chunks.map(c => (c.text || '').slice(0, 1400)).join(' … ').slice(0, 1600);
+        return `[${p.tag}] ${p.paper_title}\n${text}`;
+      }).join('\n\n');
+      ragAnalytics = { papers: [...new Set(scored.map(c => c.metadata?.paper_id).filter(Boolean))], totalChunks: scored.length };
     }
-  } catch (e) {
-    console.warn('RAG retrieval failed:', e);
-  }
+  } catch (e) { console.warn('RAG retrieval failed:', e); }
 
-  // Step 4: KG context. Load the full KG ONCE here and reuse it for the
-  // grounding check below (it was previously loaded twice per query). The
-  // method->paper resolution + subgraph serialization now live in
-  // ./copilot/kg-context (buildKgContext).
+  // Step 4: Candidate shortlist — rank methods by query relevance (RAG papers +
+  // deterministic filter + name/keyword overlap) so the model chooses from
+  // RELEVANT methods, not array order. Each carries a stable id used end-to-end.
+  const COLS = (domainOpts.summaryColumns && domainOpts.summaryColumns.length) ? domainOpts.summaryColumns : DEFAULT_SUMMARY_COLUMNS;
+  const SHORTS = domainOpts.shortNames || DEFAULT_SHORT_NAMES;
+  const ranked = rankCandidates(allMethods, {
+    filterMethods: filterMethods || [], ragPapers: ragAnalytics.papers || [],
+    ragCitations, query: effectiveQuery,
+  });
+  const candMethods = ranked.slice(0, 14).map(name => allMethods.find(m => m.name === name)).filter(Boolean);
+  const candidateBlock = candMethods.map(m => {
+    const parts = COLS.map(c => { const v = m.metadata?.[c]; return v ? `${SHORTS[c] || c}=${v}` : null; }).filter(Boolean);
+    return `- ${m.name}${parts.length ? ' — ' + parts.join('; ') : ''}`;
+  }).join('\n');
+
+  // Step 5: KG context — verbalized relations (no arrow logs), seeded from the
+  // candidates + RAG papers. Supplements the paper text; never the sole source.
   let kgData = null;
   let kgContext = '';
   let kgTraversal = [];
   try {
     kgData = await loadKgFull();
-    // Seed the subgraph from the RAG-retrieved papers when the query's methods
-    // don't resolve (broad queries), so the KG context matches the question
-    // instead of arbitrary array-order methods.
-    const kg = buildKgContext(kgData, highlightMethods, { seedPaperIds: ragAnalytics.papers || [] });
+    const kg = buildKgContext(kgData, candMethods.slice(0, 5).map(m => m.name), { seedPaperIds: ragAnalytics.papers || [] });
     kgContext = kg.kgContext;
     kgTraversal = kg.kgTraversal;
-  } catch (e) {
-    console.warn('KG context failed:', e);
-  }
+  } catch (e) { console.warn('KG context failed:', e); }
 
-  // Step 5: LLM insight — ground it in the verified benchmark leaderboards when
-  // the query is about performance/rankings/comparisons.
+  // Step 6: Benchmark grounding for quantitative/ranking queries.
   let benchmarkText = '';
   let bmPageRef = null;
   try {
     const bench = await loadBenchmarkComparisons();
-    // knownMethods lets the benchmark grounding fire on comparison intent
-    // ("compare GPD and VGN") even when no metric keyword is present.
     benchmarkText = buildBenchmarkContext(effectiveQuery, bench, { knownMethods: methodNames });
-    // A serializable deep-link to the REAL benchmark cell the answer rests on
-    // (or null when no metric/cell resolves — the gap, not a fabricated cell).
     bmPageRef = benchmarkPageRef(effectiveQuery, bench, { knownMethods: methodNames, methods: allMethods });
   } catch (e) { /* benchmarks optional */ }
 
+  // Step 7: SINGLE structured synthesis — answer markdown + the methods it
+  // discusses (by id) + citations, in ONE JSON object. The discussed ids are the
+  // SOLE selector for the comparison table, so prose and table cannot diverge.
+  const intent = classifyFormatIntent(effectiveQuery);
+  let parsed = null;
   let insightText = '';
+  try {
+    const { system, user } = buildAnswerPrompt({
+      query: effectiveQuery, ragText, kgContext, benchmarkText,
+      candidateBlock, intent, branding: domainBranding,
+    });
+    const msgs = [{ role: 'system', content: system }, { role: 'user', content: user }];
+    let raw = '';
+    try {
+      // Strict JSON mode is reliable WHEN it fits; but Groq hard-400s
+      // (json_validate_failed) if the model truncates at max_tokens. Give ample
+      // budget, then fall back to free-form (parseStructuredAnswer is robust).
+      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0.2, responseFormat: 'json_object' });
+    } catch (jsonErr) {
+      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0.2 });
+    }
+    parsed = parseStructuredAnswer(raw);
+    insightText = parsed
+      ? parsed.answer
+      : String(raw || '').replace(/^```(?:json|markdown)?\s*/i, '').replace(/```\s*$/i, '').trim();
+  } catch (llmErr) {
+    insightText = `The copilot is temporarily unavailable (${llmErr.message}). ${responseData.length} methods are shown below.`;
+  }
+
+  // Resolve the discussed method NAMES against the candidate set (fuzzy, tolerant
+  // of minor renames). Fall back to the top-ranked candidates. This is the SOLE
+  // selector for the comparison table, so prose and table stay in lock-step.
+  const discussedRaw = parsed ? (parsed.discussed || []).map(d => d.id) : [];
+  let discussedNames = resolveMethods(discussedRaw, candMethods);
+  if (discussedNames.length < 2) {
+    discussedNames = candMethods.slice(0, 4).map(m => m.name);
+  }
+  const discussed = discussedNames.map(name => ({ name }));
+
+  // Citations the answer renders as chips: the [P#]-tagged papers (ground truth).
+  const citations = papersById.map((p, i) => ({
+    marker: p.tag, paper_id: p.paper_id, paper_title: p.paper_title, index: i + 1,
+  }));
+
+  // Grounding guardrail on the ANSWER (surfaced in the provenance drawer, not the body).
   let grounding = { grounded: [], ungrounded: [] };
   try {
-    const prompt = buildInsightPrompt(
-      effectiveQuery, highlightMethods, ragText, kgContext,
-      methodSummaries, domainBranding, benchmarkText
-    );
-    insightText = await llmChat([{ role: 'user', content: prompt }]);
-    if (insightText.startsWith('```')) {
-      const lines = insightText.split('\n');
-      insightText = lines.slice(1, -1).join('\n');
-    }
+    grounding = runGroundingCheck(insightText, allMethods, (kgData && kgData.nodes) || []);
+  } catch (e) {}
 
-    // Guardrail: validate entity mentions (reuse the KG already loaded in step 4).
-    try {
-      grounding = runGroundingCheck(insightText, allMethods, (kgData && kgData.nodes) || []);
-    } catch (e) {}
-  } catch (llmErr) {
-    insightText = `- Query processed. ${responseData.length} methods shown.${filterMethods ? `\n- Filtered to: ${filterMethods.join(', ')}.` : ''}\n- (LLM unavailable: ${llmErr.message})`;
-  }
-
-  // Step 6: Traversal narrative
-  let traversalNarrative = '';
-  if (kgContext && kgTraversal.length) {
-    try {
-      const stepSummaries = kgTraversal
-        .filter(s => s.step !== 'summary' && s.step !== 'query_intent' && s.edges?.length > 0)
-        .map(s => `${s.description} (${s.detail})`);
-
-      if (stepSummaries.length) {
-        const narratePrompt =
-          `A researcher asked: "${effectiveQuery}"\n\n` +
-          `The knowledge graph traversal found:\n` +
-          stepSummaries.map(s => `- ${s}`).join('\n') + '\n\n' +
-          `Structured facts found:\n${kgContext}\n\n` +
-          `Write 2-3 sentences explaining what the graph found and WHY it matters ` +
-          `for the researcher's question. Be specific about paper names and techniques. ` +
-          `Do not repeat the question. Start with the most important finding.\n\n` +
-          `IMPORTANT: Do NOT use markdown formatting like **bold** or *italic*. ` +
-          `Write plain text only. The interface has its own highlighting system.`;
-
-        traversalNarrative = await llmChat(
-          [{ role: 'user', content: narratePrompt }],
-          { maxTokens: 300, temperature: 0.2 }
-        );
-      }
-    } catch (e) {}
-  }
-
-  // Build method relevance scores
-  const methodRelevance = responseData.slice(0, 10).map(m => ({
-    name: m.name,
-    score: highlightMethods.includes(m.name) ? 0.9 : 0.5,
+  // methodRelevance: the discussed methods, in order — the SINGLE source the
+  // comparison table + chips read, so they match the prose exactly.
+  const methodRelevance = discussed.map((d, i) => ({
+    name: d.name, score: Math.max(0.5, 1 - i * 0.08), why: d.why,
   }));
+  const finalHighlight = discussedNames.length ? discussedNames : highlightMethods;
 
   return {
     success: true,
@@ -203,17 +225,17 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     weights: newWeights,
     colorBy: newColorBy,
     filterMethods,
-    highlightMethods,
+    highlightMethods: finalHighlight,
     insight: insightText,
     grounding,
     ragCitations,
     ragAnalytics,
+    citations,
     benchmarkPageRef: bmPageRef,
     methodRelevance,
+    paperRelevance: methodRelevance,
     kgContext,
     kgTraversal,
-    traversalNarrative: traversalNarrative || undefined,
-    paperRelevance: methodRelevance,
     spellCorrection: wasSpellCorrected ? { original: query, corrected: effectiveQuery } : null,
   };
 }

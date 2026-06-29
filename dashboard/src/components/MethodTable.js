@@ -202,7 +202,7 @@ export default function MethodTable({
                 onMouseEnter={() => onHover(d.id)}
                 onMouseLeave={onUnhover}
               >
-                <td className="sticky-col name-cell">
+                <td className="sticky-col name-cell" title={d.name}>
                   {highlightedMethods.includes(d.name) && <span className="hl-dot" />}
                   {d.name}
                 </td>

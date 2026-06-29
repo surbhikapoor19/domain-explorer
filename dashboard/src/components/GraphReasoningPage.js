@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Tooltip from './Tooltip';
+import PdfViewer from './PdfViewer';
 import { HighlightedText } from '../highlighter';
 import KGGraphViz from './KGGraphViz';
 import KGNodeDetail from './KGNodeDetail';
@@ -88,8 +89,10 @@ function EquationsPanel({ equations }) {
 }
 
 /* ─── PAPER EVIDENCE ─── */
-function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onFilterContent }) {
-  const [expandedPassage, setExpandedPassage] = useState(null);
+function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onFilterContent, openPaperId }) {
+  const [expandedKey, setExpandedKey] = useState(null);
+  const [pdfOpen, setPdfOpen] = useState(null);
+  const itemRefs = useRef({});
 
   const roles = useMemo(() => {
     if (!citations || !citations.length) return [];
@@ -104,6 +107,14 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
     citations.forEach(c => { counts[c.content_type || 'general'] = (counts[c.content_type || 'general'] || 0) + 1; });
     return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, [citations]);
+
+  // Deep-link from an answer citation [n]: expand that paper's passage + scroll to it.
+  useEffect(() => {
+    if (!openPaperId || !(citations || []).some(c => c.paper_id === openPaperId)) return;
+    setExpandedKey(openPaperId);
+    const node = itemRefs.current[openPaperId];
+    if (node && node.scrollIntoView) node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [openPaperId, citations]);
 
   if (!citations || citations.length === 0) return null;
   const filtered = citations.filter(c => {
@@ -145,31 +156,52 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
       <div className="gr-card-body">
         {filtered.map((cite, i) => {
           const fullText = cite.full_text || cite.snippet || '';
-          const summary = fullText.substring(0, 120) + (fullText.length > 120 ? '...' : '');
-          const isExpanded = expandedPassage === i;
+          const summary = fullText.substring(0, 140) + (fullText.length > 140 ? '…' : '');
+          const isExpanded = expandedKey === cite.paper_id;
           return (
-            <div key={i} className="gr-evidence-item" style={{ borderLeftColor: CONTENT_COLORS[cite.content_type] || '#ccc' }}>
-              <div className="gr-evidence-head">
+            <div
+              key={i}
+              className={`gr-evidence-item ${isExpanded ? 'expanded' : ''}`}
+              ref={el => { if (el) itemRefs.current[cite.paper_id] = el; }}
+              style={{ borderLeftColor: CONTENT_COLORS[cite.content_type] || '#ccc' }}
+            >
+              {/* The whole header IS the toggle — click the paper name to open the passage. */}
+              <button
+                type="button"
+                className="gr-evidence-head"
+                onClick={() => setExpandedKey(isExpanded ? null : cite.paper_id)}
+                aria-expanded={isExpanded}
+              >
                 <span className="gr-evidence-paper">{cite.paper_title || formatPaperId(cite.paper_id)}</span>
                 <span className="gr-evidence-score">{Math.round(cite.score * 100)}%</span>
-              </div>
+                <span className={`gr-evidence-caret ${isExpanded ? 'open' : ''}`} aria-hidden="true">▾</span>
+              </button>
               <div className="gr-evidence-meta">
                 <span className="gr-evidence-tag section">{cite.section}</span>
                 {cite.rhetorical_role && <span className="gr-evidence-tag role">{ROLE_LABELS[cite.rhetorical_role] || cite.rhetorical_role}</span>}
               </div>
-              <div className="gr-evidence-summary">{summary}</div>
-              {fullText.length > 120 && (
+              {isExpanded ? (
                 <>
-                  {isExpanded && <div className="gr-evidence-full">{fullText}</div>}
-                  <button className="gr-evidence-toggle" onClick={() => setExpandedPassage(isExpanded ? null : i)}>
-                    {isExpanded ? 'Collapse' : 'Read full passage'}
-                  </button>
+                  <div className="gr-evidence-full">{fullText}</div>
+                  <div className="gr-evidence-actions">
+                    {cite.paper_id && (
+                      <button className="gr-evidence-pdf" onClick={() => setPdfOpen({ paperId: cite.paper_id, page: Math.max(1, cite.page || 1) })}>
+                        View PDF
+                      </button>
+                    )}
+                    <button className="gr-evidence-toggle" onClick={() => setExpandedKey(null)}>Collapse</button>
+                  </div>
                 </>
+              ) : (
+                <div className="gr-evidence-summary">{summary}</div>
               )}
             </div>
           );
         })}
       </div>
+      {pdfOpen && (
+        <PdfViewer paperId={pdfOpen.paperId} page={pdfOpen.page} keywords={[]} onClose={() => setPdfOpen(null)} />
+      )}
     </div>
   );
 }
@@ -263,6 +295,18 @@ export default function GraphReasoningPage({
     if (point && onSelect) onSelect(point);
   }, [data, onSelect]);
 
+  // Clicking a citation [n] in the answer opens that paper's passage in the Paper
+  // Evidence panel (clear filters so it's visible, then expand + scroll there).
+  const [openPaperId, setOpenPaperId] = useState(null);
+  const handleCiteClick = useCallback((paperId) => {
+    if (!paperId) return;
+    setFilterRole(null);
+    setFilterContent(null);
+    setOpenPaperId(null);
+    // re-trigger the effect even if the same paper is clicked twice
+    requestAnimationFrame(() => setOpenPaperId(paperId));
+  }, []);
+
   const traversalKey = traversal.length;
   const allCitationsKey = allCitations.length;
 
@@ -348,8 +392,9 @@ export default function GraphReasoningPage({
 
       <div className="gr-main-content">
 
-      {/* Layer 1: AnswerBlock — comparison table + synthesis (replaces the
-          NarrativeBlock + StatsBar + Method Relevance + Reasoning Chain dump) */}
+      {/* Layer 1: AnswerBlock — ANSWER (synthesis) first, then the comparison
+          table. Interactive plots/charts (subgraph, proof, evidence, equations)
+          follow in Layers 2-3 below. */}
       <AnswerBlock
         suggestion={suggestion}
         query={query}
@@ -358,6 +403,7 @@ export default function GraphReasoningPage({
         methodClusterMap={methodClusterMap}
         clusterLabelMap={clusterLabelMap}
         onMethodClick={handleMethodClick}
+        onCiteClick={handleCiteClick}
       />
 
       {/* Layer 2: Two-column — subgraph + proof */}
@@ -470,6 +516,7 @@ export default function GraphReasoningPage({
             anchorMethods={anchorMethods}
             query={query}
             termDictionary={termDictionary}
+            onMethodClick={handleMethodClick}
           />
         </div>
       </div>
@@ -477,7 +524,7 @@ export default function GraphReasoningPage({
       {/* Layer 3: Two-column — paper evidence + equations/contradictions */}
       <div className="gr-layout">
         <div className="gr-left">
-          <EvidencePanel citations={citations} filterRole={filterRole} filterContent={filterContent} onFilterRole={setFilterRole} onFilterContent={setFilterContent} />
+          <EvidencePanel citations={citations} filterRole={filterRole} filterContent={filterContent} onFilterRole={setFilterRole} onFilterContent={setFilterContent} openPaperId={openPaperId} />
         </div>
 
         <div className="gr-right">

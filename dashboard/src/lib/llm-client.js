@@ -77,6 +77,7 @@ async function callProxy(messages, opts = {}) {
       messages,
       max_tokens: opts.maxTokens || 1024,
       temperature: opts.temperature ?? 0.3,
+      response_format: opts.responseFormat ? { type: opts.responseFormat } : undefined,
     }),
   });
   if (!res.ok) throw new Error(`LLM proxy error ${res.status}: ${await res.text()}`);
@@ -98,6 +99,7 @@ async function callOpenAICompatible(endpoint, defaultModel, messages, settings, 
       messages,
       max_tokens: opts.maxTokens || 1024,
       temperature: opts.temperature ?? 0.3,
+      response_format: opts.responseFormat ? { type: opts.responseFormat } : undefined,
     }),
   });
   if (!res.ok) throw new Error(`LLM error ${res.status}: ${await res.text()}`);

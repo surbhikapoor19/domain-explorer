@@ -213,11 +213,11 @@ body {
 }
 
 /* ─── CITATION REFERENCES ─── */
+/* Inline (Author, 2024) references inside quoted text. NOT interactive (there is
+   no resolution target), so styled as muted text — no pill/chip chrome that would
+   imply a click. */
 .citation-ref {
-  color: #6b5b95;
-  background: #f0ecf5;
-  padding: 0.04rem 0.2rem;
-  border-radius: 2px;
+  color: var(--text-muted, #647082);
   font-size: 0.88em;
   white-space: nowrap;
 }
@@ -293,7 +293,7 @@ body {
   z-index: 10000; pointer-events: none;
   max-width: 90vw;
 }
-.tooltip-bubble-fixed.tooltip-wide { width: 300px; }
+.tooltip-bubble-fixed.tooltip-wide { width: 300px; white-space: pre-line; }
 
 .chart-help, .explanation-help {
   display: inline-flex; align-items: center; justify-content: center;
@@ -398,11 +398,17 @@ body {
 }
 .data-table .sticky-col { position: sticky; left: 0; z-index: 1; background: white; }
 .data-table thead .sticky-col { background: var(--table-head); z-index: 3; }
+/* The method NAME must always be fully readable — override the generic td
+   clip/ellipsis/nowrap so long names wrap instead of being cut off. */
 .data-table .name-cell {
-  font-weight: 700; color: var(--dark); min-width: 130px;
-  display: flex; align-items: center; gap: 0.2rem;
+  font-weight: 700; color: var(--dark); min-width: 150px; max-width: 240px;
+  white-space: normal; overflow: visible; text-overflow: clip;
+  line-height: 1.25; padding-top: 0.4rem; padding-bottom: 0.4rem;
 }
-.hl-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.hl-dot {
+  display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); margin-right: 0.25rem; vertical-align: middle;
+}
 
 .data-table tbody tr { cursor: pointer; transition: background 0.08s; }
 .data-table tbody tr:hover,
@@ -1630,18 +1636,23 @@ body {
 }
 
 /* matches .rag-header from Knowledge Base */
+/* Same header-band system as .bmr-header: left-anchored title + a subtitle
+   (the query) stacked beneath it, under a full-width hairline. The descriptor
+   used to use margin-left:auto, which flung it to the far edge and opened a
+   void in the middle on wide monitors (the flex space-between anti-pattern).
+   Stacking it left as a capped-measure subtitle removes the void. */
 .gr-page-header {
-  display: flex; align-items: center; gap: 0.6rem;
-  margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem; padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--border);
 }
 .gr-page-header h2 {
   font-family: 'Merriweather', Georgia, serif;
   font-size: 1.2rem; font-weight: 700; color: var(--dark);
-  margin: 0;
+  margin: 0 0 0.15rem;
 }
 .gr-page-header p {
-  font-size: 0.75rem; color: var(--text-muted); margin: 0; margin-left: auto;
+  font-size: 0.78rem; color: var(--text-muted); margin: 0;
+  max-width: 70ch; line-height: 1.5;
 }
 .gr-page-header em {
   color: var(--primary); font-style: normal; font-weight: 600;
@@ -1975,14 +1986,27 @@ body {
   background: var(--primary-wash);
   border-left-color: var(--primary) !important;
 }
+/* The whole header is the click target (a button) — clicking the paper name opens
+   the passage. */
 .gr-evidence-head {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.4rem;
+  width: 100%; background: none; border: none; padding: 0.1rem 0; margin: 0;
+  text-align: left; cursor: pointer; font: inherit;
 }
 .gr-evidence-paper {
   font-size: 0.82rem; font-weight: 700; color: var(--primary);
-  cursor: pointer; transition: color 0.1s;
+  transition: color 0.1s; flex: 1;
 }
-.gr-evidence-paper:hover { color: var(--primary-deep); text-decoration: underline; }
+.gr-evidence-head:hover .gr-evidence-paper { color: var(--primary-deep); text-decoration: underline; }
+.gr-evidence-caret { font-size: 0.68rem; color: var(--text-muted); transition: transform 0.15s; flex-shrink: 0; }
+.gr-evidence-caret.open { transform: rotate(180deg); }
+.gr-evidence-item.expanded { background: var(--primary-wash); border-left-color: var(--primary); }
+.gr-evidence-actions { display: flex; gap: 0.6rem; align-items: center; margin-top: 0.4rem; }
+.gr-evidence-pdf {
+  font-size: 0.7rem; font-weight: 700; color: #fff; background: var(--primary);
+  border: none; border-radius: 3px; cursor: pointer; padding: 0.2rem 0.6rem; font-family: inherit;
+}
+.gr-evidence-pdf:hover { background: var(--primary-deep); }
 .gr-evidence-score {
   font-size: 0.68rem; font-weight: 700; color: #16794e;
   background: #e8f5e9; padding: 0.06rem 0.3rem; border-radius: 2px;
@@ -2057,8 +2081,9 @@ body {
   display: flex; gap: 0.4rem; align-items: center;
   margin-top: 0.25rem;
 }
+/* A label (not a link) — muted so it doesn't read as a clickable paper title. */
 .gr-equation-paper {
-  font-size: 0.72rem; font-weight: 700; color: var(--primary);
+  font-size: 0.72rem; font-weight: 700; color: var(--text-muted, #647082);
 }
 .gr-equation-context {
   font-size: 0.7rem; color: var(--text-muted); font-style: italic;
@@ -2399,8 +2424,23 @@ body {
    → neighborhood) horizontally. ── */
 .kgl-graph-panel {
   display: flex; flex-direction: column; gap: 0; overflow: visible;
-  width: 100%;
+  width: 100%; position: relative; /* anchor for the bottom-left mini info box */
 }
+/* Small info box for a non-paper node / edge click — sits at the graph's
+   bottom-left instead of opening the full side panel. */
+.kgl-mini-info {
+  position: absolute; left: 12px; bottom: 12px; z-index: 6;
+  max-width: 260px; background: #fff; border: 1px solid var(--border, #e2e8f0);
+  border-radius: 6px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem 1.6rem 0.55rem 0.7rem;
+}
+.kgl-mini-close {
+  position: absolute; top: 2px; right: 5px; background: none; border: none;
+  font-size: 1rem; line-height: 1; color: var(--text-muted, #647082); cursor: pointer; padding: 0;
+}
+.kgl-mini-close:hover { color: #0f172a; }
+.kgl-mini-title { font-size: 0.82rem; font-weight: 700; color: #0f172a; word-break: break-word; line-height: 1.3; }
+.kgl-mini-detail { font-size: 0.7rem; color: var(--primary, #185A7C); margin-top: 3px; font-weight: 700; text-transform: capitalize; }
 .kgl-graph-panel .kgv-container { width: 100%; min-width: 0; }
 .kgl-graph-panel.has-detail { border-radius: 0 0 4px 4px; }
 .kgl-graph-panel .kgnd-panel {
@@ -4959,6 +4999,181 @@ body {
   border-top: 1px solid var(--border, #e2e8f0);
   background: #fafbfc;
 }
+/* Answer-first synthesis: rendered at the TOP of the AnswerBlock (before the
+   comparison table), so it uses a bottom separator instead of a top one. */
+.gr-answer-synthesis {
+  padding: 0.95rem 1.05rem;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  background: #fff;
+}
+
+/* Formatted copilot answer (AnswerMarkdown). */
+.answer-markdown { font-size: 0.95rem; line-height: 1.6; color: #1f2733; }
+.answer-markdown .answer-p { margin: 0 0 0.6rem; }
+.answer-markdown .answer-p:last-child { margin-bottom: 0; }
+.answer-markdown .answer-list { margin: 0.2rem 0 0.7rem; padding-left: 1.25rem; }
+.answer-markdown .answer-list li { margin: 0.28rem 0; }
+.answer-markdown .answer-h {
+  font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.04em; color: #475569; margin: 0.7rem 0 0.35rem;
+}
+.answer-markdown .answer-strong { font-weight: 700; color: #0f172a; }
+.answer-markdown .answer-cite {
+  font-size: 0.66rem; font-weight: 700; color: var(--primary, #185A7C);
+  background: #eef4f8; border-radius: 3px; padding: 0 4px; margin-left: 2px;
+  vertical-align: super; cursor: default;
+}
+/* Clickable citation chip — opens the cited paper's passage in Paper Evidence. */
+.answer-markdown .answer-cite-link {
+  border: none; font-family: inherit; cursor: pointer; line-height: 1.4;
+}
+.answer-markdown .answer-cite-link:hover { background: var(--primary, #185A7C); color: #fff; }
+/* Clickable method name in the answer prose — joins to scatter/KG/table highlight. */
+.answer-markdown .answer-method-link {
+  font: inherit; font-weight: 700; color: #0f172a;
+  background: none; border: none; border-bottom: 1.5px dotted var(--primary, #185A7C);
+  padding: 0; margin: 0; cursor: pointer;
+}
+.answer-markdown .answer-method-link:hover { color: var(--primary, #185A7C); background: #eef4f8; }
+.answer-markdown .answer-table-wrap { overflow-x: auto; margin: 0.4rem 0 0.7rem; }
+.answer-markdown .answer-table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+.answer-markdown .answer-table th, .answer-markdown .answer-table td {
+  border: 1px solid var(--border, #e2e8f0); padding: 0.35rem 0.55rem; text-align: left; vertical-align: top;
+}
+.answer-markdown .answer-table th { background: #f4f7f9; font-weight: 700; color: #334155; }
+.answer-markdown .answer-table td { font-variant-numeric: tabular-nums; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   BENCHMARKS (redesigned) — tag-filtered extracted data. No ranking/charts.
+   ════════════════════════════════════════════════════════════════════════ */
+.bmr-page { max-width: 100%; padding: 1rem 1.25rem 2rem; }
+/* Page-header band: left title+intro cluster, right grade-key legend, with a
+   full-width edge-to-edge hairline. The rule (not the text) defines the band's
+   width, so the space between the capped-measure intro and the right-aligned
+   legend reads as an intentional title/meta split — not dead space. The intro
+   is capped near ~60 CPL for readability. (Baymard line-length; Material/GC/Salt
+   header-band + NN-g left-align dashboard guidance.) */
+.bmr-header { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem 2.5rem; margin: 0 0 0.95rem; padding-bottom: 0.65rem; border-bottom: 1px solid var(--border); }
+.bmr-header-text { flex: 1 1 28rem; min-width: 0; }
+.bmr-header h2 { margin: 0 0 0.25rem; font-size: 1.15rem; color: var(--dark); }
+.bmr-header p { margin: 0; font-size: 0.82rem; color: var(--text-mid); max-width: 62ch; line-height: 1.55; }
+.bmr-gradekey { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.85rem; margin: 0.1rem 0 0; flex: 0 1 24rem; max-width: 24rem; font-size: 0.74rem; color: var(--text-mid); }
+.bmr-gradekey-label { font-weight: 700; color: var(--dark); display: inline-flex; align-items: center; gap: 0.25rem; }
+.bmr-gradekey-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+.bmr-gradekey-item .bmr-grade { cursor: default; }
+.bmr-gradekey-note { color: var(--text-muted); font-style: italic; }
+.bmr-loading, .bmr-empty { padding: 2rem; color: var(--text-muted); font-size: 0.9rem; text-align: center; }
+.bmr-layout { display: flex; gap: 1.25rem; align-items: flex-start; }
+.bmr-rail {
+  flex: 0 0 248px; position: sticky; top: 0.5rem; max-height: calc(100vh - 1rem);
+  overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 0.8rem;
+}
+.bmr-rail-head { display: flex; justify-content: space-between; align-items: center; font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); margin-bottom: 0.6rem; }
+.bmr-clear { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.72rem; font-weight: 700; }
+/* Collapsible, searchable filter facets. A category with many options (Method)
+   gets a search box + scrollable list; small ones open as a short list. */
+.bmr-facet { border-top: 1px solid var(--border-light); }
+.bmr-facet:first-of-type { border-top: none; }
+.bmr-facet-head {
+  display: flex; align-items: center; gap: 0.4rem; width: 100%; text-align: left;
+  background: none; border: none; cursor: pointer; padding: 0.5rem 0.1rem;
+  font-family: inherit; font-size: 0.76rem; font-weight: 700; color: var(--dark);
+}
+.bmr-facet-head:hover { color: var(--primary); }
+.bmr-facet-chev { color: var(--text-muted); font-size: 0.62rem; width: 0.7rem; flex-shrink: 0; }
+.bmr-facet-name { flex: 1; }
+.bmr-facet-selcount {
+  font-size: 0.6rem; font-weight: 800; background: var(--primary); color: #fff;
+  border-radius: 999px; padding: 0.04rem 0.4rem; font-variant-numeric: tabular-nums;
+}
+.bmr-facet-body { padding: 0 0.1rem 0.55rem; }
+.bmr-facet-search {
+  width: 100%; box-sizing: border-box; margin-bottom: 0.4rem; padding: 0.32rem 0.5rem;
+  font-family: inherit; font-size: 0.72rem; color: var(--dark);
+  border: 1px solid var(--border); border-radius: 5px; background: #fff;
+}
+.bmr-facet-search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(22,101,125,0.12); }
+.bmr-facet-list { display: flex; flex-direction: column; gap: 0.08rem; max-height: 232px; overflow-y: auto; }
+.bmr-opt {
+  display: flex; align-items: center; gap: 0.4rem; width: 100%; text-align: left;
+  background: none; border: none; border-radius: 5px; padding: 0.28rem 0.4rem; cursor: pointer;
+  font-family: inherit; font-size: 0.74rem; color: var(--text-mid);
+}
+.bmr-opt:hover { background: #f1f5f8; }
+.bmr-opt.on { background: #eaf2f6; color: var(--primary); font-weight: 700; }
+.bmr-opt-check { width: 0.8rem; flex-shrink: 0; color: var(--primary); font-weight: 800; }
+.bmr-opt-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bmr-opt-count { font-variant-numeric: tabular-nums; font-size: 0.66rem; color: var(--text-muted); flex-shrink: 0; }
+.bmr-facet-none { font-size: 0.7rem; color: var(--text-muted); padding: 0.3rem 0.4rem; font-style: italic; }
+.bmr-results { flex: 1; min-width: 0; }
+.bmr-results-count { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.6rem; font-variant-numeric: tabular-nums; }
+.bmr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.7rem; }
+.bmr-card { border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.75rem; background: #fff; }
+.bmr-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem; }
+.bmr-method { font-weight: 700; color: var(--dark); font-size: 0.86rem; line-height: 1.25; }
+.bmr-grade { flex-shrink: 0; font-size: 0.66rem; font-weight: 800; border-radius: 3px; padding: 0.05rem 0.35rem; cursor: default; }
+.bmr-grade-A { background: #e6f7ef; color: #1a7a42; }
+.bmr-grade-B { background: #eef4f8; color: #16657d; }
+.bmr-grade-C { background: #fdf3e7; color: #92400e; }
+.bmr-metric { display: flex; align-items: baseline; gap: 0.45rem; margin: 0.45rem 0; flex-wrap: wrap; }
+/* The metric being shown (Success Rate / Declutter Rate / Total Time) is a clear
+   bold subheading — not the smallest text on the card. */
+.bmr-metric-name { font-size: 0.86rem; font-weight: 700; color: var(--dark); }
+.bmr-value { font-size: 1.1rem; font-weight: 700; color: var(--primary, #185A7C); font-variant-numeric: tabular-nums; }
+.bmr-nreports { font-size: 0.66rem; color: var(--text-muted); }
+.bmr-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.45rem; }
+.bmr-tag { font-size: 0.66rem; font-weight: 600; background: #eef0fb; color: #4338a6; border-radius: 3px; padding: 0.05rem 0.35rem; }
+.bmr-src { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; border-top: 1px solid var(--border-light); padding-top: 0.4rem; }
+.bmr-papers { font-size: 0.7rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bmr-src-toggle { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+.bmr-src-toggle:hover { text-decoration: underline; }
+.bmr-src-body { margin-top: 0.4rem; }
+.bmr-src-caption { font-size: 0.7rem; color: var(--text-mid); font-style: italic; margin-bottom: 0.3rem; line-height: 1.4; }
+/* The inline crop is a small thumbnail; clicking opens the full-screen lightbox
+   (the thumbnail alone is too small to read the numbers). */
+.bmr-src-cropbtn { display: block; width: 100%; padding: 0; margin: 0; border: none; background: none; cursor: zoom-in; }
+.bmr-src-crop { max-width: 100%; display: block; border: 1px solid var(--border); border-radius: 4px; }
+.bmr-src-cropbtn:hover .bmr-src-crop { border-color: var(--primary); }
+.bmr-src-zoomhint { display: inline-block; margin-top: 0.25rem; font-size: 0.66rem; font-weight: 700; color: var(--primary); }
+
+.bmr-lightbox {
+  position: fixed; inset: 0; z-index: 1000; background: rgba(15,23,28,0.82);
+  display: flex; align-items: center; justify-content: center; padding: 2.5vh 2vw;
+}
+.bmr-lightbox-inner {
+  background: #fff; border-radius: 8px; max-width: 96vw; max-height: 95vh;
+  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 12px 48px rgba(0,0,0,0.4);
+}
+.bmr-lightbox-bar {
+  display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;
+  padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--border);
+}
+.bmr-lightbox-title { flex: 1; font-size: 0.8rem; font-weight: 700; color: var(--dark); line-height: 1.35; }
+.bmr-lightbox-actions { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+.bmr-lightbox-actions button {
+  font-family: inherit; font-size: 0.72rem; font-weight: 700; cursor: pointer; color: var(--text-mid);
+  background: #fff; border: 1px solid var(--border); border-radius: 5px; padding: 0.25rem 0.6rem;
+}
+.bmr-lightbox-actions button:hover { border-color: var(--primary); color: var(--primary); }
+.bmr-lightbox-scroll { flex: 1; min-height: 0; overflow: auto; display: flex; align-items: flex-start; justify-content: center; background: #f5f8f9; }
+.bmr-lightbox-scroll img.fit { max-width: 100%; max-height: calc(95vh - 3.2rem); object-fit: contain; }
+.bmr-lightbox-scroll.zoom { align-items: flex-start; justify-content: flex-start; }
+.bmr-lightbox-scroll img.actual { max-width: none; max-height: none; }
+
+.bmr-pager { display: flex; align-items: center; justify-content: center; gap: 0.3rem; margin-top: 1.1rem; flex-wrap: wrap; }
+.bmr-pager-btn, .bmr-pager-num {
+  font-family: inherit; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-mid);
+  background: #fff; border: 1px solid var(--border); border-radius: 5px; padding: 0.3rem 0.6rem; min-width: 2rem;
+  font-variant-numeric: tabular-nums;
+}
+.bmr-pager-btn:hover:not(:disabled), .bmr-pager-num:hover { border-color: var(--primary); color: var(--primary); }
+.bmr-pager-btn:disabled { opacity: 0.4; cursor: default; }
+.bmr-pager-num.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+.bmr-pager-ellipsis { color: var(--text-muted); padding: 0 0.15rem; }
+@media (max-width: 760px) {
+  .bmr-layout { flex-direction: column; }
+  .bmr-rail { position: static; flex: 1 1 auto; width: 100%; max-height: none; }
+}
 .gr-synthesis-label {
   font-size: 11px;
   font-weight: 700;
@@ -5039,7 +5254,11 @@ body {
   font-size: 13px;
   margin-bottom: 0.25rem;
 }
-.gr-proof-anchor-name { font-weight: 600; }
+.gr-proof-anchor-name {
+  font-weight: 600; background: none; border: none; padding: 0; font-family: inherit;
+  font-size: inherit; cursor: pointer;
+}
+.gr-proof-anchor-name:hover { text-decoration: underline; }
 .gr-proof-anchor-meta { color: #6b7280; }
 
 .gr-proof-extraction {
@@ -6570,6 +6789,8 @@ body {
 }
 .benchmarks-cell-facet-scene { background: #e8f3fb; color: #16657d; }
 .benchmarks-cell-facet-criterion { background: #e6f7ef; color: #1a7a42; }
+.benchmarks-cell-facet-protocol { background: #eef0fb; color: #4338a6; }
+.benchmarks-cell-facet-ood { background: #fdecec; color: #b42318; }
 .benchmarks-cell-facet-raw { background: #f0f2f5; color: #6b7280; }
 .benchmarks-row-scope {
   background: #f0f2f5;
@@ -6587,6 +6808,23 @@ body {
   border-left: 3px solid #f0c674;
   border-radius: 4px;
   padding: 0.4rem 0.7rem;
+}
+.benchmarks-cell-caveat {
+  margin: 0.4rem 0 0;
+  font-size: 0.76rem;
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  border-left: 3px solid;
+}
+.benchmarks-cell-caveat-ood {
+  color: #b42318;
+  background: #fdecec;
+  border-left-color: #e2645a;
+}
+.benchmarks-cell-caveat-copied {
+  color: #92400e;
+  background: #fdf3e7;
+  border-left-color: #e0a24a;
 }
 
 .benchmarks-h2h-cell { margin-top: 0.5rem; }

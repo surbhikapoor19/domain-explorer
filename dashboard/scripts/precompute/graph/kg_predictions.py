@@ -270,6 +270,8 @@ def export_kg_predictions(chroma_dir, output_dir, node_by_id=None,
                 n_with_cmp += 1
         links.append(link)
 
+    from .kg_full import detruncate_labels
+    detruncate_labels(nodes)   # restore labels cut mid-word, same as kg-full.json
     payload = {'success': True, 'nodes': nodes, 'links': links}
     from .._safe_write import safe_write_json
     safe_write_json(out_path, payload, label='empty predictions')

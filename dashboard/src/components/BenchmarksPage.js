@@ -1,410 +1,315 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Tooltip from './Tooltip';
-import ReproducibilityView from './ReproducibilityView';
-import CoverageMatrix from './CoverageMatrix';
-import PaperTrailDrawer from './PaperTrailDrawer';
-import ConditionSpine from './ConditionSpine';
-import { loadBenchmarkComparisons, loadMethods } from '../lib/data-loader';
-import { buildCells, filterCells, buildMethodsIndex } from '../lib/benchmark-cells';
+import { loadBenchmarkComparisons } from '../lib/data-loader';
+import { buildResultRecords, tagFacets, filterByTags, tagKey } from '../lib/benchmark-records';
 
-// Reusable help affordance, matching the rest of the app's "?" tooltips.
-const Help = ({ text }) => (
-  <Tooltip text={text} wide><span className="chart-help">?</span></Tooltip>
-);
+// Results are paginated so the landing view isn't a 200+ card scroll.
+const PAGE_SIZE = 30;
 
-// -----------------------------------------------------------------------------
+// Benchmarks = a flat, tag-filterable view of the EXTRACTED result data. No
+// ranking, no charts — every number is shown with its full protocol (the tags we
+// parsed) and its source. Pick tags to narrow: tags in different categories are
+// AND-ed (e.g. Packed + Random camera + GSR = all three), tags in the same
+// category are OR-ed.
 
-export default function BenchmarksPage({
-  data,
-  selectedPoint,
-  onSelect,
-  minConfidence = 0.70,
-  incomingPageRef,
-}) {
-  const [benchmarkData, setBenchmarkData] = useState(null);
-  const [loading, setLoading]             = useState(true);
-  const [showLowConf, setShowLowConf]     = useState(false);  // "Show all" confidence escape hatch
-  // The page has two top-level modes: the default "agreement" landing and the
-  // "coverage" gap-finder matrix. The cell drill-down is a DRAWER, not a tab.
-  const [viewMode, setViewMode]           = useState('agreement'); // 'agreement' | 'coverage'
-  const [drawerOpen, setDrawerOpen]       = useState(false);
-  const [pendingRef, setPendingRef]       = useState(null); // copilot draft, applied on confirm
-  // The cell-scoped drill-down targets ONE (metric × condition) cell by key.
-  const [activeCellKey, setActiveCellKey] = useState(null);
-  // The condition spine's facet filter: { metricId?, scene?, success_criterion? }.
-  const [conditionFilter, setConditionFilter] = useState({});
-  // Method-attribute filter ({ gripper?, sensor?, learning_paradigm? }).
-  const [attrFilter, setAttrFilter]           = useState({});
-  // The methods.json index (KG/CSV join) for method-attribute facets.
-  const [methodsIndex, setMethodsIndex]       = useState(null);
-  // The in-app walkthrough help modal.
-  const [helpOpen, setHelpOpen]               = useState(false);
+const GRADE_TIP = {
+  A: 'Grade A — corroborated by multiple independent papers',
+  B: 'Grade B — a single solid source',
+  C: 'Grade C — low-confidence / disputed extraction',
+};
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    loadBenchmarkComparisons()
-      .then(d => {
-        if (!cancelled) {
-          setBenchmarkData(d);
-          setLoading(false);
-        }
-      })
-      .catch(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+// The "?" explainer: HOW each number is graded, and WHY grade A is rare in this
+// corpus (so a reader understands the B-dominance is honest, not a data defect).
+const GRADE_EXPLAIN =
+  'The grade measures how well-CORROBORATED a number is — NOT how good the method is.\n\n' +
+  'A — the same method, on the same metric, under the same protocol, reported with consistent ' +
+  'values by 2+ INDEPENDENT papers.\n' +
+  'B — a single solid source. One paper reporting a number can only be a B (one paper is not corroboration).\n' +
+  'C — low-confidence extraction, OR papers that report the same cell but DISAGREE (high variance).\n\n' +
+  'Why A is rare here: grasp-planning benchmarks are not standardized. Most (method × metric × protocol) ' +
+  'combinations are reported by only one paper (so they are B); papers frequently re-quote each other\'s ' +
+  'baseline numbers rather than independently re-running them (re-quoting is not corroboration, so it cannot ' +
+  'earn an A); and when two papers do re-run the same setup, their numbers often disagree (→ C). A mostly-B ' +
+  'board is the honest picture of this literature — we do not fabricate agreement.';
 
-  // Load the methods index for the KG/CSV method-attribute join.
-  useEffect(() => {
-    loadMethods()
-      .then((m) => setMethodsIndex(buildMethodsIndex(m)))
-      .catch(() => setMethodsIndex(new Map()));
-  }, []);
+function prettyPaper(p) {
+  return String(p || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
 
-  // ── Deep-link handshake: incomingPageRef stages a DRAFT (no immediate apply). ──
-  // The copilot's pageRef stages an editable "Copilot applied: …" banner; the
-  // view only moves once the user clicks Apply.
-  useEffect(() => {
-    setPendingRef(incomingPageRef || null);
-  }, [incomingPageRef]);
-
-  const crossValidations = benchmarkData?.cross_validations || [];
-  const stats            = benchmarkData?.stats || {};
-  const quarantine       = benchmarkData?.quarantine || {};
-  const cellContext      = benchmarkData?.cell_context || {};
-
-  // All merged cells (metric × condition) from the shared alignment module.
-  const allCells = useMemo(() => buildCells(benchmarkData), [benchmarkData]);
-
-  // The condition spine is now persistent across BOTH the Agreement and Coverage
-  // modes, so the metric label is always stated canonically in the spine. We
-  // therefore never repeat it on the agreement cards — keeping each metric label
-  // in exactly one canonical place on the page (the spine) and avoiding a
-  // duplicated metric token between the spine chip and the card group title.
-  const showMetricOnCards = useMemo(() => {
-    // Multiple metrics in scope → label each agreement group by its metric (a
-    // useful inline section divider when scrolling). A single-metric domain
-    // states the metric once in the spine and keeps the rows metric-free.
-    const ids = new Set(allCells.map(c => c.metric_id));
-    return ids.size > 1;
-  }, [allCells]);
-
-  // THE single filter — identical to the composer's live counts (both call
-  // filterCells), so a bracket count can never disagree with what the page shows.
-  // Combines the condition facets (metric/scene/criterion) with the method-attribute
-  // facets (gripper/sensor/learning_paradigm). No facets selected => every cell.
-  const visibleCells = useMemo(() => {
-    if (!benchmarkData) return [];
-    const selection = {
-      metricId: conditionFilter.metricId,
-      scene: conditionFilter.scene,
-      success_criterion: conditionFilter.success_criterion,
-      gripper: attrFilter.gripper,
-      sensor: attrFilter.sensor,
-      learning_paradigm: attrFilter.learning_paradigm,
-    };
-    return filterCells(allCells, selection, methodsIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [benchmarkData, allCells, conditionFilter, attrFilter, methodsIndex]);
-
-  // Set of cell keys currently in scope (for filtering cross-validations).
-  const visibleCellKeys = useMemo(
-    () => new Set(visibleCells.map(c => c.key)),
-    [visibleCells]
+// A collapsible, optionally-searchable filter facet. Categories with many options
+// (e.g. Method, with one entry per method/paper) get a search box + scrollable
+// list so you can find one alphabetically or by typing; small categories render
+// as a short open list. Selecting options is OR within a facet, AND across facets.
+function FacetDropdown({ facet, selected, onToggle }) {
+  const searchable = facet.tags.length > 8;
+  const selCount = useMemo(
+    () => facet.tags.reduce((n, t) => n + (selected.has(tagKey(facet.category, t.value)) ? 1 : 0), 0),
+    [facet, selected]
   );
+  // Open small facets (and any with an active selection) by default; collapse big
+  // ones so the rail stays compact.
+  const [open, setOpen] = useState(() => facet.tags.length <= 6 || selCount > 0);
+  const [q, setQ] = useState('');
 
-  // Confidence gate — below the threshold the extracted numbers are unreliable
-  // (grade C / weak / disputed) and are hidden. "Show all" ignores the gate.
-  const passesConf = (x) =>
-    showLowConf || (typeof x?.confidence === 'number' ? x.confidence : 1) >= minConfidence;
-
-  // Cross-validations shown in the reproducibility buckets: pass the confidence
-  // gate AND fall inside a spine-visible (metric × condition) cell.
-  const visibleCrossValidations = useMemo(() => {
-    return crossValidations
-      .filter(passesConf)
-      .filter(cv => {
-        // Map each CV to its cell via the merged cells (metric_id + condition).
-        const cond = cv.condition == null ? '' : String(cv.condition);
-        const cell = allCells.find(
-          c => c.metric_id === cv.metric_id && c.condition === cond
-        );
-        // If the CV has a backing cell, require it to be in scope; if it has no
-        // backing leaderboard cell, keep it only when no facet filter is set.
-        if (cell) return visibleCellKeys.has(cell.key);
-        return visibleCellKeys.size === allCells.length; // no facet narrowing
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [crossValidations, allCells, visibleCellKeys, showLowConf, minConfidence]);
-
-  // How many IN-SCOPE cross-paper results the confidence gate is hiding right now,
-  // surfaced next to the toggle so the filtering is never silent (a researcher
-  // should know N results were withheld, not silently see a thinner list).
-  const hiddenByConf = useMemo(() => {
-    if (showLowConf) return 0;
-    return crossValidations.filter(cv => {
-      const conf = typeof cv?.confidence === 'number' ? cv.confidence : 1;
-      if (conf >= minConfidence) return false;           // not hidden
-      const cond = cv.condition == null ? '' : String(cv.condition);
-      const cell = allCells.find(c => c.metric_id === cv.metric_id && c.condition === cond);
-      return cell ? visibleCellKeys.has(cell.key) : visibleCellKeys.size === allCells.length;
-    }).length;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showLowConf, crossValidations, allCells, visibleCellKeys, minConfidence]);
-
-  // Cell keys that already appear as a cross-validation in the buckets — so we
-  // don't double-list them under "Not yet reproduced".
-  const reproducedCellKeys = useMemo(() => {
-    const s = new Set();
-    for (const cv of visibleCrossValidations) {
-      const cond = cv.condition == null ? '' : String(cv.condition);
-      const cell = allCells.find(c => c.metric_id === cv.metric_id && c.condition === cond);
-      if (cell) s.add(cell.key);
-    }
-    return s;
-  }, [visibleCrossValidations, allCells]);
-
-  // Cells with leaderboard entries but no cross-validation in scope: surface
-  // them as "Not yet reproduced", confidence-filtering their entries so they
-  // honour the same threshold as everything else.
-  const unreproducedCells = useMemo(() => {
-    return visibleCells
-      .filter(cell => !reproducedCellKeys.has(cell.key))
-      .map(cell => ({
-        ...cell,
-        entries: (cell.entries || []).filter(passesConf),
-      }))
-      .filter(cell => cell.entries.length > 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleCells, reproducedCellKeys, showLowConf, minConfidence]);
-
-  // The cell currently open in the Comparisons drill-down, with its entries
-  // confidence-filtered to match the rest of the page.
-  const activeCell = useMemo(() => {
-    if (!activeCellKey) return null;
-    const cell = allCells.find(c => c.key === activeCellKey);
-    if (!cell) return null;
-    return { ...cell, entries: (cell.entries || []).filter(passesConf) };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCellKey, allCells, showLowConf, minConfidence]);
-
-  // Open the cell-scoped PaperTrail drawer for a given cell key.
-  const openCell = (cellKey) => { setActiveCellKey(cellKey); setDrawerOpen(true); };
-  const closeDrawer = () => setDrawerOpen(false);
-
-  // -------------------------------------------------------------------------
-  // Loading / empty states
-  // -------------------------------------------------------------------------
-  if (loading) {
-    return (
-      <div className="benchmarks-page">
-        <div className="benchmarks-loading">Loading benchmark data...</div>
-      </div>
-    );
-  }
-
-  if (!benchmarkData || allCells.length === 0) {
-    return (
-      <div className="benchmarks-page">
-        <div className="benchmarks-empty">
-          No benchmark comparison data available for this domain yet.
-        </div>
-      </div>
-    );
-  }
-
-  // ── Copilot draft (pendingRef) — staged but not applied until "Apply". ──────
-  // Map a pageRef.conditionFilter into the spine's filter shape.
-  const pendingFilter = (() => {
-    const cf = pendingRef && pendingRef.conditionFilter;
-    if (!cf || typeof cf !== 'object') return {};
-    const next = {};
-    for (const k of ['metricId', 'scene', 'success_criterion', 'gripper', 'sensor', 'learning_paradigm']) {
-      if (cf[k] != null) next[k] = cf[k];
-    }
-    return next;
-  })();
-  // Does the draft's cell actually exist? (null cellKey = filter-only draft = resolves.)
-  const pendingCellResolves = pendingRef && pendingRef.cellKey
-    ? allCells.some(c => c.key === pendingRef.cellKey)
-    : Boolean(pendingRef);
-  // Human summary of the draft (metric label + scene + criterion).
-  const pendingSummary = (() => {
-    if (!pendingRef) return '';
-    const parts = [];
-    if (pendingFilter.metricId) {
-      const m = allCells.find(c => c.metric_id === pendingFilter.metricId);
-      parts.push(m ? (m.metric_label || pendingFilter.metricId) : pendingFilter.metricId);
-    }
-    if (pendingFilter.scene) parts.push(pendingFilter.scene);
-    if (pendingFilter.success_criterion) parts.push(pendingFilter.success_criterion);
-    return parts.join(' · ');
-  })();
-  const applyPendingRef = () => {
-    if (!pendingRef) return;
-    // Apply the copilot's facets to the (optional) filters, then open the cell.
-    setConditionFilter({ metricId: pendingFilter.metricId, scene: pendingFilter.scene, success_criterion: pendingFilter.success_criterion });
-    setAttrFilter({ gripper: pendingFilter.gripper, sensor: pendingFilter.sensor, learning_paradigm: pendingFilter.learning_paradigm });
-    if (pendingRef.cellKey && pendingCellResolves) openCell(pendingRef.cellKey);
-    setPendingRef(null);
-  };
-  const dismissPendingRef = () => setPendingRef(null);
+  const tags = useMemo(() => {
+    let ts = facet.tags;
+    if (searchable) ts = [...ts].sort((a, b) => a.label.localeCompare(b.label));
+    const needle = q.trim().toLowerCase();
+    if (needle) ts = ts.filter(t => t.label.toLowerCase().includes(needle));
+    return ts;
+  }, [facet.tags, searchable, q]);
 
   return (
-    <div className="benchmarks-page">
+    <div className="bmr-facet">
+      <button type="button" className="bmr-facet-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        <span className="bmr-facet-chev" aria-hidden>{open ? '▾' : '▸'}</span>
+        <span className="bmr-facet-name">{facet.category}</span>
+        {selCount > 0 && <span className="bmr-facet-selcount">{selCount}</span>}
+      </button>
+      {open && (
+        <div className="bmr-facet-body">
+          {searchable && (
+            <input
+              type="text"
+              className="bmr-facet-search"
+              placeholder={`Search ${facet.category.toLowerCase()}…`}
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              aria-label={`Search ${facet.category}`}
+            />
+          )}
+          <div className="bmr-facet-list">
+            {tags.map(t => {
+              const k = tagKey(facet.category, t.value);
+              const on = selected.has(k);
+              return (
+                <button key={k} type="button" className={`bmr-opt ${on ? 'on' : ''}`} onClick={() => onToggle(k)} aria-pressed={on}>
+                  <span className="bmr-opt-check" aria-hidden>{on ? '✓' : ''}</span>
+                  <span className="bmr-opt-label" title={t.label}>{t.label}</span>
+                  <span className="bmr-opt-count">{t.count}</span>
+                </button>
+              );
+            })}
+            {tags.length === 0 && <div className="bmr-facet-none">No matches</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
-      {/* ── Page toolbar — always present (the "?" help affordance lives here). */}
-      <div className="benchmarks-page-toolbar">
-        <button type="button" className="benchmarks-help-btn" aria-label="How to use this page" title="How to use this page" onClick={() => setHelpOpen(true)}>?</button>
+// Full-screen viewer for a source-table crop so the numbers are actually readable
+// (the inline thumbnail on the card is too small). Fit-to-screen by default with a
+// toggle to actual size; Esc or backdrop click closes.
+function BenchmarkLightbox({ data, onClose }) {
+  const [zoom, setZoom] = useState(false);
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  useEffect(() => { setZoom(false); }, [data]);
+  if (!data) return null;
+  return (
+    <div className="bmr-lightbox" onClick={onClose} role="dialog" aria-modal="true" aria-label={`Source table for ${data.method}`}>
+      <div className="bmr-lightbox-inner" onClick={e => e.stopPropagation()}>
+        <div className="bmr-lightbox-bar">
+          <span className="bmr-lightbox-title">{data.method}{data.caption ? ` — ${data.caption}` : ''}</span>
+          <div className="bmr-lightbox-actions">
+            <button type="button" onClick={() => setZoom(z => !z)}>{zoom ? 'Fit to screen' : 'Actual size'}</button>
+            <button type="button" onClick={onClose} aria-label="Close">✕</button>
+          </div>
+        </div>
+        <div className={`bmr-lightbox-scroll ${zoom ? 'zoom' : ''}`}>
+          <img src={data.src} alt={`Source table for ${data.method}`} className={zoom ? 'actual' : 'fit'} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Windowed page controls: ‹ Prev · 1 … (p-1) p (p+1) … last · Next ›
+function Pagination({ page, pageCount, onPage }) {
+  if (pageCount <= 1) return null;
+  const nums = [];
+  const add = n => { if (n >= 1 && n <= pageCount && !nums.includes(n)) nums.push(n); };
+  add(1); add(2);
+  for (let d = -1; d <= 1; d++) add(page + d);
+  add(pageCount - 1); add(pageCount);
+  nums.sort((a, b) => a - b);
+  const items = [];
+  let prev = 0;
+  for (const n of nums) { if (n - prev > 1) items.push(`gap${n}`); items.push(n); prev = n; }
+  return (
+    <nav className="bmr-pager" aria-label="Results pages">
+      <button type="button" className="bmr-pager-btn" disabled={page <= 1} onClick={() => onPage(page - 1)}>‹ Prev</button>
+      {items.map(it => (typeof it === 'string'
+        ? <span key={it} className="bmr-pager-ellipsis" aria-hidden>…</span>
+        : <button key={it} type="button" className={`bmr-pager-num ${it === page ? 'on' : ''}`} aria-current={it === page ? 'page' : undefined} onClick={() => onPage(it)}>{it}</button>
+      ))}
+      <button type="button" className="bmr-pager-btn" disabled={page >= pageCount} onClick={() => onPage(page + 1)}>Next ›</button>
+    </nav>
+  );
+}
+
+function ResultCard({ rec, onZoom }) {
+  const [showSrc, setShowSrc] = useState(false);
+  const src = (rec.sources || [])[0] || null;
+  const hasSrc = src && (src.crop_image || src.table_caption);
+  // Card chips show the PROTOCOL only — not Method/Metric/grade, which already
+  // have dedicated slots (method name in the head, metric+value below, grade badge).
+  const protocolTags = rec.tags.filter(t => t.cat !== 'Metric' && t.cat !== 'Evidence grade' && t.cat !== 'Method');
+  return (
+    <div className="bmr-card">
+      <div className="bmr-card-head">
+        <span className="bmr-method" title={rec.method}>{rec.method}</span>
+        {rec.grade && (
+          <span className={`bmr-grade bmr-grade-${rec.grade}`} title={GRADE_TIP[rec.grade] || ''}>
+            {rec.grade}
+          </span>
+        )}
+      </div>
+      <div className="bmr-metric">
+        <span className="bmr-metric-name">{rec.metric}</span>
+        <span className="bmr-value">{rec.value != null ? rec.value : '—'}</span>
+        {rec.nReports > 1 && <span className="bmr-nreports">median · {rec.nReports} papers</span>}
+      </div>
+      {protocolTags.length > 0 && (
+        <div className="bmr-tags">
+          {protocolTags.map((t, i) => (
+            <span key={i} className="bmr-tag">{t.label}</span>
+          ))}
+        </div>
+      )}
+      <div className="bmr-src">
+        <span className="bmr-papers">{(rec.papers || []).map(prettyPaper).join(', ') || 'source not recorded'}</span>
+        {hasSrc && (
+          <button type="button" className="bmr-src-toggle" onClick={() => setShowSrc(s => !s)} aria-expanded={showSrc}>
+            {showSrc ? 'Hide source' : 'Source'}
+          </button>
+        )}
+      </div>
+      {showSrc && hasSrc && (
+        <div className="bmr-src-body">
+          {src.table_caption && <div className="bmr-src-caption">{src.table_caption}</div>}
+          {src.crop_image && (
+            <button
+              type="button"
+              className="bmr-src-cropbtn"
+              onClick={() => onZoom && onZoom({ src: src.crop_image, caption: src.table_caption, method: rec.method })}
+              title="Click to enlarge"
+            >
+              <img className="bmr-src-crop" src={src.crop_image} alt={`source table for ${rec.method}`} loading="lazy" />
+              <span className="bmr-src-zoomhint">⤢ Click to enlarge</span>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// eslint-disable-next-line no-unused-vars
+export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfidence, incomingPageRef }) {
+  const [benchmarkData, setBenchmarkData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(() => new Set());
+  const [lightbox, setLightbox] = useState(null);
+  const [page, setPage] = useState(1);
+  const resultsRef = useRef(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadBenchmarkComparisons()
+      .then(d => { if (alive) { setBenchmarkData(d); setLoading(false); } })
+      .catch(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, []);
+
+  const records = useMemo(() => buildResultRecords(benchmarkData), [benchmarkData]);
+  const facets = useMemo(() => tagFacets(records), [records]);
+  const filtered = useMemo(() => filterByTags(records, selected), [records, selected]);
+
+  // Reset to page 1 whenever the filter changes (the result set is different).
+  useEffect(() => { setPage(1); }, [selected]);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageClamped = Math.min(page, pageCount);
+  const start = (pageClamped - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+  const goPage = (p) => {
+    setPage(p);
+    if (resultsRef.current && resultsRef.current.scrollIntoView) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const toggle = (k) => setSelected(prev => {
+    const n = new Set(prev);
+    if (n.has(k)) n.delete(k); else n.add(k);
+    return n;
+  });
+  const clear = () => setSelected(new Set());
+
+  if (loading) return <div className="bmr-page"><div className="bmr-loading">Loading benchmark data…</div></div>;
+  if (!records.length) return <div className="bmr-page"><div className="bmr-empty">No benchmark data available.</div></div>;
+
+  return (
+    <div className="bmr-page">
+      <div className="bmr-header">
+        <div className="bmr-header-text">
+          <h2>Benchmark Results</h2>
+          <p>
+            Every result extracted from the corpus' result tables, shown with its full protocol.
+            These are <strong>not ranked</strong> — pick tags to find results that match. Tags in
+            different categories must all hold; tags within one category match either.
+          </p>
+        </div>
+        <div className="bmr-gradekey">
+          <span className="bmr-gradekey-label">
+            Evidence grade
+            <Tooltip text={GRADE_EXPLAIN} wide><span className="chart-help">?</span></Tooltip>
+          </span>
+          <span className="bmr-gradekey-item"><span className="bmr-grade bmr-grade-A">A</span> 2+ independent papers agree</span>
+          <span className="bmr-gradekey-item"><span className="bmr-grade bmr-grade-B">B</span> single solid source</span>
+          <span className="bmr-gradekey-item"><span className="bmr-grade bmr-grade-C">C</span> low-confidence / disputed</span>
+          <span className="bmr-gradekey-note">Most results are B — see the “?” for why A is rare here.</span>
+        </div>
       </div>
 
-      {/* ── Copilot draft banner — staged pageRef, applied on confirm. ─────
-       * Always rendered so a copilot deep-link can be surfaced; Apply commits
-       * the facets to the (optional) filters via applyPendingRef. */}
-      {pendingRef && (
-        <div className="benchmarks-copilot-banner">
-          <span className="benchmarks-copilot-banner-label">
-            Copilot applied: <strong>{pendingSummary || 'this view'}</strong>
-          </span>
-          {!pendingCellResolves && (
-            <span className="benchmarks-copilot-nomatch">no matched comparison available</span>
-          )}
-          <span className="benchmarks-copilot-banner-actions">
-            <button type="button" className="benchmarks-tab" onClick={applyPendingRef}>Apply</button>
-            <button type="button" className="benchmarks-tab" onClick={dismissPendingRef}>Dismiss</button>
-          </span>
-        </div>
-      )}
-
-      {/* ── Show-all-by-default: every extracted comparison is visible; the
-           condition spine below is OPTIONAL refinement, never a gate. ───────── */}
-      <>
-          <p className="benchmarks-orientation">
-            Every head-to-head result we could extract from the papers, grouped by metric.
-            Browse them all below — or use the filters to narrow to a specific metric, condition, or hardware setup.
-          </p>
-          <p className="benchmarks-caveat">
-            ⚠ <strong>Read rankings as indicative, not definitive.</strong> A leaderboard can pool
-            numbers that papers measured under <strong>different protocols</strong> — camera view
-            (fixed vs. random), sensor noise, object set (e.g. EGAD), and simulation vs. real-world —
-            which are not strictly comparable. Always confirm a number against its source crop in the
-            drawer before citing it.
-          </p>
-
-          {/* ── Stats bar ──────────────────────────────────────────────── */}
-          <div className="benchmarks-stats-bar">
-            <div className="benchmarks-stat">
-              <span className="benchmarks-stat-value">{stats.n_comparisons ?? '—'}</span>
-              <span className="benchmarks-stat-label">comparisons <Help text="Head-to-head results extracted from papers where one method directly outperformed another on the same metric and condition." /></span>
-            </div>
-            <div className="benchmarks-stat">
-              <span className="benchmarks-stat-value">{stats.n_leaderboards ?? '—'}</span>
-              <span className="benchmarks-stat-label">benchmarks <Help text="Distinct metric + condition cells (e.g. success rate on pile scenes). Drill into one to compare the methods measured under those exact conditions." /></span>
-            </div>
-            <div className="benchmarks-stat">
-              <span className="benchmarks-stat-value">{stats.n_methods_indexed ?? '—'}</span>
-              <span className="benchmarks-stat-label">methods</span>
-            </div>
-            <div className="benchmarks-stat">
-              <span className="benchmarks-stat-value">{stats.n_cross_validations ?? '—'}</span>
-              <span className="benchmarks-stat-label">cross-paper <Help text="Numbers reported for the same method + metric by 2+ independent papers — the basis for the reproducibility consistency check." /></span>
-            </div>
-          </div>
-
-          {/* ── View toggle: Agreement ⇄ Coverage ──────────────────────── */}
-          <div className="benchmarks-tabs benchmarks-viewtoggle">
-            <button className={`benchmarks-tab ${viewMode === 'agreement' ? 'active' : ''}`} onClick={() => setViewMode('agreement')}>Agreement</button>
-            <button className={`benchmarks-tab ${viewMode === 'coverage' ? 'active' : ''}`} onClick={() => setViewMode('coverage')}>Coverage</button>
-          </div>
-
-          {/* ── Condition spine (persistent facet filter bar) ────────────── */}
-          <ConditionSpine
-            benchmarkData={benchmarkData}
-            value={conditionFilter}
-            onChange={setConditionFilter}
-            methodsIndex={methodsIndex}
-            attrValue={attrFilter}
-            onAttrChange={setAttrFilter}
-          />
-
-          {/* ── Confidence filter (driven by the global Min-confidence control). */}
-          <div className="benchmarks-confidence-toggle">
-            <label>
-              <input
-                type="checkbox"
-                checked={showLowConf}
-                onChange={e => setShowLowConf(e.target.checked)}
-              />
-              Show all (including below {Math.round(minConfidence * 100)}% confidence)
-            </label>
-            {!showLowConf && hiddenByConf > 0 && (
-              <span className="benchmarks-confidence-hidden">
-                {hiddenByConf} cross-paper result{hiddenByConf !== 1 ? 's' : ''} hidden below {Math.round(minConfidence * 100)}% confidence
-              </span>
+      <div className="bmr-layout">
+        <aside className="bmr-rail">
+          <div className="bmr-rail-head">
+            <span>Filters</span>
+            {selected.size > 0 && (
+              <button type="button" className="bmr-clear" onClick={clear}>Clear ({selected.size})</button>
             )}
           </div>
+          {facets.map(f => (
+            <FacetDropdown key={f.category} facet={f} selected={selected} onToggle={toggle} />
+          ))}
+        </aside>
 
-          {/* AGREEMENT VIEW — default landing */}
-          {viewMode === 'agreement' && (
-            <ReproducibilityView
-              crossValidations={visibleCrossValidations}
-              totalCrossValidations={crossValidations.length}
-              minConfidence={minConfidence}
-              unreproducedCells={unreproducedCells}
-              onOpenCell={openCell}
-              showMetric={showMetricOnCards}
-            />
-          )}
-
-          {/* COVERAGE VIEW — condition × metric gap-finder matrix */}
-          {viewMode === 'coverage' && (
-            <CoverageMatrix
-              benchmarkData={benchmarkData}
-              conditionFilter={conditionFilter}
-              onOpenCell={openCell}
-            />
-          )}
-
-          {/* ── Quarantine footnote ──────────────────────────────────── */}
-          {(stats.n_quarantined > 0 || quarantine.n_records > 0) && (
-            <div className="benchmarks-quarantine-note">
-              <strong>{stats.n_quarantined ?? quarantine.n_records}</strong> record{(stats.n_quarantined ?? quarantine.n_records) !== 1 ? 's' : ''} withheld (low quality)
-              {quarantine.reasons && Object.keys(quarantine.reasons).length > 0 && (
-                <span className="benchmarks-quarantine-reasons">
-                  {' — '}
-                  {Object.entries(quarantine.reasons)
-                    .map(([reason, count]) => `${count} ${reason.replace(/_/g, ' ')}`)
-                    .join(', ')}
-                </span>
-              )}
-              . These rows had unresolvable headers or unmatched method names and were excluded from all analysis.
-            </div>
-          )}
-      </>
-
-      {/* ── Cell drill-down drawer (overlay) ────────────────────────────── */}
-      {drawerOpen && activeCell && (
-        <PaperTrailDrawer
-          cell={activeCell}
-          cellContext={cellContext}
-          methodsIndex={methodsIndex}
-          data={data}
-          selectedPoint={selectedPoint}
-          onSelect={onSelect}
-          onClose={closeDrawer}
-        />
-      )}
-
-      {/* ── In-app walkthrough help modal ───────────────────────────────── */}
-      {helpOpen && (
-        <div className="benchmarks-help-modal" role="dialog" aria-modal="true">
-          <div className="benchmarks-help-backdrop" onClick={() => setHelpOpen(false)} aria-hidden="true" />
-          <div className="benchmarks-help-panel">
-            <button type="button" className="benchmarks-help-close" aria-label="Close" onClick={() => setHelpOpen(false)}>×</button>
-            <iframe title="Benchmarks walkthrough" src="/benchmark-walkthrough.html" />
+        <main className="bmr-results" data-testid="bmr-results" ref={resultsRef}>
+          <div className="bmr-results-count">
+            {pageCount <= 1
+              ? `${filtered.length} of ${records.length} results`
+              : `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, filtered.length)} of ${filtered.length} results`}
+            {selected.size > 0 ? ` · ${selected.size} tag${selected.size > 1 ? 's' : ''} selected` : ''}
           </div>
-        </div>
-      )}
+          {filtered.length === 0 ? (
+            <div className="bmr-empty">No result has all the selected tags. Remove a tag to broaden the search.</div>
+          ) : (
+            <>
+              <div className="bmr-grid">
+                {pageItems.map(r => <ResultCard key={r.id} rec={r} onZoom={setLightbox} />)}
+              </div>
+              <Pagination page={pageClamped} pageCount={pageCount} onPage={goPage} />
+            </>
+          )}
+        </main>
+      </div>
+
+      <BenchmarkLightbox data={lightbox} onClose={() => setLightbox(null)} />
     </div>
   );
 }

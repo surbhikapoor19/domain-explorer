@@ -49,6 +49,16 @@ const SUCCESS_CRITERION_TOKENS = {
   sr: 'sr', // success rate
 };
 
+// ── Protocol facet tokens (#1) ───────────────────────────────────────────────
+// Folded into the condition by the precompute pipeline (normalize/protocol.py) so
+// incomparable protocols never pool into one ranking. Decoded here into named
+// facets so a cell header states the FULL protocol ("Packed · Random camera ·
+// Gaussian noise") and an out-of-distribution transfer cell can be flagged.
+const VIEW_TOKENS = { fixedview: 'fixedview', randomview: 'randomview' };
+const NOISE_TOKENS = { gammanoise: 'gammanoise', gaussnoise: 'gaussnoise' };
+const OBJECTSET_TOKENS = { egad: 'egad', ycb: 'ycb', partnet: 'partnet' };
+const RETRAIN_TOKENS = { noretrain: 'noretrain' };
+
 // Human-readable labels for condition facet tokens, so the UI NEVER shows raw
 // extraction shorthand (e.g. "gsr"/"dr") to a researcher. The paper-native
 // abbreviation is kept in parens for those who recognise it.
@@ -62,6 +72,15 @@ const FACET_LABELS = {
   isolated: 'Isolated',
   cluttered: 'Cluttered',
   sim: 'Simulation',
+  // protocol facets
+  fixedview: 'Fixed camera',
+  randomview: 'Random camera',
+  gammanoise: 'Gamma noise',
+  gaussnoise: 'Gaussian noise',
+  egad: 'EGAD objects',
+  ycb: 'YCB objects',
+  partnet: 'PartNet objects',
+  noretrain: 'No retrain (OOD)',
 };
 
 /**
@@ -117,6 +136,10 @@ export function parseConditionFacets(condition) {
   const facets = {
     scene: null,
     success_criterion: null,
+    view: null,
+    noise: null,
+    object_set: null,
+    retrain: null,
     raw: [],
     tokens: [],
   };
@@ -142,6 +165,14 @@ export function parseConditionFacets(condition) {
       SUCCESS_CRITERION_TOKENS[lower] !== undefined
     ) {
       facets.success_criterion = SUCCESS_CRITERION_TOKENS[lower];
+    } else if (facets.view == null && VIEW_TOKENS[lower] !== undefined) {
+      facets.view = VIEW_TOKENS[lower];
+    } else if (facets.noise == null && NOISE_TOKENS[lower] !== undefined) {
+      facets.noise = NOISE_TOKENS[lower];
+    } else if (facets.object_set == null && OBJECTSET_TOKENS[lower] !== undefined) {
+      facets.object_set = OBJECTSET_TOKENS[lower];
+    } else if (facets.retrain == null && RETRAIN_TOKENS[lower] !== undefined) {
+      facets.retrain = RETRAIN_TOKENS[lower];
     } else {
       // Unknown token (or a duplicate of an already-filled facet): keep raw.
       facets.raw.push(tok);
@@ -506,6 +537,10 @@ export function reproducibilityCard(cell, method) {
   // Facets: start from the cell, then merge any per-source condition tokens.
   let scene = (c.facets && c.facets.scene) || null;
   let success_criterion = (c.facets && c.facets.success_criterion) || null;
+  let object_set = (c.facets && c.facets.object_set) || null;
+  let view = (c.facets && c.facets.view) || null;
+  let noise = (c.facets && c.facets.noise) || null;
+  let retrain = (c.facets && c.facets.retrain) || null;
 
   const mergeFromReports = (list) => {
     for (const r of list) {
@@ -515,10 +550,20 @@ export function reproducibilityCard(cell, method) {
       if (success_criterion == null && decoded.success_criterion != null) {
         success_criterion = decoded.success_criterion;
       }
+      if (object_set == null && decoded.object_set != null) object_set = decoded.object_set;
+      if (view == null && decoded.view != null) view = decoded.view;
+      if (noise == null && decoded.noise != null) noise = decoded.noise;
+      if (retrain == null && decoded.retrain != null) retrain = decoded.retrain;
     }
   };
   mergeFromReports(reports);
   mergeFromReports(cvReports);
+
+  // A readable protocol summary from the camera-view / noise / OOD-no-retrain axes
+  // (the confounds that make two numbers incomparable). 'not reported' when none
+  // are stated — never invented.
+  const protoBits = [view, noise, retrain].filter(Boolean).map(humanizeFacet);
+  const protocol = protoBits.length ? protoBits.join(' · ') : 'not reported';
 
   // trials: a positive numeric trial count if any source carries one.
   let trials = 'not reported';
@@ -530,14 +575,14 @@ export function reproducibilityCard(cell, method) {
   }
 
   const factors = {
-    object_set: 'not reported',
+    object_set: object_set || 'not reported',
     gripper: 'not reported',
     arm: 'not reported',
     sensor: 'not reported',
     scene: scene || 'not reported',
     success_criterion: success_criterion || 'not reported',
     trials,
-    protocol: 'not reported',
+    protocol,
   };
 
   const nPapers =

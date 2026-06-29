@@ -3,6 +3,7 @@ from collections import defaultdict
 from statistics import median
 from benchmarks.aggregate.confidence import (
     coefficient_of_variation, classify_consistency, evidence_grade)
+from benchmarks.normalize.protocol import enrich_condition, is_caption_copied
 
 CONF_BASE = {'A': 0.92, 'B': 0.78, 'C': 0.45}
 
@@ -96,6 +97,13 @@ def build_benchmark_json(records, cfg):
     # before grouping — lets them cross-validate instead of fragmenting, and
     # keeps the leaderboard label + per-source provenance consistent.
     cond_aliases = cfg.get('condition_aliases') or {}
+    # Protocol-aware cell keying (#1): fold the experimental protocol parsed from
+    # the column header + caption (sim vs real, fixed vs random camera view, gamma
+    # vs Gaussian noise, EGAD object set, OOD no-retrain) into the condition token
+    # list, so incomparable protocols never pool into one ranked column. ON by
+    # default; the migration runs it OFF once to prove faithful reconstruction.
+    protocol_on = cfg.get('protocol_aware_conditions', True)
+    copied_on = cfg.get('caption_copied_detection', True)   # #3; gated for the migration's faithfulness pass
     for r in records:
         if cond_aliases and r.condition in cond_aliases:
             r.condition = cond_aliases[r.condition]
@@ -107,6 +115,10 @@ def build_benchmark_json(records, cfg):
         # inference / planning / end-to-end times don't pool in one ranking.
         if not r.condition and r.metric_id == 'latency' and r.metric_raw:
             r.condition = _time_scope(r.metric_raw)
+        # Append the parsed protocol tokens LAST (after aliasing + time-scoping),
+        # so an unparseable protocol leaves the existing condition untouched.
+        if protocol_on:
+            r.condition = enrich_condition(r.condition, r.metric_raw, r.table_caption)
 
     publishable = [r for r in records if r.metric_id and r.method_id]
     quarantined = [r for r in records if not (r.metric_id and r.method_id)]
@@ -151,8 +163,13 @@ def build_benchmark_json(records, cfg):
                                    any(r.verified for r in valid),
                                    max((r.extraction_conf for r in valid), default='low'))
             entry_copied = _suspected_copy(valid)
-            if entry_copied and grade == 'A':
-                grade = 'B'  # identical value+stddev across papers = citation copy, not corroboration
+            # #3 caption-based copied baseline: a number whose own caption admits
+            # it was re-quoted from another paper ("results ... are from [N]") is
+            # not an independent measurement, so it cannot earn grade-A
+            # corroboration even when the values are not byte-identical.
+            entry_caption_copied = copied_on and any(is_caption_copied(method, r.table_caption) for r in valid)
+            if (entry_copied or entry_caption_copied) and grade == 'A':
+                grade = 'B'  # citation copy, not corroboration
             cv_val = round(coefficient_of_variation(vals), 3)
             # HEADLINE = the per-paper MEDIAN (honest central estimate), not the
             # cherry-picked best run. The optimistic max is kept as `best` so it is
@@ -164,7 +181,9 @@ def build_benchmark_json(records, cfg):
                             'median': round(med, 2), 'n_reports': n_papers,
                             'cv': cv_val, 'grade': grade,
                             'confidence': _confidence(grade, cv_val),
-                            'corroboration': 'identical_values_suspected_copy' if entry_copied else 'independent',
+                            'corroboration': ('identical_values_suspected_copy' if entry_copied
+                                              else 'caption_copied_baseline' if entry_caption_copied
+                                              else 'independent'),
                             'source_papers': sorted({r.paper_id for r in valid}),
                             'sources': [{'paper': r.paper_id, 'value_str': r.value_str,
                                          'metric_raw': r.metric_raw, 'condition': r.condition,
@@ -203,8 +222,11 @@ def build_benchmark_json(records, cfg):
                                max((r.extraction_conf for r in valued), default='low'))
         cv_val = round(coefficient_of_variation(vals), 3)
         cv_copied = _suspected_copy(valued)
-        if cv_copied and grade == 'A':
-            grade = 'B'  # identical value+stddev across papers = citation copy, not corroboration
+        # #3 caption-based copied baseline (see leaderboard loop): re-quoted numbers
+        # are not independent corroboration even when not byte-identical.
+        cv_caption_copied = copied_on and any(is_caption_copied(method, r.table_caption) for r in valued)
+        if (cv_copied or cv_caption_copied) and grade == 'A':
+            grade = 'B'  # citation copy, not corroboration
         cross_validations.append({
             'method': method, 'metric_id': metric_id,
             'metric_label': _metric_label(cfg, metric_id), 'dataset_id': dataset_id,
