@@ -419,24 +419,10 @@ export default function KGGraphViz({
     // fCoSE layout settles.
     cy.one('layoutstop', () => fitMacroView(cy));
 
-    const wrapper = containerRef.current;
-    if (wrapper) {
-      wrapper.addEventListener('wheel', (ev) => {
-        if (ev.metaKey || ev.ctrlKey) {
-          ev.preventDefault();
-          const factor = ev.deltaY < 0 ? 1.08 : 0.92;
-          const rect = wrapper.getBoundingClientRect();
-          cy.zoom({
-            level: cy.zoom() * factor,
-            renderedPosition: { x: ev.clientX - rect.left, y: ev.clientY - rect.top },
-          });
-        } else {
-          setZoomHint(true);
-          clearTimeout(zoomHintTimer.current);
-          zoomHintTimer.current = setTimeout(() => setZoomHint(false), 1200);
-        }
-      }, { passive: false });
-    }
+    // NOTE: the cooperative wheel-to-zoom handler is attached in a dedicated
+    // mount effect (see below), NOT here — the cy-callback fires at a timing that
+    // differs between the dev server and a production build, which could leave the
+    // listener unbound in prod (the "no zoom hint in production" bug).
 
     // Track which node is tap-selected so the hover mouseout doesn't
     // clear the persistent neighborhood highlight.
@@ -621,6 +607,31 @@ export default function KGGraphViz({
     });
     ro.observe(el);
     return () => ro.disconnect();
+  }, []);
+
+  // Cooperative wheel-to-zoom + the "⌘/Ctrl + scroll to zoom" hint. Attached to
+  // the container on MOUNT (ref is guaranteed set) so it binds reliably in both
+  // dev and production — the previous attach inside the cy callback could miss in
+  // a prod build. Reads cyRef at event time, so it works once Cytoscape is ready.
+  useEffect(() => {
+    const wrapper = containerRef.current;
+    if (!wrapper) return;
+    const onWheel = (ev) => {
+      const cy = cyRef.current;
+      if (ev.metaKey || ev.ctrlKey) {
+        ev.preventDefault();
+        if (!cy) return;
+        const factor = ev.deltaY < 0 ? 1.08 : 0.92;
+        const rect = wrapper.getBoundingClientRect();
+        cy.zoom({ level: cy.zoom() * factor, renderedPosition: { x: ev.clientX - rect.left, y: ev.clientY - rect.top } });
+      } else {
+        setZoomHint(true);
+        clearTimeout(zoomHintTimer.current);
+        zoomHintTimer.current = setTimeout(() => setZoomHint(false), 1200);
+      }
+    };
+    wrapper.addEventListener('wheel', onWheel, { passive: false });
+    return () => wrapper.removeEventListener('wheel', onWheel);
   }, []);
 
   // Toggle type visibility
@@ -824,6 +835,11 @@ export default function KGGraphViz({
           Use {navigator.platform.toLowerCase().includes('mac') ? '⌘' : 'Ctrl'} + scroll to zoom
         </div>
       )}
+      {/* Always-visible, subtle affordance so the zoom gesture is discoverable
+          even without scrolling (belt-and-suspenders for the transient hint). */}
+      <div className="kgv-zoom-caption" aria-hidden="true">
+        {navigator.platform.toLowerCase().includes('mac') ? '⌘' : 'Ctrl'} + scroll to zoom
+      </div>
 
       {/* Tooltip — suppressed while a pinned info box is open (it shares this
           bottom-left corner; showing both stacks two boxes). */}

@@ -13,10 +13,13 @@ import { rankCandidates, parseStructuredAnswer, resolveMethods } from './copilot
 
 // Deterministic FORMAT intent from the query (mirrors the answer-engine router):
 // chooses the answer's shape (table vs ranked list vs bullets) before generation.
-function classifyFormatIntent(q) {
+export function classifyFormatIntent(q) {
   const s = (q || '').toLowerCase();
-  if (/\b(vs\.?|versus|compare|comparison|difference between|trade-?offs?)\b/.test(s)) return 'comparison';
-  if (/\b(best|fastest|highest|top|rank(ing)?|outperform|state[- ]of[- ]the[- ]art|sota|success rate|accuracy|fastest)\b/.test(s)) return 'ranking';
+  // COMPARISON — explicit compare words, OR comparative-performance phrasing that
+  // implies a head-to-head: "do X perform better in ...", "A better than B",
+  // "which is better", "A or B" between two named things.
+  if (/\b(vs\.?|versus|compared?|comparison|difference between|trade-?offs?|better than|worse than|perform\w*\s+(?:better|worse)|which\b[^?]*\b(?:better|worse))\b/.test(s)) return 'comparison';
+  if (/\b(best|fastest|highest|top|rank(ing)?|outperform\w*|state[- ]of[- ]the[- ]art|sota|success rate|accuracy|most accurate|perform\w* best|better|worse)\b/.test(s)) return 'ranking';
   if (/\b(which|recommend|methods? for|approaches? for|list|options?|suitable|suited|good for|use for)\b/.test(s)) return 'recommendation';
   return 'default';
 }
@@ -198,7 +201,7 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   try {
     const matches = structuredMatches(effectiveQuery, allMethods, queryKeywords?.attributeTerms || {});
     if (matches.length) {
-      structuredText = matches.map(mm => `- ${mm.col} = ${mm.values.join(' / ')}: ${mm.methods.join(', ')}`).join('\n');
+      structuredText = matches.map(mm => `- ${mm.col} = ${mm.value}: ${mm.methods.join(', ')}`).join('\n');
       const toAdd = [...new Set(matches.flatMap(mm => mm.methods))].slice(0, 12);
       let added = false;
       toAdd.forEach(name => {

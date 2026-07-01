@@ -73,18 +73,23 @@ export function structuredMatches(query, methods, attributeTerms) {
   const out = [];
   for (const [col, termMap] of Object.entries(attributeTerms || {})) {
     if (typeof termMap !== 'object') continue;
+    // Collect the distinct VALUES the question names for this column, then emit
+    // ONE group per value — so "suction OR multi-finger" surfaces as two separate,
+    // comparable arms (Hardware=Suction, Hardware=Multi-finger) instead of one
+    // OR-ed blob. That gives the copilot the material to actually compare them.
     const values = new Set();
     for (const [term, vals] of Object.entries(termMap)) {
       if (queryLower.includes(term.toLowerCase())) (Array.isArray(vals) ? vals : [vals]).forEach(v => values.add(v));
     }
-    if (!values.size) continue;
-    const matched = methods.filter(m => {
-      const cell = String(m.metadata?.[col] || m[col] || '').toLowerCase();
-      return [...values].some(v => cell.includes(String(v).toLowerCase()));
-    }).map(m => m.name);
-    if (matched.length) out.push({ col, values: [...values], methods: matched });
+    for (const value of values) {
+      const matched = methods.filter(m => {
+        const cell = String(m.metadata?.[col] || m[col] || '').toLowerCase();
+        return cell.includes(String(value).toLowerCase());
+      }).map(m => m.name);
+      if (matched.length) out.push({ col, value, methods: matched });
+    }
   }
-  // Fewer matches first — the most selective attribute is the most informative.
+  // Fewer matches first — the most selective group is the most informative.
   return out.sort((a, b) => a.methods.length - b.methods.length);
 }
 

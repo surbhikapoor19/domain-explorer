@@ -2425,6 +2425,14 @@ body {
   80%  { opacity: 1; }
   100% { opacity: 0; }
 }
+/* Always-visible subtle affordance in the graph's corner. */
+.kgv-zoom-caption {
+  position: absolute; bottom: 8px; right: 10px; z-index: 6;
+  padding: 3px 8px; border-radius: 5px;
+  background: rgba(255, 255, 255, 0.82); border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.2px; pointer-events: none;
+}
 
 /* Let scroll chain to the page when a panel reaches its boundary.
    overscroll-behavior:contain was trapping scroll inside panels,

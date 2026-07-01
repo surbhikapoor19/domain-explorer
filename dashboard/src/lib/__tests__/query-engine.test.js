@@ -16,15 +16,29 @@ const ATTR = {
 
 test('returns EVERY method matching each queried attribute (incl. GraspGen for suction)', () => {
   const res = structuredMatches('do suction methods work in piled scenes?', METHODS, ATTR);
-  const hw = res.find(r => r.col === 'End-effector Hardware');
-  const scene = res.find(r => r.col === 'Object Configuration');
+  const hw = res.find(r => r.col === 'End-effector Hardware' && r.value === 'Suction');
+  const scene = res.find(r => r.col === 'Object Configuration' && r.value === 'Piled');
   expect(hw.methods.slice().sort()).toEqual(['Dex-Net 3.0', 'Dex-Net 4.0', 'GraspGen']);
   expect(scene.methods.slice().sort()).toEqual(['Dex-Net 4.0', 'VGN']);
 });
 
-test('lists the most selective attribute first', () => {
+test('"suction or multi-finger" surfaces as TWO separate comparable groups (not one blob)', () => {
+  const attr = { 'End-effector Hardware': { suction: ['Suction'], 'multi-finger': ['Multi-finger'] } };
+  const methods = [
+    { name: 'A', metadata: { 'End-effector Hardware': 'Suction' } },
+    { name: 'B', metadata: { 'End-effector Hardware': 'Multi-finger' } },
+    { name: 'C', metadata: { 'End-effector Hardware': 'Two-finger, Suction' } },
+  ];
+  const res = structuredMatches('do suction or multi-finger grippers differ?', methods, attr);
+  const suction = res.find(r => r.value === 'Suction');
+  const multi = res.find(r => r.value === 'Multi-finger');
+  expect(suction.methods.slice().sort()).toEqual(['A', 'C']);
+  expect(multi.methods).toEqual(['B']);
+});
+
+test('lists the most selective group first', () => {
   const res = structuredMatches('suction in piled scenes', METHODS, ATTR);
-  expect(res[0].methods.length).toBeLessThanOrEqual(res[1].methods.length); // scene(2) before hardware(3)
+  expect(res[0].methods.length).toBeLessThanOrEqual(res[1].methods.length);
 });
 
 test('omits attributes not named in the query; defensive on empty input', () => {
