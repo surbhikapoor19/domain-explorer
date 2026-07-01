@@ -346,42 +346,51 @@
       <p class="lede">The query box on Graph Reasoning. It runs <b>in your browser</b>: retrieval, graph traversal, and
       benchmark grounding all happen locally (client-side), and only the final assembled prompt is sent to an LLM.</p>
       <figure>
-        <svg viewBox="0 0 760 240" role="img" aria-label="Annotated Graph Reasoning header and copilot search bar">
+        <svg viewBox="0 0 760 250" role="img" aria-label="Annotated Graph Reasoning header and copilot search bar">
           <defs><marker id="annar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
             <path d="M0,0 L7,3 L0,6 Z" fill="#d95a3e"/></marker></defs>
           <g font-family="inherit" font-size="12">
-            <!-- callout labels (top) -->
-            <text x="300" y="30" text-anchor="middle" font-weight="700" fill="#1c2528">Switch views</text>
-            <text x="300" y="45" text-anchor="middle" fill="#5a6b70" font-size="10.5">Graph Reasoning · Benchmarks · Admin</text>
-            <line x1="300" y1="50" x2="300" y2="66" stroke="#d95a3e" marker-end="url(#annar)"/>
-            <text x="650" y="30" text-anchor="middle" font-weight="700" fill="#1c2528">Evidence filter · ⚙ · ❓</text>
-            <text x="650" y="45" text-anchor="middle" fill="#5a6b70" font-size="10.5">hide weak data · your API key · this guide</text>
-            <line x1="650" y1="50" x2="636" y2="74" stroke="#d95a3e" marker-end="url(#annar)"/>
-            <!-- app header -->
-            <rect x="20" y="70" width="720" height="40" rx="8" fill="#f5f8f9" stroke="#dce6e9"/>
-            <text x="36" y="95" fill="#16657d" font-weight="700" font-size="13">◆ Domain Explorer</text>
-            <text x="250" y="95" fill="#16657d" font-weight="700">Graph Reasoning</text>
-            <line x1="250" y1="100" x2="352" y2="100" stroke="#d95a3e" stroke-width="2"/>
-            <text x="372" y="95" fill="#5a6b70">Benchmarks</text>
-            <text x="470" y="95" fill="#5a6b70">Admin</text>
-            <rect x="556" y="80" width="82" height="22" rx="5" fill="#fff" stroke="#dce6e9"/>
-            <text x="597" y="95" text-anchor="middle" fill="#5a6b70" font-size="10.5">Evidence ▾</text>
-            <text x="662" y="97" fill="#5a6b70" font-size="16">⚙</text>
-            <text x="700" y="96" font-size="15">❓</text>
-            <!-- copilot query bar -->
-            <rect x="20" y="130" width="720" height="42" rx="21" fill="#fff" stroke="#16657d" stroke-width="1.6"/>
-            <circle cx="40" cy="151" r="12" fill="#d95a3e"/>
-            <text x="40" y="155" text-anchor="middle" fill="#fff" font-weight="700">1</text>
-            <text x="62" y="156" fill="#8691a0">Ask a question — e.g. “which methods share a technique with the top-cited item?”</text>
-            <circle cx="713" cy="150" r="7" fill="none" stroke="#16657d" stroke-width="1.6"/>
-            <line x1="718" y1="155" x2="725" y2="162" stroke="#16657d" stroke-width="1.6"/>
-            <!-- bottom callout for the search bar -->
-            <line x1="380" y1="200" x2="380" y2="174" stroke="#d95a3e" marker-end="url(#annar)"/>
-            <text x="380" y="216" text-anchor="middle" font-weight="700" fill="#1c2528">① Ask the copilot here</text>
-            <text x="380" y="231" text-anchor="middle" fill="#5a6b70" font-size="10.5">the grounded answer, a comparison table, and clickable sources appear right below</text>
+            <!-- top callout: right utility cluster -->
+            <text x="600" y="26" text-anchor="middle" font-weight="700" fill="#1c2528">Evidence filter · ⚙ · Admin · Manual</text>
+            <text x="600" y="40" text-anchor="middle" fill="#5a6b70" font-size="10">hide weak data · your API key · admin · this guide</text>
+            <line x1="600" y1="45" x2="590" y2="66" stroke="#d95a3e" marker-end="url(#annar)"/>
+            <!-- header bar: brand left, utility cluster right -->
+            <rect x="20" y="66" width="720" height="42" rx="8" fill="#f5f8f9" stroke="#dce6e9"/>
+            <text x="36" y="92" fill="#16657d" font-weight="700" font-size="13">◆ Domain Explorer</text>
+            <rect x="176" y="79" width="92" height="17" rx="3" fill="#16657d"/>
+            <text x="222" y="91" text-anchor="middle" fill="#fff" font-weight="700" font-size="8">AI-IN-THE-LOOP</text>
+            <text x="278" y="91" fill="#5a6b70" font-size="10">COMPARE Ecosystem</text>
+            <text x="410" y="91" fill="#5a6b70" font-size="10">Evidence</text>
+            <rect x="456" y="80" width="150" height="18" rx="4" fill="#fff" stroke="#dce6e9"/>
+            <rect x="506" y="80" width="50" height="18" fill="#16657d"/>
+            <text x="481" y="92" text-anchor="middle" fill="#5a6b70" font-size="8.5">All</text>
+            <text x="531" y="92" text-anchor="middle" fill="#fff" font-size="8.5">Hide weak</text>
+            <text x="581" y="92" text-anchor="middle" fill="#5a6b70" font-size="8.5">Strong</text>
+            <text x="620" y="93" fill="#5a6b70" font-size="15">⚙</text>
+            <text x="646" y="91" fill="#5a6b70" font-size="10.5">Admin</text>
+            <rect x="690" y="80" width="50" height="18" rx="4" fill="#fff" stroke="#dce6e9"/>
+            <text x="715" y="92" text-anchor="middle" fill="#5a6b70" font-size="9.5">Manual</text>
+            <!-- nav tabs (below the bar), active underlined -->
+            <text x="36" y="130" fill="#16657d" font-weight="700" font-size="11.5">Graph Reasoning</text>
+            <line x1="36" y1="136" x2="148" y2="136" stroke="#d95a3e" stroke-width="2"/>
+            <text x="166" y="130" fill="#5a6b70" font-size="11.5">Benchmarks</text>
+            <line x1="20" y1="140" x2="740" y2="140" stroke="#dce6e9"/>
+            <!-- pill search bar -->
+            <rect x="20" y="152" width="720" height="42" rx="21" fill="#fff" stroke="#16657d" stroke-width="1.6"/>
+            <circle cx="40" cy="173" r="12" fill="#d95a3e"/>
+            <text x="40" y="177" text-anchor="middle" fill="#fff" font-weight="700">1</text>
+            <circle cx="66" cy="171" r="6" fill="none" stroke="#5a6b70" stroke-width="1.5"/>
+            <line x1="70" y1="175" x2="76" y2="181" stroke="#5a6b70" stroke-width="1.5"/>
+            <text x="86" y="178" fill="#8691a0">Ask about grasp planning methods — e.g. “which share a technique with the top-cited item?”</text>
+            <rect x="676" y="158" width="54" height="30" rx="15" fill="#16657d"/>
+            <text x="703" y="177" text-anchor="middle" fill="#fff" font-weight="700" font-size="11">Ask</text>
+            <!-- bottom callout -->
+            <line x1="360" y1="220" x2="360" y2="196" stroke="#d95a3e" marker-end="url(#annar)"/>
+            <text x="360" y="234" text-anchor="middle" font-weight="700" fill="#1c2528">① Ask the copilot here</text>
+            <text x="360" y="248" text-anchor="middle" fill="#5a6b70" font-size="10">the grounded answer, comparison table, and clickable sources appear right below</text>
           </g>
         </svg>
-        <figcaption>Where things live on <b>Graph Reasoning</b>: the copilot search bar ①, the view tabs, and the header's Evidence filter, ⚙ Settings, and ❓ manual.</figcaption>
+        <figcaption>Where things live on <b>Graph Reasoning</b>: the copilot search bar ①, the <b>Graph Reasoning · Benchmarks</b> tabs, and the top-right cluster — Evidence filter, ⚙ Settings, Admin, and Manual.</figcaption>
       </figure>
       <figure>
         <svg viewBox="0 0 760 130" role="img" aria-label="Copilot flow">

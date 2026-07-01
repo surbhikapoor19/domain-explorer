@@ -302,52 +302,58 @@ function App() {
     <>
     <div className="sticky-top">
       <header className="copilot-header">
-        <div className="header-content">
-          <h1>{branding.productName}</h1>
-          <span className="badge">{branding.tagline}</span>
-          <span className="header-subtitle">{branding.ecosystem}</span>
-          <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
-          <div className="conf-filter" title="Hide extracted metrics below this evidence tier (grades map to confidence: A≈0.9, B≈0.78, C≈0.45)">
-            <span className="conf-filter-label">Evidence</span>
-            <div className="conf-seg">
-              {[['All', 0], ['Hide weak', 0.6], ['Strong only', 0.85]].map(([lab, v], i) => {
-                const tier = minConfidence >= 0.85 ? 2 : minConfidence >= 0.55 ? 1 : 0;
-                return (
-                  <button key={lab} type="button"
-                    className={`conf-seg-btn ${tier === i ? 'active' : ''}`}
-                    onClick={() => updateMinConfidence(v)}>{lab}</button>
-                );
-              })}
-            </div>
+        <div className="header-bar">
+          <div className="header-brand">
+            <h1>{branding.productName}</h1>
+            <span className="badge">{branding.tagline}</span>
+            <span className="header-subtitle">{branding.ecosystem}</span>
           </div>
+          <div className="header-actions">
+            <div className="conf-filter" title="Hide extracted metrics below this evidence tier (grades map to confidence: A≈0.9, B≈0.78, C≈0.45)">
+              <span className="conf-filter-label">Evidence</span>
+              <div className="conf-seg">
+                {[['All', 0], ['Hide weak', 0.6], ['Strong only', 0.85]].map(([lab, v], i) => {
+                  const tier = minConfidence >= 0.85 ? 2 : minConfidence >= 0.55 ? 1 : 0;
+                  return (
+                    <button key={lab} type="button"
+                      className={`conf-seg-btn ${tier === i ? 'active' : ''}`}
+                      onClick={() => updateMinConfidence(v)}>{lab}</button>
+                  );
+                })}
+              </div>
+            </div>
+            <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
+            <button
+              className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
+              onClick={() => setPage('admin')}
+              title="Domain administration"
+            >
+              Admin
+            </button>
+            <ManualButton />
+          </div>
+        </div>
+        <nav className="header-nav">
           {explorerEnabled && (
             <button
-              className={`nav-link ${page === 'explorer' ? 'active' : ''}`}
+              className={`nav-tab ${page === 'explorer' ? 'active' : ''}`}
               onClick={() => setPage('explorer')}
             >
               Explorer
             </button>
           )}
           <button
-            className={`nav-link ${page === 'graph-reasoning' ? 'active' : ''}`}
+            className={`nav-tab ${page === 'graph-reasoning' ? 'active' : ''}`}
             onClick={() => setPage('graph-reasoning')}
           >
             Graph Reasoning
           </button>
           <button
-            className={`nav-link ${page === 'benchmarks' ? 'active' : ''}`}
+            className={`nav-tab ${page === 'benchmarks' ? 'active' : ''}`}
             onClick={() => setPage('benchmarks')}
           >
             Benchmarks
           </button>
-          <button
-            className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
-            onClick={() => setPage('admin')}
-            title="Domain administration"
-          >
-            Admin
-          </button>
-          <ManualButton />
           {(recomputing || filterActive || hasHighlights) && (
             <div className="header-status">
               {recomputing && <span className="status-computing">Computing...</span>}
@@ -362,12 +368,13 @@ function App() {
               )}
             </div>
           )}
-        </div>
+        </nav>
       </header>
 
       <section className="query-section">
         <div className="query-label">Ask a question about {branding.methodNoun}s in this domain</div>
         <form onSubmit={handleQuerySubmit} className="query-form">
+          <span className="query-icon" aria-hidden="true">&#128269;</span>
           <input
             type="text"
             value={query}

@@ -251,6 +251,18 @@ const LAYOUT = {
   padding: 15,
 };
 
+// The landing macro graph is zoomed one step PAST fit-to-all so it reads as a
+// graph rather than a distant dust cloud (per PI request). Focused subgraphs
+// (few nodes) and the explicit "Fit" button stay at plain fit-to-all.
+const MACRO_ZOOM_IN = 1.4;
+function fitMacroView(cy) {
+  if (!cy) return;
+  cy.fit(undefined, 10);
+  if (cy.nodes().length > 40) {
+    cy.zoom({ level: cy.zoom() * MACRO_ZOOM_IN, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+  }
+}
+
 export default function KGGraphViz({
   onNodeClick, selectedNode, height = 420, dataUrl, postData,
   onNodeSelect, onEdgeSelect, onNodeHover, onBackgroundTap, refitTrigger,
@@ -403,6 +415,9 @@ export default function KGGraphViz({
     }
 
     cy.userZoomingEnabled(false);
+    // Zoom the initial landing view in a step past fit-to-all once the first
+    // fCoSE layout settles.
+    cy.one('layoutstop', () => fitMacroView(cy));
 
     const wrapper = containerRef.current;
     if (wrapper) {
@@ -590,7 +605,7 @@ export default function KGGraphViz({
     if (cyRef.current) {
       setTimeout(() => {
         cyRef.current?.resize();
-        cyRef.current?.fit(undefined, 10);
+        fitMacroView(cyRef.current);
       }, 250);
     }
   }, [refitTrigger]);
@@ -602,7 +617,7 @@ export default function KGGraphViz({
     if (!el) return;
     const ro = new ResizeObserver(() => {
       const cy = cyRef.current;
-      if (cy) { cy.resize(); cy.fit(undefined, 10); }
+      if (cy) { cy.resize(); fitMacroView(cy); }
     });
     ro.observe(el);
     return () => ro.disconnect();
