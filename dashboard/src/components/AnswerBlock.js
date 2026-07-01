@@ -114,6 +114,9 @@ export default function AnswerBlock({
   // The grounded synthesis answer (RAG+KG). The graph-traversal narrative is gone
   // — the answer is now the model's structured `insight` rendered as markdown.
   const answer = suggestion?.insight || '';
+  // Overview/landscape answers survey the whole set — show the grouped answer, but
+  // NOT a head-to-head comparison table (which is for a focused few).
+  const isOverview = suggestion?.intent === 'overview';
   const titleNames = anchorMethods.map(m => m.name).join(' · ');
   const title = isComparison
     ? `How ${anchorMethods.length} methods compare on the priority dimensions`
@@ -139,7 +142,9 @@ export default function AnswerBlock({
         </div>
       )}
 
-      {/* COMPARISON next — the priority-dimension comparison table. */}
+      {/* COMPARISON next — the priority-dimension comparison table. Hidden for an
+          OVERVIEW/landscape answer (a survey of the whole set, not a head-to-head). */}
+      {!isOverview && (<>
       <div className="gr-card-header">
         <Tooltip text={COMPARISON_TITLE_TOOLTIP} wide>
           <h3 className="gr-card-title">{title}</h3>
@@ -218,6 +223,7 @@ export default function AnswerBlock({
           </tbody>
         </table>
       </div>
+      </>)}
     </div>
   );
 }

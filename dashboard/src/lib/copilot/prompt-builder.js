@@ -7,6 +7,7 @@
 // FORMAT DIRECTIVE per query intent — the answer's shape is deterministic (not
 // left to the model's mood). Mirrors how answer engines route by question type.
 const FORMAT_DIRECTIVES = {
+  overview: 'This is an OVERVIEW / LANDSCAPE question — the user wants to see the WHOLE set, not a pick. After a 1-sentence lead, group the CANDIDATES by their planning approach / paradigm (use `##` group headers or bold group labels) and, under each group, list EVERY candidate as a bullet: bold the method name + a one-clause descriptor from its attributes, with a citation where available. Cover ALL candidates provided — do not drop any. Completeness matters more than brevity here, so this answer may exceed the usual length. Do NOT render a comparison table.',
   comparison: 'This is a COMPARISON question. After the lead sentence, render a Markdown table whose rows are the comparison dimensions and whose columns are the chosen methods. Cite cells/claims inline.',
   ranking: 'This is a RANKING/performance question. Lead with the VERIFIED BENCHMARKS: state the ranked values, each value\'s grade (A/B/C), and the source paper tag. Then a short bulleted list of the ranked methods.',
   recommendation: 'This is a RECOMMEND/"which methods" question. After the lead, give a bulleted list (one bullet per chosen method, most relevant first) — bold the method name and give a concrete one-line reason it fits, with a citation. Enumerate every qualifying method in the evidence, not just the top one.',

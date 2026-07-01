@@ -15,6 +15,10 @@ import { rankCandidates, parseStructuredAnswer, resolveMethods } from './copilot
 // chooses the answer's shape (table vs ranked list vs bullets) before generation.
 export function classifyFormatIntent(q) {
   const s = (q || '').toLowerCase();
+  // OVERVIEW / LANDSCAPE — "give an overview of the methods", "the landscape",
+  // "all methods", "what approaches are there", "survey". Must survey the WHOLE
+  // set (grouped), not pick a couple — checked FIRST so it wins over the others.
+  if (/\b(overview|landscape|survey|taxonomy|all (the |available )?(methods|approaches|algorithms|techniques)|(list|show) (me )?(all|the|every|methods|approaches|algorithms)|what (methods|approaches|algorithms) (are|exist))\b/.test(s)) return 'overview';
   // COMPARISON — explicit compare words, OR comparative-performance phrasing that
   // implies a head-to-head: "do X perform better in ...", "A better than B",
   // "which is better", "A or B" between two named things.
@@ -27,6 +31,23 @@ export function classifyFormatIntent(q) {
 // buildMethodSummaries is re-exported for backward compatibility — a test imports
 // it from ./ai-pipeline; the implementation now lives in ./copilot/rag-context.
 export { buildMethodSummaries };
+
+// ── Determinism guardrail: per-session answer cache ──
+// A repeated query returns the IDENTICAL answer without re-calling the LLM. Keyed
+// by the spell-corrected, normalized query + a corpus fingerprint, so it
+// invalidates automatically if the method set (corpus) changes. Combined with
+// temperature:0, this makes "the same question, again and again → the same answer"
+// hold, and near-identical phrasings that normalize/spell-correct to the same
+// query share one answer. Cross-reload consistency relies on temperature:0.
+const _answerCache = new Map();
+const _ANSWER_CACHE_MAX = 100;
+export function answerCacheKey(effectiveQuery, allMethods) {
+  const q = String(effectiveQuery || '').toLowerCase().trim().replace(/\s+/g, ' ').replace(/[?.!]+$/, '');
+  const list = Array.isArray(allMethods) ? allMethods : [];
+  const fp = `${list.length}:${(list[0] && list[0].name) || ''}`;
+  return `${fp}::${q}`;
+}
+export function _clearAnswerCache() { _answerCache.clear(); }
 
 function runGroundingCheck(insightText, methods, kgNodes) {
   const grounded = [];
@@ -80,6 +101,14 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   const methodNames = allMethods.map(m => m.name);
   const { text: correctedQuery, corrected: wasSpellCorrected } = await spellCorrectQuery(query, queryKeywords, methodNames);
   const effectiveQuery = correctedQuery;
+  // FORMAT intent, computed early so candidate selection can widen for an
+  // OVERVIEW/landscape query (which must survey the whole set, not a few).
+  const intent = classifyFormatIntent(effectiveQuery);
+
+  // Determinism guardrail: an identical (normalized) query returns the cached
+  // answer verbatim and skips the LLM entirely.
+  const _ck = answerCacheKey(effectiveQuery, allMethods);
+  if (_answerCache.has(_ck)) return _answerCache.get(_ck);
 
   // Step 1: Deterministic pipeline
   const { weights: newWeights, colorBy: newColorBy, filterMethods } =
@@ -139,7 +168,10 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     filterMethods: filterMethods || [], ragPapers: ragAnalytics.papers || [],
     ragCitations, query: effectiveQuery,
   });
-  const candMethods = ranked.slice(0, 14).map(name => allMethods.find(m => m.name === name)).filter(Boolean);
+  // Overview/landscape queries survey the whole set, so give the model a much
+  // wider candidate list (all/most methods) instead of the top-14 for a focused query.
+  const candCap = intent === 'overview' ? 40 : 14;
+  const candMethods = ranked.slice(0, candCap).map(name => allMethods.find(m => m.name === name)).filter(Boolean);
   const fmtCandidate = (m) => {
     const parts = COLS.map(c => { const v = m.metadata?.[c]; return v ? `${SHORTS[c] || c}=${v}` : null; }).filter(Boolean);
     return `- ${m.name}${parts.length ? ' — ' + parts.join('; ') : ''}`;
@@ -217,7 +249,7 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   // Step 7: SINGLE structured synthesis — answer markdown + the methods it
   // discusses (by id) + citations, in ONE JSON object. The discussed ids are the
   // SOLE selector for the comparison table, so prose and table cannot diverge.
-  const intent = classifyFormatIntent(effectiveQuery);
+  // (intent was computed early, above, so candidate selection could widen for overview.)
   let parsed = null;
   let insightText = '';
   try {
@@ -231,9 +263,9 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
       // Strict JSON mode is reliable WHEN it fits; but Groq hard-400s
       // (json_validate_failed) if the model truncates at max_tokens. Give ample
       // budget, then fall back to free-form (parseStructuredAnswer is robust).
-      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0.2, responseFormat: 'json_object' });
+      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0, responseFormat: 'json_object' });
     } catch (jsonErr) {
-      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0.2 });
+      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0 });
     }
     parsed = parseStructuredAnswer(raw);
     insightText = parsed
@@ -280,7 +312,7 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   }));
   const finalHighlight = discussedNames.length ? discussedNames : highlightMethods;
 
-  return {
+  const result = {
     success: true,
     umapData: responseData,
     weights: newWeights,
@@ -297,6 +329,14 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     paperRelevance: methodRelevance,
     kgContext,
     kgTraversal,
+    intent,
     spellCorrection: wasSpellCorrected ? { original: query, corrected: effectiveQuery } : null,
   };
+  // Cache successful answers only (don't pin an LLM-unavailable fallback). Simple
+  // FIFO cap so a long session can't grow the cache unbounded.
+  if (parsed) {
+    if (_answerCache.size >= _ANSWER_CACHE_MAX) _answerCache.delete(_answerCache.keys().next().value);
+    _answerCache.set(_ck, result);
+  }
+  return result;
 }
