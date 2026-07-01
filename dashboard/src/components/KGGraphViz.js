@@ -267,6 +267,7 @@ export default function KGGraphViz({
   onNodeClick, selectedNode, height = 420, dataUrl, postData,
   onNodeSelect, onEdgeSelect, onNodeHover, onBackgroundTap, refitTrigger,
   hiddenEdgeTypes, hiddenNodeTypes: extHiddenNodeTypes, highlightedLabels, dimUnhighlighted,
+  focusOnHighlight = false,
   minDegree = 0, searchTerm = '', viewName, minConfidence = 0, hideTooltip = false,
 }) {
   const cyRef = useRef(null);
@@ -597,7 +598,8 @@ export default function KGGraphViz({
   }, [refitTrigger]);
 
   // Auto-resize + fit when the container dimensions change (e.g. CSS
-  // grid transition from side panel opening/closing).
+  // grid transition from side panel opening/closing). Depends on `loading` for
+  // the same reason as the wheel effect: the container only exists post-load.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -607,12 +609,13 @@ export default function KGGraphViz({
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Cooperative wheel-to-zoom + the "⌘/Ctrl + scroll to zoom" hint. Attached to
-  // the container on MOUNT (ref is guaranteed set) so it binds reliably in both
-  // dev and production — the previous attach inside the cy callback could miss in
-  // a prod build. Reads cyRef at event time, so it works once Cytoscape is ready.
+  // Cooperative wheel-to-zoom + the "⌘/Ctrl + scroll to zoom" hint. Depends on
+  // `loading` because the .kgv-container only renders AFTER loading clears — a
+  // mount-only ([]) effect ran while the loading placeholder was showing (ref
+  // null), bailed, and never bound. Re-running when loading flips to false
+  // attaches the listener to the real container (and rebinds after a re-query).
   useEffect(() => {
     const wrapper = containerRef.current;
     if (!wrapper) return;
@@ -632,7 +635,7 @@ export default function KGGraphViz({
     };
     wrapper.addEventListener('wheel', onWheel, { passive: false });
     return () => wrapper.removeEventListener('wheel', onWheel);
-  }, []);
+  }, [loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Toggle type visibility
   const toggleType = useCallback(type => {
@@ -746,7 +749,15 @@ export default function KGGraphViz({
         e.addClass('ext-dim');
       }
     });
-  }, [highlightedLabels, dimUnhighlighted, elements, selectedNode]);
+    // WHERE-on-the-graph: pan/zoom the viewport to the highlighted cohort so the
+    // user actually sees the selection instead of hunting for lit nodes among
+    // dimmed ones. Only for a deliberate click-selection (focusOnHighlight), and
+    // only when it's a real subset (never for a near-everything highlight).
+    if (focusOnHighlight && hlNodes.nonempty() && hlNodes.length < cy.nodes().length) {
+      cy.stop();
+      cy.animate({ fit: { eles: hlNodes, padding: 80 } }, { duration: 420, easing: 'ease-in-out-cubic' });
+    }
+  }, [highlightedLabels, dimUnhighlighted, elements, selectedNode, focusOnHighlight]);
 
   if (loading) return <div className="kgv-loading">Loading graph...</div>;
   if (!elements.length) return <div className="kgv-loading">No graph data</div>;
@@ -835,11 +846,6 @@ export default function KGGraphViz({
           Use {navigator.platform.toLowerCase().includes('mac') ? '⌘' : 'Ctrl'} + scroll to zoom
         </div>
       )}
-      {/* Always-visible, subtle affordance so the zoom gesture is discoverable
-          even without scrolling (belt-and-suspenders for the transient hint). */}
-      <div className="kgv-zoom-caption" aria-hidden="true">
-        {navigator.platform.toLowerCase().includes('mac') ? '⌘' : 'Ctrl'} + scroll to zoom
-      </div>
 
       {/* Tooltip — suppressed while a pinned info box is open (it shares this
           bottom-left corner; showing both stacks two boxes). */}

@@ -820,6 +820,18 @@ export default function KGLanding({
   const highlightedLabels        = _highlightResolution.labels;
   const hasAnyHighlight          = highlightedLabels.size > 0;
 
+  // Human-readable summary of the active CLICK selection (technique / year /
+  // most-referenced paper): its BASIS and the co-selected methods it lit up. Drives
+  // the selection bar so the user sees WHY those nodes are highlighted and WHAT they
+  // share — the "everything connects" link made explicit.
+  const selectionSummary = useMemo(() => {
+    const methods = highlightedMethods instanceof Set ? [...highlightedMethods] : (highlightedMethods || []);
+    if (selectedTechnique) return { basis: 'Technique', value: selectedTechnique, verb: 'use it', methods };
+    if (selectedYear)      return { basis: 'Published', value: String(selectedYear), verb: 'from that year', methods };
+    if (selectedTopCited)  return { basis: 'Most-referenced', value: selectedTopCited, verb: 'linked to it', methods };
+    return null;
+  }, [selectedTechnique, selectedYear, selectedTopCited, highlightedMethods]);
+
   // One-selection-at-a-time helpers. Clicking any filter chip clears the
   // others so highlights never union confusingly across dimensions.
   const pickTechnique = useCallback((name) => {
@@ -947,16 +959,36 @@ export default function KGLanding({
       {/* Cross-highlight discoverability — the link between the method table
           above and the graph below is invisible until you stumble on it.
           One dismissable line, then it stays out of the way. */}
-      {!xhintDismissed && (
+      {selectionSummary ? (
+        // ACTIVE SELECTION — explains why the cohort is lit + what it shares, and
+        // the graph has zoomed to it (see focusOnHighlight). Replaces the tip bar.
+        <div className="kgl-xhint kgl-selbar" role="status">
+          <span className="kgl-xhint-icon" aria-hidden="true">◎</span>
+          <span className="kgl-xhint-text">
+            <strong>{selectionSummary.basis}: {selectionSummary.value}</strong>
+            {selectionSummary.methods.length > 0 ? (
+              <> — {selectionSummary.methods.length} method{selectionSummary.methods.length !== 1 ? 's' : ''} {selectionSummary.verb}
+                {': '}
+                <span className="kgl-selbar-methods">{selectionSummary.methods.slice(0, 8).join(', ')}</span>
+                {selectionSummary.methods.length > 8 ? `, +${selectionSummary.methods.length - 8} more` : ''}.
+                {' '}The graph zoomed to them; dimmed nodes don't match.</>
+            ) : (
+              <> — highlighted across the graph and every panel below.</>
+            )}
+          </span>
+          <button className="kgl-xhint-dismiss kgl-selbar-clear" onClick={clearAllSelections} aria-label="Clear selection">Clear ✕</button>
+        </div>
+      ) : (!xhintDismissed && (
         <div className="kgl-xhint" role="note">
           <span className="kgl-xhint-icon" aria-hidden="true">⇄</span>
           <span className="kgl-xhint-text">
             Hover a <strong>table row</strong> or a <strong>graph node</strong> to
             spotlight the same method across the table, the graph, and every panel below.
+            <strong> Click</strong> a value in any panel to lock the selection and zoom the graph to it.
           </span>
           <button className="kgl-xhint-dismiss" onClick={dismissXhint} aria-label="Dismiss tip">×</button>
         </div>
-      )}
+      ))}
       {/* ── Exact Explorer layout: scatter-section > viz-toolbar > content ── */}
       <div className="scatter-section">
         <div className="viz-toolbar">
@@ -1098,6 +1130,7 @@ export default function KGLanding({
               minConfidence={graphView === 'predictions' ? predMinConf : 0}
               highlightedLabels={highlightedLabels}
               dimUnhighlighted={hasAnyHighlight}
+              focusOnHighlight={!!(selectedTechnique || selectedYear || selectedTopCited)}
               hideTooltip={!!miniInfo}
             />
             {miniInfo && (

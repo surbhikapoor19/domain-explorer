@@ -2351,6 +2351,20 @@ body {
   font-size: 0.95rem;
   color: var(--primary);
 }
+/* Active-selection variant of the bar: stronger tint + accent bar so it reads as
+   live state (not a passive tip). Shows the selection basis + co-selected members. */
+.kgl-selbar {
+  background: rgba(22, 101, 125, 0.13);
+  border-color: rgba(22, 101, 125, 0.42);
+  border-left: 3px solid var(--primary);
+}
+.kgl-selbar .kgl-selbar-methods { font-weight: 650; color: var(--primary-deep); }
+.kgl-selbar-clear {
+  font-size: 0.72rem; font-weight: 700; opacity: 0.9;
+  border: 1px solid rgba(22, 101, 125, 0.4); border-radius: 5px;
+  padding: 0.1rem 0.4rem; letter-spacing: 0.2px;
+}
+.kgl-selbar-clear:hover { background: rgba(22, 101, 125, 0.12); opacity: 1; }
 .kgl-xhint-text { flex: 1; }
 .kgl-xhint-text strong { color: var(--primary); font-weight: 650; }
 .kgl-xhint-dismiss {
@@ -2424,14 +2438,6 @@ body {
   15%  { opacity: 1; }
   80%  { opacity: 1; }
   100% { opacity: 0; }
-}
-/* Always-visible subtle affordance in the graph's corner. */
-.kgv-zoom-caption {
-  position: absolute; bottom: 8px; right: 10px; z-index: 6;
-  padding: 3px 8px; border-radius: 5px;
-  background: rgba(255, 255, 255, 0.82); border: 1px solid var(--border);
-  color: var(--text-muted); font-size: 0.68rem; font-weight: 600;
-  letter-spacing: 0.2px; pointer-events: none;
 }
 
 /* Let scroll chain to the page when a panel reaches its boundary.
