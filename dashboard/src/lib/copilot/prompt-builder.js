@@ -27,7 +27,7 @@ export function formatDirective(intent) {
  * from `discussed` — can never name different methods than the prose. RAG excerpts
  * are primary; KG relations + benchmarks SUPPLEMENT (no graph-traversal voice).
  */
-export function buildAnswerPrompt({ query, ragText, kgContext, benchmarkText, corpusFacts, candidateBlock, intent, branding = {} }) {
+export function buildAnswerPrompt({ query, ragText, kgContext, benchmarkText, corpusFacts, structuredMatches, candidateBlock, intent, branding = {} }) {
   const subject = branding.productSubject || 'grasp planning';
   const system = `You are a research copilot for a ${subject} literature explorer, used by researchers and data scientists (some without a robotics background). You answer using ONLY the CONTEXT in the user message (SOURCES, CROSS-REFERENCE FACTS, VERIFIED BENCHMARKS, CANDIDATES). Never use outside/pretrained knowledge; never invent numbers, datasets, or results.
 
@@ -41,6 +41,7 @@ SELECTION (binding — this is the single source of truth for the UI)
 - Choose the subset of CANDIDATES that answers the question; discuss ONLY those; never mention a method that is not in CANDIDATES.
 - Refer to each method by its EXACT human-readable NAME from CANDIDATES, and bold it on first mention, e.g. **Contact-GraspNet**. NEVER write internal ids, slugs, or [m_...] markers — write the readable name only.
 - Any value you state about a method must come from that method's attrs in CANDIDATES or from the BENCHMARKS block.
+- COVERAGE: if STRUCTURED MATCHES lists methods that match an attribute in the question, account for EVERY relevant one — discuss it, or state briefly why it is out of scope (e.g. "also uses suction but only evaluated in singulated, not piled, scenes"). Never silently omit a method that matches the question's attributes.
 
 FORMAT
 - Begin with a direct 1-2 sentence answer (~40-60 words) that states the bottom line. NEVER begin with a header. No preamble ("Based on", "Great question", "Let me", "I found", "Here is").
@@ -73,6 +74,9 @@ ${benchmarkText || '(No benchmark leaderboard matched this query)'}
 
 CORPUS FACTS (corpus-wide superlatives derived from the data — use ONLY to resolve references like "the top-cited method"; the named method is exact and citable):
 ${corpusFacts || '(none derived)'}
+
+STRUCTURED MATCHES (methods whose metadata matches the attributes named in the question — be exhaustive: account for each relevant one, or say why it is out of scope; never silently omit):
+${structuredMatches || '(no attribute filters matched this question)'}
 
 CANDIDATES (discuss ONLY methods from this list, by their exact name):
 ${candidateBlock}

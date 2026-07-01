@@ -60,6 +60,34 @@ export function attributeFilter(query, methods, attributeTerms) {
   return filtered.length >= 2 ? filtered.map(m => m.name) : null;
 }
 
+/**
+ * structuredMatches — like attributeFilter, but returns the matches PER attribute
+ * column (OR within a column) instead of AND-ing every column and collapsing to a
+ * flat list. This lets the copilot ground on the EXACT set of methods whose
+ * metadata matches each attribute the question mentions (e.g. Hardware=Suction ->
+ * every suction method), so a relevant method isn't silently dropped by RAG/LLM
+ * selection. Returns [{col, values:[...], methods:[names]}], most-specific first.
+ */
+export function structuredMatches(query, methods, attributeTerms) {
+  const queryLower = (query || '').toLowerCase();
+  const out = [];
+  for (const [col, termMap] of Object.entries(attributeTerms || {})) {
+    if (typeof termMap !== 'object') continue;
+    const values = new Set();
+    for (const [term, vals] of Object.entries(termMap)) {
+      if (queryLower.includes(term.toLowerCase())) (Array.isArray(vals) ? vals : [vals]).forEach(v => values.add(v));
+    }
+    if (!values.size) continue;
+    const matched = methods.filter(m => {
+      const cell = String(m.metadata?.[col] || m[col] || '').toLowerCase();
+      return [...values].some(v => cell.includes(String(v).toLowerCase()));
+    }).map(m => m.name);
+    if (matched.length) out.push({ col, values: [...values], methods: matched });
+  }
+  // Fewer matches first — the most selective attribute is the most informative.
+  return out.sort((a, b) => a.methods.length - b.methods.length);
+}
+
 const NO_FILTER_SIGNALS = [
   'compare', 'comparison', 'overview', 'trend', 'landscape',
   'all methods', 'every method', 'general', 'broadly',

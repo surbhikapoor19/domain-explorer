@@ -1,7 +1,7 @@
 import { chat as llmChat } from './llm-client';
 import { loadRagChunks, loadKgFull, loadBenchmarkComparisons } from './data-loader';
 import { buildBenchmarkContext, benchmarkPageRef } from './benchmark-context';
-import { runQueryPipeline } from './query-engine';
+import { runQueryPipeline, structuredMatches } from './query-engine';
 import { spellCorrectQuery } from './spell-correct';
 import { GRASP_DEFAULTS } from '../DomainContext';
 import { buildMethodSummaries, formatRagContext, DEFAULT_SUMMARY_COLUMNS, DEFAULT_SHORT_NAMES } from './copilot/rag-context';
@@ -187,6 +187,30 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     if (added) candidateBlock = candMethods.map(fmtCandidate).join('\n');
   } catch (e) { /* facts optional */ }
 
+  // Step 6c: Structured attribute matches — the EXACT methods whose metadata
+  // matches each attribute the question names (Hardware=Suction, Scene=Piled, …).
+  // The Explorer table's attribute filter is exhaustive but RAG/LLM answer
+  // selection is NOT, so without this a matching method (e.g. a suction method)
+  // can be silently dropped from the answer. Inject the per-attribute matches AND
+  // add them to the candidates, so the model addresses every relevant one — or
+  // says why one is out of scope — instead of omitting it.
+  let structuredText = '';
+  try {
+    const matches = structuredMatches(effectiveQuery, allMethods, queryKeywords?.attributeTerms || {});
+    if (matches.length) {
+      structuredText = matches.map(mm => `- ${mm.col} = ${mm.values.join(' / ')}: ${mm.methods.join(', ')}`).join('\n');
+      const toAdd = [...new Set(matches.flatMap(mm => mm.methods))].slice(0, 12);
+      let added = false;
+      toAdd.forEach(name => {
+        if (!candMethods.find(m => m.name === name)) {
+          const m = allMethods.find(mm2 => mm2.name === name);
+          if (m) { candMethods.push(m); added = true; }
+        }
+      });
+      if (added) candidateBlock = candMethods.map(fmtCandidate).join('\n');
+    }
+  } catch (e) { /* structured matches optional */ }
+
   // Step 7: SINGLE structured synthesis — answer markdown + the methods it
   // discusses (by id) + citations, in ONE JSON object. The discussed ids are the
   // SOLE selector for the comparison table, so prose and table cannot diverge.
@@ -196,7 +220,7 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   try {
     const { system, user } = buildAnswerPrompt({
       query: effectiveQuery, ragText, kgContext, benchmarkText, corpusFacts,
-      candidateBlock, intent, branding: domainBranding,
+      structuredMatches: structuredText, candidateBlock, intent, branding: domainBranding,
     });
     const msgs = [{ role: 'system', content: system }, { role: 'user', content: user }];
     let raw = '';
