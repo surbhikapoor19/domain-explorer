@@ -89,6 +89,32 @@ test('paginates results at 30 per page', async () => {
   expect(within(screen.getByTestId('bmr-results')).getAllByText(/^M\d\d$/).length).toBe(5);
 });
 
+test('syncs with a copilot query: pre-filters to the queried methods + shows a banner', async () => {
+  render(<BenchmarksPage queryMethods={['GIGA', 'NonexistentMethod']} />);
+  const results = await screen.findByTestId('bmr-results');
+  await waitFor(() => expect(screen.getByText(/1 of 3 results/)).toBeInTheDocument());
+  expect(within(results).getByText('GIGA')).toBeInTheDocument();
+  expect(within(results).queryByText('AnyGrasp')).not.toBeInTheDocument();
+  expect(screen.getByText(/Synced to your copilot query/)).toBeInTheDocument();
+  expect(screen.getByText(/1 had no benchmark data/)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: /Show all results/ }));
+  await waitFor(() => expect(screen.getByText(/3 of 3 results/)).toBeInTheDocument());
+});
+
+test('shows the copilot answer on the Benchmarks page (no need to go back to Graph)', async () => {
+  const suggestion = {
+    insight: 'For piled scenes, **Dex-Net 4.0** uses a suction gripper [P1].',
+    citations: [{ marker: 'P1', paper_id: 'dex4', paper_title: 'Dex-Net 4.0' }],
+    methodRelevance: [{ name: 'Dex-Net 4.0' }],
+  };
+  const { container } = render(<BenchmarksPage suggestion={suggestion} query="suction piled" />);
+  await screen.findByTestId('bmr-results');
+  expect(screen.getByText(/Copilot answer/i)).toBeInTheDocument();
+  const answer = container.querySelector('.bmr-answer');
+  expect(answer).toBeInTheDocument();
+  expect(answer.textContent).toMatch(/piled scenes/);
+});
+
 test('source crop opens a full-screen lightbox, closable', async () => {
   render(<BenchmarksPage />);
   await screen.findByTestId('bmr-results');

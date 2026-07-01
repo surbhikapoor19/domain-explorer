@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Tooltip from './Tooltip';
+import AnswerMarkdown from './AnswerMarkdown';
 import { loadBenchmarkComparisons } from '../lib/data-loader';
 import { buildResultRecords, tagFacets, filterByTags, tagKey } from '../lib/benchmark-records';
 
@@ -210,12 +211,13 @@ function ResultCard({ rec, onZoom }) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfidence, incomingPageRef }) {
+export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfidence, incomingPageRef, queryMethods, suggestion, query, termDictionary }) {
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(() => new Set());
   const [lightbox, setLightbox] = useState(null);
   const [page, setPage] = useState(1);
+  const [queryFiltered, setQueryFiltered] = useState(false);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -230,6 +232,22 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   const facets = useMemo(() => tagFacets(records), [records]);
   const filtered = useMemo(() => filterByTags(records, selected), [records, selected]);
 
+  // ── Copilot sync ── When a copilot query names methods, scope the board to
+  // those (as Method filters) — but only the ones that actually have benchmark
+  // data, so the page reflects the answer instead of sitting unchanged.
+  const availableMethods = useMemo(() => new Set(records.map(r => r.method)), [records]);
+  const queryKey = (queryMethods || []).join('|');
+  const matchedQueryMethods = useMemo(
+    () => (queryMethods || []).filter(m => availableMethods.has(m)),
+    [queryKey, availableMethods] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  useEffect(() => {
+    if (!queryMethods || !queryMethods.length || !records.length || !matchedQueryMethods.length) return;
+    setSelected(new Set(matchedQueryMethods.map(m => tagKey('Method', m))));
+    setQueryFiltered(true);
+    setPage(1);
+  }, [queryKey, records.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Reset to page 1 whenever the filter changes (the result set is different).
   useEffect(() => { setPage(1); }, [selected]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -243,18 +261,30 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
     }
   };
 
-  const toggle = (k) => setSelected(prev => {
+  const toggle = (k) => { setQueryFiltered(false); setSelected(prev => {
     const n = new Set(prev);
     if (n.has(k)) n.delete(k); else n.add(k);
     return n;
-  });
-  const clear = () => setSelected(new Set());
+  }); };
+  const clear = () => { setQueryFiltered(false); setSelected(new Set()); };
 
   if (loading) return <div className="bmr-page"><div className="bmr-loading">Loading benchmark data…</div></div>;
   if (!records.length) return <div className="bmr-page"><div className="bmr-empty">No benchmark data available.</div></div>;
 
   return (
     <div className="bmr-page">
+      {suggestion && suggestion.insight && (
+        <div className="bmr-answer">
+          <div className="bmr-answer-label">Copilot answer</div>
+          <AnswerMarkdown
+            text={suggestion.insight}
+            citations={suggestion.citations}
+            methods={suggestion.methodRelevance}
+            query={query}
+            termDictionary={termDictionary}
+          />
+        </div>
+      )}
       <div className="bmr-header">
         <div className="bmr-header-text">
           <h2>Benchmark Results</h2>
@@ -275,6 +305,19 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
           <span className="bmr-gradekey-note">Most results are B — see the “?” for why A is rare here.</span>
         </div>
       </div>
+
+      {queryFiltered && matchedQueryMethods.length > 0 && (
+        <div className="bmr-querybar">
+          <span>
+            Synced to your copilot query — showing <strong>{matchedQueryMethods.length}</strong>&nbsp;
+            method{matchedQueryMethods.length > 1 ? 's' : ''} from the answer
+            {queryMethods.length > matchedQueryMethods.length
+              ? ` (${queryMethods.length - matchedQueryMethods.length} had no benchmark data)`
+              : ''}.
+          </span>
+          <button type="button" className="bmr-querybar-clear" onClick={clear}>Show all results</button>
+        </div>
+      )}
 
       <div className="bmr-layout">
         <aside className="bmr-rail">

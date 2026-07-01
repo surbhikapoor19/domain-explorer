@@ -67,15 +67,18 @@ body {
 .header-brand { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
 .header-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .header-nav {
-  display: flex; align-items: center; gap: 0.15rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  position: relative;
   margin-top: 0.45rem; border-bottom: 1px solid var(--border);
 }
 .nav-tab {
   background: none; border: none; border-bottom: 2px solid transparent;
-  margin-bottom: -1px; padding: 0.4rem 0.75rem; cursor: pointer;
-  font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--text-mid);
+  margin-bottom: -1px; padding: 0.5rem 1.1rem; cursor: pointer;
+  font-family: inherit; font-size: 1.02rem; font-weight: 600; color: var(--text-mid);
   transition: color 0.12s, border-color 0.12s;
 }
+/* Keep the transient status chip from throwing off the centered tabs. */
+.header-nav .header-status { position: absolute; right: 0; margin-left: 0; }
 .nav-tab:hover { color: var(--primary); }
 .nav-tab.active { color: var(--primary); border-bottom-color: var(--accent); }
 .copilot-header h1 {
@@ -5082,6 +5085,29 @@ body {
 .bmr-gradekey-item { display: inline-flex; align-items: center; gap: 0.3rem; }
 .bmr-gradekey-item .bmr-grade { cursor: default; }
 .bmr-gradekey-note { color: var(--text-muted); font-style: italic; }
+/* Copilot-sync banner: shown when the board is scoped to a copilot query. */
+.bmr-querybar {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  margin: 0 0 0.9rem; padding: 0.5rem 0.8rem; flex-wrap: wrap;
+  background: #eef4f8; border: 1px solid var(--primary); border-radius: 6px;
+  font-size: 0.8rem; color: var(--dark);
+}
+.bmr-querybar strong { font-variant-numeric: tabular-nums; }
+.bmr-querybar-clear {
+  flex-shrink: 0; background: none; border: none; color: var(--primary); cursor: pointer;
+  font-family: inherit; font-size: 0.78rem; font-weight: 700; white-space: nowrap;
+}
+.bmr-querybar-clear:hover { text-decoration: underline; }
+/* Copilot answer shown at the top of Benchmarks so a query answered here needn't
+   send the user back to Graph Reasoning to read it. */
+.bmr-answer {
+  margin: 0 0 1rem; padding: 0.85rem 1rem 0.7rem;
+  background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 6px;
+}
+.bmr-answer-label {
+  font-size: 0.64rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--primary); margin-bottom: 0.35rem;
+}
 .bmr-loading, .bmr-empty { padding: 2rem; color: var(--text-muted); font-size: 0.9rem; text-align: center; }
 .bmr-layout { display: flex; gap: 1.25rem; align-items: flex-start; }
 .bmr-rail {

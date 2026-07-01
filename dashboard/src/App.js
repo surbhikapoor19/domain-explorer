@@ -532,6 +532,10 @@ function App() {
           onSelect={setSelectedPoint}
           minConfidence={minConfidence}
           incomingPageRef={suggestion?.benchmarkPageRef || null}
+          queryMethods={suggestion?.highlightMethods || null}
+          suggestion={suggestion}
+          query={query}
+          termDictionary={termDictionary}
         />
 
         {selectedPoint && <DetailPanel point={selectedPoint} onClose={() => setSelectedPoint(null)} minConfidence={minConfidence} />}
