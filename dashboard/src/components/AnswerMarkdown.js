@@ -68,7 +68,7 @@ function renderInline(str, ctx) {
               type="button"
               className="answer-cite answer-cite-link"
               title={`Open source: ${title}`}
-              onClick={() => onCiteClick(cite.paper_id)}
+              onClick={() => onCiteClick(cite, str)}
             >[{cite.index}]</button>
           );
         }

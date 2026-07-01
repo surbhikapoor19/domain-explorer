@@ -6,6 +6,7 @@ import KGGraphViz from './KGGraphViz';
 import KGNodeDetail from './KGNodeDetail';
 import KGLanding from './KGLanding';
 import AnswerBlock, { computeAnchorMethods } from './AnswerBlock';
+import CitationModal from './CitationModal';
 import ProofBlock from './ProofBlock';
 
 const EDGE_TYPES = [
@@ -298,13 +299,16 @@ export default function GraphReasoningPage({
   // Clicking a citation [n] in the answer opens that paper's passage in the Paper
   // Evidence panel (clear filters so it's visible, then expand + scroll there).
   const [openPaperId, setOpenPaperId] = useState(null);
-  const handleCiteClick = useCallback((paperId) => {
-    if (!paperId) return;
+  const [citePopup, setCitePopup] = useState(null);
+  // Clicking a citation [n] opens the passage that best supports THAT claim (modal),
+  // and also scrolls the Paper Evidence panel to the paper for broader context.
+  const handleCiteClick = useCallback((cite, claimText) => {
+    if (!cite) return;
+    setCitePopup({ cite, claimText });
     setFilterRole(null);
     setFilterContent(null);
     setOpenPaperId(null);
-    // re-trigger the effect even if the same paper is clicked twice
-    requestAnimationFrame(() => setOpenPaperId(paperId));
+    requestAnimationFrame(() => setOpenPaperId(cite.paper_id));
   }, []);
 
   const traversalKey = traversal.length;
@@ -538,6 +542,7 @@ export default function GraphReasoningPage({
 
       </div>
 
+      <CitationModal data={citePopup} onClose={() => setCitePopup(null)} />
     </div>
   );
 }

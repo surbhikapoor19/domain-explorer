@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Tooltip from './Tooltip';
 import AnswerMarkdown from './AnswerMarkdown';
+import CitationModal from './CitationModal';
 import { loadBenchmarkComparisons } from '../lib/data-loader';
 import { buildResultRecords, tagFacets, filterByTags, tagKey } from '../lib/benchmark-records';
 
@@ -218,6 +219,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   const [lightbox, setLightbox] = useState(null);
   const [page, setPage] = useState(1);
   const [queryFiltered, setQueryFiltered] = useState(false);
+  const [citePopup, setCitePopup] = useState(null);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -282,6 +284,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
             methods={suggestion.methodRelevance}
             query={query}
             termDictionary={termDictionary}
+            onCiteClick={(cite, claimText) => setCitePopup({ cite, claimText })}
           />
         </div>
       )}
@@ -353,6 +356,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
       </div>
 
       <BenchmarkLightbox data={lightbox} onClose={() => setLightbox(null)} />
+      <CitationModal data={citePopup} onClose={() => setCitePopup(null)} />
     </div>
   );
 }

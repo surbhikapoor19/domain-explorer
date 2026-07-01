@@ -254,8 +254,17 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   const discussed = discussedNames.map(name => ({ name }));
 
   // Citations the answer renders as chips: the [P#]-tagged papers (ground truth).
+  // Each carries the ACTUAL retrieved chunks the LLM saw, so a citation click can
+  // show the passage that supports the specific claim (not just the paper's top
+  // query chunk) — on any page, with no dependency on a page-specific panel.
   const citations = papersById.map((p, i) => ({
     marker: p.tag, paper_id: p.paper_id, paper_title: p.paper_title, index: i + 1,
+    chunks: (p.chunks || []).map(c => ({
+      text: c.text || '',
+      section: (c.metadata && c.metadata.section) || '',
+      page: (c.metadata && c.metadata.page) || null,
+      score: c.score || 0,
+    })),
   }));
 
   // Grounding guardrail on the ANSWER (surfaced in the provenance drawer, not the body).

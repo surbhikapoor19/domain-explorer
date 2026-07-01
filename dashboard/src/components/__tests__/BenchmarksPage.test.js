@@ -115,6 +115,20 @@ test('shows the copilot answer on the Benchmarks page (no need to go back to Gra
   expect(answer.textContent).toMatch(/piled scenes/);
 });
 
+test('clicking a citation in the answer opens the source modal (was dead on Benchmarks)', async () => {
+  const suggestion = {
+    insight: 'GIGA uses a contact-point loss [P1].',
+    citations: [{ marker: 'P1', paper_id: 'giga', paper_title: 'GIGA Source Paper', index: 1,
+      chunks: [{ text: 'A contact-point loss trains the network.', section: 'Method', page: 3, score: 0.6 }] }],
+    methodRelevance: [{ name: 'GIGA' }],
+  };
+  render(<BenchmarksPage suggestion={suggestion} query="loss" />);
+  await screen.findByTestId('bmr-results');
+  fireEvent.click(screen.getByRole('button', { name: '[1]' }));
+  const dialog = screen.getByRole('dialog');
+  expect(within(dialog).getByText('GIGA Source Paper')).toBeInTheDocument();
+});
+
 test('source crop opens a full-screen lightbox, closable', async () => {
   render(<BenchmarksPage />);
   await screen.findByTestId('bmr-results');

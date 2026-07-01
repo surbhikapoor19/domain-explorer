@@ -35,7 +35,7 @@ describe('AnswerMarkdown', () => {
     expect(container.textContent).not.toMatch(/\[m_vgn\]/);
   });
 
-  test('a RESOLVED citation [P#] is a clickable chip that fires onCiteClick(paper_id)', () => {
+  test('a RESOLVED citation [P#] is a clickable chip that fires onCiteClick(cite, claimText)', () => {
     const onCiteClick = jest.fn();
     render(
       <AnswerMarkdown
@@ -46,7 +46,12 @@ describe('AnswerMarkdown', () => {
     );
     const btn = screen.getByRole('button', { name: '[1]' });
     fireEvent.click(btn);
-    expect(onCiteClick).toHaveBeenCalledWith('vgn');
+    // Now passes the full citation object + the claim text (the block the marker sits in),
+    // so the source viewer can show the passage matching THIS claim.
+    expect(onCiteClick).toHaveBeenCalledWith(
+      expect.objectContaining({ paper_id: 'vgn' }),
+      expect.stringContaining('Strong result'),
+    );
   });
 
   test('an UNRESOLVED citation marker is dropped (no dead chip, no raw text)', () => {
