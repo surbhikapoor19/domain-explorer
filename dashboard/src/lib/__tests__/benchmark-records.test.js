@@ -50,6 +50,41 @@ describe('buildResultRecords', () => {
   });
 });
 
+describe('buildResultRecords — full `results` set (comparable AND uncomparable)', () => {
+  const BENCH_RESULTS = {
+    leaderboards: {},           // present but empty; `results` must take precedence
+    results: [
+      { method: 'AnyGrasp', metric_id: 'success_rate', metric_label: 'Success Rate (%)',
+        value: 85, condition: 'packed', comparable: true, grade: 'B', paper_id: 'any',
+        value_str: '85', table_caption: 'Table 1' },
+      { method: 'GraspQP', metric_id: null, metric_label: 'Entropy (H)', metric_raw: 'entropy (H)',
+        value: 2.3, unit: 'bits', condition: null, comparable: false, grade: 'C', paper_id: 'graspqp',
+        value_str: '2.3', table_caption: 'Table 4: grasp diversity', page: 7 },
+    ],
+  };
+  const recs = buildResultRecords(BENCH_RESULTS);
+  test('keeps every extracted result, comparable or not', () => {
+    expect(recs).toHaveLength(2);
+    expect(recs.map(r => r.method).sort()).toEqual(['AnyGrasp', 'GraspQP']);
+  });
+  test('an uncomparable metric is a first-class, filterable row labeled by its raw header', () => {
+    const ent = recs.find(r => r.method === 'GraspQP');
+    expect(ent.metric).toBe('Entropy (H)');
+    expect(ent.comparable).toBe(false);
+    expect(ent.value).toBe(2.3);
+    // it becomes its own Metric facet option (value falls back to the label when metric_id is null)
+    expect(ent.tagKeys.has('Metric:Entropy (H)')).toBe(true);
+    expect(ent.tagKeys.has('Evidence grade:C')).toBe(true);
+    // provenance carried for the source drawer
+    expect(ent.sources[0]).toMatchObject({ paper: 'graspqp', table_caption: 'Table 4: grasp diversity', page: 7 });
+  });
+  test('recognized metrics still group under their metric_id facet', () => {
+    const sr = recs.find(r => r.method === 'AnyGrasp');
+    expect(sr.tagKeys.has('Metric:success_rate')).toBe(true);
+    expect(sr.comparable).toBe(true);
+  });
+});
+
 describe('tagFacets', () => {
   const facets = tagFacets(buildResultRecords(BENCH));
   test('categories appear in TAG_CATEGORY_ORDER, Method first', () => {

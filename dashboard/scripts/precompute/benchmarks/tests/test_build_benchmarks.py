@@ -43,6 +43,62 @@ def test_comparison_carries_grade_and_provenance():
     assert c['winner'] == 'AnyGrasp' and c['metric_id'] == 'success_rate'
     assert c['grade'] in ('A', 'B', 'C') and c['paper'] == 'anygrasp'
 
+def test_result_cleanup_helpers_drop_junk_keep_metrics():
+    from benchmarks.aggregate.build_benchmarks import (
+        clean_method_name, clean_metric_label, is_valid_metric_label)
+    # method names: strip citation markers / et al. / daggers
+    assert clean_method_name("DexGN-S[4]") == "DexGN-S"
+    assert clean_method_name("GraspNet [3, 5]*") == "GraspNet"
+    # metric labels: strip directional arrows
+    assert clean_metric_label("UGR ↑ [%]") == "UGR [%]"
+    # valid = recognized OR looks-like-a-metric (unit or metric word); junk dropped
+    assert is_valid_metric_label("anything", "success_rate") is True          # recognized
+    assert is_valid_metric_label("Max penetration depth (cm)", None) is True  # unit + word
+    assert is_valid_metric_label("Success Rate (%)", None) is True
+    assert is_valid_metric_label("0.86", None) is False                       # value-as-header
+    assert is_valid_metric_label("GQ", None) is False                         # bare abbreviation
+    assert is_valid_metric_label("Pile", None) is False                       # condition, not metric
+    assert is_valid_metric_label("# Images", None) is False                   # dataset stat
+
+def test_results_drops_noise_records():
+    recs = [
+        ResultRecord(paper_id="p", method_raw="GoodMethod[2]", method_id=None,
+                     metric_raw="Success Rate (%)", metric_id=None, unit="%",
+                     higher_is_better=True, value=90.0, value_str="90"),
+        ResultRecord(paper_id="p", method_raw="X", method_id=None,           # junk metric 'Pile'
+                     metric_raw="Pile", metric_id=None, unit=None,
+                     higher_is_better=None, value=5.0, value_str="5"),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    labels = [r['metric_label'] for r in out['results']]
+    assert 'Success Rate (%)' in labels and 'Pile' not in labels
+    assert out['results'][0]['method'] == 'GoodMethod'      # citation marker stripped
+    assert out['stats']['n_results_dropped_noise'] >= 1
+
+def test_results_keeps_every_value_bearing_record_incl_uncomparable():
+    # A recognized-metric record AND an unknown-metric record (e.g. "entropy").
+    recs = [
+        ResultRecord(paper_id="p1", method_raw="Ours", method_id="AnyGrasp",
+                     metric_raw="success rate", metric_id="success_rate", unit="%",
+                     higher_is_better=True, value=85.0, value_str="85"),
+        ResultRecord(paper_id="p2", method_raw="GraspQP", method_id=None,
+                     metric_raw="entropy (H)", metric_id=None, unit="bits",
+                     higher_is_better=True, value=2.3, value_str="2.3",
+                     table_caption="Table 4: grasp diversity", page=7),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    assert 'results' in out and out['stats']['n_results'] == 2
+    by_metric = {r['metric_label'].lower(): r for r in out['results']}
+    # the unknown metric is KEPT (not dropped), labeled by its raw header, marked uncomparable
+    ent = next(r for r in out['results'] if 'entropy' in r['metric_label'].lower())
+    assert ent['method'] == 'GraspQP' and ent['value'] == 2.3 and ent['comparable'] is False
+    assert ent['grade'] in ('A', 'B', 'C')
+    # the recognized metric is comparable and still present
+    sr = next(r for r in out['results'] if r['metric_id'] == 'success_rate')
+    assert sr['comparable'] is True and sr['method'] == 'AnyGrasp'
+    # ...even though the unknown-metric record is ALSO quarantined from leaderboards
+    assert out['quarantine']['n_records'] >= 1
+
 def test_unresolved_metric_is_quarantined_not_published():
     recs = records_from_v4({"outperforms_both_csv": [
         {"winner_csv": "X", "loser_csv": "Y", "metric": "Col_2",

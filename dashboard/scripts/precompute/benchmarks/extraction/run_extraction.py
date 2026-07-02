@@ -68,6 +68,12 @@ def extract_paper(tei_path, pdf_path, cfg, resolver, *, vlm_client=None, render_
                 r.page = page
             if crop_url and not r.crop_image:
                 r.crop_image = crop_url
+            # A paper's own rows are labeled "Ours"/"our method" (is_own_method) and
+            # don't resolve by name — bind them to THIS paper's method (by paper_id),
+            # so e.g. GraspVLA's "Ours" success rates are attributed to GraspVLA.
+            # (The Docling path already did this; the TEI path — 51/55 papers — did not.)
+            if r.is_own_method and r.method_id is None:
+                r.method_id = resolver.resolve(loc.paper_id).method_id
         merged.extend(recs)
     return merged
 

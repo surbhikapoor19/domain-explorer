@@ -7,6 +7,47 @@ from benchmarks.normalize.protocol import enrich_condition, is_caption_copied
 
 CONF_BASE = {'A': 0.92, 'B': 0.78, 'C': 0.45}
 
+# ── Result-cleanup (validation) for the full `results` set ────────────────────
+# The uncomparable results recovered from quarantine include noise (partly why they
+# were quarantined): citation-marked method names, values leaked into headers,
+# conditions parsed as metrics, bare abbreviations, dataset-size stats. These
+# helpers clean the presentable ones and DROP the junk — domain-agnostic (signal-
+# based, no hardcoded method/metric names).
+_UNIT_RE = re.compile(r'[(\[]\s*(?:%|ms|s|cm|mm|m|km|g|kg|mg|fps|hz|khz|db|bits?|px|rad|deg|°|j|w|n)\b', re.I)
+_METRIC_WORD_RE = re.compile(
+    r'\b(rate|success|precision|recall|accuracy|acc|time|latency|error|err|depth|'
+    r'penetration|entropy|cost|score|iou|map|ap|f1|coverage|quality|distance|dist|'
+    r'throughput|speed|mae|rmse|mse|psnr|ssim|auc|ugr|completion|declutter|clearance|'
+    r'reward|return|epe|chamfer|collision|smoothness|jerk|energy|torque|force|'
+    r'displacement|deviation|margin|ratio|percentage|number|count|steps?)\b', re.I)
+_CONDITION_WORDS = {'pile', 'piled', 'packed', 'isolated', 'singulated', 'sim',
+                    'simulation', 'simulated', 'real', 'cluttered', 'clutter'}
+
+def clean_method_name(m):
+    m = re.sub(r'\s*\[\d+(?:\s*[,;]\s*\d+)*\]', '', str(m or ''))   # citation markers [4], [3;5]
+    m = re.sub(r'\bet\s+al\.?\b', '', m, flags=re.I)
+    m = re.sub(r'[\*†‡]', '', m)                          # footnote daggers/asterisks
+    return re.sub(r'\s{2,}', ' ', m).strip(' ,;:·-')
+
+def clean_metric_label(l):
+    l = re.sub(r'[↑↓∆∇]', '', str(l or ''))     # ↑ ↓ ∆ ∇
+    return re.sub(r'\s{2,}', ' ', l).strip(' ,;:|-')
+
+def is_valid_metric_label(label, metric_id):
+    """A recognized metric is always valid. An unrecognized one is kept only if it
+    LOOKS like a metric (has a unit or a metric keyword) and isn't a value, a bare
+    condition, or 1-2 chars of noise — so junk headers don't become filter options."""
+    if metric_id:
+        return True
+    l = (label or '').strip()
+    if len(l) <= 2:
+        return False
+    if re.fullmatch(r'[\d.,%±()\s/+\-]+', l):        # a value leaked into the header
+        return False
+    if l.lower() in _CONDITION_WORDS:                # a condition, not a metric
+        return False
+    return bool(_UNIT_RE.search(l) or _METRIC_WORD_RE.search(l))
+
 def _confidence(grade, cv):
     """A single 0-1 confidence score used by the UI's min-confidence filter:
     grade sets the base, a high CV penalizes it. (A~0.9, B~0.78, C~0.45.)"""
@@ -284,8 +325,64 @@ def build_benchmark_json(records, cfg):
     def _top(counter, n=50):
         return [{'raw': k, 'count': v}
                 for k, v in sorted(counter.items(), key=lambda kv: (-kv[1], kv[0]))[:n]]
+
+    # ── FULL RESULT SET ───────────────────────────────────────────────────────
+    # The Benchmarks page is a FILTERABLE TABLE of every extracted number, not a
+    # leaderboard — so emit ONE record per value-bearing extraction, INCLUDING the
+    # results whose metric or method isn't in the comparable registry (previously
+    # quarantined and lost). Each carries a human-readable metric label + its
+    # protocol/condition, so nothing is silently dropped. `leaderboards` and
+    # `cross_validations` remain the DERIVED comparable-subset views; `results` is
+    # the complete data the page filters over.
+    results = []
+    n_dropped_noise = 0
+    for r in records:
+        if r.value is None:
+            continue
+        # Clean + validate (drops citation-marked junk, values-as-headers, bare
+        # abbreviations, condition-as-metric — see helpers above).
+        method_name = r.method_id or clean_method_name(r.method_raw)
+        if not (method_name and len(str(method_name).strip()) > 1):
+            n_dropped_noise += 1
+            continue
+        raw_label = _metric_label(cfg, r.metric_id) if r.metric_id else (r.metric_raw or '')
+        metric_label = clean_metric_label(raw_label)
+        if not is_valid_metric_label(metric_label, r.metric_id):
+            n_dropped_noise += 1
+            continue
+        results.append({
+            'method': method_name,
+            'method_resolved': bool(r.method_id),
+            'metric_id': r.metric_id,                 # None when uncomparable
+            'metric_label': metric_label,             # always human-readable
+            'metric_raw': r.metric_raw,
+            'value': round(r.value, 4),
+            'value_str': r.value_str,
+            'unit': r.unit,
+            'higher_is_better': r.higher_is_better,
+            'dataset_id': r.dataset_id,
+            'dataset_raw': r.dataset_raw,
+            'condition': r.condition or None,
+            # comparable = sits in a leaderboard-eligible (known metric+method) bucket
+            'comparable': bool(r.metric_id and r.method_id),
+            # a lone extracted number graded by its own extraction confidence only
+            # (multi-paper corroboration lives in cross_validations, never claimed here)
+            'grade': evidence_grade(1, None, r.verified, r.extraction_conf or 'low'),
+            'is_own_method': r.is_own_method,
+            'paper_id': r.paper_id,
+            'table_caption': r.table_caption,
+            'page': r.page,
+            'extractor': r.extractor,
+            'crop_image': r.crop_image,
+            'section_label': r.section_label,
+        })
+    results.sort(key=lambda x: (str(x['method']).lower(), str(x['metric_label']).lower()))
+    stats['n_results'] = len(results)
+    stats['n_results_dropped_noise'] = n_dropped_noise
+
     return {'leaderboards': leaderboards, 'cross_validations': cross_validations,
             'comparisons': comparisons, 'method_index': method_index,
+            'results': results,
             'copilot': _copilot_keywords(cfg),
             'quarantine': {'n_records': len(quarantined), 'reasons': dict(q_reasons),
                            'unresolved_headers': _top(unresolved_headers),

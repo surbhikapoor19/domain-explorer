@@ -38,29 +38,74 @@ function scopeLabel(t) {
   return t.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
+// Shared: turn a (method, metricId, metricLabel, condition, grade) into the tag list
+// + tagKeys that drive the filter rail. Metric tag VALUE = metricId when the metric
+// is recognized (so all success-rate results group under one facet), else the raw
+// label (so an uncomparable metric like "Entropy (H)" is still its own filter option).
+function buildTags({ method, metricId, metricLabel, condition, grade }) {
+  const tags = [
+    { cat: 'Method', value: method, label: method },
+    { cat: 'Metric', value: metricId || metricLabel, label: metricLabel },
+  ];
+  for (const t of (condition || '').split(':').filter(Boolean)) {
+    const cat = tokenCategory(t);
+    tags.push({ cat, value: t, label: cat === 'Measurement scope' ? scopeLabel(t) : humanizeFacet(t) });
+  }
+  if (grade) tags.push({ cat: 'Evidence grade', value: grade, label: `Grade ${grade}` });
+  return tags;
+}
+
 /**
- * buildResultRecords(benchmarkData) -> one record per extracted leaderboard cell
- * (method × metric × protocol). Each record carries its tags + a Set of tag keys
- * ("Category:value") for fast AND/OR filtering, plus the provenance sources.
+ * buildResultRecords(benchmarkData) -> one record per extracted result. Prefers the
+ * full `results` array (EVERY extracted number, comparable or not — the Benchmarks
+ * page is a filterable table, not a leaderboard). Falls back to flattening
+ * `leaderboards` for older data that predates the `results` field.
  */
 export function buildResultRecords(benchmarkData) {
-  const lbs = (benchmarkData && benchmarkData.leaderboards) || {};
+  const results = benchmarkData && Array.isArray(benchmarkData.results) ? benchmarkData.results : null;
   const out = [];
+
+  if (results && results.length) {
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      const metricLabel = r.metric_label || r.metric_id || 'metric';
+      const cond = r.condition || '';
+      const grade = r.grade || null;
+      const tags = buildTags({ method: r.method, metricId: r.metric_id, metricLabel, condition: cond, grade });
+      out.push({
+        id: `${r.paper_id}::${r.method}::${metricLabel}::${cond}::${i}`,
+        method: r.method,
+        metric: metricLabel,
+        metricId: r.metric_id,
+        value: r.value,
+        unit: r.unit || null,
+        grade,
+        nReports: 1,
+        comparable: r.comparable !== false,
+        papers: r.paper_id ? [r.paper_id] : [],
+        higherIsBetter: r.higher_is_better,
+        condition: cond,
+        sources: [{
+          paper: r.paper_id, value_str: r.value_str, metric_raw: r.metric_raw,
+          condition: r.condition, table_caption: r.table_caption, page: r.page,
+          extractor: r.extractor, crop_image: r.crop_image,
+        }],
+        tags,
+        tagKeys: new Set(tags.map(t => `${t.cat}:${t.value}`)),
+      });
+    }
+    out.sort((a, b) => a.method.localeCompare(b.method) || a.metric.localeCompare(b.metric));
+    return out;
+  }
+
+  // Fallback: flatten leaderboard entries (legacy data with no `results` field).
+  const lbs = (benchmarkData && benchmarkData.leaderboards) || {};
   for (const key of Object.keys(lbs)) {
     const lb = lbs[key] || {};
     const metricLabel = lb.metric_label || lb.metric_id || 'metric';
     const cond = lb.condition || '';
-    const toks = cond.split(':').filter(Boolean);
     for (const e of (lb.entries || [])) {
-      const tags = [
-        { cat: 'Method', value: e.method, label: e.method },
-        { cat: 'Metric', value: lb.metric_id, label: metricLabel },
-      ];
-      for (const t of toks) {
-        const cat = tokenCategory(t);
-        tags.push({ cat, value: t, label: cat === 'Measurement scope' ? scopeLabel(t) : humanizeFacet(t) });
-      }
-      if (e.grade) tags.push({ cat: 'Evidence grade', value: e.grade, label: `Grade ${e.grade}` });
+      const tags = buildTags({ method: e.method, metricId: lb.metric_id, metricLabel, condition: cond, grade: e.grade });
       out.push({
         id: `${key}::${e.method}`,
         method: e.method,
@@ -80,7 +125,6 @@ export function buildResultRecords(benchmarkData) {
       });
     }
   }
-  // Alphabetical by method, then metric — deterministic, no implied ranking.
   out.sort((a, b) => a.method.localeCompare(b.method) || a.metric.localeCompare(b.metric));
   return out;
 }
