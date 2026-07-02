@@ -35,6 +35,8 @@ function App() {
   useTruncationTitles();
 
   const detected = useMemo(() => detectDomainFromPath(), []);
+  // Hide internal-only controls (Admin) when the app is embedded on another site.
+  const isEmbedded = useMemo(() => { try { return window.self !== window.top; } catch (_) { return true; } }, []);
   useMemo(() => setDataPrefix(detected.dataPrefix), [detected.dataPrefix]);
 
   useEffect(() => {
@@ -323,13 +325,18 @@ function App() {
               </div>
             </div>
             <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
-            <button
-              className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
-              onClick={() => setPage('admin')}
-              title="Domain administration"
-            >
-              Admin
-            </button>
+            {/* Admin is internal (CSV upload, triggering builds). Hide it when the app
+                is embedded on another site — it stays reachable (token-gated) via the
+                Manual's "Domain administration" link. */}
+            {!isEmbedded && (
+              <button
+                className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
+                onClick={() => setPage('admin')}
+                title="Domain administration"
+              >
+                Admin
+              </button>
+            )}
             <ManualButton />
           </div>
         </div>
