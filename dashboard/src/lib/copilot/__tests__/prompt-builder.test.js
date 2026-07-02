@@ -17,7 +17,22 @@
  *
  * These tests are EXPECTED TO FAIL until the implementation lands (TDD).
  */
-import { buildInsightPrompt } from '../prompt-builder';
+import { buildInsightPrompt, buildAnswerPrompt, queryFocusDirective } from '../prompt-builder';
+
+test('queryFocusDirective: a pros/cons ask adds a strengths/limitations instruction', () => {
+  expect(queryFocusDirective('compare A to B with pros and cons of each')).toMatch(/PROS & CONS|Strengths:/);
+  expect(queryFocusDirective('when should I use A vs B?')).toMatch(/Best when/i);
+  expect(queryFocusDirective('what is A?')).toBe('');
+});
+
+test('buildAnswerPrompt threads the pros/cons focus into the FORMAT DIRECTIVE', () => {
+  const { user, system } = buildAnswerPrompt({
+    query: 'compare graspQP to graspVLA bringing out the pros and cons of each',
+    intent: 'comparison', candidateBlock: 'CAND', ragText: '', kgContext: '', benchmarkText: '',
+  });
+  expect(user).toMatch(/PROS & CONS/);            // the specific ask reaches the model
+  expect(system).toMatch(/ANSWER THE SPECIFIC ASK/); // general relevance rule present
+});
 
 // ---------------------------------------------------------------------------
 // Fixtures

@@ -5107,6 +5107,11 @@ body {
   font-size: 0.8rem; color: var(--dark);
 }
 .bmr-querybar strong { font-variant-numeric: tabular-nums; }
+/* Informational variant: the copilot's methods have no benchmark rows at all. */
+.bmr-querybar-empty {
+  background: #fdf3e7; border-color: #f2d9b8; color: #92400e;
+}
+.bmr-querybar-empty strong { color: #7c3410; }
 .bmr-querybar-clear {
   flex-shrink: 0; background: none; border: none; color: var(--primary); cursor: pointer;
   font-family: inherit; font-size: 0.78rem; font-weight: 700; white-space: nowrap;

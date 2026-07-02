@@ -243,6 +243,9 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
     () => (queryMethods || []).filter(m => availableMethods.has(m)),
     [queryKey, availableMethods] // eslint-disable-line react-hooks/exhaustive-deps
   );
+  // The copilot named methods but NONE has any extracted benchmark result — say so
+  // explicitly instead of silently leaving all results unfiltered (the reported bug).
+  const queryNoMatch = !!(queryMethods && queryMethods.length && records.length && !matchedQueryMethods.length);
   useEffect(() => {
     if (!queryMethods || !queryMethods.length || !records.length || !matchedQueryMethods.length) return;
     setSelected(new Set(matchedQueryMethods.map(m => tagKey('Method', m))));
@@ -319,6 +322,16 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
               : ''}.
           </span>
           <button type="button" className="bmr-querybar-clear" onClick={clear}>Show all results</button>
+        </div>
+      )}
+
+      {queryNoMatch && (
+        <div className="bmr-querybar bmr-querybar-empty">
+          <span>
+            No extracted benchmark results for{' '}
+            <strong>{queryMethods.map(m => String(m).replace(/^[^\p{L}\p{N}]+/u, '').trim()).join(' or ')}</strong>{' '}
+            in this corpus — {queryMethods.length > 1 ? 'these methods aren’t' : 'this method isn’t'} in any result table we could extract. All results are shown below.
+          </span>
         </div>
       )}
 

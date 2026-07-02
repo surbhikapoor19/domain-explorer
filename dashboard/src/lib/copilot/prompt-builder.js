@@ -18,6 +18,21 @@ export function formatDirective(intent) {
   return FORMAT_DIRECTIVES[intent] || FORMAT_DIRECTIVES.default;
 }
 
+// Extra directive tied to the SPECIFIC ask, so the answer addresses what the user
+// wanted — pros/cons, trade-offs, when-to-use — instead of dumping neutral spec
+// attributes. Composes with the intent's format directive. Keeps everything
+// grounded in the method's attributes + evidence (domain-agnostic; no method names).
+export function queryFocusDirective(query) {
+  const q = String(query || '').toLowerCase();
+  if (/\bpros?\b|\bcons?\b|advantages?|disadvantages?|strengths?|weakness|trade[- ]?offs?/.test(q)) {
+    return ' The question explicitly asks for PROS & CONS / trade-offs. After the table, add for EACH method one "Strengths:" line and one "Limitations:" line, INFERRED from its attributes and the cited evidence and phrased for this question (e.g. training-less → no training data required but potentially slower; sim-only → cheap to scale but a sim-to-real gap). Do not merely restate the table cells as prose.';
+  }
+  if (/when (to|should|do)|use case|best for|suitable|good for|ideal for/.test(q)) {
+    return ' The question asks WHEN to use each. After the table, add a one-line "Best when…" per method, grounded in its attributes.';
+  }
+  return '';
+}
+
 /**
  * buildAnswerPrompt — the copilot's PRIMARY synthesis prompt, split into a stable
  * SYSTEM message (persona + grounding/citation/format/selection rules) and a USER
@@ -46,6 +61,7 @@ SELECTION (binding — this is the single source of truth for the UI)
 - COVERAGE: if STRUCTURED MATCHES lists methods that match an attribute in the question, account for EVERY relevant one — discuss it, or state briefly why it is out of scope (e.g. "also uses suction but only evaluated in singulated, not piled, scenes"). Never silently omit a method that matches the question's attributes.
 
 FORMAT
+- ANSWER THE SPECIFIC ASK: shape the response to what the question wants. If it asks for pros/cons, give strengths and limitations; for trade-offs, contrast them; for "when to use", give conditions. Do NOT just enumerate neutral spec attributes when the question wants a judgment — interpret the attributes into the answer the user asked for.
 - Begin with a direct 1-2 sentence answer (~40-60 words) that states the bottom line. NEVER begin with a header. No preamble ("Based on", "Great question", "Let me", "I found", "Here is").
 - Then follow the FORMAT DIRECTIVE in the user message.
 - Bold each method name on first mention. Use flat bullet lists (never nested, never a lone bullet). Use a Markdown table for comparisons.
@@ -63,7 +79,7 @@ OUTPUT — respond with ONLY a JSON object (no prose outside it, no code fence):
 
   const user = `RESEARCHER'S QUESTION: "${query}"
 
-FORMAT DIRECTIVE: ${formatDirective(intent)}
+FORMAT DIRECTIVE: ${formatDirective(intent)}${queryFocusDirective(query)}
 
 SOURCES (paper excerpts — PRIMARY evidence; cite as the bracketed [P#] tag on each block):
 ${ragText || '(No paper excerpts retrieved for this query)'}

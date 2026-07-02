@@ -115,6 +115,17 @@ test('shows the copilot answer on the Benchmarks page (no need to go back to Gra
   expect(answer.textContent).toMatch(/piled scenes/);
 });
 
+test('copilot query whose methods have NO benchmark rows shows a clear message (not silent all-231)', async () => {
+  render(<BenchmarksPage queryMethods={['🤖 GraspQP', '🤖 GraspVLA']} />);
+  await screen.findByTestId('bmr-results');
+  // neither method is in BENCH -> explicit no-data message, names cleaned of the emoji
+  expect(await screen.findByText(/No extracted benchmark results/i)).toBeInTheDocument();
+  expect(screen.getByText(/GraspQP or GraspVLA/)).toBeInTheDocument();
+  // and it did NOT falsely claim to sync/filter
+  expect(screen.queryByText(/Synced to your copilot query/)).not.toBeInTheDocument();
+  expect(screen.getByText(/3 of 3 results/)).toBeInTheDocument(); // all still shown
+});
+
 test('clicking a citation in the answer opens the source modal (was dead on Benchmarks)', async () => {
   const suggestion = {
     insight: 'GIGA uses a contact-point loss [P1].',
