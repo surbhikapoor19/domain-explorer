@@ -69,10 +69,13 @@ export function computeAnchorMethods(suggestion, data) {
   const picks = aboveThreshold.length >= 2
     ? aboveThreshold.slice(0, MAX_ANCHORS)
     : sorted.slice(0, Math.min(MAX_ANCHORS, sorted.length));
+  // Match tolerant of case, the 🤖 prefix, and punctuation ("graspQP" -> "🤖 GraspQP")
+  // so a method's metadata always attaches — otherwise its column shows "not specified".
+  const compact = (s) => String(s || '').replace(/^[^\p{L}\p{N}]+/u, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
   return picks.map(p => {
-    const row = data.find(d => d.name === p.name);
+    const row = data.find(d => d.name === p.name) || data.find(d => compact(d.name) === compact(p.name));
     return {
-      name: p.name,
+      name: (row && row.name) || p.name,
       score: p.score || 0,
       cluster: row?.cluster,
       meta: row?.metadata || {},

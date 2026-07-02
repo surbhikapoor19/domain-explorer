@@ -32,6 +32,46 @@ export function classifyFormatIntent(q) {
 // it from ./ai-pipeline; the implementation now lives in ./copilot/rag-context.
 export { buildMethodSummaries };
 
+// Compact a name/id to bare alphanumerics (drops the 🤖 prefix, case, punctuation)
+// so "🤖 GraspQP", "graspQP" and paper_id "graspqp" all reduce to "graspqp".
+function compactName(s) {
+  return String(s || '').replace(/^[^\p{L}\p{N}]+/u, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+/**
+ * methodsNamedInQuery(query, allMethods) -> the methods the user EXPLICITLY named.
+ * A method someone asks to compare must always get evidence + a candidate slot,
+ * even if semantic retrieval ranks its chunks below the top-K (the GraspQP bug:
+ * "compare graspQP to graspVLA" dropped GraspQP because GraspVLA's chunks won
+ * retrieval). Single-word names match as a whole query token (so "GraspQP" hits
+ * but "grasp" inside "graspqp" does not); multi-word names match as a substring.
+ */
+export function methodsNamedInQuery(query, allMethods) {
+  const qLc = ` ${String(query || '').toLowerCase()} `;
+  const qTokens = new Set(qLc.match(/[a-z0-9]+/g) || []);
+  const out = [];
+  for (const m of (allMethods || [])) {
+    const nameLc = String(m.name || '').replace(/^[^\p{L}\p{N}]+/u, '').trim().toLowerCase();
+    if (!nameLc) continue;
+    // Aliases the user might type: the full name, any trailing "(acronym)" like
+    // "(VGN)"/"(GIGA)", and the pre-parenthesis name ("Dex-Net 2.0"). So a method
+    // written "Volumetric Grasping Network (VGN)" is found by "VGN" too.
+    const aliases = new Set([nameLc]);
+    const paren = nameLc.match(/\(([^)]+)\)/g) || [];
+    paren.forEach(p => aliases.add(p.replace(/[()]/g, '').trim()));
+    aliases.add(nameLc.replace(/\s*\([^)]*\)\s*/g, ' ').trim());
+    const hit = [...aliases].some(a => {
+      if (!a) return false;
+      const compact = a.replace(/[^a-z0-9]+/g, '');
+      const singleWord = !/[^a-z0-9]/.test(a);
+      return (singleWord && compact.length >= 3 && qTokens.has(compact))
+          || (a.length >= 5 && qLc.includes(` ${a} `));
+    });
+    if (hit) out.push(m);
+  }
+  return out;
+}
+
 // ── Determinism guardrail: per-session answer cache ──
 // A repeated query returns the IDENTICAL answer without re-calling the LLM. Keyed
 // by the spell-corrected, normalized query + a corpus fingerprint, so it
@@ -150,12 +190,52 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
         }
         if (seen.has(pid)) seen.get(pid).chunks.push(chunk);
       });
+
+      // PIN methods the user explicitly named: guarantee their paper is in the
+      // evidence even if semantic retrieval ranked its chunks below the top-6, so
+      // the copilot can cite BOTH sides of a comparison. (Root fix for the GraspQP
+      // bug — its 73 chunks existed but lost retrieval to GraspVLA.)
+      const namedMethods = methodsNamedInQuery(effectiveQuery, allMethods);
+      const qTokens = new Set((effectiveQuery.toLowerCase().match(/[a-z0-9]+/g) || []).filter(t => t.length > 2));
+      namedMethods.forEach(m => {
+        const mc = compactName(m.name);
+        if (!mc) return;
+        const covered = [...seen.values()].some(p => {
+          const pc = compactName(p.paper_id);
+          return pc && (pc.includes(mc) || mc.includes(pc));
+        });
+        if (covered) return;
+        const mChunks = ragChunks.filter(ch => {
+          const pc = compactName(ch.metadata?.paper_id);
+          return pc && (pc.includes(mc) || mc.includes(pc));
+        });
+        if (!mChunks.length) return;
+        // Take the chunks with the most query-token overlap (best support for the ask).
+        const best = mChunks
+          .map(ch => {
+            const words = new Set((ch.text || '').toLowerCase().match(/[a-z0-9]+/g) || []);
+            let ov = 0; qTokens.forEach(t => { if (words.has(t)) ov++; });
+            return { ch, ov };
+          })
+          .sort((a, b) => b.ov - a.ov)
+          .slice(0, 3)
+          .map(x => x.ch);
+        const pid = mChunks[0].metadata?.paper_id || mc;
+        seen.set(pid, {
+          tag: `P${seen.size + 1}`, paper_id: pid,
+          paper_title: mChunks[0].metadata?.paper_title || pid, chunks: best,
+          pinned: true,
+        });
+        // Surface the pinned chunks as citations too (so the citation modal has them).
+        ragCitations = ragCitations.concat(formatRagContext(best).ragCitations);
+      });
+
       papersById = [...seen.values()];
       ragText = papersById.map(p => {
         const text = p.chunks.map(c => (c.text || '').slice(0, 1400)).join(' … ').slice(0, 1600);
         return `[${p.tag}] ${p.paper_title}\n${text}`;
       }).join('\n\n');
-      ragAnalytics = { papers: [...new Set(scored.map(c => c.metadata?.paper_id).filter(Boolean))], totalChunks: scored.length };
+      ragAnalytics = { papers: [...new Set(papersById.map(p => p.paper_id).filter(Boolean))], totalChunks: scored.length };
     }
   } catch (e) { console.warn('RAG retrieval failed:', e); }
 
@@ -171,7 +251,15 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   // Overview/landscape queries survey the whole set, so give the model a much
   // wider candidate list (all/most methods) instead of the top-14 for a focused query.
   const candCap = intent === 'overview' ? 40 : 14;
-  const candMethods = ranked.slice(0, candCap).map(name => allMethods.find(m => m.name === name)).filter(Boolean);
+  let candMethods = ranked.slice(0, candCap).map(name => allMethods.find(m => m.name === name)).filter(Boolean);
+  // Force every method the user NAMED into the candidate set (front), even if it
+  // ranked below the cap — so its metadata is always in the candidate block and the
+  // model can fill each dimension instead of writing "Not specified".
+  const namedForCand = methodsNamedInQuery(effectiveQuery, allMethods);
+  if (namedForCand.length) {
+    const have = new Set(candMethods.map(m => m.name));
+    candMethods = [...namedForCand.filter(m => !have.has(m.name)), ...candMethods];
+  }
   const fmtCandidate = (m) => {
     const parts = COLS.map(c => { const v = m.metadata?.[c]; return v ? `${SHORTS[c] || c}=${v}` : null; }).filter(Boolean);
     return `- ${m.name}${parts.length ? ' — ' + parts.join('; ') : ''}`;

@@ -1,7 +1,7 @@
 /* classifyFormatIntent — AUTHORED BY ORCHESTRATOR. The router must recognize
  * comparative-performance phrasing ("do X perform better in Y") as a COMPARISON,
  * not fall through to default — the gap that made the suction query render flat. */
-import { classifyFormatIntent, answerCacheKey } from '../ai-pipeline';
+import { classifyFormatIntent, answerCacheKey, methodsNamedInQuery } from '../ai-pipeline';
 
 test('comparative-performance phrasing -> comparison (the reported "perform better" case)', () => {
   expect(classifyFormatIntent('do suction hardware of multi-finger perform better in piled scenes?')).toBe('comparison');
@@ -21,6 +21,25 @@ test('explicit ranking / recommendation / default still classify correctly', () 
   expect(classifyFormatIntent('what is the best method?')).toBe('ranking');
   expect(classifyFormatIntent('which methods for cluttered scenes?')).toBe('recommendation');
   expect(classifyFormatIntent('how does grasp planning work?')).toBe('default');
+});
+
+test('methodsNamedInQuery: finds methods the user named, case/emoji-insensitively (GraspQP bug)', () => {
+  const methods = [
+    { name: '🤖 GraspQP' }, { name: '🤖 GraspVLA' }, { name: '🤖 GIGA' },
+    { name: '🤖 Dex-Net 4.0' }, { name: '🤖 Contact-GraspNet' },
+  ];
+  const hits = methodsNamedInQuery('compare graspQP to graspVLA bringing out the pros and cons', methods)
+    .map(m => m.name);
+  expect(hits).toEqual(expect.arrayContaining(['🤖 GraspQP', '🤖 GraspVLA']));
+  expect(hits).not.toContain('🤖 GIGA');
+  // a bare "grasp" mention must NOT drag in every grasp* method (no false positives)
+  expect(methodsNamedInQuery('what is grasp planning?', methods).map(m => m.name)).not.toContain('🤖 GraspQP');
+  // multi-word name matches as a phrase
+  expect(methodsNamedInQuery('is dex-net 4.0 any good?', methods).map(m => m.name)).toContain('🤖 Dex-Net 4.0');
+  // trailing (ACRONYM) is a first-class alias: "VGN" / "GIGA" find their methods
+  const withAcr = [{ name: '🤖 Volumetric Grasping Network (VGN)' }, { name: '🤖 Grasp Implicit Geometry Affordance (GIGA)' }];
+  expect(methodsNamedInQuery('compare VGN and GIGA', withAcr).map(m => m.name))
+    .toEqual(expect.arrayContaining(['🤖 Volumetric Grasping Network (VGN)', '🤖 Grasp Implicit Geometry Affordance (GIGA)']));
 });
 
 test('answerCacheKey: repeat + near-duplicate queries collide; corpus change invalidates', () => {

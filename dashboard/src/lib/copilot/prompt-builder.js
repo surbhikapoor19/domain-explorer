@@ -42,6 +42,7 @@ SELECTION (binding — this is the single source of truth for the UI)
 - Choose the subset of CANDIDATES that answers the question; discuss ONLY those; never mention a method that is not in CANDIDATES.
 - Refer to each method by its EXACT human-readable NAME from CANDIDATES, and bold it on first mention, e.g. **Contact-GraspNet**. NEVER write internal ids, slugs, or [m_...] markers — write the readable name only.
 - Any value you state about a method must come from that method's attrs in CANDIDATES or from the BENCHMARKS block.
+- Fill EVERY comparison dimension for a method from its CANDIDATES attributes when present — a value in CANDIDATES needs no [P#] tag (it is the method's own spec). Write "Not specified" ONLY when that method truly has no value for that attribute in CANDIDATES. Never say a method is "not covered" or leave it blank just because no paper excerpt was retrieved for it; its attributes stand on their own.
 - COVERAGE: if STRUCTURED MATCHES lists methods that match an attribute in the question, account for EVERY relevant one — discuss it, or state briefly why it is out of scope (e.g. "also uses suction but only evaluated in singulated, not piled, scenes"). Never silently omit a method that matches the question's attributes.
 
 FORMAT
