@@ -18,8 +18,8 @@ const RETRAIN = new Set(['noretrain']);
 // specific method/paper is a primary entry point (the rail renders it as a
 // searchable dropdown because there are many distinct methods).
 export const TAG_CATEGORY_ORDER = [
-  'Method', 'Metric', 'Scene', 'Success criterion', 'Camera view', 'Depth noise',
-  'Object set', 'Training', 'Measurement scope', 'Evidence grade',
+  'Method', 'Metric', 'Dataset', 'Scene', 'Success criterion', 'Camera view', 'Depth noise',
+  'Object set', 'Training', 'Measurement scope', 'Reported by', 'Evidence grade',
 ];
 
 function tokenCategory(t) {
@@ -72,15 +72,29 @@ export function buildResultRecords(benchmarkData) {
       const cond = r.condition || '';
       const grade = r.grade || null;
       const tags = buildTags({ method: r.method, metricId: r.metric_id, metricLabel, condition: cond, grade });
+      // Protocol axes a robotics researcher needs that the condition tokens don't
+      // carry: WHICH benchmark suite (dataset), and WHO reported the number (the
+      // paper's own method vs. a baseline re-run/re-quote by another paper — the
+      // single biggest bias axis in this literature).
+      const dataset = r.dataset_id || r.dataset_raw || null;
+      if (dataset) tags.push({ cat: 'Dataset', value: dataset, label: humanizeFacet(dataset) });
+      if (typeof r.is_own_method === 'boolean') {
+        tags.push(r.is_own_method
+          ? { cat: 'Reported by', value: 'self', label: 'Self-reported' }
+          : { cat: 'Reported by', value: 'third-party', label: 'Reported by another paper' });
+      }
       out.push({
         id: `${r.paper_id}::${r.method}::${metricLabel}::${cond}::${i}`,
         method: r.method,
+        methodResolved: r.method_resolved !== false,
         metric: metricLabel,
         metricId: r.metric_id,
         value: r.value,
+        valueStr: r.value_str || '',
         unit: r.unit || null,
         grade,
-        nReports: 1,
+        nReports: r.n_reports || 1,
+        corroboration: r.corroboration || null,
         comparable: r.comparable !== false,
         papers: r.paper_id ? [r.paper_id] : [],
         higherIsBetter: r.higher_is_better,
@@ -130,18 +144,38 @@ export function buildResultRecords(benchmarkData) {
 }
 
 /**
- * tagFacets(records) -> [{category, tags:[{value,label,count}]}] in display order,
- * for the filter rail. Counts reflect the FULL record set (not the current filter),
- * so the rail is stable.
+ * tagFacets(records, selectedKeys?) -> [{category, tags:[{value,label,count}]}]
+ * in display order, for the filter rail. Without a selection, counts are over the
+ * full record set. With one, each category's counts are CONDITIONED on the
+ * selections in the OTHER categories (standard faceted search): they answer
+ * "if I also picked this, how many results would I get?" — so the rail never
+ * offers a dead-end zero. Options of the whole corpus stay listed either way.
  */
-export function tagFacets(records) {
+export function tagFacets(records, selectedKeys) {
+  const sel = [...(selectedKeys || [])];
+  const byCat = new Map();
+  for (const k of sel) {
+    const cat = k.slice(0, k.indexOf(':'));
+    if (!byCat.has(cat)) byCat.set(cat, []);
+    byCat.get(cat).push(k);
+  }
+  // records matching every selected category EXCEPT `skipCat` (whose own selection
+  // must not constrain its counts — else picking one option zeroes its siblings).
+  const matchesOthers = (r, skipCat) => {
+    for (const [cat, keys] of byCat) {
+      if (cat === skipCat) continue;
+      if (!keys.some(k => r.tagKeys.has(k))) return false;
+    }
+    return true;
+  };
+
   const cats = new Map(); // cat -> Map(value -> {value,label,count})
   for (const r of (records || [])) {
     for (const t of r.tags) {
       if (!cats.has(t.cat)) cats.set(t.cat, new Map());
       const m = cats.get(t.cat);
       if (!m.has(t.value)) m.set(t.value, { value: t.value, label: t.label, count: 0 });
-      m.get(t.value).count += 1;
+      if (!sel.length || matchesOthers(r, t.cat)) m.get(t.value).count += 1;
     }
   }
   const idx = (c) => { const i = TAG_CATEGORY_ORDER.indexOf(c); return i < 0 ? 99 : i; };
@@ -152,6 +186,23 @@ export function tagFacets(records) {
 }
 
 export function tagKey(category, value) { return `${category}:${value}`; }
+
+/**
+ * tagKeysFromCellKey(cellKey) -> tag keys for a copilot deep-link ref whose
+ * cellKey is a leaderboard key ("metric_id||cond:tokens"). Lets the page apply a
+ * pageRef as a real filter selection (Metric + each protocol token's category).
+ */
+export function tagKeysFromCellKey(cellKey) {
+  const s = String(cellKey || '');
+  if (!s) return [];
+  const sep = s.indexOf('||');
+  const metric = sep >= 0 ? s.slice(0, sep) : s;
+  const cond = sep >= 0 ? s.slice(sep + 2) : '';
+  const keys = [];
+  if (metric) keys.push(tagKey('Metric', metric));
+  for (const t of cond.split(':').filter(Boolean)) keys.push(tagKey(tokenCategory(t), t));
+  return keys;
+}
 
 /**
  * filterByTags(records, selectedKeys) -> records matching the selection.

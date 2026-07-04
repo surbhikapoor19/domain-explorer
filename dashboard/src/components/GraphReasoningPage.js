@@ -208,31 +208,6 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
 }
 
 /* ─── QUERY GUIDE ─── */
-function QueryGuide() {
-  const categories = [
-    { title: 'Comparison Queries', description: 'Traverses outperforms edges and shared technique nodes to find how methods relate.', examples: ['"Compare Contact-GraspNet and AnyGrasp"'], traverses: 'method \u2192 paper \u2192 comparison claims, shared techniques' },
-    { title: 'Limitation Queries', description: 'Walks paper\u2192limitation edges extracted from the text. Each limitation is a specific claim the authors acknowledged.', examples: ['"What are the limitations of diffusion-based methods?"'], traverses: 'method \u2192 paper \u2192 limitation nodes' },
-    { title: 'Technical Queries', description: 'Retrieves key contributions and methodology steps from method sections.', examples: ['"How does DexDiffuser generate grasps?"'], traverses: 'method \u2192 paper \u2192 contributions, methodology steps' },
-    { title: 'Hardware & Setup', description: 'Finds specific robot arms, grippers, sensors mentioned in experimental sections.', examples: ['"What hardware is used for dexterous grasping?"'], traverses: 'method \u2192 paper \u2192 hardware nodes' },
-    { title: 'Evaluation Queries', description: 'Surfaces quantitative claims, equations, and benchmark results from papers.', examples: ['"What success rates do methods achieve on cluttered scenes?"'], traverses: 'method \u2192 paper \u2192 comparisons, equations' },
-  ];
-  return (
-    <div className="gr-guide">
-      <div className="gr-guide-header"><h3>What kind of questions work best?</h3></div>
-      <div className="gr-guide-grid">
-        {categories.map((cat, i) => (
-          <div key={i} className="gr-guide-card">
-            <div className="gr-guide-card-title">{cat.title}</div>
-            <p className="gr-guide-card-desc">{cat.description}</p>
-            <div className="gr-guide-card-examples">{cat.examples.map((ex, j) => <span key={j} className="gr-guide-example">{ex}</span>)}</div>
-            <div className="gr-guide-card-path"><span className="gr-guide-path-label">Traverses:</span> {cat.traverses}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* ─── MAIN PAGE ─── */
 export default function GraphReasoningPage({
   query, suggestion, querying, termDictionary,
@@ -382,7 +357,7 @@ export default function GraphReasoningPage({
   if (querying) {
     return (
       <div className="graph-reasoning-page">
-        <div className="gr-loading"><div className="gr-loading-bar" /><span>Traversing knowledge graph...</span></div>
+        <div className="gr-loading"><div className="gr-loading-bar" /><span>Working on your answer — progress is shown under the search bar.</span></div>
       </div>
     );
   }
@@ -390,8 +365,8 @@ export default function GraphReasoningPage({
   return (
     <div className="graph-reasoning-page">
       <div className="gr-page-header">
-        <h2>How we found your answer</h2>
-        <p>Query: <em>{query}</em></p>
+        <h2>Answer</h2>
+        <p>Question: <em>{query}</em> · Everything below is grounded in the corpus — click any [n] to see the source passage.</p>
       </div>
 
       <div className="gr-main-content">

@@ -27,7 +27,7 @@ const BENCH = {
 test('grounds a performance + simulated query in the success_rate / sim leaderboard', () => {
   const out = buildBenchmarkContext('method for simulated scenes with highest performance?', BENCH);
   expect(out).toContain('Success Rate');
-  expect(out).toContain('AnyGrasp = 86.9');
+  expect(out).toContain('AnyGrasp reported 86.9');
   expect(out).toContain('grade A');
   expect(out).toContain('anygrasp');          // source cited
   expect(out).not.toContain('Latency');        // not a latency query
@@ -37,7 +37,7 @@ test('matches latency / "fastest" queries to the latency board (lower is better)
   const out = buildBenchmarkContext('which method is fastest?', BENCH);
   expect(out).toContain('Latency');
   expect(out).toContain('lower is better');
-  expect(out).toContain('VGN = 9');
+  expect(out).toContain('VGN reported 9');
 });
 
 test('returns empty for a non-quantitative question', () => {
@@ -90,14 +90,14 @@ test('uses the domain-derived copilot map to route a motion timing query', () =>
   const out = buildBenchmarkContext('fastest planner in a narrow passage?', MOTION_BENCH);
   expect(out).toContain('Planning Time');
   expect(out).toContain('narrow_passage');
-  expect(out).toContain('RRT-Connect = 0.8');
+  expect(out).toContain('RRT-Connect reported 0.8');
   expect(out).toContain('lower is better');
 });
 
 test('routes a motion success-rate query via the copilot map (grasp default lacks these planners)', () => {
   const out = buildBenchmarkContext('which algorithm has the best success rate in cluttered scenes?', MOTION_BENCH);
   expect(out).toContain('Success Rate');
-  expect(out).toContain('cuRobo = 98');
+  expect(out).toContain('cuRobo reported 98');
 });
 
 test('specific alias outranks a directional word: "shortest path length" → path_length, not planning_time', () => {
@@ -105,7 +105,7 @@ test('specific alias outranks a directional word: "shortest path length" → pat
   // Longest-match must pick path_length (alias len 11 > "shortest" len 8).
   const out = buildBenchmarkContext('which planner gives the shortest path length?', MOTION_BENCH);
   expect(out).toContain('Path Length');
-  expect(out).toContain('BIT* = 3.1');
+  expect(out).toContain('BIT* reported 3.1');
   expect(out).not.toContain('Planning Time');
 });
 
@@ -121,7 +121,7 @@ test('an EMPTY copilot block falls back to the grasp defaults (data built before
   const emptyCopilot = { leaderboards: BENCH.leaderboards, copilot: { metric_keywords: {}, condition_keywords: {} } };
   const out = buildBenchmarkContext('which method has the highest success rate in simulation?', emptyCopilot);
   expect(out).toContain('Success Rate');
-  expect(out).toContain('AnyGrasp = 86.9');
+  expect(out).toContain('AnyGrasp reported 86.9');
 });
 
 // ── APPENDED: comparison-intent path + motion-gap (CONTRACT extension) ────────
@@ -148,7 +148,7 @@ test('comparison verb "vs" with no metric word still surfaces a board for the na
   // "vs" alone is comparison intent; AnyGrasp + GIGA co-occur on success_rate||sim.
   const out = buildBenchmarkContext('AnyGrasp vs GIGA', BENCH, { knownMethods: ['AnyGrasp', 'GIGA'] });
   expect(out).not.toBe('');
-  expect(out).toContain('AnyGrasp = 86.9');       // exact leaderboard value, not a bare echo
+  expect(out).toContain('AnyGrasp reported 86.9');       // exact leaderboard value, not a bare echo
   expect(out).toContain('GIGA');
 });
 
@@ -158,7 +158,7 @@ test('comparison path does NOT hijack a genuine metric query (existing scoring w
   // branch only fires when no metric matched.
   const out = buildBenchmarkContext('which has the highest success rate in simulation, AnyGrasp or GIGA?', BENCH, { knownMethods: ['AnyGrasp', 'GIGA'] });
   expect(out).toContain('Success Rate');
-  expect(out).toContain('AnyGrasp = 86.9');
+  expect(out).toContain('AnyGrasp reported 86.9');
   expect(out).not.toContain('Latency');           // metric routing unchanged
 });
 

@@ -63,6 +63,8 @@ function App() {
 
   const [query, setQuery] = useState('');
   const [querying, setQuerying] = useState(false);
+  const [lastQuery, setLastQuery] = useState('');           // the previously ANSWERED query (follow-up context)
+  const [queryStage, setQueryStage] = useState(null);       // 'retrieving' | 'grounding' | 'writing' | 'done'
   const [suggestion, setSuggestion] = useState(null);
   const [queryError, setQueryError] = useState(null);
 
@@ -98,6 +100,7 @@ function App() {
   const allMethodsRef = useRef([]);
 
   const applyQueryResult = useCallback((queryText, result) => {
+    setLastQuery(queryText);
     setSuggestion(result);
     setData(result.umapData);
     setWeights(result.weights);
@@ -221,9 +224,14 @@ function App() {
   const handleQuerySubmit = async (e) => {
     e.preventDefault();
     if (!query.trim() || querying) return;
+    // Asking from Admin (or any page without a result surface) would produce no
+    // visible outcome — land the user where the answer renders.
+    if (page === 'admin' || page === 'explorer') setPage('graph-reasoning');
     setQuerying(true);
     setQueryError(null);
-    setSuggestion(null);
+    // Keep the PREVIOUS answer visible (dimmed by the progress bar) instead of
+    // blanking the page for the 5-15s generation.
+    const prevSuggestion = suggestion;
     try {
       const queryText = query.trim();
       // Method-summary columns + short names come from the active domain config
@@ -237,6 +245,12 @@ function App() {
         {
           defaultWeights: defaultWeightsRef.current, branding,
           summaryColumns, shortNames: domainCfg.shortNames,
+          // Follow-up context: the previous turn gives pronouns a referent.
+          history: prevSuggestion && prevSuggestion.insight
+            ? { prevQuery: lastQuery, prevAnswer: prevSuggestion.insight }
+            : null,
+          // Staged progress so the user sees WHAT is happening during generation.
+          onStage: (stage) => setQueryStage(stage),
         }
       );
       applyQueryResult(queryText, result);
@@ -324,7 +338,10 @@ function App() {
                 })}
               </div>
             </div>
-            <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
+            {/* Settings exposes provider/API-key plumbing — internal, hidden in embeds. */}
+            {!isEmbedded && (
+              <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
+            )}
             {/* Admin is internal (CSV upload, triggering builds). Hide it when the app
                 is embedded on another site — it stays reachable (token-gated) via the
                 Manual's "Domain administration" link. */}
@@ -380,6 +397,21 @@ function App() {
 
       <section className="query-section">
         <div className="query-label">Ask a question about {branding.methodNoun}s in this domain</div>
+        {/* First-run orientation: purpose + clickable example questions, gone after
+            the first answer (they've served their job by then). */}
+        {!suggestion && !querying && (
+          <div className="query-onboard">
+            <span className="query-purpose">{branding.purposeLine}</span>
+            <span className="query-examples">
+              {(branding.exampleQueries || []).slice(0, 4).map(ex => (
+                <button key={ex} type="button" className="query-example-chip"
+                  onClick={() => setQuery(ex)}>
+                  {ex}
+                </button>
+              ))}
+            </span>
+          </div>
+        )}
         <form onSubmit={handleQuerySubmit} className="query-form">
           <span className="query-icon" aria-hidden="true">&#128269;</span>
           <input
@@ -391,9 +423,24 @@ function App() {
             className="query-input"
           />
           <button type="submit" disabled={querying || !query.trim()} className="query-btn">
-            {querying ? 'Searching...' : 'Ask'}
+            {querying ? 'Working…' : 'Ask'}
           </button>
         </form>
+        {querying && (
+          <div className="query-progress" role="status" aria-live="polite">
+            {[['retrieving', 'Retrieving evidence'], ['grounding', 'Checking benchmarks & facts'], ['writing', 'Writing the answer']].map(([k, label], i) => {
+              const order = { retrieving: 0, grounding: 1, writing: 2, done: 3 };
+              const cur = order[queryStage] ?? 0;
+              const state = i < cur ? 'done' : i === cur ? 'active' : 'pending';
+              return (
+                <span key={k} className={`query-step ${state}`}>
+                  <span className="query-step-dot" aria-hidden="true">{state === 'done' ? '✓' : ''}</span>
+                  {label}
+                </span>
+              );
+            })}
+          </div>
+        )}
         {suggestion?.spellCorrection && (
           <div className="spell-correction-notice">
             Showing results for <strong>{suggestion.spellCorrection.corrected}</strong>
@@ -430,8 +477,12 @@ function App() {
         {sharedHeader}
         {queryError && <div className="query-error">{queryError}</div>}
 
-        {/* MethodTable — identical render to Explorer (sibling of .copilot-app, full width) */}
-        <MethodTable
+        {/* MethodTable — identical render to Explorer (sibling of .copilot-app, full
+            width). ORDER: on the landing the table leads (it pairs with the KG
+            cross-highlighting below); once a question is ANSWERED the answer is the
+            most valuable thing on the page, so it renders first and the table
+            follows — no more scrolling past 56 rows to reach the answer. */}
+        {!suggestion && <MethodTable
           data={activeCluster != null
             ? data.filter(d => {
                 if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
@@ -459,7 +510,7 @@ function App() {
               fetchUmap();
             }
           }}
-        />
+        />}
 
         <GraphReasoningPage
           query={query}
@@ -492,6 +543,37 @@ function App() {
             }
           }}
         />
+
+        {/* Answered state: the table follows the answer (see order note above). */}
+        {suggestion && <MethodTable
+          data={activeCluster != null
+            ? data.filter(d => {
+                if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
+                  const parts = (d.metadata?.[activeCluster.column] || '').split(',').map(s => s.trim());
+                  return parts.some(p => p === activeCluster.value);
+                }
+                return d.cluster === activeCluster;
+              })
+            : data}
+          allData={data}
+          highlightedMethods={highlightedMethods}
+          selectedPoint={selectedPoint}
+          hoveredIndex={hoveredIndex}
+          onSelect={setSelectedPoint}
+          onHover={setHoveredIndex}
+          onUnhover={() => setHoveredIndex(null)}
+          onFilter={(methods) => {
+            if (methods && methods.length >= 3) {
+              setFilterActive(true);
+              setFilterCount(methods.length);
+              fetchUmap(null, methods);
+            } else {
+              setFilterActive(false);
+              setFilterCount(null);
+              fetchUmap();
+            }
+          }}
+        />}
       </div>
       </DomainContext.Provider>
     );

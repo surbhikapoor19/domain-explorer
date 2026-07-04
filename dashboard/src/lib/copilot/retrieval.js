@@ -13,17 +13,42 @@ const STOP = new Set(['the', 'a', 'an', 'of', 'for', 'and', 'to', 'in', 'on', 'w
   'are', 'as', 'by', 'how', 'what', 'which', 'that', 'this', 'do', 'does', 'can', 'using',
   'use', 'used', 'their', 'its', 'from', 'at', 'or', 'be', 'has', 'have']);
 
-// Real lexical retrieval (BM25) over the chunks, scoped by query intent.
-// (Replaces the previous +1-per-substring count, which ranked common words
-// as highly as discriminating ones.) Returns the top-`topK` scored chunks.
+// Small domain-vocabulary expansion so lexically-different phrasings of the same
+// concept still match ("gripper" vs "end-effector", "fast" vs "latency"). Each
+// group is symmetric: any member of a group expands the query with the others.
+const SYNONYM_GROUPS = [
+  ['gripper', 'end-effector', 'hand'],
+  ['fast', 'speed', 'latency', 'runtime', 'time'],
+  ['accuracy', 'success', 'precision'],
+  ['clutter', 'cluttered', 'pile', 'piled'],
+  ['sim', 'simulation', 'simulated'],
+  ['real', 'physical', 'real-world'],
+  ['grasp', 'grasping'],
+  ['plan', 'planner', 'planning'],
+];
+const SYNONYMS = new Map();
+for (const group of SYNONYM_GROUPS) {
+  for (const w of group) SYNONYMS.set(w, group.filter(x => x !== w));
+}
+export function expandQueryTerms(terms) {
+  const out = new Set(terms);
+  for (const t of terms) (SYNONYMS.get(t) || []).forEach(s => out.add(s));
+  return [...out];
+}
+
+// Real lexical retrieval (BM25) over the chunks. The query intent BOOSTS its
+// preferred layers rather than hard-filtering to them — a hard filter starved
+// e.g. broad queries down to the coarse layer only (a quarter of the corpus)
+// and missed relevant mid/fine evidence entirely.
 export function bm25Search(query, ragChunks, { topK = 10 } = {}) {
   const intent = classifyIntent(query);
   const targetLayers = new Set(INTENT_LAYERS[intent] || ['coarse', 'mid', 'fine']);
-  const qTerms = [...new Set((query.toLowerCase().match(/[a-z0-9-]+/g) || []))]
+  const LAYER_BOOST = 1.15;   // gentle preference, never exclusion
+  const baseTerms = [...new Set((query.toLowerCase().match(/[a-z0-9-]+/g) || []))]
     .filter(w => w.length > 2 && !STOP.has(w));
+  const qTerms = expandQueryTerms(baseTerms);
   const toks = (c) => (c._toks || (c._toks = (c.text.toLowerCase().match(/[a-z0-9-]+/g) || [])));
-  let pool = ragChunks.filter(c => c.text && targetLayers.has(c.metadata?.layer));
-  if (pool.length < 5) pool = ragChunks.filter(c => c.text);   // fall back across layers
+  const pool = ragChunks.filter(c => c.text);
   const df = {};
   pool.forEach(c => { const seen = new Set(); toks(c).forEach(t => { if (!seen.has(t)) { seen.add(t); df[t] = (df[t] || 0) + 1; } }); });
   const N = pool.length || 1;
@@ -40,8 +65,24 @@ export function bm25Search(query, ragChunks, { topK = 10 } = {}) {
         s += idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * dl / avgdl));
       }
     });
+    if (s > 0 && targetLayers.has(c.metadata?.layer)) s *= LAYER_BOOST;
     return { ...c, score: s };
   }).filter(c => c.score > 0).sort((a, b) => b.score - a.score).slice(0, topK);
+}
+
+// Near-duplicate suppression: multi-granularity chunking stores the same passage
+// at several layers; without this, the top-K evidence slots fill with copies of
+// one paragraph. Key = first 240 normalized chars.
+export function dedupeChunks(chunks) {
+  const seen = new Set();
+  const out = [];
+  for (const c of (chunks || [])) {
+    const key = (c.text || '').toLowerCase().replace(/\s+/g, ' ').slice(0, 240);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(c);
+  }
+  return out;
 }
 
 // Min-max normalize a list's `.score` into [0,1]. A degenerate (all-equal or
@@ -95,26 +136,21 @@ export async function retrieveChunks(query, ragChunks, opts = {}) {
     return bm25;
   }
 
-  // Merge BM25 + cosine, dedupe by id, blend on independently-normalized scores
-  // so both surfacing methods are represented on a common [0,1] scale. A chunk
-  // found by either path is kept; its blended score is the max of its (possibly
-  // absent) BM25 and cosine contributions.
+  // Merge BM25 + cosine on a common [0,1] scale as a WEIGHTED SUM (0.55 neural +
+  // 0.45 lexical) — not a max. A chunk both retrievers agree on outranks a chunk
+  // only one found, which max() failed to reward. Then suppress near-duplicate
+  // passages (multi-granularity chunking stores the same text at several layers).
   const bm25Norm = normScores(bm25);
   const cosNorm = normScores(cosine);
   const merged = new Map();
-  const consider = (c, norm) => {
-    const n = norm.get(c.id) ?? 0;
-    const existing = merged.get(c.id);
-    if (existing) {
-      existing.score = Math.max(existing.score, n);
-    } else {
-      merged.set(c.id, { ...c, score: n });
-    }
-  };
-  bm25.forEach(c => consider(c, bm25Norm));
-  cosine.forEach(c => consider(c, cosNorm));
+  const consider = (c) => { if (!merged.has(c.id)) merged.set(c.id, c); };
+  bm25.forEach(consider);
+  cosine.forEach(consider);
 
-  return [...merged.values()]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, topK);
+  const scored = [...merged.values()].map(c => ({
+    ...c,
+    score: 0.55 * (cosNorm.get(c.id) ?? 0) + 0.45 * (bm25Norm.get(c.id) ?? 0),
+  }));
+
+  return dedupeChunks(scored.sort((a, b) => b.score - a.score)).slice(0, topK);
 }

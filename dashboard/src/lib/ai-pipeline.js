@@ -81,13 +81,44 @@ export function methodsNamedInQuery(query, allMethods) {
 // query share one answer. Cross-reload consistency relies on temperature:0.
 const _answerCache = new Map();
 const _ANSWER_CACHE_MAX = 100;
-export function answerCacheKey(effectiveQuery, allMethods) {
+export function answerCacheKey(effectiveQuery, allMethods, history) {
   const q = String(effectiveQuery || '').toLowerCase().trim().replace(/\s+/g, ' ').replace(/[?.!]+$/, '');
   const list = Array.isArray(allMethods) ? allMethods : [];
-  const fp = `${list.length}:${(list[0] && list[0].name) || ''}`;
-  return `${fp}::${q}`;
+  // Corpus fingerprint = a hash over ALL method names (length+first-name alone
+  // survived corpus content changes and returned stale cached answers).
+  let h = 5381;
+  const names = list.map(m => (m && m.name) || '').join('|');
+  for (let i = 0; i < names.length; i++) h = ((h * 33) ^ names.charCodeAt(i)) >>> 0;
+  const fp = `${list.length}:${h.toString(36)}`;
+  // A follow-up asked in a different conversation context is a different answer.
+  const hist = history && history.prevQuery ? `::after:${String(history.prevQuery).toLowerCase().trim()}` : '';
+  return `${fp}::${q}${hist}`;
 }
 export function _clearAnswerCache() { _answerCache.clear(); }
+
+/**
+ * findUngroundedNumbers(answer, contextBlob) — every quantitative figure in the
+ * answer must literally appear in the evidence the model was given. Returns the
+ * figures that don't (conservatively: years and small integers ≤10 are exempt —
+ * counts like "3 methods" are the answer's own arithmetic, not evidence claims).
+ * This turns the grounding check from telemetry into ENFORCEMENT: fabricated
+ * numbers get a visible caveat instead of passing silently with a [P#] tag.
+ */
+export function findUngroundedNumbers(answer, contextBlob) {
+  const nums = (String(answer || '').match(/\d+(?:\.\d+)?/g) || []).filter(n => {
+    const v = parseFloat(n);
+    if (v >= 1900 && v <= 2100 && Number.isInteger(v)) return false;  // years
+    if (Number.isInteger(v) && v <= 10) return false;                 // small counts
+    return true;
+  });
+  const ctx = String(contextBlob || '');
+  const out = [];
+  for (const n of [...new Set(nums)]) {
+    const alt = n.includes('.') ? n.replace(/0+$/, '').replace(/\.$/, '') : `${n}.0`;
+    if (!ctx.includes(n) && !ctx.includes(alt)) out.push(n);
+  }
+  return out;
+}
 
 function runGroundingCheck(insightText, methods, kgNodes) {
   const grounded = [];
@@ -147,8 +178,10 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
 
   // Determinism guardrail: an identical (normalized) query returns the cached
   // answer verbatim and skips the LLM entirely.
-  const _ck = answerCacheKey(effectiveQuery, allMethods);
-  if (_answerCache.has(_ck)) return _answerCache.get(_ck);
+  const onStage = typeof domainOpts.onStage === 'function' ? domainOpts.onStage : () => {};
+  const _ck = answerCacheKey(effectiveQuery, allMethods, domainOpts.history);
+  if (_answerCache.has(_ck)) { onStage('done'); return _answerCache.get(_ck); }
+  onStage('retrieving');
 
   // Step 1: Deterministic pipeline
   const { weights: newWeights, colorBy: newColorBy, filterMethods } =
@@ -202,12 +235,12 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
         if (!mc) return;
         const covered = [...seen.values()].some(p => {
           const pc = compactName(p.paper_id);
-          return pc && (pc.includes(mc) || mc.includes(pc));
+          return pc && (pc === mc || pc.startsWith(mc) || mc.startsWith(pc));
         });
         if (covered) return;
         const mChunks = ragChunks.filter(ch => {
           const pc = compactName(ch.metadata?.paper_id);
-          return pc && (pc.includes(mc) || mc.includes(pc));
+          return pc && (pc === mc || pc.startsWith(mc) || mc.startsWith(pc));
         });
         if (!mChunks.length) return;
         // Take the chunks with the most query-token overlap (best support for the ask).
@@ -278,13 +311,27 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     kgTraversal = kg.kgTraversal;
   } catch (e) { console.warn('KG context failed:', e); }
 
-  // Step 6: Benchmark grounding for quantitative/ranking queries.
+  onStage('grounding');
+  // Step 6: Benchmark grounding for quantitative/ranking queries. Each block is
+  // tagged [B#] so the prompt's "[B#] citation" instruction actually has a target
+  // (previously the model was told to cite [B#] against an untagged block).
   let benchmarkText = '';
   let bmPageRef = null;
   let benchData = null;
+  let benchTags = [];
   try {
     benchData = await loadBenchmarkComparisons();
-    benchmarkText = buildBenchmarkContext(effectiveQuery, benchData, { knownMethods: methodNames });
+    const rawBench = buildBenchmarkContext(effectiveQuery, benchData, { knownMethods: methodNames });
+    if (rawBench && !/^No leaderboard/.test(rawBench)) {
+      const blocks = rawBench.split('\n\n').filter(Boolean);
+      benchmarkText = blocks.map((b, i) => `[B${i + 1}] ${b}`).join('\n\n');
+      benchTags = blocks.map((b, i) => ({
+        marker: `B${i + 1}`,
+        title: (b.split('\n')[0] || '').replace(/\s*\(values measured.*$/, '').trim(),
+      }));
+    } else {
+      benchmarkText = rawBench;
+    }
     bmPageRef = benchmarkPageRef(effectiveQuery, benchData, { knownMethods: methodNames, methods: allMethods });
   } catch (e) { /* benchmarks optional */ }
 
@@ -338,29 +385,64 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   // discusses (by id) + citations, in ONE JSON object. The discussed ids are the
   // SOLE selector for the comparison table, so prose and table cannot diverge.
   // (intent was computed early, above, so candidate selection could widen for overview.)
+  onStage('writing');
   let parsed = null;
   let insightText = '';
-  try {
-    const { system, user } = buildAnswerPrompt({
-      query: effectiveQuery, ragText, kgContext, benchmarkText, corpusFacts,
-      structuredMatches: structuredText, candidateBlock, intent, branding: domainBranding,
-    });
-    const msgs = [{ role: 'system', content: system }, { role: 'user', content: user }];
-    let raw = '';
+  const history = domainOpts.history || null;
+  // Overview answers enumerate the whole candidate set — give them the budget to
+  // finish (a 1400-token cap truncated the JSON and forced a doubled LLM call).
+  const tokenBudget = intent === 'overview' ? 2400 : 1400;
+  for (let attempt = 0; attempt < 2 && !insightText; attempt++) {
     try {
-      // Strict JSON mode is reliable WHEN it fits; but Groq hard-400s
-      // (json_validate_failed) if the model truncates at max_tokens. Give ample
-      // budget, then fall back to free-form (parseStructuredAnswer is robust).
-      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0, responseFormat: 'json_object' });
-    } catch (jsonErr) {
-      raw = await llmChat(msgs, { maxTokens: 1400, temperature: 0 });
+      const { system, user } = buildAnswerPrompt({
+        query: effectiveQuery, ragText, kgContext, benchmarkText, corpusFacts,
+        structuredMatches: structuredText, candidateBlock, intent, branding: domainBranding,
+        history,
+      });
+      const msgs = [{ role: 'system', content: system }, { role: 'user', content: user }];
+      let raw = '';
+      try {
+        // Strict JSON mode is reliable WHEN it fits; but Groq hard-400s
+        // (json_validate_failed) if the model truncates at max_tokens. Give ample
+        // budget, then fall back to free-form (parseStructuredAnswer is robust).
+        raw = await llmChat(msgs, { maxTokens: tokenBudget, temperature: 0, responseFormat: 'json_object' });
+      } catch (jsonErr) {
+        raw = await llmChat(msgs, { maxTokens: tokenBudget, temperature: 0 });
+      }
+      parsed = parseStructuredAnswer(raw);
+      insightText = parsed
+        ? parsed.answer
+        : String(raw || '').replace(/^```(?:json|markdown)?\s*/i, '').replace(/```\s*$/i, '').trim();
+    } catch (llmErr) {
+      if (attempt === 0) {
+        // transient failure (429/timeout) — one retry after a short backoff
+        await new Promise(r => setTimeout(r, 900));
+        continue;
+      }
+      // DEGRADED ANSWER, not an apology: everything below was computed
+      // deterministically (no LLM involved), so serve it.
+      const parts = [];
+      if (corpusFacts) parts.push(`**What the corpus data shows:**\n${corpusFacts}`);
+      if (structuredText) parts.push(`**Methods matching your query's attributes:**\n${structuredText}`);
+      if (benchmarkText && !/^No leaderboard/.test(benchmarkText)) parts.push(`**Verified benchmark values:**\n${benchmarkText}`);
+      insightText = parts.length
+        ? `The AI summary is temporarily unavailable — here is what the data itself answers:\n\n${parts.join('\n\n')}`
+        : `The copilot is temporarily unavailable (${llmErr.message}). ${responseData.length} methods are shown below.`;
     }
-    parsed = parseStructuredAnswer(raw);
-    insightText = parsed
-      ? parsed.answer
-      : String(raw || '').replace(/^```(?:json|markdown)?\s*/i, '').replace(/```\s*$/i, '').trim();
-  } catch (llmErr) {
-    insightText = `The copilot is temporarily unavailable (${llmErr.message}). ${responseData.length} methods are shown below.`;
+  }
+
+  // ENFORCE numeric grounding: any figure in the answer that does not literally
+  // appear in the supplied evidence gets a visible caveat (fabricated numbers
+  // must never pass silently just because a [P#] tag sits next to them).
+  let ungroundedNumbers = [];
+  if (parsed && insightText) {
+    try {
+      const ctxBlob = [ragText, benchmarkText, corpusFacts, structuredText, candidateBlock, kgContext].join('\n');
+      ungroundedNumbers = findUngroundedNumbers(insightText, ctxBlob);
+      if (ungroundedNumbers.length) {
+        insightText += `\n\n⚠ Verification note: the figure${ungroundedNumbers.length > 1 ? 's' : ''} ${ungroundedNumbers.slice(0, 4).join(', ')} could not be matched to the retrieved sources — treat ${ungroundedNumbers.length > 1 ? 'them' : 'it'} with caution.`;
+      }
+    } catch (e) { /* enforcement optional */ }
   }
 
   // Resolve the discussed method NAMES against the candidate set (fuzzy, tolerant
@@ -386,12 +468,23 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
       score: c.score || 0,
     })),
   }));
+  // Benchmark blocks are citable too — a [B#] chip resolves to its verified
+  // benchmark table (the chunk shows the exact grounded lines the model saw).
+  benchTags.forEach((bt, i) => {
+    const block = (benchmarkText.split('\n\n')[i] || '').replace(/^\[B\d+\]\s*/, '');
+    citations.push({
+      marker: bt.marker, paper_id: null, paper_title: `Verified benchmark: ${bt.title}`,
+      index: papersById.length + i + 1, benchmark: true,
+      chunks: block ? [{ text: block, section: 'verified benchmarks', page: null, score: 1 }] : [],
+    });
+  });
 
   // Grounding guardrail on the ANSWER (surfaced in the provenance drawer, not the body).
   let grounding = { grounded: [], ungrounded: [] };
   try {
     grounding = runGroundingCheck(insightText, allMethods, (kgData && kgData.nodes) || []);
   } catch (e) {}
+  grounding.ungroundedNumbers = ungroundedNumbers;
 
   // methodRelevance: the discussed methods, in order — the SINGLE source the
   // comparison table + chips read, so they match the prose exactly.
@@ -426,5 +519,6 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     if (_answerCache.size >= _ANSWER_CACHE_MAX) _answerCache.delete(_answerCache.keys().next().value);
     _answerCache.set(_ck, result);
   }
+  onStage('done');
   return result;
 }

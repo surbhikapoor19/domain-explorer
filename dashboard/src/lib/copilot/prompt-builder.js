@@ -9,7 +9,7 @@
 const FORMAT_DIRECTIVES = {
   overview: 'This is an OVERVIEW / LANDSCAPE question — the user wants to see the WHOLE set, not a pick. After a 1-sentence lead, group the CANDIDATES by their planning approach / paradigm (use `##` group headers or bold group labels) and, under each group, list EVERY candidate as a bullet: bold the method name + a one-clause descriptor from its attributes, with a citation where available. Cover ALL candidates provided — do not drop any. Completeness matters more than brevity here, so this answer may exceed the usual length. Do NOT render a comparison table.',
   comparison: 'This is a COMPARISON question. After the lead sentence, render a Markdown table whose rows are the comparison dimensions and whose columns are the chosen methods. Cite cells/claims inline.',
-  ranking: 'This is a RANKING/performance question. Lead with the VERIFIED BENCHMARKS: state the ranked values, each value\'s grade (A/B/C), and the source paper tag. Then a short bulleted list of the ranked methods.',
+  ranking: 'This is a PERFORMANCE question. Lead with the VERIFIED BENCHMARKS: state each reported value with its grade (A/B/C), its protocol, and the source tag. IMPORTANT: values measured under different protocols are NOT directly comparable — never present cross-protocol values as a ranking; say which protocol each number comes from. Then a short bulleted list of the methods.',
   recommendation: 'This is a RECOMMEND/"which methods" question. After the lead, give a bulleted list (one bullet per chosen method, most relevant first) — bold the method name and give a concrete one-line reason it fits, with a citation. Enumerate every qualifying method in the evidence, not just the top one.',
   default: 'After the lead sentence, organize the answer into a short bulleted list (one bullet per chosen method) or at most two `##` sections, each with cited sentences.',
 };
@@ -43,7 +43,7 @@ export function queryFocusDirective(query) {
  * from `discussed` — can never name different methods than the prose. RAG excerpts
  * are primary; KG relations + benchmarks SUPPLEMENT (no graph-traversal voice).
  */
-export function buildAnswerPrompt({ query, ragText, kgContext, benchmarkText, corpusFacts, structuredMatches, candidateBlock, intent, branding = {} }) {
+export function buildAnswerPrompt({ query, ragText, kgContext, benchmarkText, corpusFacts, structuredMatches, candidateBlock, intent, branding = {}, history = null }) {
   const subject = branding.productSubject || 'grasp planning';
   const system = `You are a research copilot for a ${subject} literature explorer, used by researchers and data scientists (some without a robotics background). You answer using ONLY the CONTEXT in the user message (SOURCES, CROSS-REFERENCE FACTS, VERIFIED BENCHMARKS, CANDIDATES). Never use outside/pretrained knowledge; never invent numbers, datasets, or results.
 
@@ -65,7 +65,7 @@ FORMAT
 - Begin with a direct 1-2 sentence answer (~40-60 words) that states the bottom line. NEVER begin with a header. No preamble ("Based on", "Great question", "Let me", "I found", "Here is").
 - Then follow the FORMAT DIRECTIVE in the user message.
 - Bold each method name on first mention. Use flat bullet lists (never nested, never a lone bullet). Use a Markdown table for comparisons.
-- Be CONCISE: a 1-sentence lead + at most 4 one-line bullets; do NOT repeat the lead's methods verbatim in the bullets; keep the whole answer under ~170 words so it is never truncated.
+- Be CONCISE: a 1-sentence lead + at most 4 one-line bullets; do NOT repeat the lead's methods verbatim in the bullets; keep the whole answer under ~170 words so it is never truncated — UNLESS the FORMAT DIRECTIVE explicitly asks for full coverage (overview/landscape), in which case completeness overrides the word limit.
 - Close with ONE short caveat line about the main limitation/uncertainty.
 - Plain language, active voice, no hedging/moralizing ("It is important to", "It is worth noting"), no emojis, avoid first person.
 
@@ -77,8 +77,14 @@ OUTPUT — respond with ONLY a JSON object (no prose outside it, no code fence):
 - "discussed" = the exact CANDIDATE NAMES you bolded in the answer, most-relevant first, no more, no fewer.
 - "citations" = one entry per [P#]/[B#] tag you used, mapping it to its paper.`;
 
-  const user = `RESEARCHER'S QUESTION: "${query}"
+  // Follow-up support: the previous turn gives pronouns/ellipses a referent
+  // ("what about its runtime?" -> "its" = the method the last answer discussed).
+  const historyBlock = history && history.prevQuery
+    ? `\nPREVIOUS TURN (context for follow-up phrasing — resolve pronouns like "it"/"they"/"the first one" against this; do NOT re-answer it):\nQ: "${history.prevQuery}"\nA (summary): ${String(history.prevAnswer || '').replace(/\s+/g, ' ').slice(0, 400)}\n`
+    : '';
 
+  const user = `RESEARCHER'S QUESTION: "${query}"
+${historyBlock}
 FORMAT DIRECTIVE: ${formatDirective(intent)}${queryFocusDirective(query)}
 
 SOURCES (paper excerpts — PRIMARY evidence; cite as the bracketed [P#] tag on each block):

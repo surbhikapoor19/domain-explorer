@@ -1,7 +1,7 @@
 /* benchmark-records — AUTHORED BY ORCHESTRATOR. The redesigned Benchmarks page is
  * a flat, tag-filtered view of the EXTRACTED data (no ranking, no charts). This
  * pins the flatten + tag-facet + AND/OR filter contract. */
-import { buildResultRecords, tagFacets, filterByTags, tagKey, TAG_CATEGORY_ORDER } from '../benchmark-records';
+import { buildResultRecords, tagFacets, filterByTags, tagKey, tagKeysFromCellKey, TAG_CATEGORY_ORDER } from '../benchmark-records';
 
 const BENCH = {
   leaderboards: {
@@ -82,6 +82,60 @@ describe('buildResultRecords — full `results` set (comparable AND uncomparable
     const sr = recs.find(r => r.method === 'AnyGrasp');
     expect(sr.tagKeys.has('Metric:success_rate')).toBe(true);
     expect(sr.comparable).toBe(true);
+  });
+});
+
+describe('results path carries the protocol axes a researcher needs', () => {
+  const BENCH2 = {
+    results: [
+      { method: 'AnyGrasp', metric_id: 'success_rate', metric_label: 'Success Rate (%)',
+        value: 85, value_str: '85%', unit: '%', condition: 'packed', comparable: true,
+        grade: 'A', n_reports: 2, paper_id: 'any', dataset_id: 'ycb', is_own_method: true,
+        method_resolved: true },
+      { method: 'SomeRawName', metric_id: null, metric_label: 'Torque (Nm)', value: 1.2,
+        condition: null, comparable: false, grade: 'C', paper_id: 'p2',
+        is_own_method: false, method_resolved: false },
+    ],
+  };
+  const recs = buildResultRecords(BENCH2);
+  test('dataset + reported-by become filter facets; value_str/unit/nReports carried', () => {
+    const a = recs.find(r => r.method === 'AnyGrasp');
+    expect(a.tagKeys.has('Dataset:ycb')).toBe(true);
+    expect(a.tagKeys.has('Reported by:self')).toBe(true);
+    expect(a.valueStr).toBe('85%');
+    expect(a.unit).toBe('%');
+    expect(a.nReports).toBe(2);          // corroborated grade joined from cross-validation
+    expect(a.grade).toBe('A');
+  });
+  test('unresolved raw method names are flagged, third-party reporting tagged', () => {
+    const b = recs.find(r => r.method === 'SomeRawName');
+    expect(b.methodResolved).toBe(false);
+    expect(b.tagKeys.has('Reported by:third-party')).toBe(true);
+  });
+});
+
+describe('tagKeysFromCellKey — copilot deep-link -> filter selection', () => {
+  test('splits a leaderboard cell key into Metric + protocol tag keys', () => {
+    expect(tagKeysFromCellKey('success_rate||packed:randomview:gsr')).toEqual([
+      'Metric:success_rate', 'Scene:packed', 'Camera view:randomview', 'Success criterion:gsr',
+    ]);
+    expect(tagKeysFromCellKey('latency')).toEqual(['Metric:latency']);
+    expect(tagKeysFromCellKey('')).toEqual([]);
+  });
+});
+
+describe('tagFacets with a selection — counts conditioned on OTHER categories', () => {
+  const recs = buildResultRecords(BENCH);
+  test("selecting a Scene narrows other categories' counts but not Scene's own", () => {
+    const sel = new Set([tagKey('Scene', 'pile')]);          // only AnyGrasp is pile
+    const facets = tagFacets(recs, sel);
+    const method = facets.find(f => f.category === 'Method');
+    // Method counts are conditioned on Scene:pile -> only AnyGrasp has results
+    expect(method.tags.find(t => t.value === 'AnyGrasp').count).toBe(1);
+    expect(method.tags.find(t => t.value === 'VGN').count).toBe(0);
+    // Scene's own counts are NOT self-constrained (its siblings stay pickable)
+    const scene = facets.find(f => f.category === 'Scene');
+    expect(scene.tags.find(t => t.value === 'packed').count).toBeGreaterThan(0);
   });
 });
 

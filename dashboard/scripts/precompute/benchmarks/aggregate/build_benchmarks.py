@@ -334,6 +334,22 @@ def build_benchmark_json(records, cfg):
     # protocol/condition, so nothing is silently dropped. `leaderboards` and
     # `cross_validations` remain the DERIVED comparable-subset views; `results` is
     # the complete data the page filters over.
+    # Cross-validation join: when 2+ papers corroborate the same (method, metric,
+    # dataset, condition), each raw result of that cell inherits the corroborated
+    # grade + paper count — so grade A stays EARNABLE on the full results surface
+    # (a per-record n_papers=1 grade would make A mathematically impossible).
+    cv_by_key = {}
+    for v in cross_validations:
+        cv_by_key[(v['method'], v['metric_id'], v.get('dataset_id'), v.get('condition'))] = v
+
+    # Known-method universe for salvaging unresolved raw names: a raw variant that
+    # compacts to a known method id ("GG-CNN" vs "GGCNN") joins the canonical name.
+    known_by_compact = {}
+    for r in records:
+        if r.method_id:
+            known_by_compact.setdefault(
+                re.sub(r'[^a-z0-9]+', '', str(r.method_id).lower()), r.method_id)
+
     results = []
     n_dropped_noise = 0
     for r in records:
@@ -342,6 +358,11 @@ def build_benchmark_json(records, cfg):
         # Clean + validate (drops citation-marked junk, values-as-headers, bare
         # abbreviations, condition-as-metric — see helpers above).
         method_name = r.method_id or clean_method_name(r.method_raw)
+        method_resolved = bool(r.method_id)
+        if not method_resolved and method_name:
+            canon = known_by_compact.get(re.sub(r'[^a-z0-9]+', '', str(method_name).lower()))
+            if canon:
+                method_name, method_resolved = canon, True
         if not (method_name and len(str(method_name).strip()) > 1):
             n_dropped_noise += 1
             continue
@@ -350,9 +371,10 @@ def build_benchmark_json(records, cfg):
         if not is_valid_metric_label(metric_label, r.metric_id):
             n_dropped_noise += 1
             continue
+        cv = cv_by_key.get((method_name, r.metric_id, r.dataset_id, r.condition))
         results.append({
             'method': method_name,
-            'method_resolved': bool(r.method_id),
+            'method_resolved': method_resolved,
             'metric_id': r.metric_id,                 # None when uncomparable
             'metric_label': metric_label,             # always human-readable
             'metric_raw': r.metric_raw,
@@ -364,10 +386,13 @@ def build_benchmark_json(records, cfg):
             'dataset_raw': r.dataset_raw,
             'condition': r.condition or None,
             # comparable = sits in a leaderboard-eligible (known metric+method) bucket
-            'comparable': bool(r.metric_id and r.method_id),
-            # a lone extracted number graded by its own extraction confidence only
-            # (multi-paper corroboration lives in cross_validations, never claimed here)
-            'grade': evidence_grade(1, None, r.verified, r.extraction_conf or 'low'),
+            'comparable': bool(r.metric_id and method_resolved),
+            # grade: the cross-validated (corroborated) grade when 2+ papers report
+            # this exact cell; else this lone extraction's own confidence grade.
+            'grade': (cv['grade'] if cv else
+                      evidence_grade(1, None, r.verified, r.extraction_conf or 'low')),
+            'n_reports': (cv['n_papers'] if cv else 1),
+            'corroboration': (cv.get('corroboration') if cv else None),
             'is_own_method': r.is_own_method,
             'paper_id': r.paper_id,
             'table_caption': r.table_caption,

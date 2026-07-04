@@ -140,6 +140,65 @@ test('clicking a citation in the answer opens the source modal (was dead on Benc
   expect(within(dialog).getByText('GIGA Source Paper')).toBeInTheDocument();
 });
 
+test('global search narrows results across method/metric/paper text', async () => {
+  render(<BenchmarksPage />);
+  await screen.findByTestId('bmr-results');
+  fireEvent.change(screen.getByRole('searchbox', { name: /Search results/i }), { target: { value: 'anygrasp' } });
+  await waitFor(() => expect(screen.getByText(/1 of 3 results/)).toBeInTheDocument());
+  const results = screen.getByTestId('bmr-results');
+  expect(within(results).getByText('AnyGrasp')).toBeInTheDocument();
+  expect(within(results).queryByText('GIGA')).not.toBeInTheDocument();
+});
+
+test('Group by method inserts one heading per method with its result count', async () => {
+  const twoForVgn = { leaderboards: {
+    'success_rate||packed': { metric_id: 'success_rate', metric_label: 'Success Rate (%)', condition: 'packed', higher_is_better: true,
+      entries: [
+        { method: 'VGN', value: 80, grade: 'B', n_reports: 1, source_papers: ['vgn'] },
+        { method: 'GIGA', value: 85, grade: 'A', n_reports: 2, source_papers: ['giga'] },
+      ] },
+    'latency||inference-time': { metric_id: 'latency', metric_label: 'Latency (ms)', condition: 'inference-time', higher_is_better: false,
+      entries: [{ method: 'VGN', value: 10, grade: 'B', n_reports: 1, source_papers: ['vgn'] }] },
+  } };
+  loadBenchmarkComparisons.mockResolvedValue(twoForVgn);
+  render(<BenchmarksPage />);
+  await screen.findByTestId('bmr-results');
+  fireEvent.click(screen.getByRole('button', { name: /Group by method/i }));
+  const results = screen.getByTestId('bmr-results');
+  const heads = within(results).getAllByRole('heading', { level: 3 });
+  expect(heads).toHaveLength(2);                                   // one per method, not per record
+  const vgnHead = heads.find(h => h.textContent.includes('VGN'));
+  expect(vgnHead.textContent).toMatch(/2 results/);                // VGN's block spans both its records
+  const gigaHead = heads.find(h => h.textContent.includes('GIGA'));
+  expect(gigaHead.textContent).toMatch(/1 result/);
+});
+
+test('a pooled median is labeled honestly (median of N values, per-source values listed)', async () => {
+  const pooled = { leaderboards: { 'success_rate||real': {
+    metric_id: 'success_rate', metric_label: 'Success Rate (%)', condition: 'real', higher_is_better: true,
+    entries: [{ method: 'X-Grasp', value: 89, grade: 'B', n_reports: 1, source_papers: ['xg'],
+      sources: [
+        { paper: 'xg', value_str: '90', metric_raw: 'SR (%)', page: 5 },
+        { paper: 'xg', value_str: '88', metric_raw: 'SR (%)', page: 5 },
+      ] }],
+  } } };
+  loadBenchmarkComparisons.mockResolvedValue(pooled);
+  render(<BenchmarksPage />);
+  await screen.findByTestId('bmr-results');
+  expect(screen.getByText(/median of 2 values/)).toBeInTheDocument();   // NOT presented as extracted
+  fireEvent.click(screen.getByRole('button', { name: /^Source$/ }));
+  expect(screen.getByText('90')).toBeInTheDocument();                    // each reported value visible
+  expect(screen.getByText('88')).toBeInTheDocument();
+});
+
+test('the no-benchmark-data banner is dismissable', async () => {
+  render(<BenchmarksPage queryMethods={['🤖 NoSuchMethod']} />);
+  await screen.findByTestId('bmr-results');
+  await screen.findByText(/No extracted benchmark results/i);
+  fireEvent.click(screen.getByRole('button', { name: /Dismiss/i }));
+  expect(screen.queryByText(/No extracted benchmark results/i)).not.toBeInTheDocument();
+});
+
 test('source crop opens a full-screen lightbox, closable', async () => {
   render(<BenchmarksPage />);
   await screen.findByTestId('bmr-results');

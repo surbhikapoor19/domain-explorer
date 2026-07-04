@@ -145,6 +145,37 @@ body {
   margin: 0.4rem 1.25rem; padding: 0.35rem 0.65rem; background: #fef2f2;
   color: #991b1b; border: 1px solid #fecaca; border-radius: 3px; font-size: 0.78rem;
 }
+/* First-run onboarding row: purpose line + example-question chips. */
+.query-onboard {
+  display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+  margin: 0.15rem 0 0.4rem; font-size: 0.76rem; color: var(--text-muted);
+}
+.query-purpose { color: var(--text-mid); }
+.query-examples { display: inline-flex; gap: 0.4rem; flex-wrap: wrap; }
+.query-example-chip {
+  padding: 0.18rem 0.55rem; font-family: inherit; font-size: 0.72rem;
+  border: 1px solid var(--border); border-radius: 999px; background: #fff;
+  color: var(--primary); cursor: pointer; white-space: nowrap;
+}
+.query-example-chip:hover { border-color: var(--primary); background: #eef4f8; }
+
+/* Staged copilot progress: the user sees WHICH stage the 5-15s generation is in. */
+.query-progress {
+  display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap;
+  margin: 0.45rem 0 0; font-size: 0.74rem; color: var(--text-muted);
+}
+.query-step { display: inline-flex; align-items: center; gap: 0.35rem; }
+.query-step-dot {
+  width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; line-height: 1; color: #fff; flex-shrink: 0;
+}
+.query-step.active { color: var(--primary); font-weight: 700; }
+.query-step.active .query-step-dot { border-color: var(--primary); animation: pulse-dot 1.1s ease-in-out infinite; }
+.query-step.done { color: var(--text-mid); }
+.query-step.done .query-step-dot { background: var(--primary); border-color: var(--primary); }
+@keyframes pulse-dot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+
 .spell-correction-notice {
   margin: 0.3rem 0 0; padding: 0.25rem 0; font-size: 0.78rem; color: var(--text-mid);
 }
@@ -5112,6 +5143,39 @@ body {
   background: #fdf3e7; border-color: #f2d9b8; color: #92400e;
 }
 .bmr-querybar-empty strong { color: #7c3410; }
+.bmr-querybar-empty .bmr-querybar-clear { color: #92400e; }
+
+/* Results toolbar: global search + group-by-method toggle. */
+.bmr-toolbar { display: flex; gap: 0.6rem; align-items: center; margin: 0 0 0.55rem; }
+.bmr-search {
+  flex: 1; min-width: 0; padding: 0.42rem 0.65rem; font-family: inherit; font-size: 0.8rem;
+  border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--dark);
+}
+.bmr-search:focus { outline: none; border-color: var(--primary); }
+.bmr-group-toggle {
+  flex-shrink: 0; padding: 0.42rem 0.7rem; font-family: inherit; font-size: 0.76rem; font-weight: 700;
+  border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text-mid); cursor: pointer;
+}
+.bmr-group-toggle.on { background: #eef4f8; border-color: var(--primary); color: var(--primary); }
+.bmr-group-head {
+  grid-column: 1 / -1; display: flex; align-items: baseline; gap: 0.55rem;
+  margin: 0.5rem 0 0; padding: 0.3rem 0.1rem 0.25rem; border-bottom: 2px solid var(--dark);
+  font-size: 0.92rem; font-weight: 800; color: var(--dark);
+}
+.bmr-group-head:first-child { margin-top: 0; }
+.bmr-group-count { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); }
+
+/* Card chip variants: dataset (which suite) + reported-by (bias axis) + re-quoted. */
+.bmr-tag-ds { background: #eef4f8; border-color: rgba(22, 101, 125, 0.35); color: var(--primary-deep); }
+.bmr-tag-rep { background: #f4f1fa; border-color: #d6c9ee; color: #5b3fa8; }
+.bmr-tag-requote { background: #fdf3e7; border-color: #f2d9b8; color: #92400e; }
+.bmr-unverified { font-size: 0.66rem; font-weight: 600; color: var(--text-muted); font-style: italic; }
+
+/* Multi-source provenance drawer: one block per reported value. */
+.bmr-src-item + .bmr-src-item { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-light); }
+.bmr-src-val { font-size: 0.74rem; color: var(--dark); font-variant-numeric: tabular-nums; }
+.bmr-src-raw { color: var(--text-muted); font-style: italic; }
+.bmr-src-page { color: var(--text-muted); }
 .bmr-querybar-clear {
   flex-shrink: 0; background: none; border: none; color: var(--primary); cursor: pointer;
   font-family: inherit; font-size: 0.78rem; font-weight: 700; white-space: nowrap;

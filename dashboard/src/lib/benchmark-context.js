@@ -73,14 +73,18 @@ export function buildBenchmarkContext(query, benchmarkData, opts = {}) {
     if (cm.length) lbs = cm;
   }
   lbs = lbs.sort((a, b) => (b.entries?.length || 0) - (a.entries?.length || 0)).slice(0, 2);
+  // NOT a numbered ranking: values within one block share a protocol, but robotics
+  // results are rarely 1-1 comparable, and a "1. 2. 3." list reads as a leaderboard
+  // (and renders verbatim above a page that says "not ranked"). Report each value
+  // as a sourced measurement; ORDER conveys nothing.
   const blocks = lbs.map(lb => {
-    const head = `${lb.metric_label}${lb.condition ? ' — ' + lb.condition : ''}` +
+    const head = `${lb.metric_label}${lb.condition ? ' — protocol: ' + lb.condition : ''}` +
                  `${lb.higher_is_better === false ? ' (lower is better)' : ''}`;
-    const rows = (lb.entries || []).slice(0, 6).map((e, i) => {
+    const rows = (lb.entries || []).slice(0, 6).map(e => {
       const src = (e.source_papers || []).join(', ');
-      return `  ${i + 1}. ${e.method} = ${e.value}  [grade ${e.grade}, ${e.n_reports} paper${e.n_reports !== 1 ? 's' : ''}${src ? ', source: ' + src : ''}]`;
+      return `  - ${e.method} reported ${e.value}  [grade ${e.grade}, ${e.n_reports} paper${e.n_reports !== 1 ? 's' : ''}${src ? ', source: ' + src : ''}]`;
     }).join('\n');
-    return `${head}:\n${rows}`;
+    return `${head} (values measured under the same protocol; results from different protocols are NOT directly comparable):\n${rows}`;
   });
   return blocks.join('\n\n');
 }
@@ -142,14 +146,16 @@ function buildComparisonContext(q, benchmarkData, opts) {
 
   if (!scored.length) return '';
   const lbs = scored.slice(0, 2).map(x => x.lb);
+  // Same de-ranked framing as the metric path: sourced measurements, not a
+  // numbered leaderboard (robotics results are rarely 1-1 comparable).
   const blocks = lbs.map(lb => {
-    const head = `${lb.metric_label}${lb.condition ? ' — ' + lb.condition : ''}` +
+    const head = `${lb.metric_label}${lb.condition ? ' — protocol: ' + lb.condition : ''}` +
                  `${lb.higher_is_better === false ? ' (lower is better)' : ''}`;
-    const rows = (lb.entries || []).slice(0, 6).map((e, i) => {
+    const rows = (lb.entries || []).slice(0, 6).map(e => {
       const src = (e.source_papers || []).join(', ');
-      return `  ${i + 1}. ${e.method} = ${e.value}  [grade ${e.grade}, ${e.n_reports} paper${e.n_reports !== 1 ? 's' : ''}${src ? ', source: ' + src : ''}]`;
+      return `  - ${e.method} reported ${e.value}  [grade ${e.grade}, ${e.n_reports} paper${e.n_reports !== 1 ? 's' : ''}${src ? ', source: ' + src : ''}]`;
     }).join('\n');
-    return `${head}:\n${rows}`;
+    return `${head} (values measured under the same protocol; results from different protocols are NOT directly comparable):\n${rows}`;
   });
   return blocks.join('\n\n');
 }

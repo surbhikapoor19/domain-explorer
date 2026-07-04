@@ -31,6 +31,16 @@ const DEFAULTS = {
   tagline: 'AI-in-the-Loop',
   queryHint: 'Ask about grasp planning methods, e.g., "methods for cluttered scenes with multi-finger grippers"',
   methodNoun: 'method',
+  // One-line purpose statement (first-run orientation) + clickable example
+  // questions shown under the ask bar until the first answer. Domain configs
+  // (domain-config.json -> branding) can override both.
+  purposeLine: 'Explore and compare the methods in this research corpus — ask a question, get a cited answer grounded in the papers.',
+  exampleQueries: [
+    'Compare Contact-GraspNet and AnyGrasp',
+    'Which methods work for cluttered scenes?',
+    'What are the limitations of diffusion-based methods?',
+    'Give an overview of the landscape',
+  ],
 };
 
 function resolveBranding() {

@@ -43,6 +43,45 @@ def test_comparison_carries_grade_and_provenance():
     assert c['winner'] == 'AnyGrasp' and c['metric_id'] == 'success_rate'
     assert c['grade'] in ('A', 'B', 'C') and c['paper'] == 'anygrasp'
 
+def test_results_inherit_cross_validated_grade_so_A_stays_earnable():
+    # Two papers report the SAME (method, metric, condition) with consistent values
+    # -> a cross-validation exists -> each raw result carries the corroborated grade.
+    recs = [
+        ResultRecord(paper_id="p1", method_raw="AnyGrasp", method_id="AnyGrasp",
+                     metric_raw="success rate", metric_id="success_rate", unit="%",
+                     higher_is_better=True, value=85.0, value_str="85",
+                     extraction_conf="high", verified=True),
+        ResultRecord(paper_id="p2", method_raw="AnyGrasp", method_id="AnyGrasp",
+                     metric_raw="success rate", metric_id="success_rate", unit="%",
+                     higher_is_better=True, value=85.5, value_str="85.5",
+                     extraction_conf="high", verified=True),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    assert out['cross_validations'], 'cv should exist for 2 agreeing papers'
+    cv_grade = out['cross_validations'][0]['grade']
+    res = [r for r in out['results'] if r['method'] == 'AnyGrasp']
+    assert len(res) == 2
+    for r in res:
+        assert r['grade'] == cv_grade       # corroborated grade, not a lone-extraction grade
+        assert r['n_reports'] == 2
+
+def test_results_salvage_raw_method_variant_to_canonical_name():
+    recs = [
+        # canonical spelling resolves normally...
+        ResultRecord(paper_id="p1", method_raw="Ours", method_id="Contact-GraspNet",
+                     metric_raw="success rate", metric_id="success_rate", unit="%",
+                     higher_is_better=True, value=90.0, value_str="90"),
+        # ...a raw variant ("ContactGraspNet", no hyphen) did NOT resolve at extraction
+        ResultRecord(paper_id="p2", method_raw="ContactGraspNet", method_id=None,
+                     metric_raw="success rate", metric_id="success_rate", unit="%",
+                     higher_is_better=True, value=88.0, value_str="88"),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    names = {r['method'] for r in out['results']}
+    assert names == {'Contact-GraspNet'}          # variant joined the canonical name
+    salvaged = [r for r in out['results'] if r['paper_id'] == 'p2'][0]
+    assert salvaged['method_resolved'] is True
+
 def test_result_cleanup_helpers_drop_junk_keep_metrics():
     from benchmarks.aggregate.build_benchmarks import (
         clean_method_name, clean_metric_label, is_valid_metric_label)
