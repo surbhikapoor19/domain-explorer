@@ -129,11 +129,13 @@
     <p class="sub">User &amp; Architecture Manual</p>
     <div class="toc" id="toc">
       <div class="grp">Use it</div>
+      <a href="#quickstart">Quick start</a>
       <a href="#overview">Overview</a>
       <a href="#start">Getting started</a>
       <a href="#views">The three views</a>
       <a href="#concepts">Key concepts</a>
       <a href="#copilot">The AI copilot</a>
+      <a href="#faq">Troubleshooting &amp; FAQ</a>
       <div class="grp">Build it</div>
       <a href="#pipeline">Pipeline architecture</a>
       <a href="#stack">Technology stack</a>
@@ -153,15 +155,89 @@
     </header>
 
     <div class="callout"><span class="lab">How to read this manual</span>
-      <b>New here, or coming from a robotics (not ML) background?</b> Read sections 1–5 (“Use it”) top to bottom —
+      <b>In a hurry?</b> The <a href="#quickstart" class="plain">Quick start</a> below gets you to answers in about two minutes.<br/>
+      <b>New here, or coming from a robotics (not ML) background?</b> Read sections 1–7 (“Use it”) top to bottom —
       that's a complete, jargon-light picture of what the tool does and how to use it. You can safely skip every
       “<span style="color:var(--muted)">↗</span>” deep-dive link and every collapsed panel; nothing essential is hidden inside them.<br/>
-      <b>Implementing, extending, or evaluating it?</b> Sections 6–8 (“Build it”) plus the expandable internals and the
+      <b>Implementing, extending, or evaluating it?</b> Sections 8–10 (“Build it”) plus the expandable internals and the
       <a href="#refs" class="plain">Further reading</a> links go all the way down to the papers and source of every component.</div>
+
+    <!-- ───────────── QUICK START ───────────── -->
+    <section id="quickstart">
+      <h2><span class="n">1</span> Get answers in 2 minutes</h2>
+      <p class="lede">Six things a robotics engineer actually comes here to do, as recipes. Everything else in this
+      manual is depth behind these.</p>
+
+      <div class="callout"><span class="lab">Four terms, one line each</span>
+        <b>RAG</b> (retrieval-augmented generation) — before answering, the copilot pulls real passages out of the
+        papers and may only write from those, so answers cite sources instead of inventing.<br/>
+        <b>KG</b> (knowledge graph) — a network of typed facts extracted from the corpus: methods, papers, techniques,
+        hardware, and the stated links between them.<br/>
+        <b>TEI</b> — the structured XML each paper's PDF is parsed into (sections, references, citations) so software
+        can read it like a document, not a picture.<br/>
+        <b>Evidence grades A / B / C</b> — how well-corroborated an extracted number is:
+        <span class="pill a">A</span>2+ independent papers report consistent values
+        <span class="pill b">B</span>a single solid source
+        <span class="pill c">C</span>low-confidence extraction, or papers disagree.</div>
+
+      <h3>Find methods for your setup</h3>
+      <ol class="steps">
+        <li>On <b>Graph Reasoning</b> (the landing page), type your constraint into the ask bar — e.g.
+          <code>which methods use suction grippers in cluttered scenes?</code> — and hit <b>Ask</b>.</li>
+        <li>The answer names the matching methods with <b>[n]</b> citations; attribute matches (hardware, scene,
+          input type…) are checked against the whole spreadsheet, not just the retrieved papers.</li>
+        <li>Cross-check in the method table — hover any row to spotlight that method in the graph and every panel.</li>
+      </ol>
+
+      <h3>Compare two methods</h3>
+      <ol class="steps">
+        <li>Ask <code>compare X vs Y</code>. Methods you <b>name</b> are always pulled in with their own evidence —
+          even if retrieval alone would have missed one.</li>
+        <li>Read the answer, then the <b>priority-dimension comparison table</b> under it
+          (<i>shared / differs / partial / gap</i> pill per row).</li>
+        <li>Switch to <b>Benchmarks</b> — the page syncs itself to the methods named in your query (a banner says so;
+          an amber notice appears instead if none of them has an extracted result).</li>
+      </ol>
+
+      <h3>Check where a number came from</h3>
+      <ol class="steps">
+        <li>Click any <b>[n]</b> citation chip in a copilot answer (works on both Graph Reasoning and Benchmarks).</li>
+        <li>A source modal opens: the claim being cited (“Cited for …”), the retrieved passage that best matches it
+          with the shared terms highlighted, and its section + page.</li>
+        <li>Check the badge: <b>supporting passage</b> = the source states the claim; <b>weak match</b> = an explicit
+          warning that the source doesn't clearly state it — treat that citation with caution.
+          <b>[B#]</b> chips open the verified benchmark block instead of a paper passage.</li>
+      </ol>
+
+      <h3>Find benchmark results that match your protocol</h3>
+      <ol class="steps">
+        <li>Open the <b>Benchmarks</b> tab. In the left filter rail, pick your metric, scene, camera view, success
+          criterion, dataset… Tags in <i>different</i> categories must all hold (AND); tags within <i>one</i> category
+          match either (OR). The count beside each option = how many results picking it would give you.</li>
+        <li>On any card, click <b>Source</b> — per-value provenance plus a crop of the paper's own table.</li>
+        <li>Click the crop to enlarge it full-screen (Esc closes).</li>
+      </ol>
+
+      <h3>See everything about one method</h3>
+      <ol class="steps">
+        <li>On <b>Benchmarks</b>, type its name in the search box (or pick it in the Method facet), then toggle
+          <b>Group by method</b> so all of its evidence reads as one block.</li>
+        <li>Back on Graph Reasoning, hover its row in the method table — the same method lights up in the graph and
+          every panel; click its graph node for a detail panel.</li>
+      </ol>
+
+      <h3>Spot an open research gap</h3>
+      <ol class="steps">
+        <li>On the Graph Reasoning landing, click the “interactive panels below” jump cue (or scroll) to
+          <b>Research Gaps</b>.</li>
+        <li>Pick any two spreadsheet attributes as rows/columns — empty cells are combinations no method in the
+          corpus addresses yet.</li>
+      </ol>
+    </section>
 
     <!-- ───────────── OVERVIEW ───────────── -->
     <section id="overview">
-      <h2><span class="n">1</span> Overview</h2>
+      <h2><span class="n">2</span> Overview</h2>
       <p class="lede">Domain Explorer is <b>domain-agnostic</b>. The screenshots people first see are about
       robotic grasp planning, but nothing in the tool is grasp-specific — it ships with example domains
       (grasp planning, motion planning) and you can add your own. Wherever this manual says <i>“items”</i>,
@@ -192,16 +268,23 @@
 
     <!-- ───────────── GETTING STARTED ───────────── -->
     <section id="start">
-      <h2><span class="n">2</span> Getting started</h2>
+      <h2><span class="n">3</span> Getting started</h2>
       <p class="lede">No install needed to <i>use</i> a published domain — it's a website. Here's the 60-second
       orientation.</p>
       <ol class="steps">
         <li>Open the dashboard. You land on <b>Graph Reasoning</b> (the default view).</li>
-        <li>Either <b>ask a question</b> in the box at the top, or just explore the knowledge graph and the
-            insight panels below it.</li>
-        <li>Use the top nav to switch views: <b>Graph Reasoning</b>, <b>Benchmarks</b>, and
-            <b>Admin</b> (token-gated — it asks for an access token before opening).</li>
-        <li>Use the <b>Evidence</b> filter in the header (<i>All / Hide weak / Strong only</i>) to hide weak/low-grade numbers across the whole app.</li>
+        <li>Either <b>ask a question</b> in the box at the top — until your first answer, a purpose line and
+            clickable <b>example questions</b> sit under it to get you going — or just explore the knowledge graph
+            and the insight panels below it.</li>
+        <li>The nav tabs switch between <b>Graph Reasoning</b> and <b>Benchmarks</b>. The header's right side holds
+            the <b>Evidence</b> filter, <b>⚙ Settings</b>, <b>Admin</b> (token-gated, maintainers only), and this
+            <b>Manual</b>. ⚙ and Admin are hidden when the dashboard is embedded on another site; Admin stays
+            reachable via the link in this manual's footer.</li>
+        <li>The <b>Evidence</b> filter hides low-grade extracted numbers app-wide — precisely:
+            <i>All</i> shows everything, <i>Hide weak</i> hides grade&nbsp;C, <i>Strong only</i> hides both B and C
+            (grade&nbsp;A only).</li>
+        <li>To <b>zoom the graph</b>, hold <b>Cmd</b> (Mac) / <b>Ctrl</b> (Windows) while scrolling — a plain scroll
+            moves the page instead (a hint appears if you forget the modifier).</li>
         <li>To run the copilot on your own key, open <b>⚙ Settings</b> and pick a provider (see
             <a href="#copilot">The AI copilot</a>).</li>
       </ol>
@@ -213,7 +296,7 @@
 
     <!-- ───────────── THE FOUR VIEWS ───────────── -->
     <section id="views">
-      <h2><span class="n">3</span> The three views</h2>
+      <h2><span class="n">4</span> The three views</h2>
       <p class="lede">Each view answers a different question. Click through them:</p>
       <div class="tabs" id="viewTabs">
         <div class="tab active" data-p="v1">Graph Reasoning</div>
@@ -224,21 +307,32 @@
       <div class="panel active" id="v1">
         <h3>Graph Reasoning — “how are these connected, and what does the literature say?”</h3>
         <p>The landing view. A live <b>knowledge graph</b> of your corpus (items, papers, techniques, hardware,
-        authors, claims) you can pan, zoom, filter, and click into. Toggle between the documented
-        <b>Knowledge Graph</b> and the model-inferred <b>Predicted Relationships</b>. Below the graph sit
-        cross-highlighting insight panels (techniques, timeline, benchmarks, research-gap matrix).</p>
-        <p>Type a question and it becomes the <b>AI copilot</b>: it shows the answer, the sub-graph it traversed,
-        the supporting passages, and (for performance questions) the ranked benchmark evidence.</p>
+        authors, claims) you can pan, filter, and click into — zoom with <b>Cmd/Ctrl + scroll</b>. Toggle between the
+        documented <b>Knowledge Graph</b> and the model-inferred <b>Predicted Relationships</b> (with a
+        min-confidence slider). Below the graph sit cross-highlighting insight panels: Techniques, Timeline,
+        Benchmarks coverage, Most Referenced, and the Research Gaps matrix.</p>
+        <p><b>Click a value in any panel</b> — a technique, a timeline year, a most-referenced paper — and the graph
+        <b>zooms to the matching cohort</b> while a selection bar names the basis (e.g. “Technique: TSDF — 7 methods
+        use it: …”) and lists the co-selected methods, with a <b>Clear</b> button. Esc or a click on empty background
+        also clears. Hovering a table row or a graph node spotlights that same method everywhere.</p>
+        <p>Type a question and it becomes the <b>AI copilot</b>: the answer with clickable <b>[n]</b> citations, a
+        priority-dimension comparison table, the sub-graph it traversed, the supporting paper passages, and (for
+        performance questions) verified benchmark evidence cited as <b>[B#]</b>.</p>
         <div class="callout"><span class="lab">Example</span> <code>Which approaches share a technique with the
           top-cited item, and how do they differ?</code></div>
       </div>
 
       <div class="panel" id="v3">
         <h3>Benchmarks — “what was reported, and can I trust it?”</h3>
-        <p>Every result extracted from the papers' own result tables, shown as a card with its full protocol —
-        deliberately <b>not ranked</b>. The <b>filter rail</b> on the left narrows the set: pick a <b>method</b>
-        (searchable — there's one entry per method), a metric, a scene, or any protocol tag. Tags in
-        <i>different</i> categories must all hold; tags within one category match either.</p>
+        <p>A <b>filterable table of every result extracted from the papers' own result tables</b> — deliberately
+        <b>not a leaderboard</b>. Robotics results are rarely one-to-one comparable (different scenes, cameras,
+        success criteria, object sets), so nothing here is ever ranked: each card shows a number exactly as its
+        paper reported it, with the full protocol attached, and gives you the filters to find the results that match
+        <i>your</i> setup.</p>
+        <p>The <b>filter rail</b> on the left narrows the set: pick a <b>method</b> (searchable — one entry per
+        method), a metric, a scene, a dataset, or any protocol tag. Tags in <i>different</i> categories must all
+        hold (AND); tags within one category match either (OR). The count beside each option answers
+        <i>“how many results would picking this give me?”</i> — the rail never offers a dead-end zero.</p>
         <figure>
           <svg viewBox="0 0 760 300" role="img" aria-label="Annotated Benchmarks page: filter rail and result cards">
             <defs><marker id="bmar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
@@ -286,53 +380,77 @@
         </figure>
         <table>
           <tr><th>Signal</th><th>Means</th></tr>
-          <tr><td><b>Metric &amp; value</b></td><td>the metric (e.g. success rate) and the reported number for that method + protocol.</td></tr>
-          <tr><td><b>Evidence grade</b></td><td><span class="pill a">A</span>multiple papers agree
-            <span class="pill b">B</span>one solid source <span class="pill c">C</span>weak / papers disagree. Filter by grade with the <b>Evidence grade</b> facet in the rail.</td></tr>
-          <tr><td><b>Protocol tags</b></td><td>scene, camera view, depth noise, object set, success criterion — the conditions the number was measured under.</td></tr>
-          <tr><td><b>Source</b></td><td>the paper(s), the table caption, and a <b>crop of the source table — click it to enlarge full-screen</b> so the numbers are readable.</td></tr>
+          <tr><td><b>Metric &amp; value</b></td><td>the metric and the number <b>in the paper's own notation</b>
+            (“90%”, “0.87±0.02”), with units for non-percentage metrics. A <b>“median of N values”</b> badge means
+            several reported values were pooled into one number — each is listed individually in the Source drawer.
+            “N papers agree” marks independent corroboration.</td></tr>
+          <tr><td><b>Evidence grade</b></td><td><span class="pill a">A</span>2+ independent papers agree
+            <span class="pill b">B</span>single solid source <span class="pill c">C</span>low-confidence / disputed.
+            Filter by grade with the <b>Evidence grade</b> facet in the rail.</td></tr>
+          <tr><td><b>Protocol tags</b></td><td>scene, camera view, depth noise, object set, success criterion,
+            dataset — the conditions the number was measured under — plus <b>Self-reported</b> vs
+            <b>Reported by another paper</b> (the biggest bias axis in this literature) and a
+            <b>re-quoted baseline</b> flag when a number appears copied from another paper rather than
+            independently re-measured.</td></tr>
+          <tr><td><b>Source drawer</b></td><td>per-value provenance: the paper, page, table caption, the raw cell
+            text, and a <b>crop of the source table — click it to enlarge full-screen</b> (Esc closes) so you can
+            verify the number with your own eyes.</td></tr>
         </table>
-        <p>Results are <b>paginated</b> (30 cards per page) so the view never becomes an endless scroll.</p>
+        <p>Above the cards: a <b>global search box</b> (matches method, metric, protocol, paper, caption) and a
+        <b>Group by method</b> toggle that inserts a header per method so all of a method's evidence reads as one
+        block. Results are <b>paginated</b> (30 cards per page) so the view never becomes an endless scroll.</p>
+        <div class="callout"><span class="lab">Copilot sync</span> When your copilot query names methods, the board
+        scopes itself to them and a banner says so (“Synced to your copilot query — showing N methods…”, with a
+        <i>Show all results</i> escape). If <b>none</b> of the named methods has an extracted result, an explicit
+        amber notice says exactly that instead of silently leaving the board unfiltered.</div>
       </div>
 
       <div class="panel" id="v4">
-        <h3>Admin — “ingest a new corpus / rebuild”</h3>
+        <h3>Admin — “ingest a new corpus / rebuild” (maintainers only)</h3>
         <p>Token-gated. Upload a CSV + PDFs for a new domain, map columns to roles, provide the domain&rsquo;s
         knowledge-graph aliases and benchmark metrics, then trigger a cloud build, watch its status, and toggle
         which views are enabled. This is where a new domain is born (see
         <a href="#your-domain">Add your own domain</a>).</p>
+        <p>The Admin button is <b>hidden when the dashboard is embedded on another site</b>; it stays reachable via
+        the password-gated “Domain administration” link in this manual's footer.</p>
       </div>
     </section>
 
     <!-- ───────────── KEY CONCEPTS ───────────── -->
     <section id="concepts">
-      <h2><span class="n">4</span> Key concepts</h2>
+      <h2><span class="n">5</span> Key concepts</h2>
       <p class="lede">A few ideas explained once, used everywhere. Expand any to go deeper.</p>
 
       <details open><summary>Evidence grades &amp; confidence (A / B / C)</summary>
-        <div class="body">Extracted numbers are not equal. A grade encodes how much to trust one: <b>A</b> when
-        multiple independent papers report consistent values, <b>B</b> for a single solid source, <b>C</b> when a
-        number is weak or papers disagree. A single 0–1 <b>confidence score</b> (grade + a penalty for high
-        variance) backs the grades. The header's global <b>Evidence</b> filter (<i>All / Hide weak / Strong
-        only</i>) hides weak / grade-C numbers in the copilot's answers and the detail panels; on the
-        <b>Benchmarks</b> page you filter by grade directly with the <b>Evidence grade</b> facet in the rail.</div></details>
+        <div class="body">Extracted numbers are not equal. A grade encodes how well-<b>corroborated</b> one is (not
+        how good the method is): <b>A</b> when 2+ independent papers report consistent values for the same
+        method × metric × protocol, <b>B</b> for a single solid source (one paper can only ever be a B — one paper
+        is not corroboration), <b>C</b> for a low-confidence extraction or when papers report the same cell but
+        disagree. A single 0–1 <b>confidence score</b> backs the grades (A≈0.9, B≈0.78, C≈0.45). The header's global
+        <b>Evidence</b> filter uses it app-wide — precisely: <i>All</i> shows everything, <i>Hide weak</i> hides
+        grade&nbsp;C, <i>Strong only</i> hides both B and C. On the <b>Benchmarks</b> page you can also filter by
+        grade directly with the <b>Evidence grade</b> facet in the rail.</div></details>
 
       <details><summary>Cross-highlighting (“everything connects to everything”)</summary>
-        <div class="body">Hovering or selecting an item in any surface — table row, graph node, scatter dot,
-        insight bar — lights up that item everywhere else. Clicking a category (a technique, a year, an author)
-        highlights every item connected to it across all panels. Click empty space, press <code>Esc</code>, or
-        re-click to clear.</div></details>
+        <div class="body">Hovering an item in any surface — table row, graph node, insight bar — lights up that item
+        everywhere else. <b>Clicking</b> a value in a landing panel (a technique, a timeline year, a most-referenced
+        paper) locks the selection: the graph <b>zooms to the highlighted cohort</b> and a selection bar names the
+        basis and the co-selected methods, with a <b>Clear</b> button. Click empty space, press <code>Esc</code>,
+        or re-click to clear.</div></details>
 
       <details><summary>Predicted relationships (a graph neural network)</summary>
         <div class="body">Beyond the relationships literally stated in papers, a heterogeneous graph neural network
+        (GraphSAGE&nbsp;+&nbsp;DistMult — see <a href="#pipeline" class="plain">Pipeline architecture</a>)
         learns the structure of the corpus and <b>predicts</b> likely-but-undocumented links (e.g. “these two items
         should probably be compared on the same benchmark”), each with a confidence score and a min-confidence slider. It's a
         hypothesis generator, clearly separated from documented facts.</div></details>
 
       <details><summary>Provenance &amp; proof</summary>
         <div class="body">Every benchmark number carries its lineage: the source paper, the raw cell text, the table
-        caption, the page, and an image crop of the table it came from. Click <b>Source</b> on any row to verify the
-        number with your own eyes — no black boxes.</div></details>
+        caption, the page, and an image crop of the table it came from. Click <b>Source</b> on any benchmark card to
+        verify the number with your own eyes (click the crop to enlarge). In copilot answers, every <b>[n]</b>
+        citation chip opens the passage that best supports that specific claim — and says <b>weak match</b> when it
+        doesn't clearly state it. No black boxes.</div></details>
 
       <details><summary>Research-gap matrix</summary>
         <div class="body">A cross-tab of any two attributes from your CSV. Empty cells are <b>coverage gaps</b> —
@@ -342,9 +460,10 @@
 
     <!-- ───────────── COPILOT ───────────── -->
     <section id="copilot">
-      <h2><span class="n">5</span> The AI copilot</h2>
-      <p class="lede">The query box on Graph Reasoning. It runs <b>in your browser</b>: retrieval, graph traversal, and
-      benchmark grounding all happen locally (client-side), and only the final assembled prompt is sent to an LLM.</p>
+      <h2><span class="n">6</span> The AI copilot</h2>
+      <p class="lede">The ask bar at the top of every page (answers render on Graph Reasoning and Benchmarks). It runs
+      <b>in your browser</b>: retrieval, graph traversal, and benchmark grounding all happen locally (client-side),
+      and only the final assembled prompt is sent to an LLM.</p>
       <figure>
         <svg viewBox="0 0 760 250" role="img" aria-label="Annotated Graph Reasoning header and copilot search bar">
           <defs><marker id="annar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
@@ -390,7 +509,7 @@
             <text x="360" y="248" text-anchor="middle" fill="#5a6b70" font-size="10">the grounded answer, comparison table, and clickable sources appear right below</text>
           </g>
         </svg>
-        <figcaption>Where things live on <b>Graph Reasoning</b>: the copilot search bar ①, the <b>Graph Reasoning · Benchmarks</b> tabs, and the top-right cluster — Evidence filter, ⚙ Settings, Admin, and Manual.</figcaption>
+        <figcaption>Where things live on <b>Graph Reasoning</b>: the copilot search bar ①, the <b>Graph Reasoning · Benchmarks</b> tabs, and the top-right cluster — Evidence filter, ⚙ Settings, Admin, and Manual (⚙ and Admin are hidden when the dashboard is embedded on another site). Until your first answer, a purpose line and clickable example questions sit under the bar.</figcaption>
       </figure>
       <figure>
         <svg viewBox="0 0 760 130" role="img" aria-label="Copilot flow">
@@ -410,7 +529,8 @@
             <text x="416" y="62" text-anchor="middle" font-weight="700">Grounded prompt</text>
             <text x="416" y="77" text-anchor="middle" fill="#5a6b70" font-size="10.5">all evidence assembled</text>
             <rect x="516" y="46" width="100" height="40" rx="8" fill="#fff" stroke="#dce6e9"/>
-            <text x="566" y="70" text-anchor="middle">LLM (BYOK)</text>
+            <text x="566" y="63" text-anchor="middle" font-weight="700">LLM</text>
+            <text x="566" y="78" text-anchor="middle" fill="#5a6b70" font-size="10">server or your key</text>
             <rect x="652" y="46" width="102" height="40" rx="8" fill="#e4f4ec" stroke="#2f9e6f"/>
             <text x="703" y="62" text-anchor="middle" font-weight="700">Answer</text>
             <text x="703" y="77" text-anchor="middle" fill="#5a6b70" font-size="10.5">+ proof + sources</text>
@@ -426,6 +546,38 @@
         </svg>
         <figcaption>For performance/comparison questions, the verified benchmark evidence is injected so the answer cites real, graded, sourced numbers.</figcaption>
       </figure>
+
+      <h3>What you'll see while it works</h3>
+      <ul>
+        <li><b>First run:</b> a purpose line + clickable example questions under the ask bar, gone after your first
+          answer.</li>
+        <li><b>Staged progress</b> under the bar while it generates: <i>Retrieving evidence → Checking benchmarks
+          &amp; facts → Writing the answer</i>.</li>
+        <li><b>Spell correction:</b> typos in method or technique names are fixed locally and the answer notes
+          “Showing results for …” with what you originally typed.</li>
+      </ul>
+
+      <h3>Reading the answer</h3>
+      <ul>
+        <li><b>Citations you can check:</b> click any <b>[n]</b> chip — on Graph Reasoning <i>or</i> Benchmarks — and
+          a source modal opens with the claim being cited (“Cited for …”), the best-matching retrieved passage with
+          shared terms highlighted, its section + page, and a <b>supporting passage</b> vs <b>weak match</b> badge
+          (weak = the source doesn't clearly state the claim; the modal warns you). <b>[B#]</b> chips cite verified
+          benchmark blocks instead of paper passages.</li>
+        <li><b>Numbers are enforced, not trusted:</b> if any figure in the answer can't be matched to the retrieved
+          sources, a visible <b>“⚠ Verification note”</b> flags it at the end of the answer.</li>
+        <li><b>Methods you name are never dropped:</b> ask “compare GraspQP to GraspVLA” and both get their own
+          evidence and a slot in the comparison table, even if retrieval alone would have favored one.</li>
+        <li><b>Overview questions survey everything:</b> “give an overview of the methods” / “what approaches
+          exist?” enumerates the whole method set grouped by approach, instead of picking a couple.</li>
+        <li><b>Follow-ups work:</b> the previous turn is context, so “which of <i>them</i> is fastest?” resolves the
+          pronoun.</li>
+        <li><b>Deterministic by design:</b> the same question gives the same answer within a session (per-session
+          answer cache + temperature 0) — see the FAQ.</li>
+        <li><b>Degraded, not dead:</b> if the AI is unavailable, you still get a data-only answer assembled from the
+          corpus facts, attribute matches, and verified benchmark values — clearly labeled as such.</li>
+      </ul>
+
       <h3>Bring your own key (run it locally / privately)</h3>
       <p>Open <b>⚙ Settings → Provider</b>. The <code>Default</code> option uses a server-side key (production).
       For local or private use, pick a BYOK provider and paste a token — it's stored only in your browser and sent
@@ -442,9 +594,54 @@
       <b>OpenRouter</b>.</div>
     </section>
 
+    <!-- ───────────── TROUBLESHOOTING / FAQ ───────────── -->
+    <section id="faq">
+      <h2><span class="n">7</span> Troubleshooting &amp; FAQ</h2>
+      <p class="lede">The questions that actually come up, with the honest answers.</p>
+
+      <details open><summary>The graph doesn't zoom when I scroll.</summary>
+        <div class="body">By design. Hold <b>Cmd</b> (Mac) or <b>Ctrl</b> (Windows) while scrolling to zoom; a plain
+        scroll moves the page so the graph never traps your mouse wheel. If you scroll over the graph without the
+        modifier, a hint overlay (“Use ⌘/Ctrl + scroll to zoom”) appears for a moment to remind you.</div></details>
+
+      <details><summary>A citation opened a passage that only weakly matches the claim.</summary>
+        <div class="body">The modal says <b>weak match</b> and warns you explicitly. It means the retrieved passage
+        shares too little with the cited claim to plausibly support it — the copilot may have generalized across
+        sources rather than restating one. That's surfaced, not hidden: a <b>supporting passage</b> badge means the
+        source states the claim; a <b>weak match</b> badge means treat that citation with caution and check the full
+        paper (the Paper Evidence panel and its “View PDF” button are one click away).</div></details>
+
+      <details><summary>A method I care about has no benchmark rows.</summary>
+        <div class="body">Its papers report numbers using metrics or protocols outside the extracted result tables,
+        or report results only in image-form tables the extractor couldn't read — a property of the corpus, not a
+        bug. When a copilot query names methods and <b>none</b> of them has an extracted result, the Benchmarks page
+        shows an explicit amber notice saying exactly that (rather than silently showing everything unfiltered). The
+        method still has full coverage in the graph, the method table, and the copilot's paper evidence.</div></details>
+
+      <details><summary>I asked the same question twice and got the identical answer.</summary>
+        <div class="body">By design. Answers are cached per session and generation runs at temperature&nbsp;0, so the
+        same (or near-identically phrased) question returns the same answer instead of paraphrasing itself into
+        subtle inconsistencies. A reproducible answer is a feature in a tool meant for verification. The cache
+        clears on reload, and invalidates automatically if the corpus changes.</div></details>
+
+      <details><summary>Why are most evidence grades B?</summary>
+        <div class="body">Because <b>B means a single solid source, and one paper can only ever be a B</b>. An A
+        requires 2+ <i>independent</i> papers reporting consistent values for the same method × metric × protocol —
+        and robotics benchmarks are not standardized, so most combinations are reported by exactly one paper. Papers
+        also frequently re-quote each other's baseline numbers instead of re-running them (re-quoting is not
+        corroboration, so it can't earn an A), and when two papers <i>do</i> re-run the same setup they often
+        disagree (→ C). A mostly-B board is the honest picture of the literature, not a data defect.</div></details>
+
+      <details><summary>The answer starts with “The AI summary is temporarily unavailable”.</summary>
+        <div class="body">The language model couldn't be reached (rate limit, outage). The copilot degrades instead
+        of failing: it serves what was computed deterministically without the LLM — corpus facts, the methods
+        matching your query's attributes, and verified benchmark values. Ask again in a minute, or set your own key
+        under <b>⚙ Settings</b>.</div></details>
+    </section>
+
     <!-- ───────────── PIPELINE ───────────── -->
     <section id="pipeline">
-      <h2><span class="n">6</span> Pipeline architecture</h2>
+      <h2><span class="n">8</span> Pipeline architecture</h2>
       <p class="lede">How raw PDFs become the dashboard. Every step is precomputed offline into static JSON, so the
       live site is fast and serverless.</p>
       <figure>
@@ -494,7 +691,7 @@
             <line x1="658" y1="123" x2="690" y2="123" stroke="#16657d" marker-end="url(#a2)"/>
           </g>
         </svg>
-        <figcaption>One command (<code>ingest_domain.py --domain &lt;name&gt;</code>) or the Admin “Build” button runs the main chain in CI (GROBID → RAG → graph → HGT → precompute). Benchmark extraction runs <i>after</i> precompute and is a separate “Build benchmarks” action.</figcaption>
+        <figcaption>One command (<code>ingest_domain.py --domain &lt;name&gt;</code>) or the Admin “Build” button runs the main chain in CI (GROBID → RAG → graph → link prediction → precompute). Benchmark extraction runs <i>after</i> precompute and is a separate “Build benchmarks” action.</figcaption>
       </figure>
       <details><summary>Step by step (with the method behind each stage)</summary><div class="body">
         <b>1 · Extract.</b> <a href="https://github.com/kermitt2/grobid">GROBID</a> parses born-digital text into
@@ -518,9 +715,10 @@
         <b>5 · Precompute.</b> Writes all the static JSON the pages read (items, knowledge-graph, landing, etc.) to
         <code>public/data-&lt;domain&gt;/</code>, served statically. It also computes a
         <a href="https://arxiv.org/abs/1802.03426">UMAP</a> 2-D layout +
-        <a href="https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html">HDBSCAN</a> clusters for an
-        optional 2-D similarity map (not currently surfaced in the UI). <b>Clustering is not used for any
-        inference</b>: not in the knowledge graph, not in the copilot.<br/>
+        <a href="https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html">HDBSCAN</a> clusters for the
+        <b>Explorer</b> similarity map — an optional legacy view, off by default, that a maintainer can toggle on
+        only from Admin. <b>Clustering is not used for any inference</b>: not in the knowledge graph, not in the
+        copilot.<br/>
         <b>6 · Benchmarks.</b> Table cells are normalized (units, multi-level headers, aliases), de-duplicated per
         paper, scored for consistency, and assigned A/B/C grades with provenance. This step runs <i>after</i>
         precompute and is triggered separately (the Admin “Build benchmarks” action / the <code>benchmark</code> step).
@@ -557,12 +755,12 @@
 
     <!-- ───────────── STACK ───────────── -->
     <section id="stack">
-      <h2><span class="n">7</span> Technology stack</h2>
+      <h2><span class="n">9</span> Technology stack</h2>
       <p class="lede">All open components; nothing proprietary required to run it.</p>
       <table>
         <tr><th>Layer</th><th>Tech</th><th>Used for</th></tr>
         <tr class="stack-row"><td>Frontend</td><td><a href="https://react.dev/">React</a> (<a href="https://create-react-app.dev/">CRA</a>)</td><td>the single-page dashboard; domain config via context.</td></tr>
-        <tr class="stack-row"><td>Charts</td><td><a href="https://plotly.com/javascript/">Plotly.js</a></td><td>scatter / UMAP map and benchmark bar charts.</td></tr>
+        <tr class="stack-row"><td>Charts</td><td><a href="https://plotly.com/javascript/">Plotly.js</a></td><td>the similarity-map scatter in the optional legacy Explorer view. The Benchmarks page is plain HTML cards — deliberately no charts.</td></tr>
         <tr class="stack-row"><td>Graph</td><td><a href="https://js.cytoscape.org/">Cytoscape.js</a></td><td>the interactive knowledge graph + predicted-edge view.</td></tr>
         <tr class="stack-row"><td>Hosting</td><td><a href="https://vercel.com/docs">Vercel</a></td><td>static site + serverless API functions (admin, chat proxy).</td></tr>
         <tr class="stack-row"><td>Builds</td><td><a href="https://docs.github.com/en/actions">GitHub Actions</a></td><td>per-domain ingestion pipeline triggered from Admin.</td></tr>
@@ -576,7 +774,7 @@
 
     <!-- ───────────── YOUR DOMAIN ───────────── -->
     <section id="your-domain">
-      <h2><span class="n">8</span> Add your own domain</h2>
+      <h2><span class="n">10</span> Add your own domain</h2>
       <p class="lede">This is the whole point: the dashboard is a <b>template over a corpus</b>. To bring a new field
       in, you supply your corpus (a CSV + the PDFs) plus a small one-time vocabulary block, then rebuild.</p>
       <div class="grid2">
@@ -594,11 +792,11 @@
             and datasets to read from result tables). The copilot's ranking vocabulary is then
             <i>auto-derived</i> from those metric aliases — nothing extra to type. Optionally paste the domain's
             <b>Google&nbsp;Drive folder</b> of CSV exports to enable the nightly auto-sync (see <i>Keep it live</i> below).</li>
-        <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → HGT → precompute) and commits the
+        <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → link prediction → precompute) and commits the
             precomputed JSON back. <b>Benchmarks are a separate <i>Build benchmarks</i> action</b> (the Docling
             table extractor, run after precompute), so trigger that too once the main build succeeds.</li>
-        <li>When both finish, your domain is a first-class, interactive view — the copilot, benchmarks, graph,
-            and map re-skin to your field automatically.</li>
+        <li>When both finish, your domain is a first-class, interactive view — the copilot, benchmarks, and graph
+            re-skin to your field automatically.</li>
       </ol>
 
       <div class="callout tip"><span class="lab">Keep it live (nightly sync)</span> Give a domain a
@@ -642,7 +840,7 @@
 
     <!-- ───────────── FURTHER READING ───────────── -->
     <section id="refs">
-      <h2><span class="n">9</span> Further reading</h2>
+      <h2><span class="n">11</span> Further reading</h2>
       <p class="lede">Every external technology and method this manual names, linked to its authoritative source — the
       original papers, official docs, and repositories — for a deeper dive and full transparency. This section is
       optional: the manual stands on its own without clicking any of it.</p>
@@ -676,7 +874,7 @@
       <ul class="refs">
         <li><a class="nm" href="https://react.dev/">React</a> (<a class="nm" href="https://create-react-app.dev/">Create React App</a>)<span class="ds">The single-page dashboard UI.</span></li>
         <li><a class="nm" href="https://js.cytoscape.org/">Cytoscape.js</a><span class="ds">Renders the interactive knowledge graph and the predicted-edge view.</span></li>
-        <li><a class="nm" href="https://plotly.com/javascript/">Plotly.js</a><span class="ds">Draws the scatter / UMAP map and the benchmark charts.</span></li>
+        <li><a class="nm" href="https://plotly.com/javascript/">Plotly.js</a><span class="ds">Draws the similarity-map scatter in the optional legacy Explorer view (off by default; toggleable from Admin).</span></li>
         <li><a class="nm" href="https://vercel.com/docs">Vercel</a><span class="ds">Hosts the static site plus the serverless API functions (admin, chat proxy).</span></li>
         <li><a class="nm" href="https://docs.github.com/en/actions">GitHub Actions</a><span class="ds">Runs the per-domain ingestion pipeline triggered from the Admin page.</span></li>
       </ul>
