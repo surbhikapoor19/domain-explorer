@@ -24,7 +24,7 @@ const PROVIDERS = {
   },
   groq: {
     name: 'Groq',
-    defaultModel: 'llama-3.3-70b-versatile',
+    defaultModel: 'openai/gpt-oss-120b',
     requiresKey: true,
     keyLabel: 'Groq API key',
     keyUrl: 'https://console.groq.com/keys',

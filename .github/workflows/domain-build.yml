@@ -115,7 +115,11 @@ jobs:
           elif [ "$PAGES" = "benchmark" ]; then
             STEPS="benchmark"
           fi
-          python scripts/ingest_domain.py --domain "$DOMAIN" --steps "$STEPS"
+          # Allow the dispatch to force a rebuild (e.g. after a pipeline code change
+          # that changes output shape) — otherwise a step skips when its output exists.
+          FORCE=""
+          if [ "${{ github.event.client_payload.force }}" = "true" ]; then FORCE="--force"; fi
+          python scripts/ingest_domain.py --domain "$DOMAIN" --steps "$STEPS" $FORCE
 
       - name: Commit results
         run: |

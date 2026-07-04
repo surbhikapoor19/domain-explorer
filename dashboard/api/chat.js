@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   const hfToken = process.env.HF_API_TOKEN || process.env.HF_TOKEN || '';
   const groqKey = process.env.GROQ_API_KEY || '';
   const hfModel = process.env.HF_MODEL || 'Qwen/Qwen2.5-72B-Instruct';
-  const groqModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+  const groqModel = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
   // Attempt HuggingFace
   if (hfToken) {
