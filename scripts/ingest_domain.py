@@ -448,8 +448,10 @@ def step_benchmark(paths, domain):
     import tempfile
     output_dir = paths['output']
     out_json = output_dir / 'benchmark-comparisons.json'
-    if out_json.exists() and os.environ.get('FORCE_BENCHMARK') != '1':
-        print(f"  [benchmark] {out_json} exists; skipping (FORCE_BENCHMARK=1 to rebuild)")
+    # Honor the global --force flag too (the CI workflow passes it via
+    # client_payload.force) — previously only the FORCE_BENCHMARK env re-ran this.
+    if out_json.exists() and not FORCE and os.environ.get('FORCE_BENCHMARK') != '1':
+        print(f"  [benchmark] {out_json} exists; skipping (--force or FORCE_BENCHMARK=1 to rebuild)")
         return
     pre = Path(__file__).resolve().parent.parent / 'dashboard' / 'scripts' / 'precompute'
     cfg = pre / 'benchmarks' / 'config' / f'{domain}.json'
@@ -472,6 +474,13 @@ def step_benchmark(paths, domain):
     subprocess.run(extract, cwd=str(pre), check=True)
     export = [sys.executable, 'graph/benchmark_data.py', '--from-records', str(rr),
               '--output-dir', str(output_dir), '--config', str(cfg)]
+    # Enrich the domain's knowledge graph with the graded, protocol-scoped
+    # benchmark comparisons (table-derived `outperforms` edges beat prose claims;
+    # previously the export never received --kg-path, so the deployed graph kept
+    # only the ~7 prose-resolved edges).
+    kg_full = output_dir / 'kg-full.json'
+    if kg_full.exists():
+        export += ['--kg-path', str(kg_full)]
     subprocess.run(export, cwd=str(pre), check=True)
     print(f"  [benchmark] wrote {out_json}")
 

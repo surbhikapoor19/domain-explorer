@@ -87,7 +87,7 @@ async function callProxy(messages, opts = {}) {
 
 // One generic OpenAI-compatible chat-completions caller — every BYOK provider
 // (HF router, OpenRouter, Groq, custom) speaks this dialect.
-async function callOpenAICompatible(endpoint, defaultModel, messages, settings, opts = {}, extraHeaders = {}) {
+async function callOpenAICompatible(endpoint, defaultModel, messages, settings, opts = {}, extraHeaders = {}, extraBody = null) {
   const model = settings.model || defaultModel;
   const headers = { 'Content-Type': 'application/json', ...extraHeaders };
   if (settings.apiKey) headers['Authorization'] = `Bearer ${settings.apiKey}`;
@@ -100,6 +100,7 @@ async function callOpenAICompatible(endpoint, defaultModel, messages, settings, 
       max_tokens: opts.maxTokens || 1024,
       temperature: opts.temperature ?? 0.3,
       response_format: opts.responseFormat ? { type: opts.responseFormat } : undefined,
+      ...(typeof extraBody === 'function' ? extraBody(model) : (extraBody || {})),
     }),
   });
   if (!res.ok) throw new Error(`LLM error ${res.status}: ${await res.text()}`);
@@ -125,8 +126,12 @@ export async function chat(messages, settingsOverride) {
         { 'HTTP-Referer': window.location.origin, 'X-Title': 'Grasp Planning Explorer' });
     case 'groq':
       if (!settings.apiKey) throw new Error('Groq requires an API key. Add it in Settings.');
+      // gpt-oss are reasoning models on Groq: hidden reasoning consumes max_tokens,
+      // so cap it — same fix as the server proxy (/api/chat), else BYOK users get
+      // truncated/empty answers on long prompts.
       return callOpenAICompatible('https://api.groq.com/openai/v1/chat/completions',
-        P.groq.defaultModel, messages, settings, opts);
+        P.groq.defaultModel, messages, settings, opts, {},
+        (model) => (/gpt-oss/i.test(model) ? { reasoning_effort: 'low' } : {}));
     case 'openai_compatible': {
       if (!settings.baseUrl) throw new Error('Add a Base URL in Settings for the OpenAI-compatible provider.');
       const base = settings.baseUrl.replace(/\/+$/, '');

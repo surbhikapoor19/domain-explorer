@@ -71,30 +71,55 @@ def export_benchmark_data(extraction_results_path, output_dir, kg_path=None, con
     return out
 
 def _enrich_kg(kg_path, comparisons):
+    """Inject graded, table-derived outperforms edges into the domain KG.
+    One edge per (winner paper, loser paper) pair, AGGREGATED over every metric/
+    condition the pair was compared on — the edge carries n_comparisons, the metric
+    list, and the pair's best evidence grade, so a pair compared on 12 cells isn't
+    reduced to whichever comparison happened to come first. Idempotent: existing
+    benchmark-derived edges are refreshed in place, prose-claimed edges untouched."""
     with open(kg_path) as f:
         kg = json.load(f)
     m2p = {}
     for link in kg.get('links', []):
         if link.get('type') == 'described_in':
             m2p[link['source'].replace('method:', '')] = link['target'].replace('paper:', '')
-    existing = {(l['source'], l['target']) for l in kg.get('links', [])
-                if l.get('type') == 'outperforms'}
-    added = 0
+
+    # Aggregate comparisons per directed paper pair.
+    by_pair = {}
+    grade_rank = {'A': 3, 'B': 2, 'C': 1}
     for c in comparisons:
         wp, lp = m2p.get(c['winner']), m2p.get(c['loser'])
         if not wp or not lp or wp == lp:
             continue
-        src, tgt = f"paper:{wp}", f"paper:{lp}"
-        if (src, tgt) in existing:
-            continue
-        kg['links'].append({'type': 'outperforms', 'source': src, 'target': tgt,
+        key = (f"paper:{wp}", f"paper:{lp}")
+        agg = by_pair.setdefault(key, {
+            'n_comparisons': 0, 'metrics': [], 'grade': 'C',
+            'representative': c,   # highest-graded single comparison for the numbers
+        })
+        agg['n_comparisons'] += 1
+        if c['metric_id'] not in agg['metrics']:
+            agg['metrics'].append(c['metric_id'])
+        if grade_rank.get(c['grade'], 0) > grade_rank.get(agg['grade'], 0):
+            agg['grade'] = c['grade']
+            agg['representative'] = c
+
+    # Refresh-in-place: drop previous benchmark-derived edges (prose edges stay),
+    # then append the current aggregate set. Re-running is a no-op.
+    links = [l for l in kg.get('links', [])
+             if not (l.get('type') == 'outperforms' and l.get('extraction') == 'benchmark_v2')]
+    before = len([l for l in kg.get('links', []) if l.get('type') == 'outperforms' and l.get('extraction') == 'benchmark_v2'])
+    for (src, tgt), agg in by_pair.items():
+        c = agg['representative']
+        links.append({'type': 'outperforms', 'source': src, 'target': tgt,
             'metric': c['metric_id'], 'condition': c.get('condition'),
             'winner_value': c['winner_value'], 'loser_value': c['loser_value'],
-            'margin': c['margin'], 'grade': c['grade'], 'extraction': 'benchmark_v2'})
-        existing.add((src, tgt)); added += 1
+            'margin': c['margin'], 'grade': agg['grade'],
+            'n_comparisons': agg['n_comparisons'], 'metrics': agg['metrics'],
+            'extraction': 'benchmark_v2'})
+    kg['links'] = links
     with open(kg_path, 'w') as f:
         json.dump(kg, f)
-    return added
+    return len(by_pair) - before
 
 def export_from_records(records_path, output_dir, kg_path=None, config_path=None):
     """Build benchmark-comparisons.json from a Phase-C result-records.json artifact."""

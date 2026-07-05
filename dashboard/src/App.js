@@ -342,18 +342,10 @@ function App() {
             {!isEmbedded && (
               <button className="settings-btn" onClick={() => setShowSettings(true)} title="AI Settings">&#9881;</button>
             )}
-            {/* Admin is internal (CSV upload, triggering builds). Hide it when the app
-                is embedded on another site — it stays reachable (token-gated) via the
-                Manual's "Domain administration" link. */}
-            {!isEmbedded && (
-              <button
-                className={`nav-link nav-link-admin ${page === 'admin' ? 'active' : ''}`}
-                onClick={() => setPage('admin')}
-                title="Domain administration"
-              >
-                Admin
-              </button>
-            )}
+            {/* Admin (CSV upload, triggering builds) is intentionally NOT in the
+                header — maintainers reach it via the password-gated link in the
+                Manual's footer (or /admin directly). Keeps internal tooling out of
+                the public product surface. */}
             <ManualButton />
           </div>
         </div>

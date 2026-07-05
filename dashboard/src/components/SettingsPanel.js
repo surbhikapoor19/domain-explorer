@@ -1,12 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { getProviders, loadSettings, saveSettings } from '../lib/llm-client';
+import { getProviders, loadSettings, saveSettings, chat } from '../lib/llm-client';
 
 export default function SettingsPanel({ onClose }) {
   const providers = getProviders();
   const [settings, setSettings] = useState(loadSettings);
+  const [test, setTest] = useState(null); // null | 'running' | {ok, msg}
   const prov = providers[settings.provider];
 
   useEffect(() => { saveSettings(settings); }, [settings]);
+  // A settings change invalidates the previous test verdict.
+  useEffect(() => { setTest(null); }, [settings.provider, settings.apiKey, settings.model, settings.baseUrl]);
+
+  // One-click sanity check so a pasted key is verified HERE, not by a failed
+  // copilot query later. Uses the exact same client path as the copilot.
+  const runTest = async () => {
+    setTest('running');
+    try {
+      const reply = await chat([{ role: 'user', content: 'Reply with the single word: OK' }], { ...settings });
+      setTest(reply && reply.trim()
+        ? { ok: true, msg: `Connected — ${prov?.name || 'provider'} responded.` }
+        : { ok: false, msg: 'The provider responded but returned no text.' });
+    } catch (e) {
+      setTest({ ok: false, msg: String(e.message || e).slice(0, 180) });
+    }
+  };
 
   return (
     <div className="settings-overlay" onClick={onClose}>
@@ -64,6 +81,22 @@ export default function SettingsPanel({ onClose }) {
             onChange={e => setSettings(s => ({ ...s, model: e.target.value }))}
             placeholder={prov?.defaultModel || 'provider default'}
           />
+
+          <div className="settings-test-row">
+            <button
+              type="button"
+              className="settings-test-btn"
+              onClick={runTest}
+              disabled={test === 'running' || (prov?.requiresKey && !settings.apiKey)}
+            >
+              {test === 'running' ? 'Testing…' : 'Test connection'}
+            </button>
+            {test && test !== 'running' && (
+              <span className={`settings-test-result ${test.ok ? 'ok' : 'fail'}`} role="status">
+                {test.ok ? '✓ ' : '✕ '}{test.msg}
+              </span>
+            )}
+          </div>
 
           <p className="settings-note">
             {prov?.requiresKey
