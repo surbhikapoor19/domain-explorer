@@ -390,8 +390,9 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   let insightText = '';
   const history = domainOpts.history || null;
   // Overview answers enumerate the whole candidate set — give them the budget to
-  // finish (a 1400-token cap truncated the JSON and forced a doubled LLM call).
-  const tokenBudget = intent === 'overview' ? 2400 : 1400;
+  // finish. Budgets include headroom for gpt-oss REASONING tokens, which count
+  // against max_tokens before any visible answer is produced.
+  const tokenBudget = intent === 'overview' ? 3000 : 2000;
   for (let attempt = 0; attempt < 2 && !insightText; attempt++) {
     try {
       const { system, user } = buildAnswerPrompt({
@@ -400,15 +401,12 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
         history,
       });
       const msgs = [{ role: 'system', content: system }, { role: 'user', content: user }];
-      let raw = '';
-      try {
-        // Strict JSON mode is reliable WHEN it fits; but Groq hard-400s
-        // (json_validate_failed) if the model truncates at max_tokens. Give ample
-        // budget, then fall back to free-form (parseStructuredAnswer is robust).
-        raw = await llmChat(msgs, { maxTokens: tokenBudget, temperature: 0, responseFormat: 'json_object' });
-      } catch (jsonErr) {
-        raw = await llmChat(msgs, { maxTokens: tokenBudget, temperature: 0 });
-      }
+      // NO response_format json_object: gpt-oss reasoning models hard-400 it
+      // (json_validate_failed with an empty generation) whenever reasoning eats
+      // the budget, which made EVERY query fail its first call and doubled load
+      // (the cause of the "AI summary temporarily unavailable" fallbacks).
+      // parseStructuredAnswer is robust to fenced/loose JSON, so plain mode is fine.
+      const raw = await llmChat(msgs, { maxTokens: tokenBudget, temperature: 0 });
       parsed = parseStructuredAnswer(raw);
       insightText = parsed
         ? parsed.answer

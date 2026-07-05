@@ -48,7 +48,14 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${groqKey}`,
         },
-        body: JSON.stringify({ model: groqModel, messages, max_tokens, temperature, ...(response_format ? { response_format } : {}) }),
+        body: JSON.stringify({
+          model: groqModel, messages, max_tokens, temperature,
+          // gpt-oss are REASONING models: their hidden reasoning consumes
+          // max_tokens. Keep it short or long prompts produce empty/truncated
+          // answers (and json_object mode hard-400s with an empty generation).
+          ...(/gpt-oss/i.test(groqModel) ? { reasoning_effort: 'low' } : {}),
+          ...(response_format ? { response_format } : {}),
+        }),
       });
       if (groqRes.ok) {
         const data = await groqRes.json();
