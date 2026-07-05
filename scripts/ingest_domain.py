@@ -454,7 +454,11 @@ def step_benchmark(paths, domain):
         print(f"  [benchmark] {out_json} exists; skipping (--force or FORCE_BENCHMARK=1 to rebuild)")
         return
     pre = Path(__file__).resolve().parent.parent / 'dashboard' / 'scripts' / 'precompute'
-    cfg = pre / 'benchmarks' / 'config' / f'{domain}.json'
+    # Config files use underscore slugs (grasp_planning.json) but dispatches may
+    # carry either form ("grasp-planning" from the admin UI/API) — accept both.
+    cfg = pre / 'benchmarks' / 'config' / f"{domain.replace('-', '_')}.json"
+    if not cfg.exists():
+        cfg = pre / 'benchmarks' / 'config' / f'{domain}.json'
     if not cfg.exists():
         print(f"  [benchmark] no benchmarks config at {cfg}; skipping")
         return
