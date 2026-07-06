@@ -669,7 +669,7 @@
             <text x="417" y="142" text-anchor="middle">Graph link prediction</text>
             <rect x="342" y="166" width="150" height="40" rx="8" fill="#fdf3f0" stroke="#d95a3e"/>
             <text x="417" y="184" text-anchor="middle" font-weight="700" fill="#b14b1f">Benchmark extraction</text>
-            <text x="417" y="198" text-anchor="middle" fill="#b14b1f" font-size="10">normalize → grade</text>
+            <text x="417" y="198" text-anchor="middle" fill="#b14b1f" font-size="10">verify → grade → results</text>
             <!-- precompute -->
             <rect x="528" y="96" width="130" height="54" rx="9" fill="#eef6f8" stroke="#16657d" stroke-width="1.4"/>
             <text x="593" y="118" text-anchor="middle" font-weight="700">Precompute</text>
@@ -695,9 +695,11 @@
       </figure>
       <details><summary>Step by step (with the method behind each stage)</summary><div class="body">
         <b>1 · Extract.</b> <a href="https://github.com/kermitt2/grobid">GROBID</a> parses born-digital text into
-        structured <a href="https://tei-c.org/">TEI</a> XML (sections, references, in-text citation context).
-        <a href="https://github.com/docling-project/docling">Docling</a> (IBM Research) reads the result <i>tables</i>
-        (with bounding boxes, so each number keeps a crop) — OCR off, since papers are born-digital.<br/>
+        structured <a href="https://tei-c.org/">TEI</a> XML (sections, references, in-text citation context, plus the
+        figures/tables/equations/authors/bibliography the graph uses).
+        <a href="https://github.com/docling-project/docling">Docling</a> (IBM Research) parses each PDF's
+        <i>tables</i>: the layout and cell text serve as deterministic ground truth, and bounding boxes mean each
+        number keeps a crop — OCR off, since papers are born-digital.<br/>
         <b>2 · RAG.</b> Text is split into chunks and <b>embedded</b> — each chunk is turned into a list of numbers that
         captures its meaning, so passages about similar things sit near each other — using the compact
         <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">all-MiniLM-L6-v2</a> sentence-transformer,
@@ -705,12 +707,29 @@
         question <i>in the browser</i> with <a href="https://huggingface.co/docs/transformers.js/index">Transformers.js</a>
         for semantic search and blends it with <a href="https://www.staff.city.ac.uk/~sbrp622/papers/foundations_bm25_review.pdf">Okapi&nbsp;BM25</a>
         lexical scoring.<br/>
-        <b>3 · Knowledge graph.</b> Entities (items, papers, techniques, hardware, authors, claims) and their
-        relationships — including citation stance — are assembled into a graph.<br/>
+        <b>3 · Knowledge graph.</b> Assembled from parallel extraction tracks, each edge labeled with its
+        provenance: the TEI structural parse (figures, tables, equations, authors, bibliography), regex-extracted
+        facts, LLM-extracted entities (contributions, problems, limitations, comparison claims), and CSV metadata
+        plus a citation resolver. The highest-provenance track is the <b>verified-triple extractor</b>: per text
+        chunk, the LLM proposes (relation, object, <i>verbatim quote</i>) triples against a fixed 8-relation schema
+        (<code>uses_backbone</code>, <code>trained_on</code>, <code>uses_hardware</code>, <code>outperforms_claim</code>…),
+        and any triple whose quote is not literally a substring of that chunk is mechanically rejected — the model
+        cannot assert a relation without a quote that survives the check. Surviving triples become edges carrying
+        the quote + chunk id (<code>extraction=&#39;verified_llm&#39;</code>), so the claim behind the edge is
+        checkable against the paper text. Prose “outperforms” claims resolve <i>every</i> method the sentence names
+        (acronym- and punctuation-tolerant; the most specific matched alias wins) and become edges only when the
+        claim actually asserts superiority (“outperforms”, “better than”, “surpasses”…) — a bare “unlike X” stays a
+        comparison, not a win.<br/>
         <b>4 · Graph link prediction.</b> A heterogeneous <a href="https://arxiv.org/abs/1706.02216">GraphSAGE</a>
         graph neural network (made type-aware with PyG's <code>to_hetero</code>) plus a
         <a href="https://arxiv.org/abs/1412.6575">DistMult</a> relation decoder learns the corpus structure and
-        predicts latent links. (The build step is named <code>hgt</code> for historical reasons; the architecture is
+        predicts latent links — trained <b>per domain</b> on the schema exported from that domain's knowledge graph.
+        Bibliometric relations (authorship, citations…) stay in the graph for message passing but are <b>excluded
+        from the training loss</b>, and per-relation validation/test metrics (AUC, MRR, Hits@k) are persisted with
+        every trained model. The UI applies a support gate on top: predicted edges for any relation with fewer than
+        30 real training edges are hidden, and the view says how many were gated (“N low-evidence predictions
+        hidden”) — a model cannot learn a relation from a handful of examples, so those predictions are noise, not
+        insight. (The build step is named <code>hgt</code> for historical reasons; the architecture is
         GraphSAGE&nbsp;+&nbsp;DistMult, not a Heterogeneous Graph Transformer.)<br/>
         <b>5 · Precompute.</b> Writes all the static JSON the pages read (items, knowledge-graph, landing, etc.) to
         <code>public/data-&lt;domain&gt;/</code>, served statically. It also computes a
@@ -719,27 +738,64 @@
         <b>Explorer</b> similarity map — an optional legacy view, off by default, that a maintainer can toggle on
         only from Admin. <b>Clustering is not used for any inference</b>: not in the knowledge graph, not in the
         copilot.<br/>
-        <b>6 · Benchmarks.</b> Table cells are normalized (units, multi-level headers, aliases), de-duplicated per
-        paper, scored for consistency, and assigned A/B/C grades with provenance. This step runs <i>after</i>
+        <b>6 · Benchmarks.</b> Docling's parsed tables are the deterministic ground truth. When a vision key exists
+        (<code>ANTHROPIC_API_KEY</code>, or <code>GROQ_API_KEY</code> via the Groq-vision fallback), a VLM reads each
+        table <i>crop</i> for the semantics flat cell text loses (multi-level headers, units) — and <b>every VLM row
+        is verified against Docling's extracted cell text</b>: a value not found in the cells is flagged unverified
+        at the lowest confidence, so the vision model can miss rows but cannot invent values. Table headers map to
+        metrics through a per-domain registry (the aliases in <code>benchmarks/config/&lt;domain&gt;.json</code>);
+        headers that don't resolve are quarantined <i>with an audit list</i> of the exact raw strings, and
+        <code>propose_aliases.py</code> clusters them and drafts human-reviewable registry proposals — nothing is
+        ever auto-applied. Aggregation (<code>build_benchmarks.py</code>) then emits: <b>(a)</b> <code>results</code>
+        — every value-bearing extraction, cleaned (citation-marker method names stripped; values-as-headers, bare
+        abbreviations, and condition-as-metric labels dropped), each carrying its method (alias-salvaged where
+        possible, flagged unresolved otherwise), metric label, value plus the paper's own <code>value_str</code>,
+        unit, protocol condition tokens, dataset, self- vs third-party reporting, and a per-record grade that
+        inherits the cross-validation grade when 2+ papers corroborate the same cell; <b>(b)</b> derived comparable
+        views — leaderboards (2+ methods on the same metric + protocol), cross-validations, and graded pairwise
+        comparisons; <b>(c)</b> quarantine stats. The Benchmarks page renders <code>results</code> — a filterable
+        table, explicitly <i>not</i> a leaderboard. The table-derived comparisons also enrich the knowledge graph:
+        one graded <code>outperforms</code> edge per (winner, loser) paper pair, aggregated over every
+        metric/condition the pair was compared on (the edge carries <code>n_comparisons</code>, the metric list, and
+        the pair's best grade; <code>extraction=&#39;benchmark_v2&#39;</code>). This step runs <i>after</i>
         precompute and is triggered separately (the Admin “Build benchmarks” action / the <code>benchmark</code> step).
       </div></details>
 
+      <details><summary>How a build runs (CI)</summary><div class="body">
+        Domain builds run in GitHub Actions via <code>repository_dispatch</code> — the Admin panel's Build button
+        sends the event. The payload selects the step chain:
+        <code>grobid,rag,kg,hgt,precompute</code> (main build) or <code>benchmark</code>; each step skips when its
+        output already exists, and <code>client_payload.force</code> re-runs those steps anyway (e.g. after a
+        pipeline code change). PDFs ship in the repo as <code>datasets/&lt;slug&gt;/papers.zip</code> via Git LFS;
+        the workflow pulls and unzips them, runs <code>scripts/ingest_domain.py</code>, and commits the outputs
+        (TEI, extracted facts/entities, verified triples, the knowledge graph, the link-prediction schema, and all
+        <code>dashboard/public/data-&lt;slug&gt;/</code> JSON) back to <code>main</code>. LLM-dependent steps —
+        entity extraction, verified triples, Groq-vision table reading — require the <code>GROQ_API_KEY</code>
+        Actions secret and degrade gracefully without it: they're skipped (or extraction runs born-digital-only),
+        so a keyless build still produces a working, less-enriched domain.
+      </div></details>
+
       <details><summary>How the knowledge graph is built — and how edges work across domains</summary><div class="body">
-        The graph is assembled from <b>three sources</b>, then normalized:
+        The graph is assembled from <b>four extraction tracks</b>, then normalized:
         <ul>
-          <li><b>Your CSV</b> → one <b>item</b> node per row, plus an <b>attribute</b> node for each categorical
-            value (a technique, a piece of hardware, a dataset, a year…).</li>
+          <li><b>Your CSV</b> (+ a citation resolver) → one <b>item</b> node per row, plus an <b>attribute</b> node
+            for each categorical value (a technique, a piece of hardware, a dataset, a year…).</li>
           <li><b>GROBID / TEI</b> (paper structure) → <b>paper, author, institution, year, figure, table, equation</b>
             and <b>reference</b> nodes.</li>
-          <li><b>LLM extraction</b> over the paper text → <b>contribution, problem, limitation, comparison</b> and
-            method-step nodes.</li>
+          <li><b>Regex facts + LLM entities</b> over the paper text → <b>contribution, problem, limitation,
+            comparison</b> and method-step nodes.</li>
+          <li><b>Verified triples</b> (highest provenance) → edges whose claim carries a verbatim, mechanically
+            checked source quote (see step 3 above).</li>
         </ul>
         Edges are <b>typed</b>, and the edge vocabulary is shared across every domain — e.g. <code>described_in</code>,
         <code>uses_hardware</code>, <code>trained_on</code>, <code>implemented_in</code>, <code>maintained_by</code>,
         <code>addresses_problem</code>, <code>contributes</code>, <code>compares</code>/<code>outperforms</code>,
         <code>cites_external</code>, <code>authored_by</code>, <code>co_authored_with</code>,
         <code>published_in_year</code>, <code>has_figure</code>/<code>table</code>/<code>equation</code>, plus computed
-        <code>semantically_similar</code> / <code>similar_in_role</code> links.
+        <code>semantically_similar</code> / <code>similar_in_role</code> links. An <code>outperforms</code> edge
+        additionally names how it was earned: <code>prose_claim</code> (a superiority sentence),
+        <code>verified_llm</code> (quote-verified claim), or <code>benchmark_v2</code> (table-derived, graded,
+        aggregated per paper pair).
         <p>The cross-domain trick: <b>CSV edges are role-driven, not column-name-driven.</b> Each column is mapped to a
         semantic <b>role</b> (e.g. <code>hardware.platform</code>, <code>train.regime</code>,
         <code>meta.maintainer</code>, <code>identity.year</code>), and the <i>role</i> — not the literal header —
@@ -763,9 +819,9 @@
         <tr class="stack-row"><td>Charts</td><td><a href="https://plotly.com/javascript/">Plotly.js</a></td><td>the similarity-map scatter in the optional legacy Explorer view. The Benchmarks page is plain HTML cards — deliberately no charts.</td></tr>
         <tr class="stack-row"><td>Graph</td><td><a href="https://js.cytoscape.org/">Cytoscape.js</a></td><td>the interactive knowledge graph + predicted-edge view.</td></tr>
         <tr class="stack-row"><td>Hosting</td><td><a href="https://vercel.com/docs">Vercel</a></td><td>static site + serverless API functions (admin, chat proxy).</td></tr>
-        <tr class="stack-row"><td>Builds</td><td><a href="https://docs.github.com/en/actions">GitHub Actions</a></td><td>per-domain ingestion pipeline triggered from Admin.</td></tr>
+        <tr class="stack-row"><td>Builds</td><td><a href="https://docs.github.com/en/actions">GitHub Actions</a></td><td>per-domain ingestion pipeline triggered from Admin via <code>repository_dispatch</code>; PDFs via Git LFS; outputs committed back to main.</td></tr>
         <tr class="stack-row"><td>Text extraction</td><td><a href="https://github.com/kermitt2/grobid">GROBID</a> (<a href="https://tei-c.org/">TEI</a>)</td><td>born-digital text, sections, citations.</td></tr>
-        <tr class="stack-row"><td>Table extraction</td><td><a href="https://github.com/docling-project/docling">Docling</a></td><td>result tables with coordinates → croppable numbers.</td></tr>
+        <tr class="stack-row"><td>Table extraction</td><td><a href="https://github.com/docling-project/docling">Docling</a> + VLM (Claude vision, or Groq vision fallback)</td><td>Docling's cell text is the ground truth (with coordinates → croppable numbers); the VLM reads each crop for header/unit semantics, and every VLM row is verified against the cells.</td></tr>
         <tr class="stack-row"><td>Embeddings / RAG</td><td><a href="https://sbert.net/">sentence-transformers</a> (<a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">all-MiniLM-L6-v2</a>) + <a href="https://www.trychroma.com/">Chroma</a>; <a href="https://www.staff.city.ac.uk/~sbrp622/papers/foundations_bm25_review.pdf">BM25</a> at query time</td><td>semantic + lexical chunk retrieval for the copilot.</td></tr>
         <tr class="stack-row"><td>Graph ML</td><td><a href="https://github.com/pyg-team/pytorch_geometric">PyTorch Geometric</a> (<a href="https://arxiv.org/abs/1706.02216">GraphSAGE</a> + <a href="https://arxiv.org/abs/1412.6575">DistMult</a>)</td><td>predicting latent relationships between items.</td></tr>
         <tr class="stack-row"><td>Copilot LLM</td><td>BYOK (<a href="https://huggingface.co/docs/inference-providers/index">HF</a> / <a href="https://openrouter.ai/">OpenRouter</a> / <a href="https://groq.com/">Groq</a> / custom) or server proxy</td><td>final answer synthesis from assembled evidence.</td></tr>
@@ -793,8 +849,8 @@
             <i>auto-derived</i> from those metric aliases — nothing extra to type. Optionally paste the domain's
             <b>Google&nbsp;Drive folder</b> of CSV exports to enable the nightly auto-sync (see <i>Keep it live</i> below).</li>
         <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → link prediction → precompute) and commits the
-            precomputed JSON back. <b>Benchmarks are a separate <i>Build benchmarks</i> action</b> (the Docling
-            table extractor, run after precompute), so trigger that too once the main build succeeds.</li>
+            precomputed JSON back. <b>Benchmarks are a separate <i>Build benchmarks</i> action</b> (the Docling +
+            VLM-verified table extractor, run after precompute), so trigger that too once the main build succeeds.</li>
         <li>When both finish, your domain is a first-class, interactive view — the copilot, benchmarks, and graph
             re-skin to your field automatically.</li>
       </ol>
