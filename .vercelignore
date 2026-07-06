@@ -1,0 +1,10 @@
+# The Vercel project builds only dashboard/ (rootDirectory=dashboard). Exclude
+# everything the build never reads so CLI deploys stay small — and stay under the
+# 100MB file limit that datasets/*/papers.zip (365MB via LFS) would break.
+datasets/
+backend/
+hgt/
+docs/
+scripts/
+.github/
+.pytest_cache/
