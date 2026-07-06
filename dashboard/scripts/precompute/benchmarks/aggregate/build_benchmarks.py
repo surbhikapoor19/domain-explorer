@@ -29,6 +29,27 @@ def clean_method_name(m):
     m = re.sub(r'[\*†‡]', '', m)                          # footnote daggers/asterisks
     return re.sub(r'\s{2,}', ' ', m).strip(' ,;:·-')
 
+
+# Bare unit/magnitude tokens: a "method" whose only letters are one of these is a
+# row label like "10 K", "100K", "10N" — a quantity, not a method.
+_UNIT_TOKENS = {'k', 'm', 'b', 'n', 'g', 'kg', 'mg', 'mm', 'cm', 'ms', 's', 'hz', 'khz', 'fps'}
+
+def is_valid_method_name(name):
+    """A method name must actually NAME something: at least one letter, and not a
+    pure quantity/config row label. Rejects '( 0 , 0 , 10 )' (config tuples), '10 K'
+    (dataset sizes), '10N' (force magnitudes) — the row labels of ablation tables
+    that are not method-vs-method comparisons. Keeps 'S4G', 'π 0 (fine-tuned)',
+    '6-DoF GraspNet'."""
+    s = str(name or '').strip()
+    if len(s) < 2:
+        return False
+    letters = re.sub(r'[\W\d_]+', '', s, flags=re.UNICODE)
+    if not letters:
+        return False                        # "( 0 , 0 , 10 )", "0.86", "10/5"
+    if letters.lower() in _UNIT_TOKENS:
+        return False                        # "10 K", "100K", "10N", "5 ms"
+    return True
+
 def clean_metric_label(l):
     l = re.sub(r'[↑↓∆∇]', '', str(l or ''))     # ↑ ↓ ∆ ∇
     return re.sub(r'\s{2,}', ' ', l).strip(' ,;:|-')
@@ -363,7 +384,7 @@ def build_benchmark_json(records, cfg):
             canon = known_by_compact.get(re.sub(r'[^a-z0-9]+', '', str(method_name).lower()))
             if canon:
                 method_name, method_resolved = canon, True
-        if not (method_name and len(str(method_name).strip()) > 1):
+        if not is_valid_method_name(method_name):
             n_dropped_noise += 1
             continue
         raw_label = _metric_label(cfg, r.metric_id) if r.metric_id else (r.metric_raw or '')

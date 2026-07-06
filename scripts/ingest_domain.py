@@ -493,6 +493,15 @@ def step_benchmark(paths, domain):
                '--crops-url', crops_url, '--output', str(rr)] + no_vlm
     print(f"  [benchmark] extracting via Docling ({'born-digital' if no_vlm else 'with VLM'}) ...")
     subprocess.run(extract, cwd=str(pre), check=True)
+    # Persist the raw extraction records: aggregation-only fixes can then re-run
+    # via --from-records in seconds instead of re-paying a ~50-min Docling pass.
+    import shutil
+    records_keep = paths['chroma'] / 'result-records.json'
+    try:
+        shutil.copyfile(rr, records_keep)
+        print(f"  [benchmark] kept raw records at {records_keep}")
+    except OSError as e:
+        print(f"  [benchmark] could not persist records ({e})")
     export = [sys.executable, 'graph/benchmark_data.py', '--from-records', str(rr),
               '--output-dir', str(output_dir), '--config', str(cfg)]
     # Enrich the domain's knowledge graph with the graded, protocol-scoped

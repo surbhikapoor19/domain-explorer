@@ -82,6 +82,16 @@ def test_results_salvage_raw_method_variant_to_canonical_name():
     salvaged = [r for r in out['results'] if r['paper_id'] == 'p2'][0]
     assert salvaged['method_resolved'] is True
 
+def test_method_name_validator_rejects_row_labels_keeps_real_names():
+    from benchmarks.aggregate.build_benchmarks import is_valid_method_name
+    # ablation-table row labels are NOT methods (the "(0, 0, 10)" cards bug)
+    for junk in ['( 0 , 0 , 10 )', '(10, 4, 0)', '10 K', '100K', '10N', '0.86', '10/5', '-']:
+        assert not is_valid_method_name(junk), junk
+    # real method spellings survive, including unicode + digit-heavy ones
+    for ok in ['S4G', '7DGCG', 'π 0 (fine-tuned)', '6-DoF GraspNet', 'Dex-Net 2.0 (GQ-CNN)']:
+        assert is_valid_method_name(ok), ok
+
+
 def test_result_cleanup_helpers_drop_junk_keep_metrics():
     from benchmarks.aggregate.build_benchmarks import (
         clean_method_name, clean_metric_label, is_valid_metric_label)
