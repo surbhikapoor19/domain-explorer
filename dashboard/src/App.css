@@ -5374,6 +5374,11 @@ body {
 .bmr-facet-none { font-size: 0.7rem; color: var(--text-muted); padding: 0.3rem 0.4rem; font-style: italic; }
 .bmr-results { flex: 1; min-width: 0; }
 .bmr-results-count { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.6rem; font-variant-numeric: tabular-nums; }
+.bmr-noncorpus-toggle {
+  display: block; background: none; border: none; padding: 0 0 0.6rem;
+  font-family: inherit; font-size: 0.72rem; color: var(--text-muted); cursor: pointer; text-align: left;
+}
+.bmr-noncorpus-toggle:hover { color: var(--primary); }
 .bmr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.7rem; }
 .bmr-card { border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.75rem; background: #fff; }
 .bmr-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem; }

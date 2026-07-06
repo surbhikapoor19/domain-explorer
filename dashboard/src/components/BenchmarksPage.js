@@ -189,7 +189,7 @@ function ResultCard({ rec, onZoom }) {
         <span className="bmr-method" title={rec.method}>
           {rec.method}
           {rec.methodResolved === false && (
-            <span className="bmr-unverified" title="This name appeared in a result table but could not be matched to a method in the corpus — the spelling is the paper's own."> (unverified name)</span>
+            <span className="bmr-unverified" title="This name appears in a corpus paper's result table but is not one of the corpus methods — typically a baseline the paper compared against."> (non-corpus baseline)</span>
           )}
         </span>
         {rec.grade && (
@@ -314,7 +314,9 @@ function ResultTable({ rows, groupBy, filtered, onZoom, onMethod }) {
                       aria-label={`All evidence for ${r.method}`} title={`All evidence for ${r.method}`}>
                       {r.method}
                     </button>
-                    {r.methodResolved === false && <span className="bmr-unverified"> (unverified name)</span>}
+                    {r.methodResolved === false && (
+                      <span className="bmr-unverified" title="This name appears in a corpus paper's result table but is not one of the corpus methods — typically a baseline the paper compared against."> (non-corpus baseline)</span>
+                    )}
                   </td>
                   <td className="bmr-td-metric">{r.metric}</td>
                   <td className="bmr-td-val" title={`parsed: ${r.value}`}>
@@ -430,6 +432,10 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   const [groupBy, setGroupBy] = useState('none'); // 'none' | 'method' | 'protocol'
   const [dossier, setDossier] = useState(null);   // method name whose evidence drawer is open
   const [noMatchDismissed, setNoMatchDismissed] = useState(false);
+  // Non-corpus baselines (a name from a paper's own comparison table that isn't
+  // one of the corpus methods) are hidden by default — they're noise for a reader
+  // scanning corpus methods, not first-class results.
+  const [showNonCorpus, setShowNonCorpus] = useState(false);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -455,6 +461,19 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
       return hay.includes(needle);
     });
   }, [tagFiltered, textQ]);
+
+  // Non-corpus baselines hidden by default (see showNonCorpus above). The count
+  // is always taken from `filtered` — not from the toggle state — so "N hidden"
+  // stays correct however the toggle is currently set. Method facet counts above
+  // are intentionally left over the full `records` set, not this filtered view.
+  const nonCorpusCount = useMemo(
+    () => filtered.reduce((n, r) => n + (r.methodResolved === false ? 1 : 0), 0),
+    [filtered]
+  );
+  const visible = useMemo(
+    () => (showNonCorpus ? filtered : filtered.filter(r => r.methodResolved !== false)),
+    [filtered, showNonCorpus]
+  );
 
   // ── Copilot deep link ── a pageRef names a REAL benchmark cell
   // ("metric||cond:tokens"); apply it as an actual filter selection so the page
@@ -498,11 +517,11 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   // which values are directly comparable; otherwise keep the method-alphabetical
   // order (which clusters naturally for method grouping).
   const displayRows = useMemo(() => {
-    if (groupBy !== 'protocol') return filtered;
-    return [...filtered].sort((a, b) =>
+    if (groupBy !== 'protocol') return visible;
+    return [...visible].sort((a, b) =>
       `${a.metric}|${a.condition}`.localeCompare(`${b.metric}|${b.condition}`) ||
       a.method.localeCompare(b.method));
-  }, [filtered, groupBy]);
+  }, [visible, groupBy]);
   const pageCount = Math.max(1, Math.ceil(displayRows.length / PAGE_SIZE));
   const pageClamped = Math.min(page, pageCount);
   const start = (pageClamped - 1) * PAGE_SIZE;
@@ -634,11 +653,23 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
           </div>
           <div className="bmr-results-count">
             {pageCount <= 1
-              ? `${filtered.length} of ${records.length} results`
-              : `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, filtered.length)} of ${filtered.length} results`}
+              ? `${visible.length} of ${records.length} results`
+              : `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, visible.length)} of ${visible.length} results`}
             {selected.size > 0 ? ` · ${selected.size} tag${selected.size > 1 ? 's' : ''} selected` : ''}
             {textQ.trim() ? ` · matching “${textQ.trim()}”` : ''}
           </div>
+          {nonCorpusCount > 0 && (
+            <button
+              type="button"
+              className="bmr-noncorpus-toggle"
+              onClick={() => { setShowNonCorpus(v => !v); setPage(1); }}
+              aria-pressed={showNonCorpus}
+            >
+              {showNonCorpus
+                ? `▴ Hide ${nonCorpusCount} non-corpus baseline rows`
+                : `▸ ${nonCorpusCount} rows from non-corpus baselines hidden — show`}
+            </button>
+          )}
           {displayRows.length === 0 ? (
             <div className="bmr-empty">
               {textQ.trim()

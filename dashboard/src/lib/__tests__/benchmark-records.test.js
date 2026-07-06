@@ -26,9 +26,10 @@ const BENCH = {
 
 describe('buildResultRecords', () => {
   const recs = buildResultRecords(BENCH);
-  test('one record per (method × metric × protocol) cell, alphabetical by method', () => {
+  test('one record per (method × metric × protocol) cell, evidence-strength ordered', () => {
     expect(recs).toHaveLength(4);
-    expect(recs.map(r => r.method)).toEqual(['AnyGrasp', 'GIGA', 'VGN', 'VGN']);
+    // grade A (GIGA) leads grade B — evidence-STRENGTH order, not alphabetical
+    expect(recs.map(r => r.method)).toEqual(['GIGA', 'AnyGrasp', 'VGN', 'VGN']);
   });
   test('tags the protocol correctly', () => {
     const vgnPacked = recs.find(r => r.method === 'VGN' && r.metricId === 'success_rate');
@@ -111,6 +112,21 @@ describe('results path carries the protocol axes a researcher needs', () => {
     const b = recs.find(r => r.method === 'SomeRawName');
     expect(b.methodResolved).toBe(false);
     expect(b.tagKeys.has('Reported by:third-party')).toBe(true);
+  });
+});
+
+describe('evidence-strength default ordering (first-screen credibility)', () => {
+  test('corpus methods lead non-corpus; grade A leads B leads C; then A-Z', () => {
+    const data = { results: [
+      { method: 'ZCorpusC', metric_label: 'M', value: 1, grade: 'C', paper_id: 'p', method_resolved: true },
+      { method: 'NonCorpusA', metric_label: 'M', value: 1, grade: 'A', paper_id: 'p', method_resolved: false },
+      { method: 'ACorpusB', metric_label: 'M', value: 1, grade: 'B', paper_id: 'p', method_resolved: true },
+      { method: 'ACorpusA', metric_label: 'M', value: 1, grade: 'A', paper_id: 'p', method_resolved: true },
+    ] };
+    const order = buildResultRecords(data).map(r => r.method);
+    // ALL corpus rows (even grade C) come before ANY non-corpus row — a robotics
+    // researcher's first screen never leads with an unverified name.
+    expect(order).toEqual(['ACorpusA', 'ACorpusB', 'ZCorpusC', 'NonCorpusA']);
   });
 });
 

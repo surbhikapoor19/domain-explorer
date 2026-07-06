@@ -108,7 +108,9 @@ export function buildResultRecords(benchmarkData) {
         tagKeys: new Set(tags.map(t => `${t.cat}:${t.value}`)),
       });
     }
-    out.sort((a, b) => a.method.localeCompare(b.method) || a.metric.localeCompare(b.metric));
+    // Default order is evidence STRENGTH, not performance ranking — see
+    // compareEvidenceStrength above.
+    out.sort(compareEvidenceStrength);
     return out;
   }
 
@@ -139,7 +141,9 @@ export function buildResultRecords(benchmarkData) {
       });
     }
   }
-  out.sort((a, b) => a.method.localeCompare(b.method) || a.metric.localeCompare(b.metric));
+  // Default order is evidence STRENGTH, not performance ranking — see
+  // compareEvidenceStrength above.
+  out.sort(compareEvidenceStrength);
   return out;
 }
 
@@ -183,6 +187,23 @@ export function tagFacets(records, selectedKeys) {
     category: cat,
     tags: [...cats.get(cat).values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
   }));
+}
+
+// Default list order is EVIDENCE STRENGTH, NOT a performance ranking. A row whose
+// method name resolves to a real corpus method sorts before one that doesn't
+// (an unresolved name is usually a mis-parsed/non-corpus baseline, not a
+// first-class result); within that, higher evidence grade (A > B > C, ungraded
+// last) sorts first; ties break alphabetically by method, then by metric. This
+// never reorders by VALUE — it says nothing about which method performs better.
+const GRADE_RANK = { A: 0, B: 1, C: 2 };
+function compareEvidenceStrength(a, b) {
+  const aResolved = a.methodResolved !== false;
+  const bResolved = b.methodResolved !== false;
+  if (aResolved !== bResolved) return aResolved ? -1 : 1;
+  const aGrade = a.grade in GRADE_RANK ? GRADE_RANK[a.grade] : 3;
+  const bGrade = b.grade in GRADE_RANK ? GRADE_RANK[b.grade] : 3;
+  if (aGrade !== bGrade) return aGrade - bGrade;
+  return a.method.localeCompare(b.method) || a.metric.localeCompare(b.metric);
 }
 
 export function tagKey(category, value) { return `${category}:${value}`; }

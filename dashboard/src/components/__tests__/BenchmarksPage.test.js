@@ -233,6 +233,28 @@ test('the no-benchmark-data banner is dismissable', async () => {
   expect(screen.queryByText(/No extracted benchmark results/i)).not.toBeInTheDocument();
 });
 
+test('non-corpus baselines are hidden by default behind an honest toggle', async () => {
+  const mixed = { leaderboards: {}, results: [
+    { method: 'AnyGrasp', metric_label: 'Success Rate (%)', metric_id: 'success_rate',
+      value: 85, grade: 'B', paper_id: 'any', method_resolved: true },
+    { method: 'GPT4-Vision', metric_label: 'Success', value: 0.73, grade: 'C',
+      paper_id: 'dexgpt', method_resolved: false },
+  ] };
+  loadBenchmarkComparisons.mockResolvedValue(mixed);
+  render(<BenchmarksPage />);
+  const results = await screen.findByTestId('bmr-results');
+  // hidden by default: the corpus method shows, the baseline does not
+  expect(within(results).getByText('AnyGrasp')).toBeInTheDocument();
+  expect(within(results).queryByText('GPT4-Vision')).not.toBeInTheDocument();
+  // the toggle is honest about what's hidden
+  const toggle = screen.getByRole('button', { name: /1 row.? from non-corpus baselines hidden/i });
+  fireEvent.click(toggle);
+  expect(within(results).getByText('GPT4-Vision')).toBeInTheDocument();
+  // and the reframed label (not the scary "unverified name")
+  expect(within(results).getByText('(non-corpus baseline)')).toBeInTheDocument();
+  expect(within(results).queryByText(/unverified name/i)).not.toBeInTheDocument();
+});
+
 test('source crop opens a full-screen lightbox, closable', async () => {
   render(<BenchmarksPage />);
   await screen.findByTestId('bmr-results');
