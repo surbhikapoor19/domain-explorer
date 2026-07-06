@@ -23,10 +23,19 @@ _METRIC_WORD_RE = re.compile(
 _CONDITION_WORDS = {'pile', 'piled', 'packed', 'isolated', 'singulated', 'sim',
                     'simulation', 'simulated', 'real', 'cluttered', 'clutter'}
 
+_ENUM_PREFIX_RE = re.compile(r'^\s*\d+\s*[.)]?\s+')
+
 def clean_method_name(m):
     m = re.sub(r'\s*\[\d+(?:\s*[,;]\s*\d+)*\]', '', str(m or ''))   # citation markers [4], [3;5]
     m = re.sub(r'\bet\s+al\.?\b', '', m, flags=re.I)
     m = re.sub(r'[\*†‡]', '', m)                          # footnote daggers/asterisks
+    # Enumerated-row prefix: "2 GPT4-Vision" -> "GPT4-Vision", "12. AnyGrasp" ->
+    # "AnyGrasp" — a leading digit block followed by whitespace (with an optional
+    # "." or ")" separator) is a table row number, not part of the name. Digits
+    # fused directly to the name with no following whitespace ("6-DoF GraspNet",
+    # "3DAPNet", "7DGCG") are left untouched since the regex requires \s+ after
+    # the optional separator.
+    m = _ENUM_PREFIX_RE.sub('', m)
     return re.sub(r'\s{2,}', ' ', m).strip(' ,;:·-')
 
 
@@ -34,15 +43,24 @@ def clean_method_name(m):
 # row label like "10 K", "100K", "10N" — a quantity, not a method.
 _UNIT_TOKENS = {'k', 'm', 'b', 'n', 'g', 'kg', 'mg', 'mm', 'cm', 'ms', 's', 'hz', 'khz', 'fps'}
 
+# Ablation-delta / component-toggle row prefixes: "+ CollisionNet", "± 0.5",
+# "w/ refinement", "w/o CollisionNet", "with retraining", "without refinement" —
+# these describe a component added to or removed from a method in an ablation
+# table, not a method name themselves.
+_ABLATION_PREFIX_RE = re.compile(r'^\s*(?:[+±]|(?:without|with|w/o|w/)\s)', re.I)
+
 def is_valid_method_name(name):
     """A method name must actually NAME something: at least one letter, and not a
     pure quantity/config row label. Rejects '( 0 , 0 , 10 )' (config tuples), '10 K'
     (dataset sizes), '10N' (force magnitudes) — the row labels of ablation tables
-    that are not method-vs-method comparisons. Keeps 'S4G', 'π 0 (fine-tuned)',
-    '6-DoF GraspNet'."""
+    that are not method-vs-method comparisons. Also rejects ablation-delta rows
+    ('+CollisionNet', 'w/o refinement') that name a component change, not a
+    method. Keeps 'S4G', 'π 0 (fine-tuned)', '6-DoF GraspNet'."""
     s = str(name or '').strip()
     if len(s) < 2:
         return False
+    if _ABLATION_PREFIX_RE.match(s):
+        return False                        # "+CollisionNet", "w/o refinement"
     letters = re.sub(r'[\W\d_]+', '', s, flags=re.UNICODE)
     if not letters:
         return False                        # "( 0 , 0 , 10 )", "0.86", "10/5"

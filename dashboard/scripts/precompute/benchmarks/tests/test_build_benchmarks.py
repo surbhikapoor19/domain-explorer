@@ -82,6 +82,21 @@ def test_results_salvage_raw_method_variant_to_canonical_name():
     salvaged = [r for r in out['results'] if r['paper_id'] == 'p2'][0]
     assert salvaged['method_resolved'] is True
 
+def test_artifact_rows_rejected_and_enumeration_stripped():
+    from benchmarks.aggregate.build_benchmarks import clean_method_name, is_valid_method_name
+    # enumerated baseline rows lose their row number ("2 GPT4-Vision" bug)
+    assert clean_method_name('2 GPT4-Vision') == 'GPT4-Vision'
+    assert clean_method_name('12. AnyGrasp') == 'AnyGrasp'
+    # digit-fused real names are untouched
+    for keep in ['3DAPNet', '6-DoF GraspNet', '7DGCG']:
+        assert clean_method_name(keep) == keep, keep
+    # ablation-delta rows are NOT methods ("+CollisionNet" bug)
+    for junk in ['+CollisionNet', '± 0.5', 'w/o refinement', 'w/ CollisionNet',
+                 'without retraining', 'with tactile']:
+        assert not is_valid_method_name(junk), junk
+    assert is_valid_method_name('GPT4-Vision')
+
+
 def test_method_name_validator_rejects_row_labels_keeps_real_names():
     from benchmarks.aggregate.build_benchmarks import is_valid_method_name
     # ablation-table row labels are NOT methods (the "(0, 0, 10)" cards bug)
