@@ -15,10 +15,10 @@ export default function ManualButton() {
     <button
       type="button"
       className="nav-link"
-      title="User & Architecture Manual"
+      title="How to use this dashboard — user guide"
       onClick={openManual}
     >
-      Manual
+      How to use
     </button>
   );
 }
