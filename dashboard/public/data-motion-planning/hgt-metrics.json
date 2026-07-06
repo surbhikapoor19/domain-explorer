@@ -1,1 +1,98 @@
-{}
+{
+  "version": "20260706_082607",
+  "timestamp": "2026-07-06T08:26:07.872377",
+  "n_params": 1195200,
+  "n_nodes": 1212,
+  "n_edges_total": 3572,
+  "epochs": 300,
+  "hidden_dim": 64,
+  "num_layers": 2,
+  "overall": {
+    "auc_roc": 0.6569,
+    "hits_at_10": 0.3315,
+    "ndcg_at_10": 0.1559,
+    "mrr": 0.1317
+  },
+  "per_type": {
+    "uses_technique": {
+      "auc": 1.0,
+      "hits_at_10": 0.0,
+      "n_pos": 3
+    },
+    "authored_by": {
+      "auc": 0.84,
+      "hits_at_10": 0.2,
+      "n_pos": 5
+    },
+    "cites_external": {
+      "auc": 0.595,
+      "hits_at_10": 0.1304,
+      "n_pos": 46
+    },
+    "has_content": {
+      "auc": 0.6872,
+      "hits_at_10": 0.4074,
+      "n_pos": 27
+    },
+    "co_cited_with": {
+      "auc": 1.0,
+      "hits_at_10": 0.0,
+      "n_pos": 2
+    },
+    "contains_chunk": {
+      "auc": 0.4184,
+      "hits_at_10": 0.0909,
+      "n_pos": 22
+    },
+    "has_keyphrase": {
+      "auc": 0.5787,
+      "hits_at_10": 0.2,
+      "n_pos": 20
+    },
+    "discusses_topic": {
+      "auc": 0.5625,
+      "hits_at_10": 0.5,
+      "n_pos": 12
+    },
+    "described_in": {
+      "auc": 1.0,
+      "hits_at_10": 1.0,
+      "n_pos": 1
+    },
+    "has_attribute": {
+      "auc": 0.5625,
+      "hits_at_10": 0.5,
+      "n_pos": 4
+    },
+    "maintained_by": {
+      "auc": 1.0,
+      "hits_at_10": 0.5,
+      "n_pos": 2
+    },
+    "co_authored_with": {
+      "auc": 0.8859,
+      "hits_at_10": 0.6207,
+      "n_pos": 29
+    },
+    "affiliated_with": {
+      "auc": 1.0,
+      "hits_at_10": 0.0,
+      "n_pos": 1
+    },
+    "author_works_on": {
+      "auc": 1.0,
+      "hits_at_10": 0.0,
+      "n_pos": 1
+    },
+    "semantically_similar": {
+      "auc": 1.0,
+      "hits_at_10": 1.0,
+      "n_pos": 4
+    },
+    "similar_in_role": {
+      "auc": 1.0,
+      "hits_at_10": 1.0,
+      "n_pos": 5
+    }
+  }
+}
