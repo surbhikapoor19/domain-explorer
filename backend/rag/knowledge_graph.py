@@ -211,6 +211,65 @@ def _resolve_method_reference(mention: str, method_names: list) -> str:
     return refs[0] if refs else None
 
 
+def apply_verified_triples(G, triples, all_method_names, m2p):
+    """Turn evidence-quoted triples (verified_triple_extractor output) into KG
+    edges. Every edge carries the VERBATIM quote + chunk id as provenance and
+    extraction='verified_llm' — the only edge class in the graph whose claim a
+    user can check against the paper text with one click. Node ids follow the
+    existing conventions so verified edges merge with (not duplicate) the
+    heuristic-extracted nodes. Returns the number of edges added."""
+    added = 0
+    for t in (triples or []):
+        pid = t.get('paper_id')
+        rel, obj, quote = t.get('relation'), t.get('object'), t.get('quote')
+        if not (pid and rel and obj and quote):
+            continue
+        paper_node = f"paper:{pid}"
+        if paper_node not in G:
+            continue
+        prov = {'extraction': 'verified_llm', 'quote': quote[:300],
+                'chunk_id': t.get('chunk_id')}
+        if rel in ('uses_backbone', 'uses_loss'):
+            sub = 'backbone' if rel == 'uses_backbone' else 'loss'
+            tech = _normalize_technique(obj)
+            node_id = f"tech:{sub}:{tech}"
+            if node_id not in G:
+                G.add_node(node_id, label=tech, type='technique', subtype=sub)
+            G.add_edge(paper_node, node_id, type=rel, **prov)
+        elif rel in ('trained_on', 'evaluated_on'):
+            ds_id = f"dataset:{obj.lower()}"
+            if ds_id not in G:
+                G.add_node(ds_id, label=obj, type='dataset', value=obj)
+            G.add_edge(paper_node, ds_id, type=rel, **prov)
+        elif rel == 'uses_hardware':
+            normalized = _normalize_hardware(obj)
+            node_id = f"hw:{_short_hash(normalized)}"
+            if node_id not in G:
+                G.add_node(node_id, label=normalized, type='hardware', value=normalized)
+            G.add_edge(paper_node, node_id, type=rel, **prov)
+        elif rel == 'addresses_problem':
+            normalized = _normalize_problem(obj)
+            node_id = f"problem:{_short_hash(normalized)}"
+            if node_id not in G:
+                G.add_node(node_id, label=normalized[:60], type='problem', value=normalized)
+            G.add_edge(paper_node, node_id, type=rel, **prov)
+        elif rel == 'has_limitation':
+            node_id = f"lim:{pid}:{_short_hash(obj)}"
+            if node_id not in G:
+                G.add_node(node_id, label=obj[:60], type='limitation', value=obj, paper_id=pid)
+            G.add_edge(paper_node, node_id, type=rel, **prov)
+        elif rel == 'outperforms_claim':
+            for target in _resolve_method_references(obj, all_method_names):
+                target_pid = m2p.get(target, '')
+                if target_pid and target_pid != pid:
+                    G.add_edge(paper_node, f"paper:{target_pid}",
+                               type='outperforms', evidence=quote[:300], **prov)
+        else:
+            continue
+        added += 1
+    return added
+
+
 # ---------------------------------------------------------------------------
 # Graph construction
 # ---------------------------------------------------------------------------
@@ -424,6 +483,21 @@ def build_knowledge_graph(
                 scenes = G.nodes[paper_node].get('scene_descriptions', [])
                 scenes.append(value[:200])
                 G.nodes[paper_node]['scene_descriptions'] = scenes[:5]
+
+    # ── Evidence-quoted verified triples (verified_triple_extractor) ──
+    # When the ingest produced verified_triples.json (sits next to
+    # extracted_entities.json), every triple becomes an edge carrying its
+    # verbatim source quote — the highest-provenance edge class in the graph.
+    vt_path = os.path.join(os.path.dirname(entities_path), 'verified_triples.json')
+    if os.path.exists(vt_path):
+        try:
+            with open(vt_path) as f:
+                vt = json.load(f)
+            n_vt = apply_verified_triples(G, vt.get('triples', []), all_method_names, m2p)
+            print(f"  [KG] verified triples: +{n_vt} evidence-quoted edges "
+                  f"(stats: {vt.get('stats')})")
+        except Exception as e:
+            print(f"  [KG] verified triples skipped ({e})")
 
     # ── Citation edges (from citation_resolver) ──
     citation_path = os.path.join(

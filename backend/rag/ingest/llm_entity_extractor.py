@@ -206,19 +206,20 @@ def _create_llm_fn(provider: str = "groq"):
 
     elif provider == "groq":
         api_key = os.environ.get("GROQ_API_KEY", "")
-        model = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+        model = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
         if not api_key:
             raise ValueError("GROQ_API_KEY not set")
         from groq import Groq
         client = Groq(api_key=api_key)
 
         def llm_fn(messages, max_tokens=1024, temperature=0.1):
-            completion = client.chat.completions.create(
-                model=model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
+            kwargs = dict(model=model, messages=messages,
+                          max_tokens=max_tokens, temperature=temperature)
+            # gpt-oss are reasoning models: hidden reasoning consumes max_tokens,
+            # so cap it or long prompts return truncated/empty extractions.
+            if 'gpt-oss' in model:
+                kwargs['reasoning_effort'] = 'low'
+            completion = client.chat.completions.create(**kwargs)
             return completion.choices[0].message.content.strip()
         return llm_fn
 

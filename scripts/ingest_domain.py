@@ -241,6 +241,15 @@ def step_rag(paths):
             run_entity_extraction(str(domain_config_path), output_path=str(chroma_dir / 'extracted_entities.json'))
         except Exception as e:
             print(f"  WARNING: Entity extraction failed: {e}")
+        try:
+            # Evidence-quoted triples: every semantic relation carries a verbatim,
+            # mechanically-verified source quote (the KG build consumes the file).
+            from backend.rag.ingest.verified_triple_extractor import run_verified_triple_extraction
+            print("  Running verified triple extraction...")
+            run_verified_triple_extraction(str(chroma_dir / '_rag_config.yaml'),
+                                           output_path=str(chroma_dir / 'verified_triples.json'))
+        except Exception as e:
+            print(f"  WARNING: Verified triple extraction failed: {e}")
     else:
         print("  Skipping entity extraction (no GROQ_API_KEY)")
 
