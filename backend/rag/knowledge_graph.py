@@ -146,23 +146,69 @@ def _format_paper_name(pid: str) -> str:
     return pid.replace('-', ' ').replace('_', ' ').title()
 
 
+def _method_aliases(name: str) -> list:
+    """Aliases a paper might use for a method: the full name, the name without
+    its parenthetical, and any parenthetical acronym ("Grasp Pose Detection (GPD)"
+    -> ["grasp pose detection (gpd)", "grasp pose detection", "gpd"])."""
+    n = str(name or '').lower().strip()
+    if not n:
+        return []
+    out = [n]
+    for acro in re.findall(r'\(([^)]+)\)', n):
+        acro = acro.strip()
+        if 2 <= len(acro) <= 20:
+            out.append(acro)
+    bare = re.sub(r'\s*\([^)]*\)\s*', ' ', n).strip()
+    if bare and bare not in out:
+        out.append(bare)
+    return out
+
+
+def _compact(s: str) -> str:
+    return re.sub(r'[^a-z0-9]+', '', str(s or '').lower())
+
+
+def _resolve_method_references(mention: str, method_names: list) -> list:
+    """Resolve EVERY known method a comparison claim names, punctuation- and
+    acronym-tolerant ("outperforms Contact-GraspNet and GPD by 5%" -> both).
+    The old resolver substring-matched the first name in list order and returned a
+    single hit — 102 extracted comparison claims yielded only 7 outperforms edges.
+    Longest matched alias wins per span: a method whose matched alias is contained
+    in another matched alias is dropped (so "GraspNet" never fires inside a
+    "Contact-GraspNet" mention that itself resolved)."""
+    cm = _compact(mention)
+    if not cm:
+        return []
+    hits = []  # (method_name, matched_compact_alias)
+    for name in method_names:
+        best_alias = None
+        for alias in _method_aliases(name):
+            ca = _compact(alias)
+            if len(ca) < 3 or ca not in cm:
+                continue
+            # Short/acronym aliases must match a whole word in the RAW mention
+            # (compact containment alone would fire "gpd" inside "gpddata").
+            if len(ca) <= 6 and not re.search(r'(?<![a-z0-9])' + re.escape(alias) + r'(?![a-z0-9])',
+                                              mention.lower()):
+                continue
+            if best_alias is None or len(ca) > len(best_alias):
+                best_alias = ca
+        if best_alias:
+            hits.append((name, best_alias))
+    # Longest-specificity filter: drop a hit whose alias is a strict substring of
+    # another hit's alias (the more specific method owns that span).
+    out = []
+    for name, alias in hits:
+        if any(alias != other and alias in other for _, other in hits):
+            continue
+        out.append(name)
+    return out
+
+
 def _resolve_method_reference(mention: str, method_names: list) -> str:
-    """Fuzzy-match a method mention to a known method name."""
-    mention_lower = mention.lower().strip()
-    for name in method_names:
-        if name.lower() in mention_lower or mention_lower in name.lower():
-            return name
-    # Try token overlap
-    mention_tokens = set(re.findall(r'\w+', mention_lower))
-    best_match = None
-    best_overlap = 0
-    for name in method_names:
-        name_tokens = set(re.findall(r'\w+', name.lower()))
-        overlap = len(mention_tokens & name_tokens)
-        if overlap > best_overlap and overlap >= 2:
-            best_overlap = overlap
-            best_match = name
-    return best_match
+    """Back-compat single-result wrapper around _resolve_method_references."""
+    refs = _resolve_method_references(mention, method_names)
+    return refs[0] if refs else None
 
 
 # ---------------------------------------------------------------------------
@@ -355,13 +401,18 @@ def build_knowledge_graph(
                                value=value, confidence=confidence, paper_id=pid)
                 G.add_edge(paper_node, node_id, type='compares')
 
-                # Try to resolve the compared method and create outperforms edge
-                target = _resolve_method_reference(value, all_method_names)
-                if target:
-                    target_pid = m2p.get(target, '')
-                    if target_pid and target_pid != pid:
-                        G.add_edge(paper_node, f"paper:{target_pid}",
-                                   type='outperforms', evidence=value)
+                # Resolve EVERY compared method (acronym/punctuation-tolerant) and
+                # create an outperforms edge per target — but only when the claim
+                # actually asserts superiority (a bare "unlike X" or "similar to X"
+                # is a comparison, not a win).
+                if re.search(r'outperform|better than|higher|improve|exceed|surpass|faster|'
+                             r'state[- ]of[- ]the[- ]art|best|superior', value.lower()):
+                    for target in _resolve_method_references(value, all_method_names):
+                        target_pid = m2p.get(target, '')
+                        if target_pid and target_pid != pid:
+                            G.add_edge(paper_node, f"paper:{target_pid}",
+                                       type='outperforms', evidence=value,
+                                       extraction='prose_claim', confidence=confidence)
 
             elif etype == 'quantitative_claim':
                 # Store as metadata on the paper node

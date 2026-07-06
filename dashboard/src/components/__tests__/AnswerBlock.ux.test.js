@@ -53,6 +53,7 @@ const ANCHORS = [
 // Minimal suggestion: paperRelevance listing 2+ methods (per contract) plus a
 // synthesis string so the block renders its full shell.
 const SUGGESTION = {
+  intent: 'comparison',   // table renders EXPANDED only for a comparison ask
   paperRelevance: [
     { name: 'Contact-GraspNet', score: 0.91 },
     { name: 'AnyGrasp', score: 0.82 },
@@ -80,15 +81,15 @@ describe('AnswerBlock comparison-table UX', () => {
   // CONTRACT 1a — one-line caption directly under the title explaining the four
   // states. Assert each state's meaning is spelled out (shared = all agree,
   // differs = different valid choices, partial = some documented, gap = no data).
-  test('renders a caption explaining all four states (shared / differs / partial / gap)', () => {
+  test('renders a caption explaining the visible states (gap rows fold behind a toggle instead)', () => {
     renderAnswerBlock();
     const caption = screen.getByText(
-      /shared[^]*all agree[^]*differs[^]*different valid[^]*partial[^]*documented[^]*gap[^]*no data/i,
+      /shared[^]*all agree[^]*differs[^]*different valid[^]*partial[^]*documented/i,
     );
     expect(caption).toBeInTheDocument();
     // It is one caption element, not the table rows: it names all four states.
     const txt = caption.textContent.toLowerCase();
-    ['shared', 'differs', 'partial', 'gap'].forEach(state => {
+    ['shared', 'differs', 'partial'].forEach(state => {   // 'gap' rows are folded, not captioned
       expect(txt).toContain(state);
     });
   });

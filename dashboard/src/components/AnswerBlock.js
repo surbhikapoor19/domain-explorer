@@ -9,10 +9,9 @@
  * glossary-annotated treatment. The interactive plots/charts (subgraph, proof,
  * evidence, equations) follow this block on the page.
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import AnswerMarkdown from './AnswerMarkdown';
 import Tooltip from './Tooltip';
-import { HighlightedText } from '../highlighter';
 import { CLUSTER_COLORS } from '../constants';
 import { useDomainConfig } from '../DomainContext';
 
@@ -50,7 +49,8 @@ function clusterColor(clusterId) {
 
 function normalize(v) {
   if (!v) return '';
-  const s = String(v).trim();
+  // Strip stray wrapping quotes leaking from CSV cells ('"6-DoF grasp pose…"').
+  const s = String(v).trim().replace(/^["'“”]+/, '').replace(/["'“”]+$/, '').trim();
   if (!s || s.toLowerCase() === 'nan' || s === '-') return '';
   return s;
 }
@@ -111,6 +111,27 @@ export default function AnswerBlock({
     return { covered, total: PRIORITY_DIMS.length };
   }, [dimStatus]);
 
+  // Intent-aware default: the table opens only when the user ASKED a comparison;
+  // for limitations/how-does-it-work questions it is an appendix behind one line.
+  // Reset per answer (state would otherwise leak across queries).
+  const [tableOpen, setTableOpen] = useState(suggestion?.intent === 'comparison');
+  const [showGaps, setShowGaps] = useState(false);
+  useEffect(() => {
+    setTableOpen(suggestion?.intent === 'comparison');
+    setShowGaps(false);
+  }, [suggestion]);
+
+  // All-gap dimensions fold behind a one-line reveal (a row of three
+  // "not specified" cells informs nobody).
+  const visibleDims = useMemo(
+    () => PRIORITY_DIMS.filter(d => showGaps || dimStatus[d.key] !== 'gap'),
+    [dimStatus, showGaps] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const gapDims = useMemo(
+    () => PRIORITY_DIMS.filter(d => dimStatus[d.key] === 'gap'),
+    [dimStatus] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   if (anchorMethods.length === 0) return null;
 
   const isComparison = anchorMethods.length >= 2;
@@ -120,7 +141,6 @@ export default function AnswerBlock({
   // Overview/landscape answers survey the whole set — show the grouped answer, but
   // NOT a head-to-head comparison table (which is for a focused few).
   const isOverview = suggestion?.intent === 'overview';
-  const titleNames = anchorMethods.map(m => m.name).join(' · ');
   const title = isComparison
     ? `How ${anchorMethods.length} methods compare on the priority dimensions`
     : `Profile: ${anchorMethods[0].name}`;
@@ -146,87 +166,105 @@ export default function AnswerBlock({
       )}
 
       {/* COMPARISON next — the priority-dimension comparison table. Hidden for an
-          OVERVIEW/landscape answer (a survey of the whole set, not a head-to-head). */}
-      {!isOverview && (<>
-      <div className="gr-card-header">
-        <Tooltip text={COMPARISON_TITLE_TOOLTIP} wide>
-          <h3 className="gr-card-title">{title}</h3>
-        </Tooltip>
-        <span className="gr-count-badge">
-          {coverage.covered} of {coverage.total} dimensions documented
-        </span>
-      </div>
+          OVERVIEW/landscape answer; COLLAPSED to a one-line affordance unless the
+          user explicitly asked a comparison question (the table is an appendix for
+          a limitations/how-does-it-work question, not the answer). */}
+      {!isOverview && (
+        tableOpen ? (
+          <>
+            <div className="gr-card-header">
+              <Tooltip text={COMPARISON_TITLE_TOOLTIP} wide>
+                <h3 className="gr-card-title">{title}</h3>
+              </Tooltip>
+              <span className="gr-count-badge">
+                {coverage.covered} of {coverage.total} dimensions documented
+              </span>
+              <button type="button" className="gr-cmp-collapse" onClick={() => setTableOpen(false)}>
+                Collapse ▴
+              </button>
+            </div>
 
-      <p className="gr-comparison-caption">
-        shared = all agree · differs = different valid choices · partial = some
-        documented · gap = no data
-      </p>
+            <p className="gr-comparison-caption">
+              shared = all agree · differs = different valid choices · partial = some documented
+            </p>
 
-      <div className="gr-answer-methods">
-        {anchorMethods.map(m => (
-          <span
-            key={m.name}
-            className="gr-answer-chip"
-            style={{ borderColor: clusterColor(m.cluster), color: clusterColor(m.cluster) }}
-            onClick={() => onMethodClick && onMethodClick(m.name)}
-          >
-            {m.name}
-          </span>
-        ))}
-      </div>
-
-      <div className="gr-comparison-scroll">
-        <table className="gr-comparison-table">
-          <thead>
-            <tr>
-              <th className="gr-cmp-dim-h">Priority Dimension</th>
-              {anchorMethods.map(m => (
-                <th
-                  key={m.name}
-                  className="gr-cmp-method-h"
-                  style={{ borderTopColor: clusterColor(m.cluster) }}
-                >
-                  <span style={{ color: clusterColor(m.cluster) }}>{m.name}</span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {PRIORITY_DIMS.map(d => {
-              const status = dimStatus[d.key];
-              return (
-                <tr key={d.key} className={`gr-cmp-row gr-cmp-${status}`}>
-                  <td className="gr-cmp-dim">
-                    <span className="gr-cmp-dim-label">{d.label}</span>
-                    <Tooltip text={STATUS_TOOLTIPS[status]}>
-                      <span className={`gr-cmp-status gr-cmp-status-${status}`}>
-                        {status}
-                      </span>
-                    </Tooltip>
-                  </td>
-                  {anchorMethods.map(m => {
-                    const v = normalize(m.meta[d.key]);
-                    return (
-                      <td
+            <div className="gr-comparison-scroll">
+              <table className="gr-comparison-table">
+                <thead>
+                  <tr>
+                    <th className="gr-cmp-dim-h">Priority Dimension</th>
+                    {anchorMethods.map(m => (
+                      <th
                         key={m.name}
-                        className="gr-cmp-cell"
-                        style={{ borderLeftColor: clusterColor(m.cluster) }}
+                        className="gr-cmp-method-h"
+                        style={{ borderTopColor: clusterColor(m.cluster) }}
                       >
-                        {v ? (
-                          <HighlightedText text={v} termDictionary={termDictionary} query={query} />
-                        ) : (
-                          <span className="gr-cmp-gap-mark">not specified</span>
-                        )}
-                      </td>
+                        {/* The header IS the method affordance (the old chips row
+                            above duplicated these exact names). */}
+                        <button
+                          type="button"
+                          className="gr-cmp-method-btn"
+                          style={{ color: clusterColor(m.cluster) }}
+                          onClick={() => onMethodClick && onMethodClick(m.name)}
+                          aria-label={`Highlight ${m.name} across the page`}
+                          title={`Highlight ${m.name} across the page`}
+                        >
+                          {m.name}
+                        </button>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleDims.map(d => {
+                    const status = dimStatus[d.key];
+                    return (
+                      <tr key={d.key} className={`gr-cmp-row gr-cmp-${status}`}>
+                        <td className="gr-cmp-dim">
+                          <span className="gr-cmp-dim-label">{d.label}</span>
+                          <Tooltip text={STATUS_TOOLTIPS[status]}>
+                            <span className={`gr-cmp-status gr-cmp-status-${status}`}>
+                              {status}
+                            </span>
+                          </Tooltip>
+                        </td>
+                        {anchorMethods.map(m => {
+                          const v = normalize(m.meta[d.key]);
+                          return (
+                            <td
+                              key={m.name}
+                              className="gr-cmp-cell"
+                              style={{ borderLeftColor: clusterColor(m.cluster) }}
+                            >
+                              {/* Plain text on purpose: term-highlight chips inside
+                                  cells turned the table into colored noise. */}
+                              {v || <span className="gr-cmp-gap-mark">not specified</span>}
+                            </td>
+                          );
+                        })}
+                      </tr>
                     );
                   })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      </>)}
+                </tbody>
+              </table>
+            </div>
+            {gapDims.length > 0 && (
+              <button type="button" className="gr-cmp-gaps-toggle" onClick={() => setShowGaps(s => !s)} aria-expanded={showGaps}>
+                {showGaps ? '▴ Hide' : `▸ ${gapDims.length}`} dimension{gapDims.length !== 1 ? 's' : ''} with no documented data
+                {showGaps ? '' : ` (${gapDims.map(d => d.label).join(', ')})`}
+              </button>
+            )}
+          </>
+        ) : (
+          <button type="button" className="gr-cmp-expand" onClick={() => setTableOpen(true)} aria-expanded={false}>
+            <span className="gr-cmp-expand-arrow" aria-hidden="true">▸</span>
+            {isComparison
+              ? `Compare these ${anchorMethods.length} methods on the priority dimensions`
+              : `Show ${anchorMethods[0].name}'s priority dimensions`}
+            <span className="gr-cmp-expand-badge">{coverage.covered} of {coverage.total} documented</span>
+          </button>
+        )
+      )}
     </div>
   );
 }

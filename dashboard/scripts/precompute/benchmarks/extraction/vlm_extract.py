@@ -25,6 +25,34 @@ def call_vlm(png_bytes, client, model=DEFAULT_MODEL):
             {"type": "text", "text": "Extract this table."}]}])
     return msg.content[0].text
 
+
+GROQ_VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
+
+def call_vlm_groq(png_bytes, api_key, model=None):
+    """Groq-vision fallback with the SAME contract as call_vlm (returns the model's
+    text for parse_vlm_rows). Lets CI run the VLM path with the GROQ_API_KEY it
+    already has instead of requiring a separate Anthropic key. stdlib-only (urllib);
+    every parsed row is still verified against Docling's extracted cell text
+    downstream, so a weaker vision model can only miss rows, never invent values."""
+    import os, urllib.request
+    model = model or os.environ.get("VLM_GROQ_MODEL", GROQ_VISION_MODEL)
+    b64 = base64.standard_b64encode(png_bytes).decode()
+    body = json.dumps({
+        "model": model, "max_tokens": 2000, "temperature": 0,
+        "messages": [
+            {"role": "system", "content": SCHEMA_INSTRUCTION},
+            {"role": "user", "content": [
+                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}},
+                {"type": "text", "text": "Extract this table."}]},
+        ],
+    }).encode()
+    req = urllib.request.Request(
+        "https://api.groq.com/openai/v1/chat/completions", data=body,
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        data = json.loads(r.read())
+    return data["choices"][0]["message"]["content"] or ""
+
 def parse_vlm_rows(vlm_text, loc, cfg, resolver):
     mreg, creg = MetricRegistry(cfg), ConditionRegistry(cfg)
     m = re.search(r'\{.*\}', vlm_text, re.DOTALL)

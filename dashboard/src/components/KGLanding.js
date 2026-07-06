@@ -487,13 +487,31 @@ export default function KGLanding({
   }, []);
 
   // Load full predictions data once when the user opens the predictions view.
+  // PER-RELATION SUPPORT GATE: a link-prediction model cannot learn a relation
+  // from a handful of training edges (e.g. 7 outperforms edges), so predictions
+  // for under-supported relations are structurally-plausible noise. Keep inferred
+  // edges only for relations with >= PRED_MIN_SUPPORT observed (real) edges, and
+  // surface what was gated so the view is honest about it.
+  const PRED_MIN_SUPPORT = 30;
   useEffect(() => {
     if (graphView !== 'predictions' || predGraph) return;
     let cancelled = false;
     import('../lib/data-loader').then(({ loadKgPredictions }) => {
       loadKgPredictions().then(d => {
         if (cancelled || !d || !d.links) return;
-        setPredGraph({ nodes: d.nodes || [], links: d.links || [] });
+        const links = d.links || [];
+        const support = {};
+        for (const e of links) {
+          if (e.source_type === 'observed') support[e.type] = (support[e.type] || 0) + 1;
+        }
+        const gated = {};
+        const kept = links.filter(e => {
+          if (e.source_type === 'observed') return true;
+          if ((support[e.type] || 0) >= PRED_MIN_SUPPORT) return true;
+          gated[e.type] = (gated[e.type] || 0) + 1;
+          return false;
+        });
+        setPredGraph({ nodes: d.nodes || [], links: kept, gatedTypes: gated, support });
       }).catch(() => {});
     });
     return () => { cancelled = true; };
@@ -1031,6 +1049,7 @@ export default function KGLanding({
                   { key: 'methodology', label: 'Methodology', types: ['uses_technique'],
                     color: '#7c3aed', title: 'Techniques and methods these papers likely use.' },
                 ];
+                const gated = predGraph && predGraph.gatedTypes ? Object.entries(predGraph.gatedTypes) : [];
                 return (
                   <div className="kgl-pred-legend">
                     {PRED_GROUPS.map(g => {
@@ -1048,6 +1067,14 @@ export default function KGLanding({
                         </button>
                       );
                     })}
+                    {gated.length > 0 && (
+                      <span
+                        className="kgl-pred-gated-note"
+                        title={`Predictions need enough real training edges to be trustworthy. Hidden: ${gated.map(([t, n]) => `${n} predicted "${t.replace(/_/g, ' ')}" edges (only ${(predGraph.support && predGraph.support[t]) || 0} real examples to learn from)`).join('; ')}.`}
+                      >
+                        {gated.reduce((s, [, n]) => s + n, 0)} low-evidence predictions hidden
+                      </span>
+                    )}
                   </div>
                 );
               })()}

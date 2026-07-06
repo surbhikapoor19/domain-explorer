@@ -5018,10 +5018,43 @@ body {
   padding: 0.4rem 0.85rem 0.6rem;
 }
 .gr-comparison-table {
-  width: 100%;
+  /* Auto-fit, NOT full-bleed: 3 columns stretched across a 1900px viewport left
+     one-word cells swimming in whitespace. Columns size to content, capped. */
+  width: auto;
+  max-width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
+.gr-comparison-table .gr-cmp-method-h,
+.gr-comparison-table .gr-cmp-cell { min-width: 150px; max-width: 340px; }
+.gr-cmp-method-btn {
+  background: none; border: none; padding: 0; font: inherit; font-weight: 700;
+  cursor: pointer; text-align: left; border-bottom: 1px dashed currentColor;
+}
+.gr-cmp-collapse {
+  margin-left: auto; background: none; border: 1px solid var(--border); border-radius: 5px;
+  padding: 0.2rem 0.55rem; font-family: inherit; font-size: 0.72rem; font-weight: 700;
+  color: var(--text-mid); cursor: pointer;
+}
+.gr-cmp-collapse:hover { border-color: var(--primary); color: var(--primary); }
+.gr-cmp-expand {
+  display: flex; align-items: center; gap: 0.55rem; width: 100%;
+  margin-top: 0.6rem; padding: 0.55rem 0.8rem;
+  background: #f8fafc; border: 1px solid var(--border); border-radius: 7px;
+  font-family: inherit; font-size: 0.82rem; font-weight: 700; color: var(--dark);
+  cursor: pointer; text-align: left;
+}
+.gr-cmp-expand:hover { border-color: var(--primary); background: #eef4f8; }
+.gr-cmp-expand-arrow { color: var(--primary); }
+.gr-cmp-expand-badge {
+  margin-left: auto; font-size: 0.68rem; font-weight: 600; color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.gr-cmp-gaps-toggle {
+  display: block; background: none; border: none; padding: 0.35rem 0.85rem 0.1rem;
+  font-family: inherit; font-size: 0.72rem; color: var(--text-muted); cursor: pointer; text-align: left;
+}
+.gr-cmp-gaps-toggle:hover { color: var(--primary); }
 .gr-comparison-table th,
 .gr-comparison-table td {
   text-align: left;
@@ -5175,6 +5208,12 @@ body {
 }
 .bmr-group-head:first-child { margin-top: 0; }
 .bmr-group-count { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); }
+
+/* Honesty note when under-supported prediction relations are gated out. */
+.kgl-pred-gated-note {
+  font-size: 0.68rem; color: #92400e; background: #fdf3e7; border: 1px solid #f2d9b8;
+  border-radius: 4px; padding: 0.12rem 0.45rem; cursor: help; white-space: nowrap;
+}
 
 /* View segmented control (Table | Cards). */
 .bmr-viewseg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; flex-shrink: 0; }

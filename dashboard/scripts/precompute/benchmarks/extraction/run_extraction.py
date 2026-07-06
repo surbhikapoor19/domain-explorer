@@ -184,9 +184,19 @@ def main():
     crop_saver = _make_crop_saver(a.crops_dir, a.crops_url) if a.crops_dir else None
     vlm_client = None
     if not a.no_vlm:
+        # Anthropic when its key exists; else Groq vision (same JSON contract) so CI
+        # can run the VLM path with the GROQ_API_KEY it already has.
         try:
-            client = _default_client()
-            vlm_client = lambda png: call_vlm(png, client)
+            if os.environ.get('ANTHROPIC_API_KEY'):
+                client = _default_client()
+                vlm_client = lambda png: call_vlm(png, client)
+            elif os.environ.get('GROQ_API_KEY'):
+                from benchmarks.extraction.vlm_extract import call_vlm_groq
+                groq_key = os.environ['GROQ_API_KEY']
+                vlm_client = lambda png: call_vlm_groq(png, groq_key)
+                print("  VLM: using Groq vision fallback")
+            else:
+                print("  WARNING: no VLM key (ANTHROPIC_API_KEY or GROQ_API_KEY); born-digital only")
         except Exception as e:
             print(f"  WARNING: VLM client unavailable ({e}); born-digital only")
     if a.engine == 'docling':

@@ -17,6 +17,7 @@ const ANCHORS = [
     meta: { 'Object Configuration': 'Cluttered', 'Planning Method': 'Geometric' } },
 ];
 const SUGGESTION = {
+  intent: 'comparison',   // table renders EXPANDED only for a comparison ask
   paperRelevance: [
     { name: 'Contact-GraspNet', score: 0.91 },
     { name: 'AnyGrasp', score: 0.82 },
