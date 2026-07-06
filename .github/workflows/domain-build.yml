@@ -129,13 +129,13 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -- "datasets/${SLUG}/papers.zip" 2>/dev/null || true
           git add "datasets/${SLUG}/tei/" 2>/dev/null || true
-          git add "datasets/${SLUG}/chroma_db/extracted_facts.json" 2>/dev/null || true
-          git add "datasets/${SLUG}/chroma_db/extracted_entities.json" 2>/dev/null || true
-          git add "datasets/${SLUG}/chroma_db/verified_triples.json" 2>/dev/null || true
-          git add "datasets/${SLUG}/chroma_db/result-records.json" 2>/dev/null || true
-          git add "datasets/${SLUG}/chroma_db/knowledge_graph.json" 2>/dev/null || true
-          git add "datasets/${SLUG}/chroma_db/term_dictionary.json" 2>/dev/null || true
-          git add "datasets/${SLUG}/chroma_db/hgt_schema/" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/extracted_facts.json" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/extracted_entities.json" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/verified_triples.json" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/result-records.json" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/knowledge_graph.json" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/term_dictionary.json" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/hgt_schema/" 2>/dev/null || true
           # ONE pathspec per git add: `git add A B` stages NOTHING when any
           # pathspec matches no file, and domains/<dashed>.yaml never existed
           # (files use underscores) — this silently discarded every build's data.

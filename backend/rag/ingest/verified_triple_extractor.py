@@ -78,19 +78,31 @@ def extract_verified_triples(chunks, llm_fn, max_chunks=60):
     """chunks: [{'chunk_id', 'paper_id', 'text', 'layer'?}] -> verified triples.
     Mid-layer chunks preferred (they carry the method/experiment detail). One bad
     chunk or LLM error never kills the run. Stats returned for auditability."""
+    import time
     pool = [c for c in chunks if (c.get('layer') or c.get('metadata', {}).get('layer')) == 'mid'] or list(chunks)
     kept, rejected_quote, errors = [], 0, 0
     for c in pool[:max_chunks]:
         text = c.get('text') or ''
         if len(text.split()) < 30:
             continue
-        try:
-            raw = llm_fn([
-                {'role': 'system', 'content': _PROMPT_HEADER},
-                {'role': 'user', 'content': f'PASSAGE:\n{text[:4000]}'},
-            ], max_tokens=800, temperature=0)
-        except Exception:
-            errors += 1
+        raw = None
+        # Rate limits are the dominant failure (free-tier TPM/TPD): back off and
+        # retry instead of burning the whole paper as errors.
+        for attempt in range(4):
+            try:
+                raw = llm_fn([
+                    {'role': 'system', 'content': _PROMPT_HEADER},
+                    {'role': 'user', 'content': f'PASSAGE:\n{text[:4000]}'},
+                ], max_tokens=800, temperature=0)
+                break
+            except Exception as e:
+                msg = str(e).lower()
+                if attempt < 3 and ('429' in msg or 'rate' in msg or 'limit' in msg):
+                    time.sleep(20 * (attempt + 1))
+                    continue
+                errors += 1
+                break
+        if raw is None:
             continue
         for t in parse_triples(raw):
             if not verify_quote(t['quote'], text):
@@ -142,12 +154,19 @@ def run_verified_triple_extraction(config_path, output_path=None, llm_fn=None,
     print(f"  [triples] papers: {len(by_paper)} | already done: {len(done)} | to process: {len(todo)}")
     for pid in todo:
         out = extract_verified_triples(by_paper[pid], llm_fn, max_chunks=max_chunks_per_paper)
-        existing['papers'][pid] = out['stats']
+        st = out['stats']
+        # A paper whose calls ALL errored (rate-limit exhaustion) must NOT be
+        # checkpointed as done — leave it out so the next resume retries it.
+        wholly_errored = st['llm_errors'] > 0 and st['kept'] == 0 and st['rejected_unverifiable_quote'] == 0
+        if wholly_errored:
+            print(f"  [triples] {pid}: DEFERRED ({st['llm_errors']} errors — rate-limited?); will retry on resume")
+            continue
+        existing['papers'][pid] = st
         existing['triples'].extend(out['triples'])
         with open(output_path, 'w') as f:      # checkpoint per paper (resume-safe)
             json.dump(existing, f, indent=1)
-        print(f"  [triples] {pid}: +{out['stats']['kept']} verified "
-              f"({out['stats']['rejected_unverifiable_quote']} quote-rejected)")
+        print(f"  [triples] {pid}: +{st['kept']} verified "
+              f"({st['rejected_unverifiable_quote']} quote-rejected)")
     total = len(existing.get('triples', []))
     existing['stats'] = {'n_triples': total, 'n_papers': len(existing.get('papers', {}))}
     with open(output_path, 'w') as f:

@@ -1,0 +1,935 @@
+{
+ "papers": {
+  "3dapnet": {
+   "chunks_seen": 12,
+   "kept": 23,
+   "rejected_unverifiable_quote": 2,
+   "llm_errors": 0
+  },
+  "6-dof-graspnet": {
+   "chunks_seen": 15,
+   "kept": 29,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 0
+  },
+  "7dgcg": {
+   "chunks_seen": 9,
+   "kept": 12,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 0
+  },
+  "anygrasp": {
+   "chunks_seen": 25,
+   "kept": 44,
+   "rejected_unverifiable_quote": 3,
+   "llm_errors": 0
+  },
+  "capgrasp": {
+   "chunks_seen": 15,
+   "kept": 19,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 2
+  },
+  "deep-dexterous-grasping-ddg": {
+   "chunks_seen": 25,
+   "kept": 0,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 22
+  }
+ },
+ "triples": [
+  {
+   "relation": "addresses_problem",
+   "object": "affordance-pose joint learning",
+   "quote": "We present 3DAPNet, a new method for affordance-pose joint learning.",
+   "chunk_id": "3dapnet_mid_2_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "the input point cloud C is plugged into a PointNet++ model",
+   "chunk_id": "3dapnet_mid_3_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "negative log-likelihood",
+   "quote": "The loss function for affordance detection is computed as the negative log-likelihood",
+   "chunk_id": "3dapnet_mid_3_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "open-vocabulary affordance detection",
+   "quote": "to enable open-vocabulary affordance detection",
+   "chunk_id": "3dapnet_mid_3_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "c is the point cloud feature produced by the PointNet++ encoder",
+   "chunk_id": "3dapnet_mid_4_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "affordance-specific pose generation",
+   "quote": "Our key contribution is a new guided diffusion model to address the task of affordance-specific pose generation.",
+   "chunk_id": "3dapnet_mid_4_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "L_aff + L_pose",
+   "quote": "overall loss function as L = L aff +L pose",
+   "chunk_id": "3dapnet_mid_5_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA GeForce RTX 3090 Ti",
+   "quote": "on a 24GB-RAM NVIDIA GeForce RTX 3090 Ti",
+   "chunk_id": "3dapnet_mid_5_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "3DAP",
+   "quote": "trained on our 3DAP dataset",
+   "chunk_id": "3dapnet_mid_6_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "our dataset",
+   "quote": "All methods are trained on our dataset with the splitting ratio for training, evaluation, and testing of 7:1:2.",
+   "chunk_id": "3dapnet_mid_7_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "our dataset",
+   "quote": "All methods are trained on our dataset with the splitting ratio for training, evaluation, and testing of 7:1:2.",
+   "chunk_id": "3dapnet_mid_7_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "ShapeNetCore",
+   "quote": "we curate new objects from the ShapeNetCore dataset [63] and feed both seen and unseen affordances to the model",
+   "chunk_id": "3dapnet_mid_8_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "pose generation",
+   "quote": "our method produces more poses that directly support the affordance tasks",
+   "chunk_id": "3dapnet_mid_8_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "affordance detection",
+   "quote": "our method still succeeds in detecting the associated regions and generating the corresponding appropriate poses",
+   "chunk_id": "3dapnet_mid_8_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "we retain the usage of the point cloud and text embeddings by keeping the PointNet++ encoder and the CLIP text encoder",
+   "chunk_id": "3dapnet_mid_9_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "CLIP",
+   "quote": "we retain the usage of the point cloud and text embeddings by keeping the PointNet++ encoder and the CLIP text encoder",
+   "chunk_id": "3dapnet_mid_9_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "BERT",
+   "quote": "the CLIP encoder significantly outperforms its counterparts on both tasks",
+   "chunk_id": "3dapnet_mid_9_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "RoBERTa",
+   "quote": "the CLIP encoder significantly outperforms its counterparts on both tasks",
+   "chunk_id": "3dapnet_mid_9_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "RealSense D435i",
+   "quote": "after receiving point cloud data of the environment from the RealSense D435i camera",
+   "chunk_id": "3dapnet_mid_10_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "cannot detect affordance from single objects",
+   "quote": "our method can only detect affordance from single objects due to the dataset limitation.",
+   "chunk_id": "3dapnet_mid_11_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "imperfect universal affordance detection and pose estimation",
+   "quote": "our method has not fulfilled the perfect ability in universal affordance detection and pose estimation.",
+   "chunk_id": "3dapnet_mid_11_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "3DAP",
+   "quote": "presented the 3DAP dataset for affordancepose joint learning",
+   "chunk_id": "3dapnet_mid_12_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "open-vocabulary affordance detection and pose estimation",
+   "quote": "task of open-vocabulary affordance detection and pose estimation in 3D point clouds",
+   "chunk_id": "3dapnet_mid_12_0",
+   "paper_id": "3dapnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp selection",
+   "quote": "Grasp selection is one of the most important problems in robot manipulation.",
+   "chunk_id": "6-dof-graspnet_mid_0_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp sampling",
+   "quote": "we use a VAE to sample a diverse set of grasps in SE (3)",
+   "chunk_id": "6-dof-graspnet_mid_3_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "VAE",
+   "quote": "The generator module is a VAE that is based on different samples from a latent space and the observed point cloud X.",
+   "chunk_id": "6-dof-graspnet_mid_3_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Variational Auto-Encoder",
+   "quote": "our approach samples grasp poses using a variational auto-encoder network",
+   "chunk_id": "6-dof-graspnet_mid_4_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp pose generation",
+   "quote": "To generate diverse sets of stable grasps, our approach samples grasp poses using a variational auto-encoder network",
+   "chunk_id": "6-dof-graspnet_mid_4_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "multi-object scenes",
+   "quote": "additional constraints due to a manipulator's reach and due to other objects in a scene are beyond the scope of this work",
+   "chunk_id": "6-dof-graspnet_mid_4_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Point-Net++",
+   "quote": "Both encoder and decoder are based on the Point-Net++ [24] architecture.",
+   "chunk_id": "6-dof-graspnet_mid_6_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet",
+   "quote": "we use the PointNet [23] architecture for the Grasp Evaluator.",
+   "chunk_id": "6-dof-graspnet_mid_7_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "crossentropy loss",
+   "quote": "The grasp evaluator is optimized using the crossentropy loss by optimizing",
+   "chunk_id": "6-dof-graspnet_mid_7_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp classification with imperfect point cloud",
+   "quote": "In this work, we classify each grasp using only the imperfect observed point cloud X of the object.",
+   "chunk_id": "6-dof-graspnet_mid_7_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp refinement",
+   "quote": "This insight can be exploited by searching for a transformation \u2206g \u2208 SE(3) that turns an unsuccessful grasp into a successful one.",
+   "chunk_id": "6-dof-graspnet_mid_8_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "Both grasp generator and evaluator networks are using PointNet++ [24] and have similar architectures.",
+   "chunk_id": "6-dof-graspnet_mid_9_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "KL-Divergence loss",
+   "quote": "The weight for KL-Divergence loss (\u03b1 in Eq. ( 2 )) is set to 0.01.",
+   "chunk_id": "6-dof-graspnet_mid_9_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "ShapeNet",
+   "quote": "In total we use 206 objects from six categories in ShapeNet [3] : boxes and cylinders (randomly generated), as well as bowls, bottles and mugs.",
+   "chunk_id": "6-dof-graspnet_mid_9_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "over-fitting",
+   "quote": "a high-dimensional latent space leads to over-fitting and requires significantly more training data",
+   "chunk_id": "6-dof-graspnet_mid_11_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "VAE",
+   "quote": "using VAE for grasp sampling",
+   "chunk_id": "6-dof-graspnet_mid_12_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp sampling",
+   "quote": "verify the effectiveness of using VAE for grasp sampling",
+   "chunk_id": "6-dof-graspnet_mid_12_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Geometric Grasp Sampler",
+   "quote": "VAE with latent size 2 is significantly better than the non-learning sampling scheme",
+   "chunk_id": "6-dof-graspnet_mid_12_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "low coverage",
+   "quote": "the coverage rate in Fig. 8 was less than 0.5 even after 10 refinement steps",
+   "chunk_id": "6-dof-graspnet_mid_12_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "real-world execution",
+   "quote": "our method scales to the real world despite being trained purely in simulation",
+   "chunk_id": "6-dof-graspnet_mid_13_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "VAE+Evaluator",
+   "quote": "The forward pass of VAE+Evaluator takes 0.04 seconds",
+   "chunk_id": "6-dof-graspnet_mid_13_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Panda",
+   "quote": "All experiments are done using a 7-DOF Franka Panda manipulator",
+   "chunk_id": "6-dof-graspnet_mid_13_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Intel RealSense D415",
+   "quote": "with an Intel RealSense D415 camera mounted on its parallel-jaw gripper",
+   "chunk_id": "6-dof-graspnet_mid_13_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GPD",
+   "quote": "our method outperforms GPD [31] on success rate across all objects",
+   "chunk_id": "6-dof-graspnet_mid_13_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "synthetic grasp data",
+   "quote": "The training of our model is done using synthetic grasp data generated by a physics simulator.",
+   "chunk_id": "6-dof-graspnet_mid_14_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real robot platform",
+   "quote": "We demonstrated that our method can transfer to the real world on objects with unknown 3D models by deploying the method on a real robot platform and an on-board RGB-D camera.",
+   "chunk_id": "6-dof-graspnet_mid_14_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "RGB-D camera",
+   "quote": "We demonstrated that our method can transfer to the real world on objects with unknown 3D models by deploying the method on a real robot platform and an on-board RGB-D camera.",
+   "chunk_id": "6-dof-graspnet_mid_14_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "diverse grasp generation for unknown objects",
+   "quote": "In this work, we introduced 6-DOF GraspNet for generating diverse grasps for unknown objects.",
+   "chunk_id": "6-dof-graspnet_mid_14_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "VAE accuracy",
+   "quote": "While the VAE is able to capture the complex distributions of successful grasp poses, it does not quite provide the accuracy required for highly robust grasp generation.",
+   "chunk_id": "6-dof-graspnet_mid_14_0",
+   "paper_id": "6-dof-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "cluttered scene grasping",
+   "quote": "to generate 7-DoF grasp configurations for any desired object directly from single-view point cloud data in cluttered scenes",
+   "chunk_id": "7dgcg_mid_0_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "7-DoF grasp generation in clutter",
+   "quote": "generating 7-DoF grasp configurations for a specified unknown object in a densely cluttered environment",
+   "chunk_id": "7dgcg_mid_2_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel jaw gripper",
+   "quote": "7-DoF grasp configuration for a parallel jaw gripper",
+   "chunk_id": "7dgcg_mid_2_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "target-driven grasp generation",
+   "quote": "to guide the grasp configuration generation with target detection",
+   "chunk_id": "7dgcg_mid_3_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp configuration refinement",
+   "quote": "In the process of grasp configuration refinement, several constraints must be met",
+   "chunk_id": "7dgcg_mid_5_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "trained_on",
+   "object": "custom dataset",
+   "quote": "YOLOv7 tuned on a custom dataset",
+   "chunk_id": "7dgcg_mid_6_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "RealMan",
+   "quote": "two commercial robotic arms RealMan",
+   "chunk_id": "7dgcg_mid_7_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Robotiq 2F-85",
+   "quote": "a parallel jaw gripper Robotiq 2F-85",
+   "chunk_id": "7dgcg_mid_7_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "RealSense d435i",
+   "quote": "depth camera RealSense d435i",
+   "chunk_id": "7dgcg_mid_7_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "target grasping",
+   "quote": "state-of-the-art, open-source target grasping method Contact-GraspNet",
+   "chunk_id": "7dgcg_mid_7_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Contact-GraspNet",
+   "quote": "Compared to baselines, our method significantly reduces the E2 error in grasping flat group objects",
+   "chunk_id": "7dgcg_mid_7_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "human level performance",
+   "quote": "the grasping performance of this method still lags significantly behind the human level",
+   "chunk_id": "7dgcg_mid_8_0",
+   "paper_id": "7dgcg"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "visual guided object grasping in dynamic scenes",
+   "quote": "the dynamic grasp detection problem remains largely unexplored",
+   "chunk_id": "anygrasp_mid_0_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "real-world data",
+   "quote": "when using a low-cost commercial depth sensor, an algorithm with simple sim-to-real transferring techniques still performs worse than directly training with real-world data. Thus, we persist in training with real data.",
+   "chunk_id": "anygrasp_mid_0_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "dynamic scenes",
+   "quote": "we develop the grasping ability in dynamic scenes that is complementary to our previous work",
+   "chunk_id": "anygrasp_mid_0_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "6-DoF grasping",
+   "quote": "For the 6-DoF grasping problem",
+   "chunk_id": "anygrasp_mid_4_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "144-object real-world dataset",
+   "quote": "a real-world dataset consisting of only 144 objects",
+   "chunk_id": "anygrasp_mid_4_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "3D convolutional network",
+   "quote": "Such global geometric features can be easily learned through a 3D convolutional network.",
+   "chunk_id": "anygrasp_mid_7_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp quality estimation",
+   "quote": "our geometry processing module directly perceives the single-view point cloud of the scene and estimates the grasp quality across the R 6 space.",
+   "chunk_id": "anygrasp_mid_7_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "moving object grasping",
+   "quote": "When trying to grasp a moving object, the robot needs to continuously update the target grasp pose before catching the object.",
+   "chunk_id": "anygrasp_mid_8_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "GraspNet-1Billion",
+   "quote": "we mainly adopt the training set of GraspNet-1Billion [9]",
+   "chunk_id": "anygrasp_mid_10_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "cosine similarity",
+   "quote": "the higher cosine similarity they have",
+   "chunk_id": "anygrasp_mid_12_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "temporal consistency of grasp poses",
+   "quote": "to ensure temporal consistency of the grasp poses",
+   "chunk_id": "anygrasp_mid_12_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp pose tracking",
+   "quote": "On top of the geometry processing module, we develop a temporal association module to enable grasp pose tracking.",
+   "chunk_id": "anygrasp_mid_14_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GSNet",
+   "quote": "features are extracted before the last layer of two MLP blocks in the GSNet.",
+   "chunk_id": "anygrasp_mid_14_1",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "softmax loss",
+   "quote": "It contains softmax loss for the objectness classification in the first MLP block",
+   "chunk_id": "anygrasp_mid_14_1",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "smooth L1 loss",
+   "quote": "and smoothl 1 loss for the graspable heatmaps and grasp pose parameter regression",
+   "chunk_id": "anygrasp_mid_14_1",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "supervised contrastive learning",
+   "quote": "we adopt supervised contrastive learning [51] in model training",
+   "chunk_id": "anygrasp_mid_14_1",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "GraspNet-1Billion",
+   "quote": "trained on the extended GraspNet-1Billion dataset",
+   "chunk_id": "anygrasp_mid_15_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "GraspNet-1Billion",
+   "quote": "GraspNet-1Billion dataset",
+   "chunk_id": "anygrasp_mid_16_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "UR5 robot arm",
+   "quote": "For the static scene grasping, we use a UR5 robot arm with an overhead camera.",
+   "chunk_id": "anygrasp_mid_18_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Intel RealSense D415",
+   "quote": "Intel RealSense D415 and D435 are adopted to evaluate the algorithm performance across depth sensors.",
+   "chunk_id": "anygrasp_mid_18_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Intel RealSense D435",
+   "quote": "Intel RealSense D415 and D435 are adopted to evaluate the algorithm performance across depth sensors.",
+   "chunk_id": "anygrasp_mid_18_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Robotiq-85 gripper",
+   "quote": "We use a Robotiq-85 gripper.",
+   "chunk_id": "anygrasp_mid_18_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Flexiv Rizon arm",
+   "quote": "For dynamic grasping, we use a Flexiv Rizon arm since it can update the servo targets more smoothly.",
+   "chunk_id": "anygrasp_mid_18_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Intel RealSense L515",
+   "quote": "An Intel RealSense L515 camera is attached to the wrist of the robot.",
+   "chunk_id": "anygrasp_mid_18_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "visual perception for grasping",
+   "quote": "Note that since we focus on the visual perception for grasping, we ask the volunteers to adopt an open-loop strategy during grasping.",
+   "chunk_id": "anygrasp_mid_18_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "UR5 robot arm",
+   "quote": "The waypoint and grasp pose are sent to the UR5 robot arm through UR script command movels() via Ethernet",
+   "chunk_id": "anygrasp_mid_19_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Robotiq gripper",
+   "quote": "We attach two 3D-printed parallel jaws to the Robotiq gripper.",
+   "chunk_id": "anygrasp_mid_19_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "parallel-jaw bin picking",
+   "quote": "For the parallel-jaw bin picking experiments, we conduct two independent trials for each experiment.",
+   "chunk_id": "anygrasp_mid_19_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "dynamic fish catching",
+   "quote": "For the dynamic fish-catching experiment, we conduct five independent trials.",
+   "chunk_id": "anygrasp_mid_19_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "bin picking",
+   "quote": "For the parallel-jaw bin picking experiments, we conduct two independent trials for each experiment.",
+   "chunk_id": "anygrasp_mid_19_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "fish catching",
+   "quote": "For the dynamic fish-catching experiment, we conduct five independent trials.",
+   "chunk_id": "anygrasp_mid_19_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "D435",
+   "quote": "The depth given by the D435 camera presents a larger variance and can achieve up to \u00b15mm error",
+   "chunk_id": "anygrasp_mid_22_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "depth sensing noise",
+   "quote": "The experiments demonstrate the robustness of our algorithm towards depth sensing noise, mainly owing to the training data collected with real sensors",
+   "chunk_id": "anygrasp_mid_22_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "lack of feedback",
+   "quote": "our grasp perception system would repeat the failed trials on an object without utilizing the feedback from each trial",
+   "chunk_id": "anygrasp_mid_22_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "previous method [7]",
+   "quote": "our grasping system achieves over 900 MPPH, which is a dramatic improvement compared to previous state-of-theart [7]",
+   "chunk_id": "anygrasp_mid_22_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "temporal consistency",
+   "quote": "To verify the temporal consistency of the grasp perception system, we conduct a robot fish-catching experiment.",
+   "chunk_id": "anygrasp_mid_23_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "fish-catching experiment",
+   "quote": "we conduct a robot fish-catching experiment",
+   "chunk_id": "anygrasp_mid_23_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Nvidia 2060 GPU",
+   "quote": "the grasp perception system can run at 7 Hz on an Nvidia 2060 GPU",
+   "chunk_id": "anygrasp_mid_23_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulated depth images",
+   "quote": "The same model is trained on these simulated depth images.",
+   "chunk_id": "anygrasp_mid_24_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "GraspNet-1Billion benchmark",
+   "quote": "We first analyze the detailed performance on the GraspNet-1Billion benchmark, which directly evaluates the grasp pose's quality based on object mesh using the force-closure analysis.",
+   "chunk_id": "anygrasp_mid_24_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real-world bin-picking experiment",
+   "quote": "Then we evaluate the model trained on simulated data with Gaussian noise in the real-world bin-picking experiment.",
+   "chunk_id": "anygrasp_mid_24_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "sim-to-real gap",
+   "quote": "we try to figure out the performance gap between training on real data and simulated data.",
+   "chunk_id": "anygrasp_mid_24_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "large performance gap",
+   "quote": "but still remains a large performance gap with directly trained on real data.",
+   "chunk_id": "anygrasp_mid_24_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "failure to generate grasps with few objects",
+   "quote": "the network cannot generate grasp poses for a scene when there remain few objects.",
+   "chunk_id": "anygrasp_mid_24_0",
+   "paper_id": "anygrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "approach-constrained grasping",
+   "quote": "when grasps must originate from specific directions, such as grasping in confined spaces",
+   "chunk_id": "capgrasp_mid_0_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "approach-constrained grasp synthesis",
+   "quote": "synthesizing 6-DoF grasps whose approach directions are within a specific target range",
+   "chunk_id": "capgrasp_mid_1_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GoNet",
+   "quote": "All results show that CAPGrasp surpasses the baselines",
+   "chunk_id": "capgrasp_mid_1_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GraspNet",
+   "quote": "All results show that CAPGrasp surpasses the baselines",
+   "chunk_id": "capgrasp_mid_1_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "EdgeGrasp-Net",
+   "quote": "All results show that CAPGrasp surpasses the baselines",
+   "chunk_id": "capgrasp_mid_1_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GPD",
+   "quote": "All results show that CAPGrasp surpasses the baselines",
+   "chunk_id": "capgrasp_mid_1_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "equivariant robotic grasp learning",
+   "quote": "this work proposes a solution for making the data equivariant",
+   "chunk_id": "capgrasp_mid_4_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "constrained grasp generation",
+   "quote": "the objective is to generate a set of successful grasp poses G on the object such that the approach direction is within A",
+   "chunk_id": "capgrasp_mid_6_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "The backbone architecture of CAPGrasp is PointNet++ [31] , which requires point clouds as input.",
+   "chunk_id": "capgrasp_mid_8_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "ELBO",
+   "quote": "CAPGrasp is trained using the standard Evidence Lower Bound (ELBO) loss",
+   "chunk_id": "capgrasp_mid_8_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "continuous CVAEs",
+   "quote": "prevent us from using the method for training continuous CVAEs",
+   "chunk_id": "capgrasp_mid_9_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "binary cross-entropy loss",
+   "quote": "The grasp discriminator is trained on the binary cross-entropy loss.",
+   "chunk_id": "capgrasp_mid_10_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Acronym",
+   "quote": "we adapted the publicly available large-scale Acronym dataset [33] that contains 17.7 M simulated parallel-jaw grasps on 8872 objects from ShapeNet [34] to our need",
+   "chunk_id": "capgrasp_mid_13_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "approach-constrained grasp generation",
+   "quote": "How effective is CAPGrasp in generating successful approach-constrained grasps?",
+   "chunk_id": "capgrasp_mid_14_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "constrained grasp refinement",
+   "quote": "To what extent does constrained grasp refinement enhance grasp quality?",
+   "chunk_id": "capgrasp_mid_14_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "real-object picking in confined spaces",
+   "quote": "How successful is CAPGrasp at picking real objects in unconfined and confined spaces?",
+   "chunk_id": "capgrasp_mid_14_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "free-floating gripper",
+   "quote": "using a free-floating gripper in Issac-Gym",
+   "chunk_id": "capgrasp_mid_14_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "manual constraint selection",
+   "quote": "The first limitation is that A is selected manually or through some simple-to-compute geometrical features.",
+   "chunk_id": "capgrasp_mid_17_0",
+   "paper_id": "capgrasp"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "isotropic cone constraints only",
+   "quote": "The second limitation is that we can only pose isotropic cone constraints but not non-isotropic elliptical cone constraints.",
+   "chunk_id": "capgrasp_mid_17_0",
+   "paper_id": "capgrasp"
+  }
+ ],
+ "stats": {
+  "n_triples": 127,
+  "n_papers": 55
+ }
+}

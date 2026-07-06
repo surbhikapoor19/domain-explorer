@@ -1,0 +1,1798 @@
+{
+ "papers": {
+  "chomp-icra2009": {
+   "chunks_seen": 13,
+   "kept": 24,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 0
+  },
+  "crisp-2502.01055": {
+   "chunks_seen": 19,
+   "kept": 29,
+   "rejected_unverifiable_quote": 2,
+   "llm_errors": 0
+  },
+  "curobo-2310.17274": {
+   "chunks_seen": 25,
+   "kept": 55,
+   "rejected_unverifiable_quote": 9,
+   "llm_errors": 0
+  },
+  "grasptrajopt-2403.05466": {
+   "chunks_seen": 13,
+   "kept": 26,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 0
+  },
+  "klampt-isrr2013": {
+   "chunks_seen": 13,
+   "kept": 21,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 0
+  },
+  "komo-1407.0414": {
+   "chunks_seen": 9,
+   "kept": 5,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 0
+  },
+  "ompl-ieee-ram-2012": {
+   "chunks_seen": 23,
+   "kept": 5,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 0
+  },
+  "raptor-2409.00303": {
+   "chunks_seen": 10,
+   "kept": 12,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 0
+  },
+  "stomp-icra2011": {
+   "chunks_seen": 17,
+   "kept": 17,
+   "rejected_unverifiable_quote": 2,
+   "llm_errors": 0
+  },
+  "trajopt-rss2013": {
+   "chunks_seen": 18,
+   "kept": 34,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 0
+  },
+  "vamp-2309.14545": {
+   "chunks_seen": 10,
+   "kept": 18,
+   "rejected_unverifiable_quote": 4,
+   "llm_errors": 0
+  }
+ },
+ "triples": [
+  {
+   "relation": "addresses_problem",
+   "object": "path optimization without collision-free input",
+   "quote": "we drop the requirement that the input path be collision free",
+   "chunk_id": "chomp-icra2009_mid_0_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "6-DOF robot arm",
+   "quote": "show experimental results on a 6-DOF robot arm",
+   "chunk_id": "chomp-icra2009_mid_0_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "quadruped robot",
+   "quote": "detail the application of CHOMP to quadruped robot locomotion",
+   "chunk_id": "chomp-icra2009_mid_0_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "6-DOF robot arm",
+   "quote": "show experimental results on a 6-DOF robot arm",
+   "chunk_id": "chomp-icra2009_mid_0_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "quadruped robot",
+   "quote": "detail the application of CHOMP to quadruped robot locomotion",
+   "chunk_id": "chomp-icra2009_mid_0_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "a new trajectory optimization procedure based on covariant gradient descent",
+   "chunk_id": "chomp-icra2009_mid_1_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "smooth collision-free trajectory planning",
+   "quote": "our goal is to find a smooth, collision-free, trajectory through the configuration space",
+   "chunk_id": "chomp-icra2009_mid_2_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "we optimize directly within the space of trajectories",
+   "chunk_id": "chomp-icra2009_mid_3_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "standard Euclidean gradient based method",
+   "quote": "we would generally expect it to be O(n) times faster to converge than a standard, Euclidean gradient based method",
+   "chunk_id": "chomp-icra2009_mid_3_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision-free trajectory planning",
+   "quote": "a trajectory for the robot is then collision-free if for every configuration q along the trajectory and for all u \u2208 B, the distance from x(q, u) to the nearest obstacle is greater than \u03b5 \u2265 0",
+   "chunk_id": "chomp-icra2009_mid_4_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "continuous trajectory obstacle avoidance",
+   "quote": "We will switch for a moment to discussing optimization of a continuous trajectory q(t) by defining our obstacle potential as a functional over q.",
+   "chunk_id": "chomp-icra2009_mid_5_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "joint limit handling",
+   "quote": "Joint limits are traditionally handled by either adding a new potential to the objective function which penalizes the trajectory for approaching the limits, or by performing a simple projection back onto the set of feasible joint values when a violation of the limits is detected.",
+   "chunk_id": "chomp-icra2009_mid_7_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "robotic arm",
+   "quote": "Figure 4 plots the final joint angle curves over time from the final optimized trajectory on a robotic arm (see section III).",
+   "chunk_id": "chomp-icra2009_mid_7_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Barrett Technology WAM arm",
+   "quote": "implementation of CHOMP on Barrett Technology's WAM arm",
+   "chunk_id": "chomp-icra2009_mid_8_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "home manipulation",
+   "quote": "tasks representative of the type of tasks that may be commonly encountered in a home manipulation setting",
+   "chunk_id": "chomp-icra2009_mid_8_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "thin obstacles",
+   "quote": "the obstacles are often thin (e.g. they may be pieces of furniture such as tables or doors)",
+   "chunk_id": "chomp-icra2009_mid_9_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "household manipulation",
+   "quote": "evaluate the efficacy of CHOMP and its probabilistic variants as a replacement for planning on a variety of everyday household manipulation problems",
+   "chunk_id": "chomp-icra2009_mid_10_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "robot arm",
+   "quote": "running CHOMP on the robot arm described in section III",
+   "chunk_id": "chomp-icra2009_mid_10_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "Euclidean gradient descent",
+   "quote": "setting A = I and performing Euclidean gradient descent performed extremely poorly",
+   "chunk_id": "chomp-icra2009_mid_10_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "LittleDog",
+   "quote": "guide the LittleDog robot, designed and built by Boston Dynamics Inc., over standardized terrains quickly and robustly",
+   "chunk_id": "chomp-icra2009_mid_11_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "quadruped locomotion on rough terrain",
+   "quote": "developing strategies for quadruped locomotion on rough terrain",
+   "chunk_id": "chomp-icra2009_mid_11_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "This work presents a powerful new trajectory optimization procedure that solves a much wider range of problems",
+   "chunk_id": "chomp-icra2009_mid_12_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real world robotic systems",
+   "quote": "our experiments show that this algorithm substantially outperforms alternatives and improves performance on real world robotic systems",
+   "chunk_id": "chomp-icra2009_mid_12_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "fixed discretization",
+   "quote": "in choosing a priori a discretization of a particular length, we are effectively constraining the optimizer to consider only trajectories of a predefined duration",
+   "chunk_id": "chomp-icra2009_mid_12_0",
+   "paper_id": "chomp-icra2009"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact-implicit motion planning",
+   "quote": "robust contact-implicit motion planning with sequential convex programming (CRISP)",
+   "chunk_id": "crisp-2502.01055_mid_0_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "\u21131 penalty",
+   "quote": "its convergence is evaluated by a merit function using weighted \u21131 penalty",
+   "chunk_id": "crisp-2502.01055_mid_0_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "hopper problem",
+   "quote": "For (e) the hopper problem, the initial guess is a free-fall motion released from the origin.",
+   "chunk_id": "crisp-2502.01055_mid_0_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "quadratic loss",
+   "quote": "usually a quadratic loss function of tracking errors and control efforts",
+   "chunk_id": "crisp-2502.01055_mid_1_1",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact-implicit motion planning",
+   "quote": "Can we solve contact-implicit motion planning in a numerically robust way, without relaxation?",
+   "chunk_id": "crisp-2502.01055_mid_1_1",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact-implicit planning",
+   "quote": "Clearly, the contact-implicit planning problem (6) can be transformed into a generic NLP problem",
+   "chunk_id": "crisp-2502.01055_mid_2_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "lack of constraint qualifications",
+   "quote": "due to the lack of CQs in the MPCC problem, it is not fully clear whether minimization of the merit function (8) has the same type of guarantees as in the case where CQs hold",
+   "chunk_id": "crisp-2502.01055_mid_2_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "MPCC",
+   "quote": "when applied to MPCC, this approach inevitably leads to infeasible subproblems",
+   "chunk_id": "crisp-2502.01055_mid_2_1",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning",
+   "quote": "crucial for complex robot motion planning problems",
+   "chunk_id": "crisp-2502.01055_mid_3_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact-rich planning",
+   "quote": "six representative contact-rich planning problems",
+   "chunk_id": "crisp-2502.01055_mid_4_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "hopper",
+   "quote": "navigate the hopper's hybrid dynamics without pre-specified contact sequences",
+   "chunk_id": "crisp-2502.01055_mid_6_1",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "hopper",
+   "quote": "For the hopper and waiter examples, which involve more challenging contact reasoning, we focus our comparison on CRISP and IPOPT.",
+   "chunk_id": "crisp-2502.01055_mid_7_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "waiter",
+   "quote": "For the hopper and waiter examples, which involve more challenging contact reasoning, we focus our comparison on CRISP and IPOPT.",
+   "chunk_id": "crisp-2502.01055_mid_7_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "IPOPT",
+   "quote": "Our results demonstrate that CRISP consistently produces feasible trajectories with the lowest tracking error and overall objective values across all tasks.",
+   "chunk_id": "crisp-2502.01055_mid_7_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Push T",
+   "quote": "applied CRISP to a real robotic arm system for the push T task",
+   "chunk_id": "crisp-2502.01055_mid_8_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Transport",
+   "quote": "CRISP significantly outperforms LCQpow with an average solve time of 0.77 s",
+   "chunk_id": "crisp-2502.01055_mid_8_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Waiter",
+   "quote": "CRISP significantly outperforms LCQpow with an average solve time of 0.77 s",
+   "chunk_id": "crisp-2502.01055_mid_8_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "robotic arm",
+   "quote": "real robotic arm system for the push T task",
+   "chunk_id": "crisp-2502.01055_mid_8_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "high-quality trajectory planning",
+   "quote": "validate the effectiveness of CRISP in delivering high-quality trajectories",
+   "chunk_id": "crisp-2502.01055_mid_8_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact planning",
+   "quote": "Motion planning through contact presents unique challenges due to the inherently discontinuous nature of contact",
+   "chunk_id": "crisp-2502.01055_mid_9_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Push T",
+   "quote": "Key frames visualization of the real-world Push T experiments from various initial configurations",
+   "chunk_id": "crisp-2502.01055_mid_9_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "IPOPT",
+   "quote": "While IPOPT produces a feasible but impractical solution (remaining stationary at the origin), our approach successfully optimizes the complex contact sequences",
+   "chunk_id": "crisp-2502.01055_mid_9_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact-implicit motion planning",
+   "quote": "CRISP, a primal-only numerical solver for contact-implicit motion planning",
+   "chunk_id": "crisp-2502.01055_mid_10_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "quadratic objective",
+   "quote": "We adopt a quadratic objective function to penalize the active force u and the terminal pos and velocity tracking error.",
+   "chunk_id": "crisp-2502.01055_mid_10_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "real-time adaptivity",
+   "quote": "its adaptivity for real-time tasks could be further increased",
+   "chunk_id": "crisp-2502.01055_mid_10_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "two-phase hopping dynamics",
+   "quote": "The hopper exhibits two-phase dynamics, which we will unify through the complementarity constraints",
+   "chunk_id": "crisp-2502.01055_mid_12_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "quadratic loss",
+   "quote": "The cost is a quadratic loss to force the robot to jump to and stop at 2 m with zero height while penalizing the control effort of the angular velocity u 1 and thrust u 2",
+   "chunk_id": "crisp-2502.01055_mid_12_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "waiter problem",
+   "quote": "In the waiter problem, the initial state is defined with the pusher positioned next to the table",
+   "chunk_id": "crisp-2502.01055_mid_13_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "push box",
+   "quote": "push box problem, as illustrated in Fig. 4(b).",
+   "chunk_id": "crisp-2502.01055_mid_15_0",
+   "paper_id": "crisp-2502.01055"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA GPUs",
+   "quote": "while we demonstrate the benefits of using parallel compute for motion generation using NVIDIA GPUs",
+   "chunk_id": "curobo-2310.17274_mid_0_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "global motion generation",
+   "quote": "requiring robots to have a robust global motion generation system to traverse any environment structure",
+   "chunk_id": "curobo-2310.17274_mid_0_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA RTX 4090",
+   "quote": "parallel steering algorithm to generate collision-free paths within 20 ms on a modern desktop machine with NVIDIA RTX 4090",
+   "chunk_id": "curobo-2310.17274_mid_0_1",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA Jetson AGX Orin",
+   "quote": "We evaluate our GPU-accelerated motion generation stack and existing CPU-based methods on an NVIDIA Jetson AGX Orin",
+   "chunk_id": "curobo-2310.17274_mid_0_1",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "global motion generation",
+   "quote": "Combining our above contributions, we have a global motion generation pipeline that can plan within 50ms",
+   "chunk_id": "curobo-2310.17274_mid_0_1",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Tesseract",
+   "quote": "plan within 50ms, 60\u00d7 faster than existing methods (Tesseract)",
+   "chunk_id": "curobo-2310.17274_mid_0_1",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision-free motion generation",
+   "quote": "collision-free motion generation to reach a goal Cartesian pose",
+   "chunk_id": "curobo-2310.17274_mid_1_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision avoidance",
+   "quote": "Collision avoidance is a critical component of motion generation as the robot needs to be able to avoid colliding with itself (self-collision) and with the world for safe operation.",
+   "chunk_id": "curobo-2310.17274_mid_2_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "sequential kinematics",
+   "quote": "to overcome the sequential nature of computation",
+   "chunk_id": "curobo-2310.17274_mid_3_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "self-collision avoidance",
+   "quote": "For avoiding self-collisions, we formulate a distance cost that computes the largest penetration distance between spheres from all links.",
+   "chunk_id": "curobo-2310.17274_mid_4_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "smooth obstacle avoidance",
+   "quote": "Generating smooth obstacle avoidance behavior has been studied extensively",
+   "chunk_id": "curobo-2310.17274_mid_5_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "collision cost",
+   "quote": "we implement a speed metric, similar to [7] , that scales the collision cost of a sphere by it's velocity",
+   "chunk_id": "curobo-2310.17274_mid_5_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "linear sphere assumption",
+   "quote": "Our implementation of the algorithm assumes that the sphere is moving linearly between waypoints which is not true for links attached through a revolute joint.",
+   "chunk_id": "curobo-2310.17274_mid_6_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "depth camera",
+   "quote": "we have access to a depth camera and accurate pose of the camera with respect to the robot's base at each frame for integrating into nvblox",
+   "chunk_id": "curobo-2310.17274_mid_7_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "nonconvex optimization problem",
+   "quote": "approximate our constraints as cost terms and implement a quasi-newton solver to solve this nonconvex optimization problem",
+   "chunk_id": "curobo-2310.17274_mid_8_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "greatly increased the convergence rate on trajectory optimization problems",
+   "chunk_id": "curobo-2310.17274_mid_9_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "hard problems",
+   "quote": "To tackle very hard problems and further reduce the number of seeds required to converge",
+   "chunk_id": "curobo-2310.17274_mid_10_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision-free path planning",
+   "quote": "We develop a geometric planner to generate a collision-free path from the start configuration",
+   "chunk_id": "curobo-2310.17274_mid_11_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "motionbenchmaker",
+   "quote": "the motionbenchmaker dataset [52] containing 800 problems",
+   "chunk_id": "curobo-2310.17274_mid_12_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "mpinets",
+   "quote": "the mpinets dataset [53] containing 1800 problems",
+   "chunk_id": "curobo-2310.17274_mid_12_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning",
+   "quote": "motion planning problems for the Franka Emika Panda robot",
+   "chunk_id": "curobo-2310.17274_mid_12_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "high-speed motion generation",
+   "quote": "When moving manipulators at high-speed, they become very sensitive to jerk profiles, especially when starting from or ending at zero velocity (i.e., idle). This has prevented motion generation approaches from executing at the full rated speed of a robot.",
+   "chunk_id": "curobo-2310.17274_mid_13_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "motionbenchmaker",
+   "quote": "We plot the success of different methods on the motionbenchmaker and mpinets dataset in these plots.",
+   "chunk_id": "curobo-2310.17274_mid_13_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "mpinets",
+   "quote": "We plot the success of different methods on the motionbenchmaker and mpinets dataset in these plots.",
+   "chunk_id": "curobo-2310.17274_mid_13_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "short path planning",
+   "quote": "Our goal is not only to get shorter paths, but also trajectories that can be executed on robots with minimal post-processing.",
+   "chunk_id": "curobo-2310.17274_mid_14_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "unevaluated collision checkers",
+   "quote": "While cuRobo also has mesh-based collision checking and depth camera based collision checking, we leave evaluating these collision checkers for a future work.",
+   "chunk_id": "curobo-2310.17274_mid_14_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Tesseract",
+   "quote": "cuRobo reduces path length by 53%, 39%, and 10% on average when compared to Tesseract-GP, cuRobo-GP, and Tesseract respectively.",
+   "chunk_id": "curobo-2310.17274_mid_14_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "jerk-sensitive manipulators",
+   "quote": "making geometric path planning not directly deploy-able on jerk sensitive manipulators",
+   "chunk_id": "curobo-2310.17274_mid_14_1",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Panda",
+   "quote": "beyond the 15 rad.s -2 acceleration limit we set for the Franka Panda robot",
+   "chunk_id": "curobo-2310.17274_mid_14_1",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "2600 motion planning problems",
+   "quote": "On all of the 2600 motion planning problems, we found cuRobo to take the least time",
+   "chunk_id": "curobo-2310.17274_mid_14_1",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "AMD Ryzen 9 7950x",
+   "quote": "a PC with an AMD Ryzen 9 7950x CPU and NVIDIA RTX 4090 GPU",
+   "chunk_id": "curobo-2310.17274_mid_15_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA RTX 4090",
+   "quote": "a PC with an AMD Ryzen 9 7950x CPU and NVIDIA RTX 4090 GPU",
+   "chunk_id": "curobo-2310.17274_mid_15_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA Jetson AGX Orin",
+   "quote": "an NVIDIA Jetson AGX Orin 64GB system configured to operate at MAXN (60W) and 15W power budgets",
+   "chunk_id": "curobo-2310.17274_mid_15_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA Jetson ORIN",
+   "quote": "The speedup over Tesseract scales to the NVIDIA Jetson ORIN as well",
+   "chunk_id": "curobo-2310.17274_mid_16_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Tesseract",
+   "quote": "cuRobo taking 50ms, leading to a 60\u00d7 speedup in motion planning.",
+   "chunk_id": "curobo-2310.17274_mid_16_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "OMPL's RRTConnect",
+   "quote": "Our GPU accelerated geometric planner is 101\u00d7 faster on average compared to OMPL's implementation of RRTConnect available in Tesseract.",
+   "chunk_id": "curobo-2310.17274_mid_16_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA Jetson ORIN",
+   "quote": "On a NVIDIA Jetson ORIN, our appraoch is 35\u00d7 and 25\u00d7 faster at MAXN and 15W modes.",
+   "chunk_id": "curobo-2310.17274_mid_18_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "These sequential iterations can make the entire computation graph memory access heavy. Our efficient parallelization of compute across the whole pipeline enables us to get these speedups.",
+   "chunk_id": "curobo-2310.17274_mid_18_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "TrajOpt",
+   "quote": "cuRobo is 87\u00d7 and 145\u00d7 faster in optimization than TrajOpt on average and 75 th percentile respectively.",
+   "chunk_id": "curobo-2310.17274_mid_18_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "inverse kinematics",
+   "quote": "We compare the performance of our inverse kinematics solver against TracIK",
+   "chunk_id": "curobo-2310.17274_mid_19_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "bookshelf-small-panda scene",
+   "quote": "We chose an instance of the bookshelf-small-panda scene from motion benchmaker [52] for the collision checking experiment",
+   "chunk_id": "curobo-2310.17274_mid_19_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "BioIK",
+   "quote": "Even if we consider their timing to be for collision-free IK, our method is still faster starting from a batch size of 10, taking 0.48ms per solution",
+   "chunk_id": "curobo-2310.17274_mid_19_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion generation acceleration",
+   "quote": "accelerating our motion generation approach",
+   "chunk_id": "curobo-2310.17274_mid_20_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "pinnochio",
+   "quote": "outmatch pinnochio's performance at a batch size of 100",
+   "chunk_id": "curobo-2310.17274_mid_20_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "STORM",
+   "quote": "run MPPI at upto 421hz, 3.36\u00d7 faster than STORM",
+   "chunk_id": "curobo-2310.17274_mid_20_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "PyBullet",
+   "quote": "our distance queries is upto 16,000x faster than PyBullet",
+   "chunk_id": "curobo-2310.17274_mid_20_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA RTX 4090",
+   "quote": "Inverse Kinematics takes 27 \ud835\udf07seconds and collision-free inverse kinematics takes 130 \ud835\udf07seconds with a batch size of 1000 on a NVIDIA RTX 4090.",
+   "chunk_id": "curobo-2310.17274_mid_21_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA AGX Orin",
+   "quote": "cuRobo's motion generation scales well to a NVIDIA AGX Orin running at 60W, taking only 100ms enabling deployment of motion generation on edge devices.",
+   "chunk_id": "curobo-2310.17274_mid_21_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "benchmarking dataset",
+   "quote": "motion generation taking 30ms across the benchmarking dataset.",
+   "chunk_id": "curobo-2310.17274_mid_21_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "OMPL's RRTConnect",
+   "quote": "leveraging cuRobo's geometric planning can lead to a 101\u00d7 speedup compared to using OMPL's RRTConnect algorithm.",
+   "chunk_id": "curobo-2310.17274_mid_21_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "UR5e",
+   "quote": "We study the tracking performance between the generated motions and executed motions by running cuRobo on two Universal Robots, an UR5e robot and an UR10 robot.",
+   "chunk_id": "curobo-2310.17274_mid_22_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "UR10",
+   "quote": "We study the tracking performance between the generated motions and executed motions by running cuRobo on two Universal Robots, an UR5e robot and an UR10 robot.",
+   "chunk_id": "curobo-2310.17274_mid_22_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA Jetson ORIN AGX",
+   "quote": "We connect the robots to a NVIDIA Jetson ORIN AGX which is running a PREEMPT RT kernel and uses the ros driver from universal robots for communication.",
+   "chunk_id": "curobo-2310.17274_mid_22_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion tracking error",
+   "quote": "We study the tracking performance between the generated motions and executed motions",
+   "chunk_id": "curobo-2310.17274_mid_22_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "encoder accuracy assumption",
+   "quote": "We hence assume for all discussion below that the joint position is accurate up to 0.0017 radians.",
+   "chunk_id": "curobo-2310.17274_mid_22_0",
+   "paper_id": "curobo-2310.17274"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "RGB-D camera",
+   "quote": "by equipping a RGB-D camera with a robot, the robot can capture a depth image of the scene.",
+   "chunk_id": "grasptrajopt-2403.05466_mid_3_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "robot motion planning",
+   "quote": "In robot motion planning, the goal is to generate a robot trajectory to reach a goal location while avoiding obstacles in the task space.",
+   "chunk_id": "grasptrajopt-2403.05466_mid_3_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasping trajectory optimization",
+   "quote": "In grasping trajectory optimization, we need to generate a trajectory for a robot from its current joint configuration to a goal configuration for grasping a target object.",
+   "chunk_id": "grasptrajopt-2403.05466_mid_4_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "point matching loss",
+   "quote": "Motivated by work on 6D object pose estimation [28] , we utilize the point matching loss function as our cost function for goal reaching.",
+   "chunk_id": "grasptrajopt-2403.05466_mid_4_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "obstacle avoidance",
+   "quote": "avoid obstacles in the task space",
+   "chunk_id": "grasptrajopt-2403.05466_mid_5_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "joint motion and grasp planning",
+   "quote": "trajectory optimization framework for joint motion and grasp planning",
+   "chunk_id": "grasptrajopt-2403.05466_mid_6_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Emika Panda",
+   "quote": "a Franka panda arm has n = 7 DOFs",
+   "chunk_id": "grasptrajopt-2403.05466_mid_7_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "point-matching cost",
+   "quote": "the point-matching cost function in Eq. ( 1 ) to measure the difference between two transformations",
+   "chunk_id": "grasptrajopt-2403.05466_mid_10_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "goal reaching",
+   "quote": "We evaluated the effectiveness of our point cloud-based representation for goal reaching.",
+   "chunk_id": "grasptrajopt-2403.05466_mid_10_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "inverse kinematics",
+   "quote": "We solve the inverse kine- (10) with three different cost functions",
+   "chunk_id": "grasptrajopt-2403.05466_mid_10_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "YCB",
+   "quote": "Grasps of the 16 YCB objects are generated using GraspIt! [9]",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "tabletop scenes",
+   "quote": "our method improves over the OMG-Planner in both the tabletop scenes and the shelf scenes",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "shelf scenes",
+   "quote": "our method improves over the OMG-Planner in both the tabletop scenes and the shelf scenes",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Fetch robot",
+   "quote": "The Fetch robot achieves higher success rates compared to the Panda robot",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Panda robot",
+   "quote": "The Fetch robot achieves higher success rates compared to the Panda robot",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp planning",
+   "quote": "our pointcloud representation enables more accurate goal reaching and collision avoidance",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "OMG-Planner",
+   "quote": "our method improves over the OMG-Planner in both the tabletop scenes and the shelf scenes",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "small flat objects",
+   "quote": "Some objects are more difficult to grasp. These are small or flat objects such as the tuna fish can, the scissors, the large marker, and the extra large clamp",
+   "chunk_id": "grasptrajopt-2403.05466_mid_11_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "model-free grasping",
+   "quote": "model-free grasping, where we do not have 3D models of objects for perception and motion planning",
+   "chunk_id": "grasptrajopt-2403.05466_mid_12_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "SceneReplica",
+   "quote": "We compare our method with an OMPL [34] -based planning baseline in the SceneReplica benchmark [20]",
+   "chunk_id": "grasptrajopt-2403.05466_mid_12_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "YCB",
+   "quote": "Detailed evaluation statistics for each YCB object are presented in Table IV",
+   "chunk_id": "grasptrajopt-2403.05466_mid_12_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "OMPL",
+   "quote": "Our method achieves a better grasping success rate and a better pick-and-place success rate",
+   "chunk_id": "grasptrajopt-2403.05466_mid_12_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "SceneReplica Benchmark",
+   "quote": "experiments conducted using the SceneReplica Benchmark [20]",
+   "chunk_id": "grasptrajopt-2403.05466_mid_13_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "OMPL-based baseline",
+   "quote": "Our approach has demonstrated a significant improvement in planning efficiency over the OMPL-based baseline",
+   "chunk_id": "grasptrajopt-2403.05466_mid_13_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "joint motion and grasp planning",
+   "quote": "We introduce a new trajectory optimization method for joint motion and grasp planning.",
+   "chunk_id": "grasptrajopt-2403.05466_mid_14_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "trajectory optimization is slow when relying on an external solver",
+   "quote": "One limitation of our method is that trajectory optimization is slow when relying on an external solver.",
+   "chunk_id": "grasptrajopt-2403.05466_mid_14_0",
+   "paper_id": "grasptrajopt-2403.05466"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "unstructured mesh contact simulation",
+   "quote": "achieves physically plausible simulations with contact between unstructured triangle meshes",
+   "chunk_id": "klampt-isrr2013_mid_0_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "humanoid robot",
+   "quote": "Results match closely with theoretical predictions and experimental testing on a humanoid robot.",
+   "chunk_id": "klampt-isrr2013_mid_0_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Microsoft Kinect",
+   "quote": "captured from 3D sensors, e.g., laser scanners or the Microsoft Kinect",
+   "chunk_id": "klampt-isrr2013_mid_0_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact generation for unstructured meshes",
+   "quote": "the primary contribution of this work is a new contact generation scheme for unstructured meshes that need not be convex nor watertight.",
+   "chunk_id": "klampt-isrr2013_mid_1_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "accuracy for large penetrations",
+   "quote": "it is less accurate for larger penetrations, so it is best suited for use with complementarity-based or impulse-based solvers",
+   "chunk_id": "klampt-isrr2013_mid_1_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision detection",
+   "quote": "The boundary-layer expanded mesh (BLEM) is used as collision geometry throughout the method.",
+   "chunk_id": "klampt-isrr2013_mid_2_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact generation",
+   "quote": "In addition to detecting collision, contact generation must produce a list of contact points, normals, and penetration depths",
+   "chunk_id": "klampt-isrr2013_mid_3_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "excessive contact points",
+   "quote": "To address this problem, the contact generator uses a clustering method that limits the number of computed contacts to a user-defined maximum k.",
+   "chunk_id": "klampt-isrr2013_mid_5_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "excessive contact points",
+   "quote": "In its basic form, the method can produce an excessive number of contact points because a point is generated for all pairs of nearby triangles.",
+   "chunk_id": "klampt-isrr2013_mid_5_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Intel Core i7",
+   "quote": "Experimental results are obtained on a single core of a 2.67 GHz Intel Core i7 laptop.",
+   "chunk_id": "klampt-isrr2013_mid_6_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "spikes up to 83 ms in contact generation",
+   "quote": "with occasional spikes of up to 83 ms where a large number of triangles of the robot come near the environment",
+   "chunk_id": "klampt-isrr2013_mid_8_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Hubo-II+",
+   "quote": "The Hubo-II+ is a 42 kg, 130 cm tall humanoid robot built by HuboLab at the Korean Advanced Institute of Science and Technology (KAIST).",
+   "chunk_id": "klampt-isrr2013_mid_9_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "numerical stability in simulation",
+   "quote": "Numerical stability is a potential issue for simulating this robot, particularly when significant supporting forces are placed on the hands",
+   "chunk_id": "klampt-isrr2013_mid_9_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "cube stacking",
+   "quote": "tested on a 10 cube stack for 10 minutes with less than a tenth of a millimeter of deviation from the theoretical prediction",
+   "chunk_id": "klampt-isrr2013_mid_10_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Atlas robot",
+   "quote": "The Boston Dynamics Atlas robot model from DRCSim v2.2.0 is placed in a stable stance on its hands and feet on a rough terrain",
+   "chunk_id": "klampt-isrr2013_mid_10_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "PR2 gripper",
+   "quote": "each fingertip of the Willow Garage PR2 gripper is modeled with approximately 1,000 triangles",
+   "chunk_id": "klampt-isrr2013_mid_10_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "stable contact handling",
+   "quote": "the new method stays stable for tens of minutes, and appears to be stable in perpetuity",
+   "chunk_id": "klampt-isrr2013_mid_10_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "contact generation",
+   "quote": "contact generation method that achieves state-of-the-art stability for \"out of the box\" robot simulation with unstructured triangle meshes",
+   "chunk_id": "klampt-isrr2013_mid_12_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Staubli TX90L",
+   "quote": "A Staubli TX90L robot affixed with the gripper from the Willow Garage PR2 picks up a block, shakes it, and places it down using the new simulator.",
+   "chunk_id": "klampt-isrr2013_mid_12_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Hubo-II+",
+   "quote": "The Hubo-II+ sits on a chair sensed by a Kinect.",
+   "chunk_id": "klampt-isrr2013_mid_12_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GIMPACT",
+   "quote": "using GIMPACT, the gripper fingers immediately slip through the block and fails to lift the block entirely.",
+   "chunk_id": "klampt-isrr2013_mid_12_0",
+   "paper_id": "klampt-isrr2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "We consider optimization problems of a general \"k-order non-linear sum-of-squares constrained\" form",
+   "chunk_id": "komo-1407.0414_mid_0_0",
+   "paper_id": "komo-1407.0414"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "code separation",
+   "quote": "The goal of the implementation is the separation between the code of optimizers and code to specify motion problems.",
+   "chunk_id": "komo-1407.0414_mid_1_0",
+   "paper_id": "komo-1407.0414"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "end-effector target reaching",
+   "quote": "Return a trajectory that moves the endeffector to a desired target position",
+   "chunk_id": "komo-1407.0414_mid_3_0",
+   "paper_id": "komo-1407.0414"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "equality constraints",
+   "quote": "code does not yet handle equality constraints",
+   "chunk_id": "komo-1407.0414_mid_8_0",
+   "paper_id": "komo-1407.0414"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "inequality constraints for collisions and joint limits",
+   "quote": "focussing on inequality constraints for collisions and joint limits",
+   "chunk_id": "komo-1407.0414_mid_8_0",
+   "paper_id": "komo-1407.0414"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning",
+   "quote": "Motion planning is the problem of finding a continuous path that connects a given start state of a robotic system to a given goal region for that system, such that the path satisfies a set of constraints",
+   "chunk_id": "ompl-ieee-ram-2012_mid_0_0",
+   "paper_id": "ompl-ieee-ram-2012"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "state validity checking",
+   "quote": "Whether a state is valid or not depends on the planning context.",
+   "chunk_id": "ompl-ieee-ram-2012_mid_24_0",
+   "paper_id": "ompl-ieee-ram-2012"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning",
+   "quote": "Such simple specifications are desirable for many users who simply want motion planning to work",
+   "chunk_id": "ompl-ieee-ram-2012_mid_29_0",
+   "paper_id": "ompl-ieee-ram-2012"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "easy-to-use interface for motion planning",
+   "quote": "to provide novice users (such as students in a robotics class) with an easy-to-use interface to play with several motion planning algorithms and apply them to several example rigid body motion planning problems",
+   "chunk_id": "ompl-ieee-ram-2012_mid_31_0",
+   "paper_id": "ompl-ieee-ram-2012"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning",
+   "quote": "The third step is to define motion planning problems for the PR2.",
+   "chunk_id": "ompl-ieee-ram-2012_mid_32_0",
+   "paper_id": "ompl-ieee-ram-2012"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "optimizes over only the actuated joints of a robot and then uses inverse dynamics to reconstruct rest of the states",
+   "chunk_id": "raptor-2409.00303_mid_0_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "formulate a trajectory optimization problem to generate safe trajectories",
+   "chunk_id": "raptor-2409.00303_mid_1_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "real-time optimization for bipedal contact",
+   "quote": "To simplify the exposition and formulation of the real-time optimization problem, we follow the assumption made in [20, Section 3.2, HGW3]",
+   "chunk_id": "raptor-2409.00303_mid_1_1",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Digit",
+   "quote": "More details on the discussion on Digit and other similar robots can be found in Section IV.",
+   "chunk_id": "raptor-2409.00303_mid_1_1",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "gait generation",
+   "quote": "This section describes the optimization formulation for offline generating a library of desired gaits.",
+   "chunk_id": "raptor-2409.00303_mid_2_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Digit",
+   "quote": "experimental evaluation of our method on Digit",
+   "chunk_id": "raptor-2409.00303_mid_4_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Talos",
+   "quote": "another humanoid Talos [29] that was originally included in the official examples of aligator",
+   "chunk_id": "raptor-2409.00303_mid_4_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory design",
+   "quote": "optimization-based trajectory design algorithms",
+   "chunk_id": "raptor-2409.00303_mid_4_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Digit",
+   "quote": "We perform a comparison between RAPTOR and aligator [12] on Digit.",
+   "chunk_id": "raptor-2409.00303_mid_7_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Digit",
+   "quote": "We perform a comparison between RAPTOR and aligator [12] on Digit.",
+   "chunk_id": "raptor-2409.00303_mid_7_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "aligator",
+   "quote": "while RAPTOR is always able to converge to a feasible solution below the constraint violation tolerance, usually within 1 second.",
+   "chunk_id": "raptor-2409.00303_mid_7_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "humanoid gait generation",
+   "quote": "a novel trajectory optimization algorithm for full-size humanoids that can generate feasible gaits in seconds",
+   "chunk_id": "raptor-2409.00303_mid_8_0",
+   "paper_id": "raptor-2409.00303"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning with general constraints",
+   "quote": "a new approach to motion planning that can deal with general constraints",
+   "chunk_id": "stomp-icra2011_mid_0_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "PR2 mobile manipulation robot",
+   "quote": "We demonstrate our approach through both simulation and experimental results with the PR2 mobile manipulation robot",
+   "chunk_id": "stomp-icra2011_mid_0_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "PR2 mobile manipulation robot",
+   "quote": "We demonstrate our approach through both simulation and experimental results with the PR2 mobile manipulation robot",
+   "chunk_id": "stomp-icra2011_mid_0_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision avoidance",
+   "quote": "to minimize collision costs using a signed distance field to measure proximity to obstacles",
+   "chunk_id": "stomp-icra2011_mid_1_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning",
+   "quote": "we treat motion planning as an optimization problem, to search for a smooth trajectory",
+   "chunk_id": "stomp-icra2011_mid_3_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory-based reinforcement learning of point to point movements",
+   "quote": "Goal-convergent exploration is highly desirable in trajectory-based reinforcement learning of point to point movements",
+   "chunk_id": "stomp-icra2011_mid_5_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "safe trajectory optimization",
+   "quote": "These trajectory updates can be considered safer than a standard gradient descent update rule.",
+   "chunk_id": "stomp-icra2011_mid_6_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "robot motion planning",
+   "quote": "For the application to robot motion planning, we represent the trajectory in joint space",
+   "chunk_id": "stomp-icra2011_mid_8_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "obstacle avoidance in motion planning",
+   "quote": "We use an obstacle cost function similar to that used in previous work on optimizationbased motion planning",
+   "chunk_id": "stomp-icra2011_mid_10_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "joint limit violations",
+   "quote": "Joint limits can potentially be dealt with by adding a term to the cost function that penalizes joint limit violations.",
+   "chunk_id": "stomp-icra2011_mid_11_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning for robot arm",
+   "quote": "using STOMP as a motion planner for a robot arm in typical day-to-day tasks",
+   "chunk_id": "stomp-icra2011_mid_12_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "performance varies with initial trajectory",
+   "quote": "performance will vary depending on the initial trajectory used for optimization",
+   "chunk_id": "stomp-icra2011_mid_12_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "cannot solve benchmark problems quickly",
+   "quote": "STOMP cannot be expected to solve typical motion planning benchmark problems like the alpha puzzle",
+   "chunk_id": "stomp-icra2011_mid_12_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Willow Garage PR2",
+   "quote": "simulation of the Willow Garage PR2 robot in a simulated world",
+   "chunk_id": "stomp-icra2011_mid_12_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Willow Garage PR2",
+   "quote": "demonstration of performance on the real robot",
+   "chunk_id": "stomp-icra2011_mid_12_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "smooth trajectory planning with obstacles",
+   "quote": "We have presented an algorithm for planning smooth trajectories for high-dimensional robotic manipulators in the presence of obstacles.",
+   "chunk_id": "stomp-icra2011_mid_17_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "mobile manipulator",
+   "quote": "We have demonstrated the algorithm both in simulation and on a mobile manipulator, for obstacle avoidance, optimization of task constraints and minimization of motor torques used to execute the trajectory.",
+   "chunk_id": "stomp-icra2011_mid_17_0",
+   "paper_id": "stomp-icra2011"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "PR2",
+   "quote": "Top left: planning an arm trajectory for the PR2 in simulation, in a benchmark problem.",
+   "chunk_id": "trajopt-rss2013_mid_0_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "industrial robot",
+   "quote": "Bottom left: industrial robot picking boxes, obeying an orientation constraint on the end effector.",
+   "chunk_id": "trajopt-rss2013_mid_0_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "DRC/Atlas",
+   "quote": "bottom right: humanoid robot model (DRC/Atlas) ducking underneath an obstacle while obeying static stability constraints.",
+   "chunk_id": "trajopt-rss2013_mid_0_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "sampling-based planners",
+   "quote": "our algorithm solved a larger fraction of problems than any of the sampling-based planners, which were given a ten second time limit.",
+   "chunk_id": "trajopt-rss2013_mid_0_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "CHOMP",
+   "quote": "including sampling based planners from OMPL [? ], as well as a recent implementation of CHOMP.",
+   "chunk_id": "trajopt-rss2013_mid_0_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "kinematic motion planning",
+   "quote": "This paper just considers kinematic problems, but the methods developed can be straightforwardly extended to find collision-free paths in problems with dynamic constraints.",
+   "chunk_id": "trajopt-rss2013_mid_2_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "kinematic-only scope",
+   "quote": "This paper just considers kinematic problems, but the methods developed can be straightforwardly extended to find collision-free paths in problems with dynamic constraints.",
+   "chunk_id": "trajopt-rss2013_mid_2_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision avoidance",
+   "quote": "Our method for penalizing collisions is based on the notion of minimum translation distance",
+   "chunk_id": "trajopt-rss2013_mid_4_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision avoidance",
+   "quote": "the local approximation is aware of this pair of nearby objects when generating a step",
+   "chunk_id": "trajopt-rss2013_mid_4_1",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision-free trajectory planning",
+   "quote": "ensure that the robot is collision-free at each waypoint of a discretely-sampled trajectory",
+   "chunk_id": "trajopt-rss2013_mid_5_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "continuous-time collision detection",
+   "quote": "the continuous collision cost solves problems with thin obstacles where the discrete-time cost fails to get the trajectory out of collision",
+   "chunk_id": "trajopt-rss2013_mid_6_1",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "MoveIt!",
+   "quote": "Our evaluation is based on four test scenes included with the MoveIt! distribution that is part of the ROS motion planning libraries",
+   "chunk_id": "trajopt-rss2013_mid_6_1",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "arm planning problems",
+   "quote": "Our tests include 198 arm planning problems",
+   "chunk_id": "trajopt-rss2013_mid_7_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "arm planning problems",
+   "quote": "Our algorithm with multiple initializations substantially outperformed the other approaches in both sets of problems",
+   "chunk_id": "trajopt-rss2013_mid_7_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "full-body planning problems",
+   "quote": "Our algorithm with multiple initializations substantially outperformed the other approaches in both sets of problems",
+   "chunk_id": "trajopt-rss2013_mid_7_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "bidirectional RRT",
+   "quote": "Our algorithm with multiple initializations substantially outperformed the other approaches",
+   "chunk_id": "trajopt-rss2013_mid_7_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "KPIECE",
+   "quote": "Our algorithm with multiple initializations substantially outperformed the other approaches",
+   "chunk_id": "trajopt-rss2013_mid_7_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "CHOMP",
+   "quote": "Our algorithm with multiple initializations substantially outperformed the other approaches",
+   "chunk_id": "trajopt-rss2013_mid_7_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Atlas humanoid robot",
+   "quote": "Atlas humanoid robot model",
+   "chunk_id": "trajopt-rss2013_mid_8_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "stable walking planning",
+   "quote": "planning a statically stable walking motion",
+   "chunk_id": "trajopt-rss2013_mid_8_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "kinematic constraints",
+   "quote": "Our approach can readily handle kinematic constraints, for example, the constraint that a redundant robot's gripper is at a certain pose at the end of the trajectory.",
+   "chunk_id": "trajopt-rss2013_mid_9_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "environment geometry representation",
+   "quote": "One of the main challenges in taking motion planning from simulation to reality is creating a useful representation of the environment's geometry.",
+   "chunk_id": "trajopt-rss2013_mid_10_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "convex decomposition",
+   "quote": "We have successfully used our algorithm with two different representations of environment geometry: (1) convex decomposition, and (2) meshes.",
+   "chunk_id": "trajopt-rss2013_mid_10_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "meshes",
+   "quote": "We have successfully used our algorithm with two different representations of environment geometry: (1) convex decomposition, and (2) meshes.",
+   "chunk_id": "trajopt-rss2013_mid_10_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "PR2",
+   "quote": "mobile robot (PR2) to explore and validate",
+   "chunk_id": "trajopt-rss2013_mid_11_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "dirty geometry data from 3D sensors",
+   "quote": "applying it to the \"dirty\" geometry data that we get from 3D sensors",
+   "chunk_id": "trajopt-rss2013_mid_11_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "full-body trajectory execution",
+   "quote": "seeing if the fullbody trajectories can be executed, in practice",
+   "chunk_id": "trajopt-rss2013_mid_11_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "One important consideration for trajectory optimization is how \"well-shaped\" the objective is.",
+   "chunk_id": "trajopt-rss2013_mid_12_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "computational cost",
+   "quote": "our approach requires more computation per iteration but generates a subproblem that is a better approximation of the true problem",
+   "chunk_id": "trajopt-rss2013_mid_12_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "trajectory optimization",
+   "quote": "Trajectory optimization problems can be specified in JSON string that specifies the costs, constraints, degrees of freedom, and number of timesteps.",
+   "chunk_id": "trajopt-rss2013_mid_13_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "robotic motion planning",
+   "quote": "novel algorithm that uses trajectory optimization for robotic motion planning",
+   "chunk_id": "trajopt-rss2013_mid_14_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Atlas",
+   "quote": "planning stepping motions the Atlas humanoid robot",
+   "chunk_id": "trajopt-rss2013_mid_14_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "PR2",
+   "quote": "real PR2 and its sensor data",
+   "chunk_id": "trajopt-rss2013_mid_14_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "OMPL",
+   "quote": "Our algorithm was faster than the alternatives, solved a larger fraction of problems, and produced better paths.",
+   "chunk_id": "trajopt-rss2013_mid_14_0",
+   "paper_id": "trajopt-rss2013"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "sampling-based motion planning performance",
+   "quote": "by focusing on primitives common across SBMPs, we improve the performance of almost any SBMP without requiring significant algorithmic changes",
+   "chunk_id": "vamp-2309.14545_mid_4_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "SBMP parallelism",
+   "quote": "Our approach addresses this challenge through a novel Struct-of-Arrays (SOA) memory layout for FK and CC.",
+   "chunk_id": "vamp-2309.14545_mid_5_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "vectorized forward kinematics bottleneck",
+   "quote": "Vectorized FK is necessary to pose batches of states in parallel for subsequent parallel CC; sequentially posing each element in a batch introduces a bottleneck that reduces overall throughput.",
+   "chunk_id": "vamp-2309.14545_mid_6_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "batch collision checking",
+   "quote": "we can vectorize intersection tests between pairs of such primitives. We check batches of robot poses for selfcollision and environment collision in parallel",
+   "chunk_id": "vamp-2309.14545_mid_7_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion validation",
+   "quote": "For efficient motion validation, we want to stop checking invalid motions as quickly as possible.",
+   "chunk_id": "vamp-2309.14545_mid_8_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "trained_on",
+   "object": "MotionBenchMaker",
+   "quote": "We evaluate on seven different environments from the MotionBenchMaker [16] dataset, a collection of realistic, difficult motion planning problems",
+   "chunk_id": "vamp-2309.14545_mid_10_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "MotionBenchMaker",
+   "quote": "We evaluate on seven different environments from the MotionBenchMaker [16] dataset, a collection of realistic, difficult motion planning problems",
+   "chunk_id": "vamp-2309.14545_mid_10_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Orange Pi 5B",
+   "quote": "For VAMP (ARM), benchmarks were run on an Orange Pi 5B with an ARM Cortex-A76 CPU clocked at 2.4GHz",
+   "chunk_id": "vamp-2309.14545_mid_10_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Emika Panda",
+   "quote": "We evaluate on the following systems: 1) the 7 DOF Franka Emika Panda",
+   "chunk_id": "vamp-2309.14545_mid_10_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Fetch Robotics Fetch",
+   "quote": "2) the 8 DOF Fetch Robotics Fetch, including the prismatic torso joint",
+   "chunk_id": "vamp-2309.14545_mid_10_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Rethink Robotics Baxter",
+   "quote": "3) the 14 DOF bimanual Rethink Robotics Baxter",
+   "chunk_id": "vamp-2309.14545_mid_10_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "PyBullet/OMPL",
+   "quote": "Over all robots, VAMP is 500x faster than PyBullet/OMPL",
+   "chunk_id": "vamp-2309.14545_mid_10_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "motion planning acceleration",
+   "quote": "we demonstrate a novel approach to accelerating motion planning",
+   "chunk_id": "vamp-2309.14545_mid_11_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Panda",
+   "quote": "Panda | MoveIt/OMPL VAMP (ARM) | 23.51 0.70",
+   "chunk_id": "vamp-2309.14545_mid_12_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Fetch",
+   "quote": "Fetch | MoveIt/OMPL VAMP (ARM) | 788.68 28.24",
+   "chunk_id": "vamp-2309.14545_mid_12_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Baxter",
+   "quote": "Baxter | MoveIt/OMPL VAMP (ARM) | 668.80 32.54",
+   "chunk_id": "vamp-2309.14545_mid_12_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Panda",
+   "quote": "Panda | PyBullet/OMPL MoveIt/OMPL VAMP",
+   "chunk_id": "vamp-2309.14545_mid_13_0",
+   "paper_id": "vamp-2309.14545"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Fetch",
+   "quote": "Fetch | PyBullet/OMPL MoveIt/OMPL VAMP",
+   "chunk_id": "vamp-2309.14545_mid_13_0",
+   "paper_id": "vamp-2309.14545"
+  }
+ ],
+ "stats": {
+  "n_triples": 246,
+  "n_papers": 11
+ }
+}
