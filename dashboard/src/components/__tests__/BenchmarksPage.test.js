@@ -33,15 +33,48 @@ const BENCH = {
 
 beforeEach(() => { loadBenchmarkComparisons.mockResolvedValue(BENCH); });
 
-test('renders a result card per extracted record (no chart), alphabetical', async () => {
+test('renders a TABLE row per extracted record by default (no chart, no ranking)', async () => {
   render(<BenchmarksPage />);
   const results = await screen.findByTestId('bmr-results');
-  // method names + value + protocol chip show inside the results region
+  // table view is the default: column headers + one row per record
+  expect(within(results).getByRole('columnheader', { name: 'Method' })).toBeInTheDocument();
+  expect(within(results).getByRole('columnheader', { name: 'Protocol' })).toBeInTheDocument();
   expect(within(results).getByText('GIGA')).toBeInTheDocument();
   expect(within(results).getByText('AnyGrasp')).toBeInTheDocument();
   expect(screen.getByText(/3 of 3 results/)).toBeInTheDocument();
   expect(within(results).getByText('85')).toBeInTheDocument();
-  expect(within(results).getAllByText('Packed').length).toBeGreaterThan(0);
+  expect(within(results).getAllByText(/Packed/).length).toBeGreaterThan(0); // protocol column
+});
+
+test('view toggle switches to cards and back', async () => {
+  render(<BenchmarksPage />);
+  const results = await screen.findByTestId('bmr-results');
+  fireEvent.click(screen.getByRole('button', { name: 'Cards' }));
+  expect(results.querySelector('.bmr-card')).toBeTruthy();
+  expect(results.querySelector('.bmr-table')).toBeFalsy();
+  fireEvent.click(screen.getByRole('button', { name: 'Table' }));
+  expect(results.querySelector('.bmr-table')).toBeTruthy();
+});
+
+test('clicking a method opens its evidence dossier (all results, grouped by metric)', async () => {
+  render(<BenchmarksPage />);
+  await screen.findByTestId('bmr-results');
+  fireEvent.click(screen.getByRole('button', { name: /All evidence for GIGA/i }));
+  const dossier = screen.getByRole('dialog', { name: /Evidence dossier for GIGA/i });
+  expect(within(dossier).getByText(/1 extracted result/)).toBeInTheDocument();
+  expect(within(dossier).getByRole('heading', { name: /Success Rate/ })).toBeInTheDocument();
+  fireEvent.click(within(dossier).getByRole('button', { name: /Close/ }));
+  expect(screen.queryByRole('dialog', { name: /Evidence dossier/i })).not.toBeInTheDocument();
+});
+
+test('Group by protocol clusters rows under a shared-protocol heading', async () => {
+  render(<BenchmarksPage />);
+  const results = await screen.findByTestId('bmr-results');
+  fireEvent.click(screen.getByRole('button', { name: /Group by protocol/i }));
+  const heads = within(results).getAllByRole('heading', { level: 3 });
+  // VGN + GIGA share success_rate||packed:randomview:gsr -> one heading says 2 results share it
+  const shared = heads.find(h => /2 results share this protocol/.test(h.textContent));
+  expect(shared).toBeTruthy();
 });
 
 test('selecting a tag filters the results (AND across categories)', async () => {
@@ -185,6 +218,7 @@ test('a pooled median is labeled honestly (median of N values, per-source values
   loadBenchmarkComparisons.mockResolvedValue(pooled);
   render(<BenchmarksPage />);
   await screen.findByTestId('bmr-results');
+  fireEvent.click(screen.getByRole('button', { name: 'Cards' }));       // card face carries the badge
   expect(screen.getByText(/median of 2 values/)).toBeInTheDocument();   // NOT presented as extracted
   fireEvent.click(screen.getByRole('button', { name: /^Source$/ }));
   expect(screen.getByText('90')).toBeInTheDocument();                    // each reported value visible
@@ -202,6 +236,7 @@ test('the no-benchmark-data banner is dismissable', async () => {
 test('source crop opens a full-screen lightbox, closable', async () => {
   render(<BenchmarksPage />);
   await screen.findByTestId('bmr-results');
+  fireEvent.click(screen.getByRole('button', { name: 'Cards' }));         // card view: one Source per card-with-source
   fireEvent.click(screen.getByRole('button', { name: /^Source$/ }));      // expand provenance
   fireEvent.click(screen.getByRole('button', { name: /Click to enlarge/i })); // open lightbox
   const dialog = screen.getByRole('dialog');

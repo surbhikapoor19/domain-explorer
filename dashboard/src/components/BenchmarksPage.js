@@ -165,7 +165,9 @@ function Pagination({ page, pageCount, onPage }) {
 function ResultCard({ rec, onZoom }) {
   const [showSrc, setShowSrc] = useState(false);
   const sources = rec.sources || [];
-  const hasSrc = sources.some(s => s && (s.crop_image || s.table_caption || s.value_str));
+  // A drawer is offered when it has something to SHOW: a caption/crop, or several
+  // reported values to enumerate (a lone value_str would render an empty drawer).
+  const hasSrc = sources.some(s => s && (s.crop_image || s.table_caption)) || sources.length > 1;
   // Card chips show the PROTOCOL only — not Method/Metric/grade, which already
   // have dedicated slots (method name in the head, metric+value below, grade badge).
   // Dataset and Reported-by chips get their own visual class (they answer a
@@ -262,6 +264,156 @@ function ResultCard({ rec, onZoom }) {
   );
 }
 
+// Honest value display shared by the card, table, and dossier: the paper's own
+// notation when present ("90%", "0.87±0.02"), else parsed number + unit.
+function displayValue(rec) {
+  const vs = (rec.valueStr || '').trim();
+  if (vs && vs !== String(rec.value)) return vs;
+  return rec.value != null ? `${rec.value}${rec.unit ? ` ${rec.unit}` : ''}` : '—';
+}
+
+// ── TABLE VIEW ── the researcher's default: one row per extracted result, mono
+// numerals, protocol visible as a column — a test report, not a shopping grid.
+function ResultTable({ rows, groupBy, filtered, onZoom, onMethod }) {
+  const [openSrc, setOpenSrc] = useState(null); // rec.id with the source row expanded
+  const groupKey = (r) => groupBy === 'method' ? r.method
+    : `${r.metric}${r.condition ? ' — ' + r.condition : ''}`;
+  const groupCount = (r) => groupBy === 'method'
+    ? filtered.filter(x => x.method === r.method).length
+    : filtered.filter(x => x.metric === r.metric && x.condition === r.condition).length;
+  return (
+    <div className="bmr-tablewrap">
+      <table className="bmr-table">
+        <thead>
+          <tr>
+            <th>Method</th><th>Metric</th><th className="bmr-th-val">Value</th>
+            <th>Protocol</th><th>Reported by</th><th className="bmr-th-grade">Grade</th><th className="bmr-th-src">Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => {
+            const newGroup = groupBy !== 'none' && (i === 0 || groupKey(rows[i - 1]) !== groupKey(r));
+            const proto = r.tags.filter(t => !['Method', 'Metric', 'Evidence grade', 'Reported by'].includes(t.cat));
+            const rep = r.tags.find(t => t.cat === 'Reported by');
+            const src = (r.sources || [])[0] || {};
+            const srcOpen = openSrc === r.id;
+            return (
+              <React.Fragment key={r.id}>
+                {newGroup && (
+                  <tr className="bmr-trow-group"><td colSpan={7} role="heading" aria-level={3}>
+                    {groupKey(r)}
+                    <span className="bmr-group-count">
+                      {groupCount(r)} result{groupCount(r) !== 1 ? 's' : ''}
+                      {groupBy === 'protocol' ? ' share this protocol — the only place values are directly comparable' : ''}
+                    </span>
+                  </td></tr>
+                )}
+                <tr className="bmr-trow">
+                  <td className="bmr-td-method">
+                    <button type="button" className="bmr-methodlink" onClick={() => onMethod(r.method)}
+                      aria-label={`All evidence for ${r.method}`} title={`All evidence for ${r.method}`}>
+                      {r.method}
+                    </button>
+                    {r.methodResolved === false && <span className="bmr-unverified"> (unverified name)</span>}
+                  </td>
+                  <td className="bmr-td-metric">{r.metric}</td>
+                  <td className="bmr-td-val" title={`parsed: ${r.value}`}>
+                    {displayValue(r)}
+                    {(r.sources || []).length > 1 && <span className="bmr-td-pooled" title="median of several reported values — open Source to see each">ᵐ</span>}
+                  </td>
+                  <td className="bmr-td-proto">{proto.length ? proto.map(t => t.label).join(' · ') : '—'}</td>
+                  <td className="bmr-td-rep">{rep ? (rep.value === 'self' ? 'Self' : '3rd-party') : '—'}</td>
+                  <td className="bmr-td-grade">{r.grade && <span className={`bmr-grade bmr-grade-${r.grade}`} title={GRADE_TIP[r.grade] || ''}>{r.grade}</span>}</td>
+                  <td className="bmr-td-src">
+                    <button type="button" className="bmr-src-toggle" onClick={() => setOpenSrc(srcOpen ? null : r.id)} aria-expanded={srcOpen}>
+                      {srcOpen ? 'Hide' : 'Source'}
+                    </button>
+                  </td>
+                </tr>
+                {srcOpen && (
+                  <tr className="bmr-trow-src"><td colSpan={7}>
+                    <span className="bmr-papers">{(r.papers || []).map(prettyPaper).join(', ')}{src.page != null ? ` · p.${src.page}` : ''}</span>
+                    {(r.sources || []).map((s, j) => (
+                      <div key={j} className="bmr-src-item">
+                        {(r.sources || []).length > 1 && (
+                          <div className="bmr-src-val">reported: <strong>{s.value_str || '—'}</strong>{s.metric_raw ? <span className="bmr-src-raw"> as “{s.metric_raw}”</span> : null}</div>
+                        )}
+                        {s.table_caption && <div className="bmr-src-caption">{s.table_caption}</div>}
+                        {s.crop_image && (
+                          <button type="button" className="bmr-src-cropbtn" onClick={() => onZoom({ src: s.crop_image, caption: s.table_caption, method: r.method })} title="Click to enlarge">
+                            <img className="bmr-src-crop" src={s.crop_image} alt={`source table for ${r.method}`} loading="lazy" />
+                            <span className="bmr-src-zoomhint">⤢ Click to enlarge</span>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </td></tr>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ── METHOD DOSSIER ── one gesture answers "what evidence exists about X":
+// every extracted result for the method, grouped by metric, with protocols,
+// grades, papers, and source crops.
+function MethodDossier({ method, records, onClose, onZoom }) {
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  const mine = useMemo(() => (records || []).filter(r => r.method === method), [records, method]);
+  const byMetric = useMemo(() => {
+    const m = new Map();
+    for (const r of mine) { if (!m.has(r.metric)) m.set(r.metric, []); m.get(r.metric).push(r); }
+    return [...m.entries()];
+  }, [mine]);
+  const papers = useMemo(() => [...new Set(mine.flatMap(r => r.papers || []))], [mine]);
+  if (!method) return null;
+  return (
+    <div className="bmr-dossier-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label={`Evidence dossier for ${method}`}>
+      <aside className="bmr-dossier" onClick={e => e.stopPropagation()}>
+        <div className="bmr-dossier-head">
+          <div>
+            <h3>{method}</h3>
+            <span className="bmr-dossier-sub">{mine.length} extracted result{mine.length !== 1 ? 's' : ''} · {papers.length} paper{papers.length !== 1 ? 's' : ''}: {papers.map(prettyPaper).join(', ')}</span>
+          </div>
+          <button type="button" className="bmr-dossier-close" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <div className="bmr-dossier-body">
+          {byMetric.map(([metric, rs]) => (
+            <section key={metric} className="bmr-dossier-metric">
+              <h4>{metric}</h4>
+              {rs.map(r => {
+                const proto = r.tags.filter(t => !['Method', 'Metric', 'Evidence grade', 'Reported by'].includes(t.cat));
+                const s = (r.sources || [])[0] || {};
+                return (
+                  <div key={r.id} className="bmr-dossier-row">
+                    <span className="bmr-dossier-val">{displayValue(r)}</span>
+                    <span className="bmr-dossier-proto">{proto.length ? proto.map(t => t.label).join(' · ') : 'protocol not stated'}</span>
+                    {r.grade && <span className={`bmr-grade bmr-grade-${r.grade}`} title={GRADE_TIP[r.grade] || ''}>{r.grade}</span>}
+                    {s.crop_image && (
+                      <button type="button" className="bmr-dossier-croplink" onClick={() => onZoom({ src: s.crop_image, caption: s.table_caption, method })}>
+                        table ⤢
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </section>
+          ))}
+          {mine.length === 0 && <div className="bmr-empty">No extracted results for this method.</div>}
+        </div>
+      </aside>
+    </div>
+  );
+}
+
 // eslint-disable-next-line no-unused-vars
 export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfidence, incomingPageRef, queryMethods, suggestion, query, termDictionary }) {
   const [benchmarkData, setBenchmarkData] = useState(null);
@@ -272,7 +424,11 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   const [queryFiltered, setQueryFiltered] = useState(false);
   const [citePopup, setCitePopup] = useState(null);
   const [textQ, setTextQ] = useState('');
-  const [grouped, setGrouped] = useState(false);
+  // Table is the DEFAULT: a dense test-report reads better than a card grid for
+  // protocol-scoped results at volume (cards remain as a secondary view).
+  const [view, setView] = useState('table');
+  const [groupBy, setGroupBy] = useState('none'); // 'none' | 'method' | 'protocol'
+  const [dossier, setDossier] = useState(null);   // method name whose evidence drawer is open
   const [noMatchDismissed, setNoMatchDismissed] = useState(false);
   const resultsRef = useRef(null);
 
@@ -338,10 +494,19 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
 
   // Reset to page 1 whenever the filter changes (the result set is different).
   useEffect(() => { setPage(1); }, [selected]);
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  // Protocol grouping clusters rows by (metric, condition) — the only frame in
+  // which values are directly comparable; otherwise keep the method-alphabetical
+  // order (which clusters naturally for method grouping).
+  const displayRows = useMemo(() => {
+    if (groupBy !== 'protocol') return filtered;
+    return [...filtered].sort((a, b) =>
+      `${a.metric}|${a.condition}`.localeCompare(`${b.metric}|${b.condition}`) ||
+      a.method.localeCompare(b.method));
+  }, [filtered, groupBy]);
+  const pageCount = Math.max(1, Math.ceil(displayRows.length / PAGE_SIZE));
   const pageClamped = Math.min(page, pageCount);
   const start = (pageClamped - 1) * PAGE_SIZE;
-  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+  const pageItems = displayRows.slice(start, start + PAGE_SIZE);
   const goPage = (p) => {
     setPage(p);
     if (resultsRef.current && resultsRef.current.scrollIntoView) {
@@ -442,14 +607,29 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
               onChange={e => { setTextQ(e.target.value); setPage(1); }}
               aria-label="Search results"
             />
+            <div className="bmr-viewseg" role="group" aria-label="View">
+              <button type="button" className={`bmr-seg-btn ${view === 'table' ? 'on' : ''}`}
+                onClick={() => setView('table')} aria-pressed={view === 'table'}>Table</button>
+              <button type="button" className={`bmr-seg-btn ${view === 'cards' ? 'on' : ''}`}
+                onClick={() => setView('cards')} aria-pressed={view === 'cards'}>Cards</button>
+            </div>
             <button
               type="button"
-              className={`bmr-group-toggle ${grouped ? 'on' : ''}`}
-              onClick={() => setGrouped(g => !g)}
-              aria-pressed={grouped}
-              title="Insert a header for each method so all of a method's evidence reads as one block"
+              className={`bmr-group-toggle ${groupBy === 'method' ? 'on' : ''}`}
+              onClick={() => setGroupBy(g => g === 'method' ? 'none' : 'method')}
+              aria-pressed={groupBy === 'method'}
+              title="Insert a header per method so all of a method's evidence reads as one block"
             >
               Group by method
+            </button>
+            <button
+              type="button"
+              className={`bmr-group-toggle ${groupBy === 'protocol' ? 'on' : ''}`}
+              onClick={() => setGroupBy(g => g === 'protocol' ? 'none' : 'protocol')}
+              aria-pressed={groupBy === 'protocol'}
+              title="Group values that share a metric + protocol — the only place values are directly comparable"
+            >
+              Group by protocol
             </button>
           </div>
           <div className="bmr-results-count">
@@ -459,7 +639,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
             {selected.size > 0 ? ` · ${selected.size} tag${selected.size > 1 ? 's' : ''} selected` : ''}
             {textQ.trim() ? ` · matching “${textQ.trim()}”` : ''}
           </div>
-          {filtered.length === 0 ? (
+          {displayRows.length === 0 ? (
             <div className="bmr-empty">
               {textQ.trim()
                 ? <>No result matches “{textQ.trim()}” with the selected tags. Clear the search or remove a tag.</>
@@ -467,19 +647,32 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
             </div>
           ) : (
             <>
-              {grouped ? (
-                // Records are already alphabetical by method, so the page slice
-                // clusters naturally — insert a header whenever the method changes.
+              {view === 'table' ? (
+                <ResultTable
+                  rows={pageItems}
+                  groupBy={groupBy}
+                  filtered={displayRows}
+                  onZoom={setLightbox}
+                  onMethod={setDossier}
+                />
+              ) : groupBy !== 'none' ? (
+                // Card view with group headers: rows are pre-clustered (method-
+                // alphabetical, or protocol-sorted above) — insert a header when
+                // the group key changes.
                 <div className="bmr-grid bmr-grid-grouped">
                   {pageItems.map((r, i) => {
-                    const newGroup = i === 0 || pageItems[i - 1].method !== r.method;
-                    const groupCount = filtered.filter(x => x.method === r.method).length;
+                    const key = (x) => groupBy === 'method' ? x.method : `${x.metric}${x.condition ? ' — ' + x.condition : ''}`;
+                    const newGroup = i === 0 || key(pageItems[i - 1]) !== key(r);
+                    const groupCount = displayRows.filter(x => key(x) === key(r)).length;
                     return (
                       <React.Fragment key={r.id}>
                         {newGroup && (
                           <div className="bmr-group-head" role="heading" aria-level={3}>
-                            {r.method}
-                            <span className="bmr-group-count">{groupCount} result{groupCount !== 1 ? 's' : ''}</span>
+                            {key(r)}
+                            <span className="bmr-group-count">
+                              {groupCount} result{groupCount !== 1 ? 's' : ''}
+                              {groupBy === 'protocol' ? ' share this protocol' : ''}
+                            </span>
                           </div>
                         )}
                         <ResultCard rec={r} onZoom={setLightbox} />
@@ -500,6 +693,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
 
       <BenchmarkLightbox data={lightbox} onClose={() => setLightbox(null)} />
       <CitationModal data={citePopup} onClose={() => setCitePopup(null)} />
+      <MethodDossier method={dossier} records={records} onClose={() => setDossier(null)} onZoom={setLightbox} />
     </div>
   );
 }
