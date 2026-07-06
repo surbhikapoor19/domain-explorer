@@ -395,7 +395,11 @@ def step_hgt(paths):
 
     try:
         from hgt.run import main as hgt_main
-        hgt_main(['--chroma-dir', str(chroma_dir), '--epochs', '300'])
+        # --rebuild-schema derives the HGT schema from THIS domain's fresh
+        # knowledge_graph.json; --schema-dir points training at the domain's own
+        # schema (the old --chroma-dir flag never existed — argparse SystemExit'd).
+        hgt_main(['--schema-dir', str(chroma_dir / 'hgt_schema'),
+                  '--rebuild-schema', '--epochs', '300'])
     except Exception as e:
         print(f"  HGT training failed: {e}")
         print("  This is OK for very small KGs (<100 edges).")
@@ -472,7 +476,8 @@ def step_benchmark(paths, domain):
     crops_dir = output_dir / 'crops'
     crops_url = f"/data-{paths['slug_dashed']}/crops"
     rr = Path(tempfile.mkdtemp()) / 'result-records.json'
-    no_vlm = [] if os.environ.get('ANTHROPIC_API_KEY') else ['--no-vlm']
+    # VLM runs with an Anthropic key OR the Groq vision fallback (GROQ_API_KEY).
+    no_vlm = [] if (os.environ.get('ANTHROPIC_API_KEY') or os.environ.get('GROQ_API_KEY')) else ['--no-vlm']
     extract = [sys.executable, '-m', 'benchmarks.extraction.run_extraction',
                '--engine', 'docling', '--config', str(cfg), '--pdf-dir', str(paths['papers']),
                '--methods-csv', str(csv_path), '--crops-dir', str(crops_dir),
