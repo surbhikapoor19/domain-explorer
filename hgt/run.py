@@ -21,7 +21,7 @@ from .config import (
 )
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(
         description="HGT training pipeline for heterogeneous link prediction"
     )
@@ -52,7 +52,7 @@ def main():
                         help="Top-k predictions per source node per relation")
     parser.add_argument("--min-confidence", type=float, default=0.5)
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     if args.rebuild_schema:

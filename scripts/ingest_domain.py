@@ -40,9 +40,12 @@ FORCE = False
 
 
 def resolve_domain_paths(domain_slug):
-    """Resolve all paths for a domain."""
+    """Resolve all paths for a domain. Accepts either slug form ("motion-planning"
+    from admin dispatches or "motion_planning"): dataset dirs use dashes, the
+    domain YAML + benchmark configs use underscores."""
     slug_dashed = domain_slug.replace('_', '-')
-    yaml_path = REPO_ROOT / 'domains' / f'{domain_slug}.yaml'
+    slug_us = domain_slug.replace('-', '_')
+    yaml_path = REPO_ROOT / 'domains' / f'{slug_us}.yaml'
     dataset_dir = REPO_ROOT / 'datasets' / slug_dashed
     papers_dir = dataset_dir / 'papers'
     tei_dir = dataset_dir / 'tei'
