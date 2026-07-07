@@ -1,0 +1,11 @@
+{
+  "records": [],
+  "coldstart": {
+    "metric_clusters": []
+  },
+  "stats": {
+    "n_records": 0,
+    "n_vlm": 0,
+    "n_unresolved_metric": 0
+  }
+}
