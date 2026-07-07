@@ -495,13 +495,25 @@ def step_benchmark(paths, domain):
     subprocess.run(extract, cwd=str(pre), check=True)
     # Persist the raw extraction records: aggregation-only fixes can then re-run
     # via --from-records in seconds instead of re-paying a ~50-min Docling pass.
-    import shutil
+    import shutil, json as _json
+    def _n_records(p):
+        try:
+            return len(_json.loads(Path(p).read_text()).get('records', []))
+        except Exception:
+            return 0
     records_keep = paths['chroma'] / 'result-records.json'
-    try:
-        shutil.copyfile(rr, records_keep)
-        print(f"  [benchmark] kept raw records at {records_keep}")
-    except OSError as e:
-        print(f"  [benchmark] could not persist records ({e})")
+    new_n, old_n = _n_records(rr), (_n_records(records_keep) if records_keep.exists() else 0)
+    if new_n == 0 and old_n > 0:
+        # Never overwrite a good persisted artifact with an empty extraction (mirrors
+        # the benchmark-comparisons overwrite guard). A real failure already exits
+        # non-zero upstream; this covers a silent empty result.
+        print(f"  [benchmark] REFUSING to overwrite {old_n} persisted records with an empty extraction; keeping existing")
+    else:
+        try:
+            shutil.copyfile(rr, records_keep)
+            print(f"  [benchmark] kept raw records at {records_keep} ({new_n} records)")
+        except OSError as e:
+            print(f"  [benchmark] could not persist records ({e})")
     export = [sys.executable, 'graph/benchmark_data.py', '--from-records', str(rr),
               '--output-dir', str(output_dir), '--config', str(cfg)]
     # Enrich the domain's knowledge graph with the graded, protocol-scoped

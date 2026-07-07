@@ -1,4 +1,4 @@
-import json, os
+import json, os, sys
 from benchmarks.extraction.locate import locate_tables
 from benchmarks.extraction.tei_tables import records_from_tei_rows
 from benchmarks.extraction.vlm_extract import parse_vlm_rows, verify_records, call_vlm
@@ -202,9 +202,17 @@ def main():
     if a.engine == 'docling':
         try:
             records, unknown = run_docling(pdf_dir, cfg, resolver, vlm_client=vlm_client, crop_saver=crop_saver)
-        except Exception as e:
-            print(f"  WARNING: Docling extraction unavailable ({e}); writing empty benchmark output")
+        except ImportError as e:
+            # docling is an OPTIONAL dependency: a genuinely missing module must not
+            # crash a whole domain build (grobid/rag/kg/hgt run in the same job).
+            print(f"  WARNING: Docling not installed ({e}); writing empty benchmark output")
             records, unknown = [], []
+        except Exception as e:
+            # But a RUNTIME extraction failure (HF 403, network, parse error) must FAIL
+            # the build. Shipping empty output under a green check silently preserved
+            # stale served data and clobbered the records artifact (run 28857742075).
+            print(f"  FATAL: Docling extraction failed ({e})")
+            sys.exit(1)
     else:
         records, unknown = run(tei_dir, pdf_dir, cfg, resolver, vlm_client=vlm_client, crop_saver=crop_saver)
     payload = {'records': [r.__dict__ for r in records],
