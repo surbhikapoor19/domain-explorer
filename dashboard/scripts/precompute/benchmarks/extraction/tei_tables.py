@@ -45,6 +45,25 @@ def _count_header_rows(rows):
     return max(k, 1)  # always at least one header row
 
 
+INDEX_TOKENS = {'no', '#', 'rank', 'id', 'idx', 'index', ''}
+
+def _header_labels(header_rows, i):
+    """Collapse the stacked header cells of column i (top to bottom) into an
+    ordered, de-duplicated list of label strings."""
+    labels = []
+    for hr in header_rows:
+        if i < len(hr):
+            lab = hr[i].strip()
+            if lab and lab not in labels:
+                labels.append(lab)
+    return labels
+
+def _is_index_label(labels):
+    """True if the collapsed header label is a row-index token ('No.', '#', 'Rank', ...)."""
+    tok = ' | '.join(labels).strip().lower().rstrip('.')
+    return tok in INDEX_TOKENS
+
+
 def records_from_tei_rows(loc, cfg, resolver):
     mreg, creg = MetricRegistry(cfg), ConditionRegistry(cfg)
     rows = loc.rows
@@ -57,15 +76,19 @@ def records_from_tei_rows(loc, cfg, resolver):
     caption_condition = creg.resolve(loc.caption)
     ncols = max(len(r) for r in rows)
 
+    # Determine the method column: the first column (left to right) whose collapsed
+    # header label is NOT an index token (e.g. a "No." / "#" row-index column). Falls
+    # back to column 0 if every column looks like an index.
+    header_labels = [_header_labels(header_rows, i) for i in range(ncols)]
+    method_col = next((i for i in range(ncols) if not _is_index_label(header_labels[i])), 0)
+
     # Build per-data-column (metric, condition) by collapsing the stacked header labels.
+    # Skip the method column and any other index column (e.g. a stray "#" column).
     cols = []
-    for i in range(1, ncols):
-        labels = []
-        for hr in header_rows:
-            if i < len(hr):
-                lab = hr[i].strip()
-                if lab and lab not in labels:
-                    labels.append(lab)
+    for i in range(ncols):
+        if i == method_col or _is_index_label(header_labels[i]):
+            continue
+        labels = header_labels[i]
         if not labels:
             continue
         col_cond, mh = None, None
@@ -100,9 +123,9 @@ def records_from_tei_rows(loc, cfg, resolver):
 
     recs = []
     for row in data_rows:
-        if not row or not row[0].strip():
+        if method_col >= len(row) or not row[method_col].strip():
             continue
-        name, is_own = _clean_method(row[0])
+        name, is_own = _clean_method(row[method_col])
         if name.lower() in {'method', 'model', 'approach', 'total', 'average', 'mean', 'all', 'baseline'}:
             continue
         hit = resolver.resolve(name if not is_own else (name or 'ours'))
@@ -116,7 +139,7 @@ def records_from_tei_rows(loc, cfg, resolver):
             if v is None:
                 continue
             recs.append(ResultRecord(
-                paper_id=loc.paper_id, method_raw=row[0], method_id=method_id,
+                paper_id=loc.paper_id, method_raw=row[method_col], method_id=method_id,
                 metric_raw=raw_label, metric_id=(mh.id if mh else None),
                 unit=(mh.unit if mh else None) or unit,
                 higher_is_better=(mh.higher_is_better if mh else None),

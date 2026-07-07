@@ -99,6 +99,12 @@ class MethodResolver:
                 return MethodHit(self._exact_ns[ns], 'high', raw)
             if ns in self._alias_ns:
                 return MethodHit(self._alias_ns[ns], 'high', raw)
+        # A candidate with no alphabetic character (bare index numbers like "1"/"42",
+        # config tuples) must never fuzzy-match a real method — it silently steals
+        # another row's values. Exact/alias/no-space matches above already handle every
+        # legitimate short name (e.g. "S4G", "GPD"), so this only gates the fuzzy branch.
+        if not re.search(r'[a-z]', n):
+            return MethodHit(None, 'low', raw)
         for key, full in self._exact.items():
             if len(key) >= 5 and (key in n or n in key):
                 return MethodHit(full, 'medium', raw)

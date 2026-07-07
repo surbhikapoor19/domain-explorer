@@ -1,4 +1,4 @@
-from benchmarks.extraction.locate import TableLocation
+from benchmarks.extraction.locate import TableLocation, is_ablation_table
 
 
 def _grid_to_rows(grid):
@@ -30,7 +30,7 @@ def docling_tables_to_locations(doc, paper_id, cfg):
                 tl = bb.to_top_left_origin(ph)
                 bbox = [tl.l, tl.t, tl.r, tl.b]
         cl = caption.lower()
-        is_abl = any(k in cl for k in abl_kw)
+        is_abl = is_ablation_table(caption, '', rows, abl_kw)
         is_res = (not is_abl) and any(k in cl for k in res_kw)
         out.append(TableLocation(
             paper_id=paper_id, table_index=i, caption=caption, section_label='',

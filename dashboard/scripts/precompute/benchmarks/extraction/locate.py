@@ -21,6 +21,23 @@ class TableLocation:
 def _text(e):
     return ''.join(e.itertext()).strip() if e is not None else ''
 
+def is_ablation_table(caption, section_label, rows, abl_kw):
+    """True if this table is an ablation study. Checks caption, section heading,
+    AND the header-row cells (the cue may be a column header like 'Ablated models'),
+    matching each keyword by stem so 'ablation' also catches 'ablated'."""
+    import re
+    stems = []
+    for k in abl_kw:
+        k = (k or '').lower()
+        stems.append(re.sub(r'(ion|ed|es|ing|s)$', '', k) or k)
+    def hit(text):
+        t = (text or '').lower()
+        return any(s and s in t for s in stems)
+    if hit(caption) or hit(section_label):
+        return True
+    header = rows[0] if rows else []
+    return any(hit(c) for c in header)
+
 def locate_tables(tei_path, cfg):
     paper_id = os.path.basename(str(tei_path)).replace('.tei.xml', '')
     res_kw = [k.lower() for k in cfg.get('results_section_keywords', [])]
@@ -47,7 +64,7 @@ def locate_tables(tei_path, cfg):
                 cells = [_text(c) for c in r.findall('tei:cell', NS)]
                 if cells:
                     rows.append(cells)
-        is_abl = any(k in sl or k in cl for k in abl_kw)
+        is_abl = is_ablation_table(caption, section, rows, abl_kw)
         is_res = (not is_abl) and any(k in sl or k in cl for k in res_kw)
         locs.append(TableLocation(paper_id, i, caption, section, is_res, is_abl,
                                   has_rows=len(rows) > 0, rows=rows))

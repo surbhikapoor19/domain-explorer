@@ -405,6 +405,13 @@ def build_benchmark_json(records, cfg):
         if not is_valid_method_name(method_name):
             n_dropped_noise += 1
             continue
+        # Backstop: even a record that resolved to a real id is dropped if its RAW
+        # table label is junk (e.g. an ablation table's "1" index laundered into a
+        # method). Only gate a NON-EMPTY raw label so paper-level attributions (blank
+        # raw) are unaffected.
+        if str(r.method_raw or '').strip() and not is_valid_method_name(clean_method_name(r.method_raw)):
+            n_dropped_noise += 1
+            continue
         raw_label = _metric_label(cfg, r.metric_id) if r.metric_id else (r.metric_raw or '')
         metric_label = clean_metric_label(raw_label)
         if not is_valid_metric_label(metric_label, r.metric_id):
