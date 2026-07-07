@@ -48,7 +48,11 @@ def call_vlm_groq(png_bytes, api_key, model=None):
     }).encode()
     req = urllib.request.Request(
         "https://api.groq.com/openai/v1/chat/completions", data=body,
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"})
+        # Groq's edge is behind Cloudflare, which blocks urllib's default
+        # "Python-urllib/x.y" User-Agent with a 403 (CF error 1010). A normal UA
+        # gets through. This was the silent cause of every empty benchmark build.
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}",
+                 "User-Agent": "Mozilla/5.0 (compatible; grasp-explorer/1.0)"})
     with urllib.request.urlopen(req, timeout=120) as r:
         data = json.loads(r.read())
     return data["choices"][0]["message"]["content"] or ""
