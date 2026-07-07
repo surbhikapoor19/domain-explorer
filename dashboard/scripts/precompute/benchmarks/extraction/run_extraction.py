@@ -91,25 +91,34 @@ def extract_paper_docling(pdf_path, paper_id, cfg, resolver, *, converter=None,
     for loc in locs:
         if loc.is_ablation_section or not loc.has_rows:
             continue
-        png = None
-        if (crop_saver or vlm_client) and loc.page is not None and loc.bbox is not None:
-            # docling page_no is 1-based; PyMuPDF load_page is 0-based
-            png = rf(pdf_path, loc.page - 1, loc.bbox)
-        if vlm_client and png is not None:
-            cell_text = " ".join((c or "") for row in loc.rows for c in row)
-            recs = merge_records([], verify_records(
-                parse_vlm_rows(vlm_client(png), loc, cfg, resolver), cell_text))
-        else:
-            recs = merge_records(records_from_tei_rows(loc, cfg, resolver), [])
-        crop_url = crop_saver(loc.paper_id, loc.table_index, png) if (crop_saver and png is not None) else None
-        for r in recs:
-            if r.page is None:
-                r.page = loc.page
-            if crop_url and not r.crop_image:
-                r.crop_image = crop_url
-            if r.is_own_method and r.method_id is None:
-                r.method_id = resolver.resolve(paper_id).method_id
-        merged.extend(recs)
+        try:
+            png = None
+            if (crop_saver or vlm_client) and loc.page is not None and loc.bbox is not None:
+                # docling page_no is 1-based; PyMuPDF load_page is 0-based
+                png = rf(pdf_path, loc.page - 1, loc.bbox)
+            recs = []
+            if vlm_client and png is not None:
+                cell_text = " ".join((c or "") for row in loc.rows for c in row)
+                recs = merge_records([], verify_records(
+                    parse_vlm_rows(vlm_client(png), loc, cfg, resolver), cell_text))
+            # VLM produced nothing usable (truncated/invalid JSON, or nothing that
+            # verified against the crop) -> fall back to Docling's own extracted cells
+            # so a single bad VLM read never drops the table or crashes the run.
+            if not recs:
+                recs = merge_records(records_from_tei_rows(loc, cfg, resolver), [])
+            crop_url = crop_saver(loc.paper_id, loc.table_index, png) if (crop_saver and png is not None) else None
+            for r in recs:
+                if r.page is None:
+                    r.page = loc.page
+                if crop_url and not r.crop_image:
+                    r.crop_image = crop_url
+                if r.is_own_method and r.method_id is None:
+                    r.method_id = resolver.resolve(paper_id).method_id
+            merged.extend(recs)
+        except Exception as e:
+            # One bad table must never sink the whole paper/run.
+            print(f"    WARNING: skipping table {loc.paper_id}#{loc.table_index} ({type(e).__name__}: {e})")
+            continue
     return merged
 
 

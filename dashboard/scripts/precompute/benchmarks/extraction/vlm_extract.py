@@ -38,7 +38,9 @@ def call_vlm_groq(png_bytes, api_key, model=None):
     model = model or os.environ.get("VLM_GROQ_MODEL", GROQ_VISION_MODEL)
     b64 = base64.standard_b64encode(png_bytes).decode()
     body = json.dumps({
-        "model": model, "max_tokens": 2000, "temperature": 0,
+        # 2000 truncated large tables mid-JSON (finish_reason='length'); 8000 lets a
+        # full table's rows come back intact. The parse is still guarded + falls back.
+        "model": model, "max_tokens": 8000, "temperature": 0,
         "messages": [
             {"role": "system", "content": SCHEMA_INSTRUCTION},
             {"role": "user", "content": [
@@ -62,7 +64,14 @@ def parse_vlm_rows(vlm_text, loc, cfg, resolver):
     m = re.search(r'\{.*\}', vlm_text, re.DOTALL)
     if not m:
         return []
-    data = json.loads(m.group(0))
+    try:
+        data = json.loads(m.group(0))
+    except (json.JSONDecodeError, ValueError):
+        # A weak vision model can truncate at max_tokens (finish_reason='length') or
+        # emit invalid JSON. Per this module's contract it may MISS rows but must NEVER
+        # crash the run — one oversized table used to kill all 55 papers. Caller falls
+        # back to Docling's born-digital cells for this table.
+        return []
     recs = []
     for row in data.get("rows", []):
         cond = creg.resolve(row.get("condition") or "") or creg.resolve(loc.caption)
