@@ -207,7 +207,6 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
   );
 }
 
-/* ─── QUERY GUIDE ─── */
 /* ─── MAIN PAGE ─── */
 export default function GraphReasoningPage({
   query, suggestion, querying, termDictionary,
@@ -224,6 +223,18 @@ export default function GraphReasoningPage({
   const [hiddenEdgeTypes, setHiddenEdgeTypes] = useState(new Set());
   const [hiddenNodeTypes, setHiddenNodeTypes] = useState(new Set());
   const [dimOrphans, setDimOrphans] = useState(true);
+
+  // Auto-scroll: bring the answer into view the moment a NEW result lands, so
+  // the user never has to scroll past the table/landing to find it. `suggestion`
+  // only changes reference when a fresh answer replaces the old one — while a
+  // follow-up query is in flight it stays the same (previous) object, so this
+  // does not re-fire mid-query.
+  const answerTopRef = useRef(null);
+  useEffect(() => {
+    if (suggestion && answerTopRef.current) {
+      answerTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [suggestion]);
 
   const toggleEdge = useCallback(k => setHiddenEdgeTypes(prev => {
     const n = new Set(prev); if (n.has(k)) n.delete(k); else n.add(k); return n;
@@ -354,170 +365,190 @@ export default function GraphReasoningPage({
     );
   }
 
-  if (querying) {
-    return (
-      <div className="graph-reasoning-page">
-        <div className="gr-loading"><div className="gr-loading-bar" /><span>Working on your answer — progress is shown under the search bar.</span></div>
-      </div>
-    );
-  }
-
+  // While a query is running we keep whatever was already on screen visible
+  // (dimmed) instead of blanking the page — the landing on a FIRST query, or
+  // the previous answer on a follow-up (its `suggestion` reference doesn't
+  // change until the new result lands). One progress strip, one verb
+  // ("Working…" — matches the Ask button), shown above the dimmed content.
   return (
-    <div className="graph-reasoning-page">
-      <div className="gr-page-header">
-        <h2>Answer</h2>
-        <p>Question: <em>{query}</em> · Everything below is grounded in the corpus — click any [n] to see the source passage.</p>
-      </div>
-
-      <div className="gr-main-content">
-
-      {/* Layer 1: AnswerBlock — ANSWER (synthesis) first, then the comparison
-          table. Interactive plots/charts (subgraph, proof, evidence, equations)
-          follow in Layers 2-3 below. */}
-      <AnswerBlock
-        suggestion={suggestion}
-        query={query}
-        anchorMethods={anchorMethods}
-        termDictionary={termDictionary}
-        methodClusterMap={methodClusterMap}
-        clusterLabelMap={clusterLabelMap}
-        onMethodClick={handleMethodClick}
-        onCiteClick={handleCiteClick}
-      />
-
-      {/* Layer 2: Two-column — subgraph + proof */}
-      <div className="gr-layout">
-        <div className="gr-left">
-          {/* Subgraph */}
-          {traversedPapers.size > 0 && (
-            <div className={`kgl-graph-row ${subgraphSelection ? 'has-detail' : ''}`}>
-              <div className="gr-card kgl-graph-card">
-                <div className="gr-card-header">
-                  <h3 className="gr-card-title">
-                    Knowledge Subgraph
-                    <Tooltip text={`This shows the portion of the full knowledge graph traversed to answer your query. Papers sharing techniques or citations with the queried methods are pulled in to show the broader context. Click any node to see its connections.`} wide>
-                      <span className="chart-help">?</span>
-                    </Tooltip>
-                  </h3>
-                  <div className="gr-subgraph-actions">
-                    <span className="gr-count-badge">
-                      {subgraphSelection ? subgraphSelection.node.label : `${traversedPapers.size} papers`}
-                    </span>
-                    <button
-                      className={`gr-filter-toggle-btn ${filtersOpen ? 'active' : ''}`}
-                      onClick={() => setFiltersOpen(f => !f)}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-                        <path d="M1.5 2.5h13M3.5 6h9M5.5 9.5h5M7 13h2" />
-                      </svg>
-                      {filtersOpen ? 'Hide Filters' : 'Filters'}
-                      {(hiddenEdgeTypes.size > 0 || hiddenNodeTypes.size > 0) && !filtersOpen && (
-                        <span className="gr-filter-dot" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-                {filtersOpen && (
-                  <div className="gr-graph-filter-panel">
-                    <div className="gr-gfp-section">
-                      <div className="gr-gfp-title">
-                        Edge types
-                        <Tooltip text="Show or hide specific relationship types in the subgraph." wide>
-                          <span className="chart-help">?</span>
-                        </Tooltip>
-                      </div>
-                      <div className="gr-gfp-checks">
-                        {EDGE_TYPES.map(t => (
-                          <label key={t.key} className="gr-gfp-check">
-                            <input type="checkbox" checked={!hiddenEdgeTypes.has(t.key)} onChange={() => toggleEdge(t.key)} />
-                            <span>{t.label}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="gr-gfp-section">
-                      <div className="gr-gfp-title">
-                        Node types
-                        <Tooltip text="Toggle visibility of node categories." wide>
-                          <span className="chart-help">?</span>
-                        </Tooltip>
-                      </div>
-                      <div className="gr-gfp-checks">
-                        {NODE_TYPES.map(t => (
-                          <label key={t.key} className="gr-gfp-check">
-                            <input type="checkbox" checked={!hiddenNodeTypes.has(t.key)} onChange={() => toggleNode(t.key)} />
-                            <span>{t.label}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="gr-gfp-section gr-gfp-row">
-                      <label className="gr-gfp-check">
-                        <input type="checkbox" checked={dimOrphans} onChange={() => setDimOrphans(d => !d)} />
-                        <span>Dim non-matching methods</span>
-                      </label>
-                      {(hiddenEdgeTypes.size > 0 || hiddenNodeTypes.size > 0) && (
-                        <button className="gr-gfp-reset" onClick={clearFilters}>Reset all</button>
-                      )}
-                    </div>
-                  </div>
-                )}
-                <KGGraphViz
-                  height={460}
-                  dataUrl="kg-full"
-                  postData={{ paperIds: [...traversedPapers], intent: queryIntent }}
-                  onNodeSelect={setSubgraphSelection}
-                  refitTrigger={!!subgraphSelection}
-                  hiddenEdgeTypes={hiddenEdgeTypes}
-                  highlightedLabels={anchorNames.size > 0 ? anchorNames : tableHighlightLabels}
-                  dimUnhighlighted={dimOrphans}
-                />
-              </div>
-              {subgraphSelection && (
-                <KGNodeDetail
-                  selection={subgraphSelection}
-                  onClose={() => setSubgraphSelection(null)}
-                  onNodeClick={(n) => setSubgraphSelection(null)}
-                  query={query}
-                  anchorNames={anchorNames}
-                  termDictionary={termDictionary}
-                  methodClusterMap={methodClusterMap}
-                  clusterLabelMap={clusterLabelMap}
-                />
-              )}
-            </div>
-          )}
+    <div className={`graph-reasoning-page ${querying ? 'gr-querying' : ''}`}>
+      {querying && (
+        <div className="gr-loading" role="status" aria-live="polite">
+          <div className="gr-loading-bar" /><span>Working on your answer — progress is shown under the search bar.</span>
         </div>
+      )}
 
-        <div className="gr-right">
-          <ProofBlock
-            suggestion={suggestion}
-            anchorMethods={anchorMethods}
-            query={query}
-            termDictionary={termDictionary}
-            onMethodClick={handleMethodClick}
+      {!suggestion ? (
+        <div className="gr-querying-content" aria-hidden={querying}>
+          <KGLanding
+            scatterData={data}
+            scatterHighlights={highlightedMethods}
+            selectedPoint={selectedPoint}
+            hoveredIndex={hoveredIndex}
+            onSelect={onSelect}
+            onHover={onHover}
+            onUnhover={onUnhover}
+            onFilter={onFilter}
           />
         </div>
-      </div>
+      ) : (
+        <div className="gr-querying-content" aria-hidden={querying}>
+          <div className="gr-page-header" ref={answerTopRef}>
+            <h2>Answer</h2>
+            <p>Question: <em>{query}</em> · Everything below is grounded in the corpus — click any [n] to see the source passage.</p>
+          </div>
 
-      {/* Layer 3: Two-column — paper evidence + equations/contradictions */}
-      <div className="gr-layout">
-        <div className="gr-left">
-          <EvidencePanel citations={citations} filterRole={filterRole} filterContent={filterContent} onFilterRole={setFilterRole} onFilterContent={setFilterContent} openPaperId={openPaperId} />
+          <div className="gr-main-content">
+
+          {/* Layer 1: AnswerBlock — ANSWER (synthesis) first, then the comparison
+              table. Interactive plots/charts (subgraph, proof, evidence, equations)
+              follow in Layers 2-3 below. */}
+          <AnswerBlock
+            suggestion={suggestion}
+            query={query}
+            anchorMethods={anchorMethods}
+            termDictionary={termDictionary}
+            methodClusterMap={methodClusterMap}
+            clusterLabelMap={clusterLabelMap}
+            onMethodClick={handleMethodClick}
+            onCiteClick={handleCiteClick}
+          />
+
+          {/* Layer 2: Two-column — subgraph + proof */}
+          <div className="gr-layout">
+            <div className="gr-left">
+              {/* Subgraph */}
+              {traversedPapers.size > 0 && (
+                <div className={`kgl-graph-row ${subgraphSelection ? 'has-detail' : ''}`}>
+                  <div className="gr-card kgl-graph-card">
+                    <div className="gr-card-header">
+                      <h3 className="gr-card-title">
+                        Knowledge Subgraph
+                        <Tooltip text={`This shows the portion of the full knowledge graph traversed to answer your query. Papers sharing techniques or citations with the queried methods are pulled in to show the broader context. Click any node to see its connections.`} wide>
+                          <span className="chart-help">?</span>
+                        </Tooltip>
+                      </h3>
+                      <div className="gr-subgraph-actions">
+                        <span className="gr-count-badge">
+                          {subgraphSelection ? subgraphSelection.node.label : `${traversedPapers.size} papers`}
+                        </span>
+                        <button
+                          className={`gr-filter-toggle-btn ${filtersOpen ? 'active' : ''}`}
+                          onClick={() => setFiltersOpen(f => !f)}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                            <path d="M1.5 2.5h13M3.5 6h9M5.5 9.5h5M7 13h2" />
+                          </svg>
+                          {filtersOpen ? 'Hide filters' : 'Filter graph'}
+                          {(hiddenEdgeTypes.size > 0 || hiddenNodeTypes.size > 0) && !filtersOpen && (
+                            <span className="gr-filter-dot" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    {filtersOpen && (
+                      <div className="gr-graph-filter-panel">
+                        <div className="gr-gfp-section">
+                          <div className="gr-gfp-title">
+                            Edge types
+                            <Tooltip text="Show or hide specific relationship types in the subgraph." wide>
+                              <span className="chart-help">?</span>
+                            </Tooltip>
+                          </div>
+                          <div className="gr-gfp-checks">
+                            {EDGE_TYPES.map(t => (
+                              <label key={t.key} className="gr-gfp-check">
+                                <input type="checkbox" checked={!hiddenEdgeTypes.has(t.key)} onChange={() => toggleEdge(t.key)} />
+                                <span>{t.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="gr-gfp-section">
+                          <div className="gr-gfp-title">
+                            Node types
+                            <Tooltip text="Toggle visibility of node categories." wide>
+                              <span className="chart-help">?</span>
+                            </Tooltip>
+                          </div>
+                          <div className="gr-gfp-checks">
+                            {NODE_TYPES.map(t => (
+                              <label key={t.key} className="gr-gfp-check">
+                                <input type="checkbox" checked={!hiddenNodeTypes.has(t.key)} onChange={() => toggleNode(t.key)} />
+                                <span>{t.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="gr-gfp-section gr-gfp-row">
+                          <label className="gr-gfp-check">
+                            <input type="checkbox" checked={dimOrphans} onChange={() => setDimOrphans(d => !d)} />
+                            <span>Dim non-matching methods</span>
+                          </label>
+                          {(hiddenEdgeTypes.size > 0 || hiddenNodeTypes.size > 0) && (
+                            <button className="gr-gfp-reset" onClick={clearFilters}>Reset all</button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    <KGGraphViz
+                      height={460}
+                      dataUrl="kg-full"
+                      postData={{ paperIds: [...traversedPapers], intent: queryIntent }}
+                      onNodeSelect={setSubgraphSelection}
+                      refitTrigger={!!subgraphSelection}
+                      hiddenEdgeTypes={hiddenEdgeTypes}
+                      highlightedLabels={anchorNames.size > 0 ? anchorNames : tableHighlightLabels}
+                      dimUnhighlighted={dimOrphans}
+                    />
+                  </div>
+                  {subgraphSelection && (
+                    <KGNodeDetail
+                      selection={subgraphSelection}
+                      onClose={() => setSubgraphSelection(null)}
+                      onNodeClick={(n) => setSubgraphSelection(null)}
+                      query={query}
+                      anchorNames={anchorNames}
+                      termDictionary={termDictionary}
+                      methodClusterMap={methodClusterMap}
+                      clusterLabelMap={clusterLabelMap}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="gr-right">
+              <ProofBlock
+                suggestion={suggestion}
+                anchorMethods={anchorMethods}
+                query={query}
+                termDictionary={termDictionary}
+                onMethodClick={handleMethodClick}
+              />
+            </div>
+          </div>
+
+          {/* Layer 3: Two-column — paper evidence + equations/contradictions */}
+          <div className="gr-layout">
+            <div className="gr-left">
+              <EvidencePanel citations={citations} filterRole={filterRole} filterContent={filterContent} onFilterRole={setFilterRole} onFilterContent={setFilterContent} openPaperId={openPaperId} />
+            </div>
+
+            <div className="gr-right">
+              <EquationsPanel equations={equations} />
+              {/* ContradictionPanel removed: the token-overlap "contradictions" were
+                  ~100% false positives (unrelated sentences sharing words like
+                  "grasp/6d/pose"), per the domain-expert data audit — it misled more
+                  than it informed. Re-introduce only with a real entailment signal. */}
+            </div>
+          </div>
+
+          </div>
+
+          <CitationModal data={citePopup} onClose={() => setCitePopup(null)} />
         </div>
-
-        <div className="gr-right">
-          <EquationsPanel equations={equations} />
-          {/* ContradictionPanel removed: the token-overlap "contradictions" were
-              ~100% false positives (unrelated sentences sharing words like
-              "grasp/6d/pose"), per the domain-expert data audit — it misled more
-              than it informed. Re-introduce only with a real entailment signal. */}
-        </div>
-      </div>
-
-      </div>
-
-      <CitationModal data={citePopup} onClose={() => setCitePopup(null)} />
+      )}
     </div>
   );
 }

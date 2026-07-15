@@ -33,6 +33,20 @@ export function queryFocusDirective(query) {
   return '';
 }
 
+// A comparison question that ALSO carries a ranking/performance cue ("compare A
+// and B and which is faster") composes the ranking directive onto the
+// comparison one, so the answer leads with verified numbers instead of dropping
+// the performance ask. classifyFormatIntent (ai-pipeline.js) is a single-string
+// router (compare vs. rank vs. ...) — this composes independently, at the
+// prompt-assembly layer, without changing that contract.
+const RANKING_CUE_RE = /\b(fastest|highest|best|top|rank(?:ing)?|outperform\w*|state[- ]of[- ]the[- ]art|sota|most accurate|success rate)\b/i;
+export function rankingComposeDirective(query, intent) {
+  if (intent === 'comparison' && RANKING_CUE_RE.test(String(query || ''))) {
+    return ' This comparison ALSO asks about relative performance — lead with any VERIFIED BENCHMARKS available (state the protocol; never rank across protocols) before the qualitative contrast.';
+  }
+  return '';
+}
+
 /**
  * buildAnswerPrompt — the copilot's PRIMARY synthesis prompt, split into a stable
  * SYSTEM message (persona + grounding/citation/format/selection rules) and a USER
@@ -85,7 +99,7 @@ OUTPUT — respond with ONLY a JSON object (no prose outside it, no code fence):
 
   const user = `RESEARCHER'S QUESTION: "${query}"
 ${historyBlock}
-FORMAT DIRECTIVE: ${formatDirective(intent)}${queryFocusDirective(query)}
+FORMAT DIRECTIVE: ${formatDirective(intent)}${queryFocusDirective(query)}${rankingComposeDirective(query, intent)}
 
 SOURCES (paper excerpts — PRIMARY evidence; cite as the bracketed [P#] tag on each block):
 ${ragText || '(No paper excerpts retrieved for this query)'}

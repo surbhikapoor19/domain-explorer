@@ -76,16 +76,52 @@ export function serializeSubgraph(subgraph, highlightLabels = [], opts = {}) {
   });
   edgeItems.sort((a, b) => (b.score - a.score) || (a.idx - b.idx));
 
-  // Quotable claim text from contribution / comparison nodes.
+  // Quotable claim text from contribution / comparison nodes. Prioritize claims
+  // incident (within 2 hops) to a highlighted method, so a highlighted method's
+  // own contribution text isn't crowded out by an unrelated one.
+  const highlightNodeIds = new Set();
+  subgraph.nodes.forEach((n) => { if (n && isHighlightedLabel(labelOf(n.id))) highlightNodeIds.add(n.id); });
+  const adjacent = new Set(highlightNodeIds);
+  subgraph.links.forEach((l) => {
+    const s = sid(l), t = tid(l);
+    if (highlightNodeIds.has(s)) adjacent.add(t);
+    if (highlightNodeIds.has(t)) adjacent.add(s);
+  });
+  subgraph.links.forEach((l) => {
+    const s = sid(l), t = tid(l);
+    if (adjacent.has(s)) adjacent.add(t);
+    if (adjacent.has(t)) adjacent.add(s);
+  });
+
   const claimItems = [];
   subgraph.nodes.forEach((n, idx) => {
     if (n && CLAIM_NODE_TYPES.has(n.type) && n.value != null && String(n.value).trim() !== '') {
-      claimItems.push({ line: String(n.value).trim(), idx });
+      claimItems.push({ line: String(n.value).trim(), score: adjacent.has(n.id) ? 1 : 0, idx });
     }
   });
+  claimItems.sort((a, b) => (b.score - a.score) || (a.idx - b.idx));
 
-  // Edges first (they are the structural backbone), then claim text, capped.
-  const lines = [...edgeItems.map((e) => e.line), ...claimItems.map((c) => c.line)];
+  // Reserve a claim budget instead of "edges first, then whatever's left" — with
+  // 40+ edges in a subgraph, edges alone used to fill the whole cap and claim
+  // text (the quotable contribution/comparison sentences) never survived. Split
+  // roughly 11 edges / 7 claims of an 18-line cap (scaled for a smaller custom
+  // cap); unused slots on either side flow to the other so small subgraphs still
+  // fill the cap exactly as before.
+  const edgeCapBase = maxLines >= 18 ? 11 : Math.max(1, Math.round(maxLines * 11 / 18));
+  const claimCapBase = Math.max(0, maxLines - edgeCapBase);
+  const edgeCap = Math.min(edgeItems.length, edgeCapBase + Math.max(0, claimCapBase - claimItems.length));
+  const claimCap = Math.min(claimItems.length, claimCapBase + Math.max(0, edgeCapBase - edgeItems.length));
+  const keptEdges = edgeItems.slice(0, edgeCap);
+  const keptClaims = claimItems.slice(0, claimCap);
+
+  // Interleave (rather than edges-then-claims) so claim text isn't pushed past
+  // the cap by a long edge list even when both sides fit within budget.
+  const lines = [];
+  let ei = 0, ci = 0;
+  while (ei < keptEdges.length || ci < keptClaims.length) {
+    if (ei < keptEdges.length) lines.push(keptEdges[ei++].line);
+    if (ci < keptClaims.length) lines.push(keptClaims[ci++].line);
+  }
   return lines.slice(0, maxLines).join('\n');
 }
 

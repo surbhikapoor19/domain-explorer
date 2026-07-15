@@ -34,6 +34,36 @@ const GRADE_EXPLAIN =
   'earn an A); and when two papers do re-run the same setup, their numbers often disagree (→ C). A mostly-B ' +
   'board is the honest picture of this literature — we do not fabricate agreement.';
 
+// The `results` data path is one extraction PER RECORD (not a corroboration-joined
+// cell like legacy leaderboards), so grade A — which requires 2+ independent papers
+// agreeing — never applies there. The legend and its explainer swap to a B/C-only
+// story so the corroboration narrative doesn't falsely imply an A tier exists.
+const GRADE_EXPLAIN_RESULTS =
+  'The grade measures how well-VERIFIED a single extraction is — NOT how good the method is.\n\n' +
+  'B — a verified single-source extraction: parsed cleanly from a result table.\n' +
+  'C — a low-confidence extraction, OR a number flagged as a re-quoted/copied baseline rather than an ' +
+  'independent measurement.\n\n' +
+  'There is no A grade in this view: each row is one extraction from one paper — corroboration across ' +
+  'independent papers isn\'t evaluated at this per-result level.';
+
+// Plain-language "?" explainer per facet/column, so every axis on this page is
+// self-describing for a researcher who didn't build the pipeline. Keyed by the
+// category names in TAG_CATEGORY_ORDER (benchmark-records.js).
+const FACET_HELP = {
+  'Method': 'The grasp-planning method this number is attributed to. "(non-corpus baseline)" means the name appears in a paper\'s result table but is not one of the corpus methods — usually a baseline the paper compared against.',
+  'Metric': 'What was measured (e.g. grasp success rate, declutter rate, latency). Different metrics are not comparable to each other.',
+  'Dataset': 'The benchmark suite / object set the number was measured on (e.g. EGAD, YCB, a sim environment). Numbers on different datasets are not directly comparable.',
+  'Scene': 'The scene arrangement the method was evaluated in (e.g. isolated object, packed clutter, pile).',
+  'Success criterion': 'How a "success" was defined for this number (e.g. lift-and-hold, place, grasp-stability threshold). Different criteria change what the percentage means.',
+  'Camera view': 'The sensor viewpoint used (e.g. single fixed view, multi-view, wrist-mounted).',
+  'Depth noise': 'Whether depth/sensor noise was added or the input was clean — a large factor in real-vs-sim numbers.',
+  'Object set': 'The specific set of objects grasped in this evaluation.',
+  'Training': 'Training regime relevant to the number (e.g. sim-only, sim-to-real, real-world fine-tuned).',
+  'Measurement scope': 'A qualifier on WHAT the metric counts (e.g. success-rate@k, or a specific timing definition like inference vs. total time).',
+  'Reported by': 'Whether this number is the authors\' OWN reported result for their method ("Self-reported"), or a value a DIFFERENT paper re-quoted while comparing against it ("Reported by another paper"). Self-reported numbers can be optimistic — the same method often scores differently in an independent paper\'s evaluation, so this is a bias signal, not a quality score.',
+  'Corroboration': '"Re-quoted baseline" means the number was copied from the original paper rather than independently re-measured. Re-quoting is not corroboration — treat it as a single source, not agreement.',
+};
+
 function prettyPaper(p) {
   return String(p || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
@@ -42,7 +72,7 @@ function prettyPaper(p) {
 // (e.g. Method, with one entry per method/paper) get a search box + scrollable
 // list so you can find one alphabetically or by typing; small categories render
 // as a short open list. Selecting options is OR within a facet, AND across facets.
-function FacetDropdown({ facet, selected, onToggle }) {
+function FacetDropdown({ facet, selected, onToggle, unresolvedMethods }) {
   const searchable = facet.tags.length > 8;
   const selCount = useMemo(
     () => facet.tags.reduce((n, t) => n + (selected.has(tagKey(facet.category, t.value)) ? 1 : 0), 0),
@@ -63,11 +93,16 @@ function FacetDropdown({ facet, selected, onToggle }) {
 
   return (
     <div className="bmr-facet">
-      <button type="button" className="bmr-facet-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
-        <span className="bmr-facet-chev" aria-hidden>{open ? '▾' : '▸'}</span>
-        <span className="bmr-facet-name">{facet.category}</span>
-        {selCount > 0 && <span className="bmr-facet-selcount">{selCount}</span>}
-      </button>
+      <div className="bmr-facet-headrow">
+        <button type="button" className="bmr-facet-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+          <span className="bmr-facet-chev" aria-hidden>{open ? '▾' : '▸'}</span>
+          <span className="bmr-facet-name">{facet.category}</span>
+          {selCount > 0 && <span className="bmr-facet-selcount">{selCount}</span>}
+        </button>
+        {FACET_HELP[facet.category] && (
+          <Tooltip text={FACET_HELP[facet.category]} wide><span className="chart-help bmr-facet-help">?</span></Tooltip>
+        )}
+      </div>
       {open && (
         <div className="bmr-facet-body">
           {searchable && (
@@ -84,10 +119,17 @@ function FacetDropdown({ facet, selected, onToggle }) {
             {tags.map(t => {
               const k = tagKey(facet.category, t.value);
               const on = selected.has(k);
+              // A Method option whose records didn't resolve to a corpus method
+              // is a raw/unverified name join — say so right in the list, not
+              // just after it's already been picked.
+              const unverified = facet.category === 'Method' && unresolvedMethods && unresolvedMethods.has(t.value);
               return (
-                <button key={k} type="button" className={`bmr-opt ${on ? 'on' : ''}`} onClick={() => onToggle(k)} aria-pressed={on}>
+                <button key={k} type="button" className={`bmr-opt ${on ? 'on' : ''} ${t.count === 0 ? 'zero' : ''}`} onClick={() => onToggle(k)} aria-pressed={on}>
                   <span className="bmr-opt-check" aria-hidden>{on ? '✓' : ''}</span>
-                  <span className="bmr-opt-label" title={t.label}>{t.label}</span>
+                  <span className="bmr-opt-label" title={t.label}>
+                    {t.label}
+                    {unverified && <span className="bmr-unverified"> (non-corpus baseline)</span>}
+                  </span>
                   <span className="bmr-opt-count">{t.count}</span>
                 </button>
               );
@@ -105,8 +147,20 @@ function FacetDropdown({ facet, selected, onToggle }) {
 // toggle to actual size; Esc or backdrop click closes.
 function BenchmarkLightbox({ data, onClose }) {
   const [zoom, setZoom] = useState(false);
+  const zoomBtnRef = useRef(null);
+  const closeBtnRef = useRef(null);
   useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    const onKey = e => {
+      if (e.key === 'Escape') { onClose(); return; }
+      // Minimal focus trap: the lightbox only has two focusable controls
+      // (zoom toggle, close) — Tab/Shift+Tab should cycle between just those,
+      // not escape into the results grid underneath.
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const next = document.activeElement === closeBtnRef.current ? zoomBtnRef.current : closeBtnRef.current;
+        if (next) next.focus();
+      }
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
@@ -119,6 +173,11 @@ function BenchmarkLightbox({ data, onClose }) {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
   }, [data]);
+  // Send focus into the dialog on open so a keyboard/screen-reader user isn't
+  // left focused on a card behind the overlay.
+  useEffect(() => {
+    if (data && closeBtnRef.current) closeBtnRef.current.focus();
+  }, [data]);
   if (!data) return null;
   return (
     <div className="bmr-lightbox" onClick={onClose} role="dialog" aria-modal="true" aria-label={`Source table for ${data.method}`}>
@@ -126,8 +185,8 @@ function BenchmarkLightbox({ data, onClose }) {
         <div className="bmr-lightbox-bar">
           <span className="bmr-lightbox-title">{data.method}{data.caption ? ` — ${data.caption}` : ''}</span>
           <div className="bmr-lightbox-actions">
-            <button type="button" onClick={() => setZoom(z => !z)}>{zoom ? 'Fit to screen' : 'Actual size'}</button>
-            <button type="button" onClick={onClose} aria-label="Close">✕</button>
+            <button type="button" ref={zoomBtnRef} onClick={() => setZoom(z => !z)}>{zoom ? 'Fit to screen' : 'Actual size'}</button>
+            <button type="button" ref={closeBtnRef} onClick={onClose} aria-label="Close">✕</button>
           </div>
         </div>
         <div className={`bmr-lightbox-scroll ${zoom ? 'zoom' : ''}`}>
@@ -172,8 +231,9 @@ function ResultCard({ rec, onZoom }) {
   // have dedicated slots (method name in the head, metric+value below, grade badge).
   // Dataset and Reported-by chips get their own visual class (they answer a
   // different question than the scene/camera protocol tokens).
-  const protocolTags = rec.tags.filter(t => t.cat !== 'Metric' && t.cat !== 'Evidence grade' && t.cat !== 'Method');
-  const chipClass = (t) => t.cat === 'Reported by' ? 'bmr-tag bmr-tag-rep'
+  const protocolTags = rec.tags.filter(t => t.cat !== 'Metric' && t.cat !== 'Evidence grade' && t.cat !== 'Method' && t.cat !== 'Corroboration');
+  const chipClass = (t) => t.cat === 'Reported by'
+    ? (t.value === 'self' ? 'bmr-tag bmr-tag-self' : 'bmr-tag bmr-tag-rep')
     : t.cat === 'Dataset' ? 'bmr-tag bmr-tag-ds' : 'bmr-tag';
   // Value display: prefer the paper's own notation (value_str, e.g. "90%",
   // "0.87±0.02") when it exists and isn't just the same digits; else the parsed
@@ -183,6 +243,13 @@ function ResultCard({ rec, onZoom }) {
   // A value synthesized from multiple table cells is NOT an extracted number —
   // say so. (Legacy leaderboard entries pool same-paper cells into a median.)
   const pooled = sources.length > 1;
+  // Provenance line: paper (verbatim slug, not the prettified display name — the
+  // slug is the actual identifier a researcher can search the corpus for) + a
+  // short caption preview + page, so the source is legible without opening the
+  // drawer.
+  const provCaption = sources[0] && sources[0].table_caption ? String(sources[0].table_caption) : '';
+  const provCaptionShort = provCaption.length > 60 ? `${provCaption.slice(0, 60)}…` : provCaption;
+  const provPage = rec.page != null ? rec.page : (sources[0] && sources[0].page != null ? sources[0].page : null);
   return (
     <div className="bmr-card">
       <div className="bmr-card-head">
@@ -224,8 +291,11 @@ function ResultCard({ rec, onZoom }) {
       )}
       <div className="bmr-src">
         <span className="bmr-papers" title={(rec.papers || []).join(', ')}>
-          {(rec.papers || []).map(prettyPaper).join(', ') || 'source not recorded'}
-          {sources[0] && sources[0].page != null ? ` · p.${sources[0].page}` : ''}
+          <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, monospace' }}>
+            {(rec.papers || []).join(', ') || 'source not recorded'}
+          </span>
+          {provCaptionShort ? ` · ${provCaptionShort}` : ''}
+          {provPage != null ? ` · p.${provPage}` : ''}
         </span>
         {hasSrc && (
           <button type="button" className="bmr-src-toggle" onClick={() => setShowSrc(s => !s)} aria-expanded={showSrc}>
@@ -277,9 +347,12 @@ function displayValue(rec) {
 function ResultTable({ rows, groupBy, filtered, onZoom, onMethod }) {
   const [openSrc, setOpenSrc] = useState(null); // rec.id with the source row expanded
   const groupKey = (r) => groupBy === 'method' ? r.method
+    : groupBy === 'paper' ? ((r.papers && r.papers[0]) || 'source not recorded')
     : `${r.metric}${r.condition ? ' — ' + r.condition : ''}`;
   const groupCount = (r) => groupBy === 'method'
     ? filtered.filter(x => x.method === r.method).length
+    : groupBy === 'paper'
+    ? filtered.filter(x => ((x.papers && x.papers[0]) || 'source not recorded') === groupKey(r)).length
     : filtered.filter(x => x.metric === r.metric && x.condition === r.condition).length;
   return (
     <div className="bmr-tablewrap">
@@ -287,13 +360,15 @@ function ResultTable({ rows, groupBy, filtered, onZoom, onMethod }) {
         <thead>
           <tr>
             <th>Method</th><th>Metric</th><th className="bmr-th-val">Value</th>
-            <th>Protocol</th><th>Reported by</th><th className="bmr-th-grade">Grade</th><th className="bmr-th-src">Source</th>
+            <th>Protocol <Tooltip text="The evaluation conditions under which this number was measured (scene, object set, sensor view, dataset, etc.). Two numbers are only comparable when their protocols match — this is why the page does not rank across papers." wide><span className="chart-help">?</span></Tooltip></th>
+            <th>Reported by <Tooltip text={FACET_HELP['Reported by']} wide><span className="chart-help">?</span></Tooltip></th>
+            <th className="bmr-th-grade">Grade</th><th className="bmr-th-src">Source</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r, i) => {
             const newGroup = groupBy !== 'none' && (i === 0 || groupKey(rows[i - 1]) !== groupKey(r));
-            const proto = r.tags.filter(t => !['Method', 'Metric', 'Evidence grade', 'Reported by'].includes(t.cat));
+            const proto = r.tags.filter(t => !['Method', 'Metric', 'Evidence grade', 'Reported by', 'Corroboration'].includes(t.cat));
             const rep = r.tags.find(t => t.cat === 'Reported by');
             const src = (r.sources || [])[0] || {};
             const srcOpen = openSrc === r.id;
@@ -392,7 +467,7 @@ function MethodDossier({ method, records, onClose, onZoom }) {
             <section key={metric} className="bmr-dossier-metric">
               <h4>{metric}</h4>
               {rs.map(r => {
-                const proto = r.tags.filter(t => !['Method', 'Metric', 'Evidence grade', 'Reported by'].includes(t.cat));
+                const proto = r.tags.filter(t => !['Method', 'Metric', 'Evidence grade', 'Reported by', 'Corroboration'].includes(t.cat));
                 const s = (r.sources || [])[0] || {};
                 return (
                   <div key={r.id} className="bmr-dossier-row">
@@ -514,14 +589,32 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   // Reset to page 1 whenever the filter changes (the result set is different).
   useEffect(() => { setPage(1); }, [selected]);
   // Protocol grouping clusters rows by (metric, condition) — the only frame in
-  // which values are directly comparable; otherwise keep the method-alphabetical
-  // order (which clusters naturally for method grouping).
+  // which values are directly comparable; paper grouping clusters everything one
+  // paper reported together; otherwise keep the method-alphabetical order (which
+  // clusters naturally for method grouping).
   const displayRows = useMemo(() => {
-    if (groupBy !== 'protocol') return visible;
-    return [...visible].sort((a, b) =>
-      `${a.metric}|${a.condition}`.localeCompare(`${b.metric}|${b.condition}`) ||
-      a.method.localeCompare(b.method));
+    if (groupBy === 'protocol') {
+      return [...visible].sort((a, b) =>
+        `${a.metric}|${a.condition}`.localeCompare(`${b.metric}|${b.condition}`) ||
+        a.method.localeCompare(b.method));
+    }
+    if (groupBy === 'paper') {
+      return [...visible].sort((a, b) =>
+        ((a.papers && a.papers[0]) || '').localeCompare((b.papers && b.papers[0]) || '') ||
+        a.method.localeCompare(b.method));
+    }
+    return visible;
   }, [visible, groupBy]);
+  // Method facet options whose records didn't resolve to a corpus method — flagged
+  // in the rail so a "raw name" join reads as unverified before it's even picked.
+  const unresolvedMethods = useMemo(
+    () => new Set(records.filter(r => r.methodResolved === false).map(r => r.method)),
+    [records]
+  );
+  // The `results` data path grades single extractions (no cross-paper corroboration
+  // at the per-row level), so the evidence-grade legend tells a different story
+  // there than for legacy leaderboard cells.
+  const hasResultsPath = !!(benchmarkData && Array.isArray(benchmarkData.results) && benchmarkData.results.length);
   const pageCount = Math.max(1, Math.ceil(displayRows.length / PAGE_SIZE));
   const pageClamped = Math.min(page, pageCount);
   const start = (pageClamped - 1) * PAGE_SIZE;
@@ -541,7 +634,32 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
   const clear = () => { setQueryFiltered(false); setSelected(new Set()); };
 
   if (loading) return <div className="bmr-page"><div className="bmr-loading">Loading benchmark data…</div></div>;
-  if (!records.length) return <div className="bmr-page"><div className="bmr-empty">No benchmark data available.</div></div>;
+  if (!records.length) {
+    // A copilot answer can still be shown even when this domain has no extracted
+    // benchmark tables yet — the answer doesn't depend on the results grid.
+    return (
+      <div className="bmr-page">
+        {suggestion && suggestion.insight && (
+          <div className="bmr-answer">
+            <div className="bmr-answer-label">Copilot answer</div>
+            <AnswerMarkdown
+              text={suggestion.insight}
+              citations={suggestion.citations}
+              methods={suggestion.methodRelevance}
+              query={query}
+              termDictionary={termDictionary}
+              onCiteClick={(cite, claimText) => setCitePopup({ cite, claimText })}
+            />
+          </div>
+        )}
+        <div className="bmr-empty">
+          No benchmark tables could be extracted from this domain's papers yet. Results appear here after the
+          domain build extracts result tables.
+        </div>
+        <CitationModal data={citePopup} onClose={() => setCitePopup(null)} />
+      </div>
+    );
+  }
 
   return (
     <div className="bmr-page">
@@ -570,12 +688,22 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
         <div className="bmr-gradekey">
           <span className="bmr-gradekey-label">
             Evidence grade
-            <Tooltip text={GRADE_EXPLAIN} wide><span className="chart-help">?</span></Tooltip>
+            <Tooltip text={hasResultsPath ? GRADE_EXPLAIN_RESULTS : GRADE_EXPLAIN} wide><span className="chart-help">?</span></Tooltip>
           </span>
-          <span className="bmr-gradekey-item"><span className="bmr-grade bmr-grade-A">A</span> 2+ independent papers agree</span>
-          <span className="bmr-gradekey-item"><span className="bmr-grade bmr-grade-B">B</span> single solid source</span>
-          <span className="bmr-gradekey-item"><span className="bmr-grade bmr-grade-C">C</span> low-confidence / disputed</span>
-          <span className="bmr-gradekey-note">Most results are B — see the “?” for why A is rare here.</span>
+          {!hasResultsPath && (
+            <span className="bmr-gradekey-item"><span className="bmr-grade bmr-grade-A">A</span> 2+ independent papers agree</span>
+          )}
+          <span className="bmr-gradekey-item">
+            <span className="bmr-grade bmr-grade-B">B</span> {hasResultsPath ? 'verified single-source extraction' : 'single solid source'}
+          </span>
+          <span className="bmr-gradekey-item">
+            <span className="bmr-grade bmr-grade-C">C</span> {hasResultsPath ? 'low-confidence extraction' : 'low-confidence / disputed'}
+          </span>
+          <span className="bmr-gradekey-note">
+            {hasResultsPath
+              ? 'Each result is one extraction from one paper — see the “?” for what B/C mean here.'
+              : 'Most results are B — see the “?” for why A is rare here.'}
+          </span>
         </div>
       </div>
 
@@ -597,7 +725,8 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
           <span>
             No extracted benchmark results for{' '}
             <strong>{queryMethods.map(m => String(m).replace(/^[^\p{L}\p{N}]+/u, '').trim()).join(' or ')}</strong>{' '}
-            in this corpus — {queryMethods.length > 1 ? 'these methods aren’t' : 'this method isn’t'} in any result table we could extract. The results below are not filtered by this query.
+            in this corpus — {queryMethods.length > 1 ? 'these methods aren’t' : 'this method isn’t'} in any result table we could extract. The results below are not filtered by this query
+            {' — '}{selected.size === 0 ? 'all results are shown below.' : 'results below reflect your current filters.'}
           </span>
           <button type="button" className="bmr-querybar-clear" onClick={() => setNoMatchDismissed(true)} aria-label="Dismiss">Dismiss ✕</button>
         </div>
@@ -612,7 +741,7 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
             )}
           </div>
           {facets.map(f => (
-            <FacetDropdown key={f.category} facet={f} selected={selected} onToggle={toggle} />
+            <FacetDropdown key={f.category} facet={f} selected={selected} onToggle={toggle} unresolvedMethods={unresolvedMethods} />
           ))}
         </aside>
 
@@ -649,6 +778,15 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
               title="Group values that share a metric + protocol — the only place values are directly comparable"
             >
               Group by protocol
+            </button>
+            <button
+              type="button"
+              className={`bmr-group-toggle ${groupBy === 'paper' ? 'on' : ''}`}
+              onClick={() => setGroupBy(g => g === 'paper' ? 'none' : 'paper')}
+              aria-pressed={groupBy === 'paper'}
+              title="Insert a header per paper so all of a paper's reported results read as one block"
+            >
+              Group by paper
             </button>
           </div>
           <div className="bmr-results-count">
@@ -692,7 +830,9 @@ export default function BenchmarksPage({ data, selectedPoint, onSelect, minConfi
                 // the group key changes.
                 <div className="bmr-grid bmr-grid-grouped">
                   {pageItems.map((r, i) => {
-                    const key = (x) => groupBy === 'method' ? x.method : `${x.metric}${x.condition ? ' — ' + x.condition : ''}`;
+                    const key = (x) => groupBy === 'method' ? x.method
+                      : groupBy === 'paper' ? ((x.papers && x.papers[0]) || 'source not recorded')
+                      : `${x.metric}${x.condition ? ' — ' + x.condition : ''}`;
                     const newGroup = i === 0 || key(pageItems[i - 1]) !== key(r);
                     const groupCount = displayRows.filter(x => key(x) === key(r)).length;
                     return (

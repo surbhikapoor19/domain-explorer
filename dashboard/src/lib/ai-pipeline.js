@@ -1,5 +1,5 @@
 import { chat as llmChat } from './llm-client';
-import { loadRagChunks, loadKgFull, loadBenchmarkComparisons } from './data-loader';
+import { loadRagChunks, loadKgFull, loadBenchmarkComparisons, loadTermDictionary, loadDomainConfig } from './data-loader';
 import { buildBenchmarkContext, benchmarkPageRef } from './benchmark-context';
 import { runQueryPipeline, structuredMatches } from './query-engine';
 import { spellCorrectQuery } from './spell-correct';
@@ -18,11 +18,11 @@ export function classifyFormatIntent(q) {
   // OVERVIEW / LANDSCAPE — "give an overview of the methods", "the landscape",
   // "all methods", "what approaches are there", "survey". Must survey the WHOLE
   // set (grouped), not pick a couple — checked FIRST so it wins over the others.
-  if (/\b(overview|landscape|survey|taxonomy|all (the |available )?(methods|approaches|algorithms|techniques)|(list|show) (me )?(all|the|every|methods|approaches|algorithms)|what (methods|approaches|algorithms) (are|exist))\b/.test(s)) return 'overview';
+  if (/\b(overview|landscape|survey|taxonomy|summar\w*|the field|the literature|all (the |available )?(methods|approaches|algorithms|techniques)|(list|show) (me )?(all|the|every|methods|approaches|algorithms)|what (methods|approaches|algorithms) (are|exist))\b/.test(s)) return 'overview';
   // COMPARISON — explicit compare words, OR comparative-performance phrasing that
   // implies a head-to-head: "do X perform better in ...", "A better than B",
   // "which is better", "A or B" between two named things.
-  if (/\b(vs\.?|versus|compared?|comparison|difference between|trade-?offs?|better than|worse than|perform\w*\s+(?:better|worse)|which\b[^?]*\b(?:better|worse))\b/.test(s)) return 'comparison';
+  if (/\b(vs\.?|versus|compared?|comparison|difference between|differ\w*|trade-?offs?|better than|worse than|perform\w*\s+(?:better|worse)|which\b[^?]*\b(?:better|worse))\b/.test(s)) return 'comparison';
   if (/\b(best|fastest|highest|top|rank(ing)?|outperform\w*|state[- ]of[- ]the[- ]art|sota|success rate|accuracy|most accurate|perform\w* best|better|worse)\b/.test(s)) return 'ranking';
   if (/\b(which|recommend|methods? for|approaches? for|list|options?|suitable|suited|good for|use for)\b/.test(s)) return 'recommendation';
   return 'default';
@@ -36,6 +36,26 @@ export { buildMethodSummaries };
 // so "🤖 GraspQP", "graspQP" and paper_id "graspqp" all reduce to "graspqp".
 function compactName(s) {
   return String(s || '').replace(/^[^\p{L}\p{N}]+/u, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+/**
+ * resolveMethodPaperId(methodName, kgData) -> the paper id a method is
+ * described_in, via the KG's method->described_in->paper edge (precise), or
+ * null when the method node / edge doesn't resolve. Precise resolution avoids
+ * the compact-substring bug where "GraspNet" mis-matched "contact-graspnet".
+ */
+function resolveMethodPaperId(methodName, kgData) {
+  if (!kgData || !Array.isArray(kgData.nodes) || !kgData.nodes.length) return null;
+  const wanted = String(methodName || '').toLowerCase().trim();
+  if (!wanted) return null;
+  const sidOf = (l) => (l.source && l.source.id) || l.source;
+  const tidOf = (l) => (l.target && l.target.id) || l.target;
+  const methodNode = kgData.nodes.find(n => n.type === 'method' && (n.label || '').toLowerCase().trim() === wanted);
+  if (!methodNode) return null;
+  const paperLink = (kgData.links || []).find(l => l.type === 'described_in' && sidOf(l) === methodNode.id);
+  if (!paperLink) return null;
+  const paperNode = kgData.nodes.find(n => n.id === tidOf(paperLink));
+  return (paperNode && (paperNode.paper_id || paperNode.id)) || null;
 }
 
 /**
@@ -72,6 +92,49 @@ export function methodsNamedInQuery(query, allMethods) {
   return out;
 }
 
+// ── Conversational follow-up rewriting ──
+// A follow-up like "what about real-world scenes?" or "which of those is
+// faster?" carries a pronoun/ellipsis with nothing for retrieval to anchor to —
+// it retrieves on the bare words alone. Anchoring it to the previous turn's
+// discussed methods before retrieval gives BM25/cosine something concrete.
+//
+// There's no separate history-log field for "discussed method names" threaded
+// from the caller — the previous ANSWER prose already bolds every method it
+// discussed (the prompt contract requires it), so that's the source of truth
+// we reconstruct from here.
+export function extractDiscussedNames(answerText, limit = 4) {
+  const out = [];
+  const seen = new Set();
+  const re = /\*\*([^*]{2,80})\*\*/g;
+  let m;
+  while ((m = re.exec(String(answerText || ''))) !== null) {
+    const name = m[1].trim();
+    const key = name.toLowerCase();
+    if (name && !seen.has(key)) { seen.add(key); out.push(name); }
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+const FOLLOWUP_PRONOUN_RE = /\b(it|its|it's|they|their|them|those|these|that one|the first one|the second one|the last one)\b/i;
+const FOLLOWUP_LEAD_RE = /^\s*(what about|and\b|how about)/i;
+
+/**
+ * rewriteFollowupQuery(query, history) -> the query, anchored to the previous
+ * turn's discussed methods/topic when it reads as a pronoun/ellipsis follow-up.
+ * Otherwise returns the query unchanged. Heuristic string rewrite (no LLM call).
+ */
+export function rewriteFollowupQuery(query, history) {
+  const q = String(query || '');
+  if (!history || !history.prevQuery) return q;
+  const isFollowup = FOLLOWUP_PRONOUN_RE.test(q) || FOLLOWUP_LEAD_RE.test(q);
+  if (!isFollowup) return q;
+  const names = extractDiscussedNames(history.prevAnswer, 3);
+  const topic = names.length ? names.join(' and ') : history.prevQuery;
+  if (FOLLOWUP_PRONOUN_RE.test(q)) return q.replace(FOLLOWUP_PRONOUN_RE, topic);
+  return `${q} (regarding ${topic})`;
+}
+
 // ── Determinism guardrail: per-session answer cache ──
 // A repeated query returns the IDENTICAL answer without re-calling the LLM. Keyed
 // by the spell-corrected, normalized query + a corpus fingerprint, so it
@@ -81,7 +144,7 @@ export function methodsNamedInQuery(query, allMethods) {
 // query share one answer. Cross-reload consistency relies on temperature:0.
 const _answerCache = new Map();
 const _ANSWER_CACHE_MAX = 100;
-export function answerCacheKey(effectiveQuery, allMethods, history) {
+export function answerCacheKey(effectiveQuery, allMethods, history, domainMeta) {
   const q = String(effectiveQuery || '').toLowerCase().trim().replace(/\s+/g, ' ').replace(/[?.!]+$/, '');
   const list = Array.isArray(allMethods) ? allMethods : [];
   // Corpus fingerprint = a hash over ALL method names (length+first-name alone
@@ -92,7 +155,14 @@ export function answerCacheKey(effectiveQuery, allMethods, history) {
   const fp = `${list.length}:${h.toString(36)}`;
   // A follow-up asked in a different conversation context is a different answer.
   const hist = history && history.prevQuery ? `::after:${String(history.prevQuery).toLowerCase().trim()}` : '';
-  return `${fp}::${q}${hist}`;
+  // Domain + a build-time signal (when the domain config carries one) — a
+  // domain switch OR a fresh data rebuild invalidates the cache even when the
+  // method COUNT+names hash happens to coincide (e.g. a re-extraction that
+  // changed benchmark/KG data but not the method roster).
+  const dm = domainMeta || {};
+  const domainPart = dm.domain || dm.productSubject || '';
+  const buildPart = dm.buildTimestamp || '';
+  return `${fp}::${domainPart}::${buildPart}::${q}${hist}`;
 }
 export function _clearAnswerCache() { _answerCache.clear(); }
 
@@ -118,6 +188,24 @@ export function findUngroundedNumbers(answer, contextBlob) {
     if (!ctx.includes(n) && !ctx.includes(alt)) out.push(n);
   }
   return out;
+}
+
+/**
+ * composeDeterministicAnswer(intent, benchmarkText, corpusFacts, structuredText,
+ * candMethods) -> a markdown answer body rendered ENTIRELY from what was already
+ * computed deterministically (no LLM), for when the LLM call fails outright
+ * after its retry. Returns '' when there is nothing deterministic to show.
+ */
+export function composeDeterministicAnswer(intent, benchmarkText, corpusFacts, structuredText, candMethods) {
+  const parts = [];
+  if (corpusFacts) parts.push(`**What the corpus data shows:**\n${corpusFacts}`);
+  if (structuredText) parts.push(`**Methods matching your query's attributes:**\n${structuredText}`);
+  if (benchmarkText && !/^No leaderboard/.test(benchmarkText)) parts.push(`**Verified benchmark values:**\n${benchmarkText}`);
+  if (!parts.length && Array.isArray(candMethods) && candMethods.length) {
+    parts.push(`**Candidate methods for this query:**\n${candMethods.slice(0, 12).map(m => `- ${m.name}`).join('\n')}`);
+  }
+  if (!parts.length) return '';
+  return `The AI summary is temporarily unavailable — here is what the data itself answers (generated without AI synthesis):\n\n${parts.join('\n\n')}`;
 }
 
 function runGroundingCheck(insightText, methods, kgNodes) {
@@ -171,15 +259,29 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   // Step 0: Spell correction
   const methodNames = allMethods.map(m => m.name);
   const { text: correctedQuery, corrected: wasSpellCorrected } = await spellCorrectQuery(query, queryKeywords, methodNames);
-  const effectiveQuery = correctedQuery;
+  // Follow-up rewrite: a pronoun/ellipsis query ("what about it?") is anchored to
+  // the previous turn's discussed methods BEFORE retrieval, so BM25/cosine have
+  // something concrete to match. Kept separate from `correctedQuery` so the
+  // spell-correction UI (`spellCorrection.corrected`) never shows this internal
+  // augmentation to the user.
+  const effectiveQuery = rewriteFollowupQuery(correctedQuery, domainOpts.history);
   // FORMAT intent, computed early so candidate selection can widen for an
   // OVERVIEW/landscape query (which must survey the whole set, not a few).
   const intent = classifyFormatIntent(effectiveQuery);
 
+  // Domain metadata for the cache fingerprint (Step below) — best-effort; a
+  // missing/failed domain-config load just means the domain/build components
+  // of the key are empty, not a broken cache.
+  let domainConfig = null;
+  try { domainConfig = await loadDomainConfig(); } catch (e) { /* optional */ }
+
   // Determinism guardrail: an identical (normalized) query returns the cached
   // answer verbatim and skips the LLM entirely.
   const onStage = typeof domainOpts.onStage === 'function' ? domainOpts.onStage : () => {};
-  const _ck = answerCacheKey(effectiveQuery, allMethods, domainOpts.history);
+  const _ck = answerCacheKey(effectiveQuery, allMethods, domainOpts.history, {
+    domain: domainConfig?.domain, productSubject: domainBranding.productSubject,
+    buildTimestamp: domainConfig?.buildTimestamp || domainConfig?.built_at || domainConfig?.generated_at,
+  });
   if (_answerCache.has(_ck)) { onStage('done'); return _answerCache.get(_ck); }
   onStage('retrieving');
 
@@ -203,14 +305,26 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
 
   // Step 3: RAG retrieval (client-side). Tag each retrieved PAPER with a stable
   // [P#] id so the answer can cite it inline and the UI can render a chip.
+  // kgData + termDictionary are loaded HERE (not at Step 5) so the pinned-method
+  // paper resolution below can use the KG's method->described_in->paper edge
+  // instead of guessing from a compact-substring match, and so BM25 gets the
+  // domain-dictionary synonym expansion.
   let ragText = '';
   let ragCitations = [];
   let ragAnalytics = {};
   let papersById = [];
+  let kgData = null;
   try {
-    const ragChunks = await loadRagChunks();
+    const [ragChunks, kgDataLoaded, termDictionary] = await Promise.all([
+      loadRagChunks(),
+      loadKgFull().catch(() => null),
+      loadTermDictionary().catch(() => null),
+    ]);
+    kgData = kgDataLoaded;
     if (ragChunks.length) {
-      const scored = await retrieveChunks(effectiveQuery, ragChunks);
+      const scored = await retrieveChunks(effectiveQuery, ragChunks, {
+        termDictionary, attributeTerms: queryKeywords?.attributeTerms,
+      });
       ragCitations = formatRagContext(scored).ragCitations;
       const seen = new Map();
       scored.forEach(chunk => {
@@ -233,15 +347,22 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
       namedMethods.forEach(m => {
         const mc = compactName(m.name);
         if (!mc) return;
-        const covered = [...seen.values()].some(p => {
-          const pc = compactName(p.paper_id);
-          return pc && (pc === mc || pc.startsWith(mc) || mc.startsWith(pc));
-        });
+        // Resolve method->paper via the KG's described_in edge when possible
+        // (precise); only fall back to compact-substring matching — now guarded
+        // by a length-ratio check — when no edge resolves (previously an
+        // open-ended startsWith mis-linked "GraspNet" to "contact-graspnet").
+        const kgPaperId = resolveMethodPaperId(m.name, kgData);
+        const kgPc = kgPaperId ? compactName(kgPaperId) : null;
+        const matchesPaperId = (pid) => {
+          const pc = compactName(pid);
+          if (!pc) return false;
+          if (kgPc) return pc === kgPc;
+          if (pc === mc) return true;
+          return Math.abs(pc.length - mc.length) <= 3 && (pc.startsWith(mc) || mc.startsWith(pc));
+        };
+        const covered = [...seen.values()].some(p => matchesPaperId(p.paper_id));
         if (covered) return;
-        const mChunks = ragChunks.filter(ch => {
-          const pc = compactName(ch.metadata?.paper_id);
-          return pc && (pc === mc || pc.startsWith(mc) || mc.startsWith(pc));
-        });
+        const mChunks = ragChunks.filter(ch => matchesPaperId(ch.metadata?.paper_id));
         if (!mChunks.length) return;
         // Take the chunks with the most query-token overlap (best support for the ask).
         const best = mChunks
@@ -264,8 +385,13 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
       });
 
       papersById = [...seen.values()];
+      // Per-CHUNK budget, not a fixed per-paper total: the first (best-ranked)
+      // chunk keeps 1200 chars, every subsequent chunk keeps 600 — so a paper
+      // with 3 supporting chunks gets ~2400 chars of evidence instead of being
+      // capped at a flat 1600 regardless of how much was retrieved for it.
       ragText = papersById.map(p => {
-        const text = p.chunks.map(c => (c.text || '').slice(0, 1400)).join(' … ').slice(0, 1600);
+        // Cap at 3 chunks/paper too: 1200 + 600 + 600 ≈ the 2400-char budget.
+        const text = p.chunks.slice(0, 3).map((c, i) => (c.text || '').slice(0, i === 0 ? 1200 : 600)).join(' … ');
         return `[${p.tag}] ${p.paper_title}\n${text}`;
       }).join('\n\n');
       ragAnalytics = { papers: [...new Set(papersById.map(p => p.paper_id).filter(Boolean))], totalChunks: scored.length };
@@ -301,14 +427,16 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
 
   // Step 5: KG context — verbalized relations (no arrow logs), seeded from the
   // candidates + RAG papers. Supplements the paper text; never the sole source.
-  let kgData = null;
+  // kgData was already loaded in Step 3 (for the pinned-method resolution above)
+  // — reused here rather than re-fetched.
   let kgContext = '';
   let kgTraversal = [];
   try {
-    kgData = await loadKgFull();
-    const kg = buildKgContext(kgData, candMethods.slice(0, 5).map(m => m.name), { seedPaperIds: ragAnalytics.papers || [] });
-    kgContext = kg.kgContext;
-    kgTraversal = kg.kgTraversal;
+    if (kgData && Array.isArray(kgData.nodes) && kgData.nodes.length) {
+      const kg = buildKgContext(kgData, candMethods.slice(0, 5).map(m => m.name), { seedPaperIds: ragAnalytics.papers || [] });
+      kgContext = kg.kgContext;
+      kgTraversal = kg.kgTraversal;
+    }
   } catch (e) { console.warn('KG context failed:', e); }
 
   onStage('grounding');
@@ -419,13 +547,8 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
       }
       // DEGRADED ANSWER, not an apology: everything below was computed
       // deterministically (no LLM involved), so serve it.
-      const parts = [];
-      if (corpusFacts) parts.push(`**What the corpus data shows:**\n${corpusFacts}`);
-      if (structuredText) parts.push(`**Methods matching your query's attributes:**\n${structuredText}`);
-      if (benchmarkText && !/^No leaderboard/.test(benchmarkText)) parts.push(`**Verified benchmark values:**\n${benchmarkText}`);
-      insightText = parts.length
-        ? `The AI summary is temporarily unavailable — here is what the data itself answers:\n\n${parts.join('\n\n')}`
-        : `The copilot is temporarily unavailable (${llmErr.message}). ${responseData.length} methods are shown below.`;
+      const composed = composeDeterministicAnswer(intent, benchmarkText, corpusFacts, structuredText, candMethods);
+      insightText = composed || `The copilot is temporarily unavailable (${llmErr.message}). ${responseData.length} methods are shown below.`;
     }
   }
 
@@ -509,7 +632,9 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
     kgContext,
     kgTraversal,
     intent,
-    spellCorrection: wasSpellCorrected ? { original: query, corrected: effectiveQuery } : null,
+    // `correctedQuery`, NOT `effectiveQuery` — the follow-up rewrite is an
+    // internal retrieval aid and must never appear in the "did you mean" UI.
+    spellCorrection: wasSpellCorrected ? { original: query, corrected: correctedQuery } : null,
   };
   // Cache successful answers only (don't pin an LLM-unavailable fallback). Simple
   // FIFO cap so a long session can't grow the cache unbounded.

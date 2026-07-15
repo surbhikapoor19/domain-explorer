@@ -1,10 +1,19 @@
 // Copilot structured-answer helpers — the single-source-of-truth core.
 //
-// The model returns ONE JSON object {answer, methods, citations}. `answer` is the
-// markdown prose; `methods` is the set the answer discusses, MOST RELEVANT FIRST.
-// We resolve `methods` to real dataset methods and use them to drive BOTH the
-// highlight set and the comparison table, so the prose and the table can never
-// name different methods (the old bug). Pure + unit-testable; nothing throws.
+// CURRENT protocol (name-based, live): the model returns ONE JSON object
+// {answer, discussed:[{id,why}], citations}. `answer` is markdown prose that
+// names methods by their exact human-readable NAME (bolded), never an id or
+// marker. `discussed` is resolved against the candidate set (resolveMethods /
+// resolveDiscussed) and drives BOTH the highlight set and the comparison table,
+// so the prose and the table can never name different methods (the old bug).
+//
+// methodId / resolveDiscussed / markerIdsInProse below implement an EARLIER
+// [m_...] id-marker protocol (the model citing methods as "[m_vgn]" inline).
+// That protocol is superseded by the name-based one above, but these helpers
+// are kept — they are still exercised by this module's own locked test
+// contract (answer-synthesis.test.js) — so they remain exported and unused by
+// the live prompt/pipeline rather than deleted.
+// Pure + unit-testable; nothing throws.
 
 const STOP = new Set(['the', 'a', 'an', 'of', 'for', 'and', 'to', 'in', 'on', 'with',
   'is', 'are', 'as', 'by', 'how', 'what', 'which', 'that', 'this', 'methods', 'method',

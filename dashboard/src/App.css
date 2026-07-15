@@ -1,7 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════
    GRASP EXPLORER
    Academic research instrument for the COMPARE ecosystem
-   Design: Merriweather + DM Sans, teal primary, coral accent
+   Design: one sans-serif type family, one blue accent, semantic color
+   reserved for verdicts only — same token set as the Benchmarks page
+   (see --bm-* below) so Graph Reasoning and Benchmarks read as one product.
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
@@ -80,9 +82,9 @@ body {
 /* Keep the transient status chip from throwing off the centered tabs. */
 .header-nav .header-status { position: absolute; right: 0; margin-left: 0; }
 .nav-tab:hover { color: var(--primary); }
-.nav-tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+.nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 .copilot-header h1 {
-  font-family: 'Merriweather', Georgia, serif;
+  font-family: inherit;
   font-size: 1.4rem; font-weight: 700; color: var(--dark);
   letter-spacing: -0.02em;
 }
@@ -97,11 +99,11 @@ body {
 .header-status {
   margin-left: auto;
   display: flex; align-items: center; gap: 0.4rem;
-  font-size: 0.72rem; font-weight: 500;
+  font-size: 0.75rem; font-weight: 500;
 }
 .status-computing { color: var(--primary); }
 .status-filter { color: #16794e; }
-.status-highlights { color: var(--accent); }
+.status-highlights { color: var(--primary); }
 .reset-btn {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 3px; padding: 0.15rem 0.5rem; font-size: 0.72rem;
@@ -113,7 +115,7 @@ body {
 /* ─── QUERY BAR ─── */
 .query-section { margin: 0; }
 .query-label {
-  font-size: 0.72rem; color: var(--text-mid); margin-bottom: 0.3rem;
+  font-size: 0.8rem; color: var(--text-mid); margin-bottom: 0.3rem;
   font-weight: 500; letter-spacing: 0.01em;
 }
 /* Rounded pill search bar: leading magnifier · flex input · pill Ask button. */
@@ -373,6 +375,18 @@ body {
      component on the page. */
   margin: 0;
 }
+/* Landing (progressive disclosure): the table opens collapsed to a peek —
+   one line of context, not 56 rows competing with the query bar and the KG
+   below. "Expand table" restores the normal height. */
+.table-panel.compact { max-height: 160px; min-height: 160px; }
+.table-expand-btn {
+  margin-left: 0.4rem;
+  background: rgba(255,255,255,0.15); color: white; border: none;
+  border-radius: 2px; padding: 0.18rem 0.45rem;
+  font-size: 0.72rem; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: background 0.12s;
+}
+.table-expand-btn:hover { background: rgba(255,255,255,0.3); }
 .table-panel-header {
   padding: 0.4rem 0.7rem;
   background: var(--primary-deep); color: white;
@@ -403,12 +417,13 @@ body {
 .table-search:focus { border-color: var(--primary); }
 .table-filter-actions { display: flex; gap: 0.2rem; }
 .filter-apply-btn {
-  background: var(--accent); color: white; border: none;
+  background: var(--primary); color: white; border: none;
   border-radius: 2px; padding: 0.22rem 0.5rem;
   font-size: 0.7rem; font-weight: 700; cursor: pointer;
   font-family: inherit; transition: background 0.12s;
 }
-.filter-apply-btn:hover { background: #c24e35; }
+.filter-apply-btn:hover:not(:disabled) { background: var(--primary-deep); }
+.filter-apply-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
 .filter-clear-btn {
   background: var(--border); color: var(--text-mid); border: none;
   border-radius: 2px; padding: 0.22rem 0.4rem;
@@ -427,7 +442,7 @@ body {
 .th-content { display: flex; flex-direction: column; gap: 0.12rem; }
 .th-label { font-size: 0.7rem; }
 .th-filter {
-  font-size: 0.63rem; padding: 0.1rem 0.15rem;
+  font-size: 0.75rem; padding: 0.1rem 0.15rem;
   border: 1px solid var(--border); border-radius: 2px;
   background: white; max-width: 120px; font-family: inherit;
 }
@@ -435,7 +450,7 @@ body {
 
 .table-scroll { overflow: auto; flex: 1; }
 
-.data-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
 .data-table thead { position: sticky; top: 0; z-index: 2; }
 .data-table th {
   background: var(--table-head);
@@ -1698,9 +1713,10 @@ body {
 .gr-page-header {
   margin-bottom: 0.75rem; padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--border);
+  scroll-margin-top: 190px; /* keeps the answer heading clear of the sticky query bar on auto-scroll */
 }
 .gr-page-header h2 {
-  font-family: 'Merriweather', Georgia, serif;
+  font-family: inherit;
   font-size: 1.2rem; font-weight: 700; color: var(--dark);
   margin: 0 0 0.15rem;
 }
@@ -1760,15 +1776,19 @@ body {
 }
 .gr-empty-example:hover { border-color: var(--primary); color: var(--primary); }
 
-/* ── Loading ── */
+/* ── Loading ──
+   A compact banner ABOVE the (dimmed) previous content — not a full-page
+   replacement. The user keeps their bearings (the landing, or the previous
+   answer on a follow-up query) instead of staring at a blank page for 5-15s. */
 .gr-loading {
-  text-align: center; padding: 3rem;
-  color: var(--primary); font-size: 0.88rem;
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.5rem 0.75rem; margin-bottom: 0.6rem;
+  background: var(--primary-wash); border: 1px solid var(--border-light); border-radius: 5px;
+  color: var(--primary); font-size: 0.82rem; font-weight: 600;
 }
 .gr-loading-bar {
-  width: 120px; height: 3px;
+  width: 60px; height: 3px; flex-shrink: 0;
   background: var(--border);
-  margin: 0 auto 0.75rem;
   border-radius: 2px;
   overflow: hidden;
   position: relative;
@@ -1780,6 +1800,15 @@ body {
   animation: gr-slide 1s ease-in-out infinite;
 }
 @keyframes gr-slide { to { left: 100%; } }
+
+/* The previously-rendered content (landing, or the prior answer on a
+   follow-up) stays visible but visibly inert while a query is in flight. */
+.gr-querying .gr-querying-content {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: saturate(0.7);
+  transition: opacity 0.15s;
+}
 
 /* ── Stats bar ── */
 .gr-stats {
@@ -5027,10 +5056,15 @@ body {
 }
 .gr-comparison-table .gr-cmp-method-h,
 .gr-comparison-table .gr-cmp-cell { min-width: 150px; max-width: 340px; }
+/* Neutral outlined chip — cluster color is the encoded variable on the
+   scatter/graph views only; here it would just be decorative noise, so every
+   method gets the same chip regardless of which cluster it belongs to. */
 .gr-cmp-method-btn {
-  background: none; border: none; padding: 0; font: inherit; font-weight: 700;
-  cursor: pointer; text-align: left; border-bottom: 1px dashed currentColor;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+  padding: 3px 11px; font: inherit; font-weight: 700; color: var(--text);
+  cursor: pointer; text-align: left;
 }
+.gr-cmp-method-btn:hover { border-color: var(--primary); color: var(--primary); }
 .gr-cmp-collapse {
   margin-left: auto; background: none; border: 1px solid var(--border); border-radius: 5px;
   padding: 0.2rem 0.55rem; font-family: inherit; font-size: 0.72rem; font-weight: 700;
@@ -5065,7 +5099,7 @@ body {
 .gr-comparison-table thead th { background: #f8fafc; font-weight: 600; color: #4a5568; }
 .gr-cmp-dim-h { width: 200px; }
 .gr-cmp-method-h {
-  border-top: 3px solid var(--primary, #185A7C);
+  border-top: 3px solid var(--border);
   font-weight: 700;
   font-size: 13px;
 }
@@ -5283,6 +5317,7 @@ body {
 .bmr-tag-ds { background: #eef4f8; border-color: rgba(22, 101, 125, 0.35); color: var(--primary-deep); }
 .bmr-tag-rep { background: #f4f1fa; border-color: #d6c9ee; color: #5b3fa8; }
 .bmr-tag-requote { background: #fdf3e7; border-color: #f2d9b8; color: #92400e; }
+.bmr-tag-self { background: #fdf3e7; border-color: #f2d9b8; color: #92400e; }
 .bmr-unverified { font-size: 0.66rem; font-weight: 600; color: var(--text-muted); font-style: italic; }
 
 /* Multi-source provenance drawer: one block per reported value. */
@@ -5347,6 +5382,10 @@ body {
   font-family: inherit; font-size: 0.76rem; font-weight: 700; color: var(--dark);
 }
 .bmr-facet-head:hover { color: var(--primary); }
+.bmr-facet-headrow { display: flex; align-items: center; gap: 0.25rem; }
+.bmr-facet-headrow .bmr-facet-head { width: auto; flex: 1 1 auto; min-width: 0; }
+.bmr-facet-help { flex-shrink: 0; }
+.bmr-table thead th .chart-help { margin-left: 0.25rem; vertical-align: middle; }
 .bmr-facet-chev { color: var(--text-muted); font-size: 0.62rem; width: 0.7rem; flex-shrink: 0; }
 .bmr-facet-name { flex: 1; }
 .bmr-facet-selcount {
@@ -5371,6 +5410,9 @@ body {
 .bmr-opt-check { width: 0.8rem; flex-shrink: 0; color: var(--primary); font-weight: 800; }
 .bmr-opt-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bmr-opt-count { font-variant-numeric: tabular-nums; font-size: 0.66rem; color: var(--text-muted); flex-shrink: 0; }
+/* A conditionally-zero facet option (dead-end under the current selection) stays
+   clickable — muted, not disabled — so removing a sibling selection is obvious. */
+.bmr-opt.zero { opacity: 0.45; }
 .bmr-facet-none { font-size: 0.7rem; color: var(--text-muted); padding: 0.3rem 0.4rem; font-style: italic; }
 .bmr-results { flex: 1; min-width: 0; }
 .bmr-results-count { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.6rem; font-variant-numeric: tabular-nums; }
@@ -7535,4 +7577,38 @@ textarea:focus-visible,
   font-size: 0.72rem;
   color: var(--text-muted);
   white-space: nowrap;
+}
+
+/* Admin: collapsible "Extraction keys & models" callout above the domain list. */
+.admin-info-callout {
+  margin-bottom: 0.75rem;
+}
+.admin-info-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary, #185a7c);
+}
+.admin-info-toggle:hover { text-decoration: underline; }
+.admin-info-body {
+  margin-top: 0.4rem;
+  background: #f9fafb;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.75rem;
+  color: #374151;
+}
+.admin-info-body p { margin: 0 0 0.5rem; }
+.admin-info-body p:last-child { margin-bottom: 0; }
+.admin-info-body ul { margin: 0 0 0.5rem; padding-left: 1.1rem; }
+.admin-info-body li { margin-bottom: 0.25rem; }
+.admin-info-body code {
+  font-size: 0.72rem;
+  background: #eef2f7;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
 }

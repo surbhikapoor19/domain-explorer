@@ -12,7 +12,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import AnswerMarkdown from './AnswerMarkdown';
 import Tooltip from './Tooltip';
-import { CLUSTER_COLORS } from '../constants';
 import { useDomainConfig } from '../DomainContext';
 
 // Per-status copy: a short pill tooltip plus the plain-English meaning used in
@@ -41,11 +40,6 @@ const GRASP_PRIORITY_DIMS = [
 
 const MAX_ANCHORS = 4;
 const SCORE_THRESHOLD = 0.5;
-
-function clusterColor(clusterId) {
-  if (clusterId == null) return 'var(--primary, #185A7C)';
-  return CLUSTER_COLORS[clusterId % CLUSTER_COLORS.length];
-}
 
 function normalize(v) {
   if (!v) return '';
@@ -197,14 +191,14 @@ export default function AnswerBlock({
                       <th
                         key={m.name}
                         className="gr-cmp-method-h"
-                        style={{ borderTopColor: clusterColor(m.cluster) }}
                       >
                         {/* The header IS the method affordance (the old chips row
-                            above duplicated these exact names). */}
+                            above duplicated these exact names). Neutral outlined
+                            chip — cluster color is reserved for the scatter/graph
+                            views, where cluster is the encoded variable. */}
                         <button
                           type="button"
                           className="gr-cmp-method-btn"
-                          style={{ color: clusterColor(m.cluster) }}
                           onClick={() => onMethodClick && onMethodClick(m.name)}
                           aria-label={`Highlight ${m.name} across the page`}
                           title={`Highlight ${m.name} across the page`}
@@ -234,7 +228,6 @@ export default function AnswerBlock({
                             <td
                               key={m.name}
                               className="gr-cmp-cell"
-                              style={{ borderLeftColor: clusterColor(m.cluster) }}
                             >
                               {/* Plain text on purpose: term-highlight chips inside
                                   cells turned the table into colored noise. */}

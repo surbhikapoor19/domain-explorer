@@ -19,7 +19,7 @@ const RETRAIN = new Set(['noretrain']);
 // searchable dropdown because there are many distinct methods).
 export const TAG_CATEGORY_ORDER = [
   'Method', 'Metric', 'Dataset', 'Scene', 'Success criterion', 'Camera view', 'Depth noise',
-  'Object set', 'Training', 'Measurement scope', 'Reported by', 'Evidence grade',
+  'Object set', 'Training', 'Measurement scope', 'Reported by', 'Corroboration', 'Evidence grade',
 ];
 
 function tokenCategory(t) {
@@ -38,6 +38,22 @@ function scopeLabel(t) {
   return t.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
+// A Measurement-scope condition token is redundant when it's just re-stating the
+// metric itself (e.g. condition "latency" on a metric already labeled "Latency
+// (ms)") — that's a duplicate chip, not new information. Normalize away
+// non-alphanumerics so "success-rate" matches "success_rate"/"Success Rate (%)".
+// "success-rate-k" is kept even on a success_rate metric — it's additive (states
+// K), not a restatement.
+function normScope(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function isRedundantScope(token, metricId, metricLabel) {
+  if (token === 'success-rate-k') return false;
+  const nt = normScope(token);
+  if (!nt) return false;
+  const nid = normScope(metricId);
+  const nlabel = normScope(metricLabel);
+  return (!!nid && nid.includes(nt)) || (!!nlabel && nlabel.includes(nt));
+}
+
 // Shared: turn a (method, metricId, metricLabel, condition, grade) into the tag list
 // + tagKeys that drive the filter rail. Metric tag VALUE = metricId when the metric
 // is recognized (so all success-rate results group under one facet), else the raw
@@ -49,10 +65,18 @@ function buildTags({ method, metricId, metricLabel, condition, grade }) {
   ];
   for (const t of (condition || '').split(':').filter(Boolean)) {
     const cat = tokenCategory(t);
+    if (cat === 'Measurement scope' && isRedundantScope(t, metricId, metricLabel)) continue;
     tags.push({ cat, value: t, label: cat === 'Measurement scope' ? scopeLabel(t) : humanizeFacet(t) });
   }
   if (grade) tags.push({ cat: 'Evidence grade', value: grade, label: `Grade ${grade}` });
   return tags;
+}
+
+// A re-quoted/copied baseline is a distinct provenance concern from evidence grade
+// (it's about WHERE the number came from, not how confident the extraction is) —
+// surface it as its own filterable facet rather than only a card-level chip.
+function isRequoted(corroboration) {
+  return corroboration === 'caption_copied_baseline' || corroboration === 'identical_values_suspected_copy';
 }
 
 /**
@@ -83,6 +107,9 @@ export function buildResultRecords(benchmarkData) {
           ? { cat: 'Reported by', value: 'self', label: 'Self-reported' }
           : { cat: 'Reported by', value: 'third-party', label: 'Reported by another paper' });
       }
+      if (isRequoted(r.corroboration)) {
+        tags.push({ cat: 'Corroboration', value: 'requoted', label: 'Re-quoted baseline' });
+      }
       out.push({
         id: `${r.paper_id}::${r.method}::${metricLabel}::${cond}::${i}`,
         method: r.method,
@@ -99,6 +126,7 @@ export function buildResultRecords(benchmarkData) {
         papers: r.paper_id ? [r.paper_id] : [],
         higherIsBetter: r.higher_is_better,
         condition: cond,
+        page: r.page != null ? r.page : null,
         sources: [{
           paper: r.paper_id, value_str: r.value_str, metric_raw: r.metric_raw,
           condition: r.condition, table_caption: r.table_caption, page: r.page,
@@ -122,6 +150,9 @@ export function buildResultRecords(benchmarkData) {
     const cond = lb.condition || '';
     for (const e of (lb.entries || [])) {
       const tags = buildTags({ method: e.method, metricId: lb.metric_id, metricLabel, condition: cond, grade: e.grade });
+      if (isRequoted(e.corroboration)) {
+        tags.push({ cat: 'Corroboration', value: 'requoted', label: 'Re-quoted baseline' });
+      }
       out.push({
         id: `${key}::${e.method}`,
         method: e.method,

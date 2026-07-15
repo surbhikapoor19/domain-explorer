@@ -25,22 +25,23 @@ export function classifyIntent(query) {
   return 'BROAD';
 }
 
+// The intent's preferred layers are a SOFT BOOST, not a hard filter. A hard
+// filter here starved most queries down to their preferred layer(s) only — a
+// BROAD query (the default classification) never saw anything but the coarse
+// quarter of the corpus, missing the mid/fine layers (2070 fine chunks) entirely.
+const LAYER_BOOST = 0.1; // additive, small — never enough to invert a real match
+
 export function searchChunks(queryEmbedding, { topK = 10, intent = 'BROAD' } = {}) {
   if (!chunks.length || !queryEmbedding?.length) return [];
   const targetLayers = new Set(INTENT_LAYERS[intent] || ['coarse', 'mid', 'fine']);
 
-  const scored = chunks
-    .filter(c => c.embedding?.length && targetLayers.has(c.metadata?.layer))
-    .map(c => ({ ...c, score: cosineSimilarity(queryEmbedding, c.embedding) }))
+  return chunks
+    .filter(c => c.embedding?.length)
+    .map(c => {
+      const base = cosineSimilarity(queryEmbedding, c.embedding);
+      const score = targetLayers.has(c.metadata?.layer) ? base + LAYER_BOOST : base;
+      return { ...c, score };
+    })
     .sort((a, b) => b.score - a.score)
     .slice(0, topK);
-
-  if (scored.length === 0) {
-    return chunks
-      .filter(c => c.embedding?.length)
-      .map(c => ({ ...c, score: cosineSimilarity(queryEmbedding, c.embedding) }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topK);
-  }
-  return scored;
 }

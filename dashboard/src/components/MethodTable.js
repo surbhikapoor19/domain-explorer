@@ -14,6 +14,10 @@ function getUniqueValues(data, col) {
   return [...vals].sort();
 }
 
+// A re-map below this many methods produces a near-meaningless UMAP (too few
+// points to project), so the "focus" action is disabled below this floor.
+const MIN_FOCUS_METHODS = 3;
+
 export default function MethodTable({
   data,
   allData,
@@ -24,11 +28,16 @@ export default function MethodTable({
   onHover,
   onUnhover,
   onFilter,
+  // Progressive disclosure on the landing view: opens collapsed to a peek
+  // (~160px) with an "Expand table" affordance, instead of competing with
+  // the query bar and the knowledge graph below for the user's first look.
+  compact,
 }) {
   const { shortNames, tableColumns } = useDomainConfig();
   const [filters, setFilters] = useState({});
   const [searchText, setSearchText] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const hasHighlights = highlightedMethods.length > 0;
 
   // Use allData (full 56) for unique filter values, fall back to data
@@ -114,8 +123,10 @@ export default function MethodTable({
     setFilters(newFilters);
   };
 
+  const canFocus = filteredData.length >= MIN_FOCUS_METHODS;
+
   const handleApplyFilter = () => {
-    if (onFilter) {
+    if (onFilter && canFocus) {
       const methodNames = filteredData.map(d => d.name);
       onFilter(methodNames.length < data.length ? methodNames : null);
     }
@@ -127,8 +138,13 @@ export default function MethodTable({
     if (onFilter) onFilter(null);
   };
 
+  // On the landing view the table opens collapsed to a peek; "Expand table"
+  // restores the normal working height. Non-compact usages (post-answer,
+  // Benchmarks, Explorer) are unaffected — always full height.
+  const isCompact = compact && !expanded;
+
   return (
-    <div className="table-panel">
+    <div className={`table-panel ${isCompact ? 'compact' : ''}`}>
       <div className="table-panel-header">
         <span>Method Explorer</span>
         <span className="method-count">{filteredData.length} of {data.length}</span>
@@ -136,9 +152,14 @@ export default function MethodTable({
           <span className="hl-indicator">{highlightedMethods.length} highlighted</span>
         )}
         <button className="filter-toggle-btn" onClick={() => setFiltersOpen(!filtersOpen)}>
-          {filtersOpen ? 'Hide Filters' : 'Filters'}
+          {filtersOpen ? 'Hide filters' : 'Filter table'}
           {activeFilterCount > 0 && ` (${activeFilterCount})`}
         </button>
+        {compact && (
+          <button className="table-expand-btn" onClick={() => setExpanded(e => !e)}>
+            {expanded ? 'Collapse table' : 'Expand table'}
+          </button>
+        )}
       </div>
 
       {filtersOpen && (
@@ -153,8 +174,13 @@ export default function MethodTable({
           />
           {activeFilterCount > 0 && (
             <div className="table-filter-actions">
-              <button className="filter-apply-btn" onClick={handleApplyFilter}>
-                Re-cluster ({filteredData.length} methods)
+              <button
+                className="filter-apply-btn"
+                onClick={handleApplyFilter}
+                disabled={!canFocus}
+                title={canFocus ? '' : 'Needs at least 3 methods to re-map'}
+              >
+                Focus map on {filteredData.length} method{filteredData.length === 1 ? '' : 's'}
               </button>
               <button className="filter-clear-btn" onClick={handleClearFilters}>
                 Clear
@@ -173,17 +199,19 @@ export default function MethodTable({
                 <th key={col}>
                   <div className="th-content">
                     <span className="th-label">{shortNames[col] || col}</span>
-                    <select
-                      className="th-filter"
-                      aria-label={`Filter by ${shortNames[col] || col}`}
-                      value={filters[col] || ''}
-                      onChange={e => handleFilterChange(col, e.target.value)}
-                    >
-                      <option value="">All</option>
-                      {(columnValues[col] || []).map(v => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
+                    {filtersOpen && (
+                      <select
+                        className="th-filter"
+                        aria-label={`Filter by ${shortNames[col] || col}`}
+                        value={filters[col] || ''}
+                        onChange={e => handleFilterChange(col, e.target.value)}
+                      >
+                        <option value="">All</option>
+                        {(columnValues[col] || []).map(v => (
+                          <option key={v} value={v}>{v}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 </th>
               ))}
