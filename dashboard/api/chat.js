@@ -66,43 +66,64 @@ export default async function handler(req, res) {
   }
   const cappedMaxTokens = Math.min(Number(max_tokens) || 1024, MAX_TOKENS_CAP);
 
+  const geminiKey = process.env.GEMINI_API_KEY || '';
+  const geminiModel = process.env.GEMINI_MODEL || 'gemini-flash-latest';
   const groqKey = process.env.GROQ_API_KEY || '';
   const groqModel = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
-  if (!groqKey) {
-    return res.status(500).json({ error: 'No LLM API key configured. Set GROQ_API_KEY in Vercel env vars.' });
+  if (!geminiKey && !groqKey) {
+    return res.status(500).json({ error: 'No LLM API key configured. Set GEMINI_API_KEY or GROQ_API_KEY in Vercel env vars.' });
   }
+
+  // Gemini via its OpenAI-compatible endpoint — same request shape as Groq.
+  const callGemini = () => fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${geminiKey}` },
+    body: JSON.stringify({
+      model: geminiModel, messages, max_tokens: cappedMaxTokens, temperature,
+      ...(response_format ? { response_format } : {}),
+    }),
+  });
 
   const callGroq = () => fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${groqKey}`,
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
     body: JSON.stringify({
       model: groqModel, messages, max_tokens: cappedMaxTokens, temperature,
-      // gpt-oss are REASONING models: their hidden reasoning consumes
-      // max_tokens. Keep it short or long prompts produce empty/truncated
-      // answers (and json_object mode hard-400s with an empty generation).
+      // gpt-oss are REASONING models: hidden reasoning consumes max_tokens.
       ...(/gpt-oss/i.test(groqModel) ? { reasoning_effort: 'low' } : {}),
       ...(response_format ? { response_format } : {}),
     }),
   });
 
-  try {
-    let groqRes = await callGroq();
-    // One retry with backoff on a transient failure (429 rate-limit / 5xx) —
-    // these are the cases worth retrying; a 4xx like a bad request is not.
-    if (!groqRes.ok && (groqRes.status === 429 || groqRes.status >= 500)) {
-      await new Promise(r => setTimeout(r, 2000));
-      groqRes = await callGroq();
+  // Gemini is the default when its key is set; Groq is the fallback. A quota/5xx
+  // OR a 200-with-empty-completion on the first provider fails over to the next,
+  // so a thin Gemini quota never leaves the copilot blank.
+  const providers = [];
+  if (geminiKey) providers.push({ name: 'gemini', call: callGemini });
+  if (groqKey) providers.push({ name: 'groq', call: callGroq });
+
+  let lastStatus = 500;
+  let lastErr = 'no provider available';
+  for (const p of providers) {
+    try {
+      let r = await p.call();
+      if (!r.ok && (r.status === 429 || r.status >= 500)) {
+        await new Promise(res2 => setTimeout(res2, 1500));
+        r = await p.call();
+      }
+      if (r.ok) {
+        const data = await r.json();
+        const content = data?.choices?.[0]?.message?.content;
+        if (content && content.trim()) {
+          return res.status(200).json(data);
+        }
+        lastStatus = 502; lastErr = `${p.name}: empty completion`;
+        continue; // try the next provider
+      }
+      lastStatus = r.status; lastErr = `${p.name}: ${await r.text()}`;
+    } catch (e) {
+      lastStatus = 500; lastErr = `${p.name}: ${e.message}`;
     }
-    if (groqRes.ok) {
-      const data = await groqRes.json();
-      return res.status(200).json(data);
-    }
-    const errText = await groqRes.text();
-    return res.status(groqRes.status).json({ error: errText });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
   }
+  return res.status(lastStatus).json({ error: lastErr });
 }
