@@ -383,11 +383,13 @@ def build_benchmark_json(records, cfg):
 
     # Known-method universe for salvaging unresolved raw names: a raw variant that
     # compacts to a known method id ("GG-CNN" vs "GGCNN") joins the canonical name.
+    # '+' is KEPT in the compact form: it is method-distinguishing ("PointNet++GPD"
+    # is NOT "PointNetGPD"), so stripping it would wrongly merge two distinct methods.
     known_by_compact = {}
     for r in records:
         if r.method_id:
             known_by_compact.setdefault(
-                re.sub(r'[^a-z0-9]+', '', str(r.method_id).lower()), r.method_id)
+                re.sub(r'[^a-z0-9+]+', '', str(r.method_id).lower()), r.method_id)
 
     results = []
     n_dropped_noise = 0
@@ -399,7 +401,7 @@ def build_benchmark_json(records, cfg):
         method_name = r.method_id or clean_method_name(r.method_raw)
         method_resolved = bool(r.method_id)
         if not method_resolved and method_name:
-            canon = known_by_compact.get(re.sub(r'[^a-z0-9]+', '', str(method_name).lower()))
+            canon = known_by_compact.get(re.sub(r'[^a-z0-9+]+', '', str(method_name).lower()))
             if canon:
                 method_name, method_resolved = canon, True
         if not is_valid_method_name(method_name):

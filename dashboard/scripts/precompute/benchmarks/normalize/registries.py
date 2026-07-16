@@ -47,7 +47,18 @@ class MetricRegistry:
         if mid is None:
             return MetricHit(None, None, None, 'unknown', raw)
         m = self._meta[mid]
-        return MetricHit(mid, m.get('unit'), m.get('higher_is_better'), m.get('type', 'unknown'), raw)
+        # Explicit unit token in the RAW string wins over the metric's default
+        # unit (e.g. a timing metric printed in seconds must not be tagged 'ms').
+        # Only override when a token is clearly present; else keep the default.
+        unit = m.get('unit')
+        rl = raw.lower()
+        if re.search(r'\(ms\)|\bms\b', rl):
+            unit = 'ms'
+        elif re.search(r'\(s\)|\bs\b|\(sec\)|\bseconds?\b', rl):
+            unit = 's'
+        elif re.search(r'\(fps\)|\bfps\b', rl):
+            unit = 'fps'
+        return MetricHit(mid, unit, m.get('higher_is_better'), m.get('type', 'unknown'), raw)
 
 class ConditionRegistry:
     def __init__(self, cfg):
@@ -105,7 +116,19 @@ class MethodResolver:
         # legitimate short name (e.g. "S4G", "GPD"), so this only gates the fuzzy branch.
         if not re.search(r'[a-z]', n):
             return MethodHit(None, 'low', raw)
+        # Conservative fuzzy-contains: never let a short cell fragment steal a
+        # longer method's identity. Only attempt a fuzzy match when the candidate
+        # itself is substantial (>=5 chars), which kills 3-char fragments ("reg").
+        # Direction A: a full method name (>=5 chars) sitting inside a longer
+        # descriptive cell (e.g. "NeuGraspNet (ours)") -> medium.
         for key, full in self._exact.items():
-            if len(key) >= 5 and (key in n or n in key):
+            if len(key) >= 5 and key in n:
                 return MethodHit(full, 'medium', raw)
+        # Direction B: candidate == a whole, space-delimited token of EXACTLY
+        # ONE method name (unique acronym/name token: vgn/gpd/giga/orbitgrasp).
+        # A substring of a token (reg in region/regnet, point in pointnetgpd)
+        # or a token shared by multiple methods (grasp) must NOT match.
+        owners = {full for key, full in self._exact.items() if n in key.split()}
+        if len(owners) == 1:
+            return MethodHit(next(iter(owners)), 'medium', raw)
         return MethodHit(None, 'low', raw)

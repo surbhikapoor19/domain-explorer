@@ -82,6 +82,27 @@ def test_results_salvage_raw_method_variant_to_canonical_name():
     salvaged = [r for r in out['results'] if r['paper_id'] == 'p2'][0]
     assert salvaged['method_resolved'] is True
 
+def test_plusplus_variant_not_merged_into_base_method():
+    """'PointNet++GPD' (a paper's own method) must NOT be compact-merged into the
+    DISTINCT baseline 'PointNetGPD' listed in the same table. The '++' is
+    method-distinguishing; stripping it conflated two methods (audit misattribution).
+    The hyphen/space salvage (ContactGraspNet -> Contact-GraspNet) must still work."""
+    recs = [
+        ResultRecord(paper_id="pointnet-plus-gpd", method_raw="PointNetGPD", method_id="PointNetGPD",
+                     metric_raw="success rate", metric_id="success_rate", unit="%",
+                     higher_is_better=True, value=62.5, value_str="62.5"),
+        ResultRecord(paper_id="pointnet-plus-gpd", method_raw="PointNet++GPD", method_id=None,
+                     metric_raw="success rate", metric_id="success_rate", unit="%",
+                     higher_is_better=True, value=71.0, value_str="71"),
+    ]
+    out = build_benchmark_json(recs, CFG)
+    names = {r['method'] for r in out['results']}
+    assert 'PointNet++GPD' in names, f"'++' variant was merged away: {names}"
+    pp = [r for r in out['results'] if r['method'] == 'PointNet++GPD'][0]
+    assert pp['value'] == 71.0 and pp['method_resolved'] is False
+    base = [r for r in out['results'] if r['method'] == 'PointNetGPD']
+    assert base and base[0]['value'] == 62.5   # baseline stays its own distinct method
+
 def test_artifact_rows_rejected_and_enumeration_stripped():
     from benchmarks.aggregate.build_benchmarks import clean_method_name, is_valid_method_name
     # enumerated baseline rows lose their row number ("2 GPT4-Vision" bug)
