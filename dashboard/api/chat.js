@@ -39,7 +39,7 @@ function isAllowedOrigin(req) {
   }
 }
 
-const MAX_TOKENS_CAP = 2500;
+const MAX_TOKENS_CAP = 4000; // headroom above the copilot's 3000-token overview budget (+ gpt-oss reasoning), while still refusing absurd requests that would burn the shared key
 const MAX_BODY_BYTES = 60000; // messages payload guard — RAG+KG+benchmark context is a few KB, not tens of KB
 
 export default async function handler(req, res) {
