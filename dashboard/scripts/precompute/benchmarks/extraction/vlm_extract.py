@@ -59,6 +59,24 @@ def call_vlm_groq(png_bytes, api_key, model=None):
         data = json.loads(r.read())
     return data["choices"][0]["message"]["content"] or ""
 
+
+def call_vlm_fallback(png_bytes, prompt=SCHEMA_INSTRUCTION, max_tokens=8000):
+    """Route a table crop through the shared multi-provider VISION fallback
+    (Groq -> Gemini -> Anthropic), skipping any provider whose key env is unset.
+    Same return contract as call_vlm / call_vlm_groq: returns the model's raw text
+    for parse_vlm_rows. The Groq happy path is byte-identical to call_vlm_groq
+    (same model/UA/endpoint/messages, max_tokens=8000). Raises
+    llm_fallback.LLMUnavailable only when EVERY configured provider fails, so the
+    build can surface why (convention [A]/[B])."""
+    import os, sys
+    lib = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), '..', '..', '..', '..', '..', 'scripts', 'lib'))
+    if lib not in sys.path:
+        sys.path.insert(0, lib)
+    from llm_fallback import call_vision
+    return call_vision(png_bytes, prompt, max_tokens=max_tokens)
+
+
 def parse_vlm_rows(vlm_text, loc, cfg, resolver):
     mreg, creg = MetricRegistry(cfg), ConditionRegistry(cfg)
     m = re.search(r'\{.*\}', vlm_text, re.DOTALL)

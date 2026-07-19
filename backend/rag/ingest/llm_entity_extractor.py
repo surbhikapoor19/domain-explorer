@@ -175,10 +175,32 @@ def _parse_llm_response(response: str) -> list:
         return []
 
 
-def _create_llm_fn(provider: str = "groq"):
-    """Create a standalone LLM function (doesn't import app.py)."""
+def _import_call_text():
+    """Best-effort import of the shared multi-provider LLM fallback (scripts/lib).
+
+    Returns ``call_text`` or ``None``. ``None`` means the fallback lib isn't
+    importable, in which case the extractor keeps its original single-provider
+    behaviour — the fallback is purely additive resilience, never a hard dependency.
+    """
+    try:
+        import sys
+        lib = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), '..', '..', '..', 'scripts', 'lib'))
+        if lib not in sys.path:
+            sys.path.insert(0, lib)
+        from llm_fallback import call_text
+        return call_text
+    except Exception:
+        return None
+
+
+def _build_primary_llm_fn(provider: str = "groq"):
+    """Create a standalone single-provider LLM function (doesn't import app.py)."""
     if provider == "claude":
         api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        # claude-sonnet-4-20250514 retired 2026-06-15 (404s); default to a
+        # current model, override via env like the groq branch's GROQ_MODEL.
+        model = os.environ.get("CLAUDE_MODEL", "claude-haiku-4-5")
         if not api_key:
             raise ValueError("ANTHROPIC_API_KEY not set")
         import anthropic
@@ -195,7 +217,7 @@ def _create_llm_fn(provider: str = "groq"):
                     user_msgs.append(m)
 
             response = client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model=model,
                 max_tokens=max_tokens,
                 system=system_msg if system_msg else "",
                 messages=user_msgs,
@@ -245,6 +267,73 @@ def _create_llm_fn(provider: str = "groq"):
         raise ValueError(f"Unsupported provider: {provider}")
 
 
+def _create_llm_fn(provider: str = "groq"):
+    """Create the LLM function used by the extraction pipeline.
+
+    Additive multi-provider resilience: the requested provider is tried FIRST
+    (unchanged happy path — if Groq works, behaviour is identical to before), and
+    only on a call-time failure does the shared fallback (Groq -> Gemini ->
+    Anthropic -> HuggingFace, skipping unset keys) take over. If the primary
+    provider can't even be constructed (missing key / SDK) the fallback is used
+    directly. When the fallback lib isn't importable, behaviour is exactly the
+    original single-provider one.
+    """
+    call_text = _import_call_text()
+    try:
+        primary = _build_primary_llm_fn(provider)
+    except Exception:
+        # Primary provider unavailable (missing key / SDK). Use the fallback alone if
+        # we have it; otherwise preserve the original hard failure.
+        if call_text is None:
+            raise
+
+        def llm_fn(messages, max_tokens=1024, temperature=0.1):
+            return call_text(messages, max_tokens=max_tokens, temperature=temperature)
+        return llm_fn
+
+    if call_text is None:
+        return primary  # unchanged behaviour when the fallback lib isn't importable
+
+    def llm_fn(messages, max_tokens=1024, temperature=0.1):
+        try:
+            return primary(messages, max_tokens=max_tokens, temperature=temperature)
+        except Exception:
+            # Primary failed at call time (rate limit, 5xx, empty). Roll to the
+            # multi-provider fallback before surfacing failure. The happy path
+            # (primary works) never reaches here.
+            return call_text(messages, max_tokens=max_tokens, temperature=temperature)
+    return llm_fn
+
+
+# ---------------------------------------------------------------------------
+# Chunk-level checkpoint sidecar
+# ---------------------------------------------------------------------------
+# When a paper is deferred (a chunk's LLM call fails), tokens already spent on
+# its OTHER, successful chunks must not be wasted on the next resume. A sidecar
+# file next to the main output banks per-chunk results: {paper_id: {chunk_id:
+# [entities]}}. It is written after EACH successful chunk (not once per paper)
+# so a mid-paper crash loses at most the chunk in flight.
+
+def _sidecar_path(output_path: str) -> str:
+    """Same path as `output_path` with `.partial.json` inserted before `.json`."""
+    root, ext = os.path.splitext(output_path)
+    if ext == ".json":
+        return root + ".partial.json"
+    return output_path + ".partial.json"
+
+
+def _load_sidecar(path: str) -> dict:
+    """Tolerant load: a missing or unparseable sidecar is treated as empty."""
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, ValueError, OSError):
+        logger.warning(f"Could not parse checkpoint sidecar {path}; starting fresh")
+        return {}
+
+
 # ---------------------------------------------------------------------------
 # Extraction pipeline
 # ---------------------------------------------------------------------------
@@ -256,6 +345,7 @@ def extract_entities_from_chunk(
     rhetorical_role: str,
     chunk_id: str,
     llm_fn,
+    stats: dict = None,
 ) -> list:
     """Extract entities from a single chunk via LLM.
 
@@ -283,6 +373,8 @@ def extract_entities_from_chunk(
         entities = _parse_llm_response(response)
     except Exception as e:
         logger.warning(f"LLM call failed for {paper_id}/{chunk_id}: {e}")
+        if stats is not None:
+            stats["llm_errors"] = stats.get("llm_errors", 0) + 1
         return []
 
     # Enrich with source metadata
@@ -300,11 +392,22 @@ def extract_entities_for_paper(
     collection,
     llm_fn,
     delay: float = 2.0,
-) -> list:
+    banked_chunks: dict = None,
+    checkpoint_cb=None,
+) -> tuple:
     """Extract entities from all relevant chunks of a paper.
 
     Reads chunks from ChromaDB, filters by rhetorical_role, calls LLM.
+    `banked_chunks` maps chunk_id -> [entities] already extracted in a prior
+    (deferred) run; those chunks are reused without another LLM call, and are
+    mutated in place as new chunks succeed this run. `checkpoint_cb`, if given,
+    is called after EACH newly-successful chunk so a crash mid-paper does not
+    lose chunks that already succeeded in this same paper.
+    Returns (entities, n_llm_errors) so the caller can refuse to checkpoint
+    papers whose chunks silently failed (e.g. rate-limit exhaustion).
     """
+    banked_chunks = {} if banked_chunks is None else banked_chunks
+
     # Fetch all chunks for this paper
     results = collection.get(
         where={"paper_id": paper_id},
@@ -313,10 +416,11 @@ def extract_entities_for_paper(
 
     if not results or not results.get("documents"):
         logger.warning(f"No chunks found for paper {paper_id}")
-        return []
+        return [], 0
 
     all_entities = []
     chunks_processed = 0
+    stats = {"llm_errors": 0}
 
     for doc, meta, chunk_id in zip(
         results["documents"],
@@ -341,6 +445,13 @@ def extract_entities_for_paper(
         if not should_process:
             continue
 
+        # Already paid for in a prior (deferred) run — reuse, no LLM call.
+        if chunk_id in banked_chunks:
+            all_entities.extend(banked_chunks[chunk_id])
+            chunks_processed += 1
+            continue
+
+        errors_before = stats["llm_errors"]
         entities = extract_entities_from_chunk(
             chunk_text=doc,
             paper_id=paper_id,
@@ -348,7 +459,16 @@ def extract_entities_for_paper(
             rhetorical_role=role,
             chunk_id=chunk_id,
             llm_fn=llm_fn,
+            stats=stats,
         )
+        # Bankable when this call raised no NEW error — a chunk that yielded
+        # zero entities still succeeded (done != failed). A chunk that errored
+        # must NOT be banked so it is retried on the next resume.
+        if stats["llm_errors"] == errors_before:
+            banked_chunks[chunk_id] = entities
+            if checkpoint_cb is not None:
+                checkpoint_cb()
+
         all_entities.extend(entities)
         chunks_processed += 1
 
@@ -359,7 +479,7 @@ def extract_entities_for_paper(
     logger.info(
         f"  {paper_id}: {chunks_processed} chunks -> {len(all_entities)} entities"
     )
-    return all_entities
+    return all_entities, stats["llm_errors"]
 
 
 def run_entity_extraction(
@@ -390,6 +510,7 @@ def run_entity_extraction(
     config = load_config(config_path)
     if output_path is None:
         output_path = os.path.join(config.chroma_persist_dir, "extracted_entities.json")
+    sidecar_path = _sidecar_path(output_path)
 
     # Load existing progress
     existing = {}
@@ -397,6 +518,9 @@ def run_entity_extraction(
         with open(output_path) as f:
             existing = json.load(f)
         print(f"Loaded {len(existing)} papers from existing file")
+
+    # Load the per-chunk checkpoint bank (tolerant of missing/corrupt sidecar)
+    bank = _load_sidecar(sidecar_path)
 
     # Connect to ChromaDB
     client = get_client(config)
@@ -430,13 +554,33 @@ def run_entity_extraction(
 
     for i, paper_id in enumerate(todo):
         print(f"\n[{i+1}/{len(todo)}] Extracting: {paper_id}")
+        paper_bank = bank.get(paper_id, {})
+        n_resumed = len(paper_bank)
+
+        def _checkpoint(_pid=paper_id, _pbank=paper_bank):
+            bank[_pid] = _pbank
+            with open(sidecar_path, "w") as f:
+                json.dump(bank, f, indent=2)
+
         try:
-            entities = extract_entities_for_paper(
+            entities, n_llm_errors = extract_entities_for_paper(
                 paper_id=paper_id,
                 collection=collection,
                 llm_fn=llm_fn,
                 delay=delay,
+                banked_chunks=paper_bank,
+                checkpoint_cb=_checkpoint,
             )
+            resumed_note = f" (resumed {n_resumed} chunks from checkpoint)" if n_resumed > 0 else ""
+            # A paper with ANY silently-failed chunk (rate-limit exhaustion) must
+            # NOT be checkpointed — its entities would be permanently incomplete.
+            # Leave it out so the next resume retries it (same contract as
+            # verified_triple_extractor). Its successful chunks stay banked in
+            # the sidecar, so the retry only re-pays for the chunk(s) that failed.
+            if n_llm_errors > 0:
+                print(f"  DEFERRED: {n_llm_errors} LLM errors (rate-limited?); will retry on resume{resumed_note}")
+                errors.append(f"{paper_id}: {n_llm_errors} LLM errors, deferred")
+                continue
             existing[paper_id] = entities
             total_entities += len(entities)
 
@@ -444,12 +588,17 @@ def run_entity_extraction(
             with open(output_path, "w") as f:
                 json.dump(existing, f, indent=2)
 
+            # Paper is fully done — drop its chunk-level checkpoint.
+            bank.pop(paper_id, None)
+            with open(sidecar_path, "w") as f:
+                json.dump(bank, f, indent=2)
+
             # Log entity type breakdown
             type_counts = defaultdict(int)
             for e in entities:
                 type_counts[e["type"]] += 1
             breakdown = ", ".join(f"{k}={v}" for k, v in sorted(type_counts.items()))
-            print(f"  -> {len(entities)} entities ({breakdown})")
+            print(f"  -> {len(entities)} entities ({breakdown}){resumed_note}")
 
         except Exception as e:
             error_msg = f"{paper_id}: {str(e)}"

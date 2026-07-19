@@ -35,8 +35,40 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / 'dashboard'))
 
+# Shared LLM-unavailable signal (Track 1: scripts/lib/llm_fallback.py). Until it
+# lands the import fails, so fall back to a placeholder that nothing raises —
+# every failure then flows through the generic category=OTHER path below.
+try:
+    from scripts.lib.llm_fallback import LLMUnavailable
+except ImportError:
+    class LLMUnavailable(Exception):
+        """Placeholder for scripts.lib.llm_fallback.LLMUnavailable (Track 1)."""
+        summary = ''
+
 ALL_STEPS = ['grobid', 'rag', 'kg', 'hgt', 'precompute', 'benchmark']
 FORCE = False
+
+
+def _step_summary(msg):
+    """Append msg to the GitHub Actions job summary ($GITHUB_STEP_SUMMARY) when
+    that env var is set; always print it. No-op on the file side outside CI."""
+    print(msg)
+    summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
+    if summary_path:
+        try:
+            with open(summary_path, 'a', encoding='utf-8') as f:
+                f.write(msg + '\n')
+        except OSError:
+            pass
+
+
+def _benchmark_result_count(path):
+    """Number of 'results' entries in a benchmark-comparisons.json (0 when the
+    file is missing or unreadable)."""
+    try:
+        return len(json.loads(Path(path).read_text()).get('results', []))
+    except Exception:
+        return 0
 
 
 def resolve_domain_paths(domain_slug):
@@ -523,8 +555,34 @@ def step_benchmark(paths, domain):
     kg_full = output_dir / 'kg-full.json'
     if kg_full.exists():
         export += ['--kg-path', str(kg_full)]
+    # No-downgrade guard (convention [C]): benchmark-comparisons.json is a
+    # load-bearing, partly hand-produced artifact (e.g. the 2114-row vision
+    # build). Snapshot the existing result count before the export overwrites it,
+    # and if the fresh build carries < 60% of the old results, restore the old
+    # file rather than let a poorer rebuild (e.g. a ~518-row Docling pass) stand —
+    # unless FORCE_BENCHMARK_OVERWRITE=1. This never fails the build.
+    old_n_cmp = _benchmark_result_count(out_json) if out_json.exists() else 0
+    backup = None
+    if old_n_cmp > 0:
+        backup = out_json.parent / (out_json.name + '.bak')
+        try:
+            shutil.copyfile(out_json, backup)
+        except OSError:
+            backup = None
     subprocess.run(export, cwd=str(pre), check=True)
-    print(f"  [benchmark] wrote {out_json}")
+    new_n_cmp = _benchmark_result_count(out_json)
+    if (old_n_cmp > 0 and new_n_cmp < 0.6 * old_n_cmp
+            and os.environ.get('FORCE_BENCHMARK_OVERWRITE') != '1'):
+        if backup and backup.exists():
+            shutil.copyfile(backup, out_json)
+        print(f"::warning::benchmark no-downgrade guard: kept existing {old_n_cmp} results, refused {new_n_cmp}")
+    else:
+        print(f"  [benchmark] wrote {out_json} ({new_n_cmp} results)")
+    if backup and backup.exists():
+        try:
+            backup.unlink()
+        except OSError:
+            pass
 
 
 def main():
@@ -576,6 +634,26 @@ def main():
 
     print("=== All steps complete ===")
 
+    # Short stats for the success summary (convention [B]): domain + benchmark
+    # result count from the just-built comparisons file.
+    n_results = _benchmark_result_count(paths['output'] / 'benchmark-comparisons.json')
+    return f"{args.domain}: {n_results} benchmark results"
+
 
 if __name__ == '__main__':
-    main()
+    # Top-level error classification (convention [B]): surface an LLM-unavailable
+    # build failure distinctly (category=LLM, exit 2) from any other failure
+    # (category=OTHER, exit 1), and record a success summary. SystemExit raised by
+    # an individual step propagates unchanged.
+    try:
+        _stats = main()
+        _step_summary('✅ Build succeeded — ' + (_stats or ''))
+    except LLMUnavailable as e:
+        summary = getattr(e, 'summary', '') or str(e)
+        print('::error::BUILD_FAILURE category=LLM ' + summary)
+        _step_summary('❌ Build failed — LLM unavailable: ' + summary)
+        sys.exit(2)
+    except Exception as e:
+        print('::error::BUILD_FAILURE category=OTHER ' + str(e))
+        _step_summary('❌ Build failed (non-LLM): ' + str(e))
+        sys.exit(1)

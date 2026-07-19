@@ -74,18 +74,37 @@ def parse_triples(raw):
     return out
 
 
-def extract_verified_triples(chunks, llm_fn, max_chunks=60):
+def extract_verified_triples(chunks, llm_fn, max_chunks=60, banked_chunks=None, checkpoint_cb=None):
     """chunks: [{'chunk_id', 'paper_id', 'text', 'layer'?}] -> verified triples.
     Mid-layer chunks preferred (they carry the method/experiment detail). One bad
-    chunk or LLM error never kills the run. Stats returned for auditability."""
+    chunk or LLM error never kills the run. Stats returned for auditability.
+
+    `banked_chunks` maps chunk_id -> {"triples": [...], "rejected": n} banked in
+    a prior (deferred) run's sidecar checkpoint; those chunks are reused without
+    another LLM call, and are mutated in place as new chunks succeed this run.
+    `checkpoint_cb`, if given, is called after EACH chunk whose LLM call
+    ultimately succeeds (the retry loop below resolved without an error), so a
+    crash mid-paper does not lose chunks that already succeeded this run."""
     import time
+    banked_chunks = {} if banked_chunks is None else banked_chunks
     pool = [c for c in chunks if (c.get('layer') or c.get('metadata', {}).get('layer')) == 'mid'] or list(chunks)
+    pool = pool[:max_chunks]
     kept, rejected_quote, errors = [], 0, 0
-    for c in pool[:max_chunks]:
+    for c in pool:
+        chunk_id = c.get('chunk_id') or c.get('id')
+
+        # Already paid for in a prior (deferred) run — reuse, no LLM call.
+        if chunk_id in banked_chunks:
+            banked = banked_chunks[chunk_id]
+            kept.extend(banked['triples'])
+            rejected_quote += banked['rejected']
+            continue
+
         text = c.get('text') or ''
         if len(text.split()) < 30:
             continue
         raw = None
+        chunk_errored = False
         # Rate limits are the dominant failure (free-tier TPM/TPD): back off and
         # retry instead of burning the whole paper as errors.
         for attempt in range(4):
@@ -101,18 +120,30 @@ def extract_verified_triples(chunks, llm_fn, max_chunks=60):
                     time.sleep(20 * (attempt + 1))
                     continue
                 errors += 1
+                chunk_errored = True
                 break
         if raw is None:
             continue
+
+        chunk_kept, chunk_rejected = [], 0
         for t in parse_triples(raw):
             if not verify_quote(t['quote'], text):
-                rejected_quote += 1
+                chunk_rejected += 1
                 continue
-            t['chunk_id'] = c.get('chunk_id') or c.get('id')
+            t['chunk_id'] = chunk_id
             t['paper_id'] = c.get('paper_id') or c.get('metadata', {}).get('paper_id')
-            kept.append(t)
+            chunk_kept.append(t)
+        kept.extend(chunk_kept)
+        rejected_quote += chunk_rejected
+
+        # Bankable when the LLM call ultimately succeeded — a chunk yielding
+        # zero kept triples still succeeded (done != failed).
+        if not chunk_errored:
+            banked_chunks[chunk_id] = {'triples': chunk_kept, 'rejected': chunk_rejected}
+            if checkpoint_cb is not None:
+                checkpoint_cb()
     return {'triples': kept,
-            'stats': {'chunks_seen': min(len(pool), max_chunks), 'kept': len(kept),
+            'stats': {'chunks_seen': len(pool), 'kept': len(kept),
                       'rejected_unverifiable_quote': rejected_quote, 'llm_errors': errors}}
 
 
@@ -120,21 +151,31 @@ def run_verified_triple_extraction(config_path, output_path=None, llm_fn=None,
                                    max_chunks_per_paper=25):
     """ChromaDB → verified_triples.json (next to extracted_entities.json).
     Resumable like run_entity_extraction: papers already in the output are skipped,
-    so an interrupted CI run continues instead of re-paying LLM calls."""
+    so an interrupted CI run continues instead of re-paying LLM calls. Also
+    checkpoints per CHUNK (verified_triples.partial.json sidecar) so a paper
+    deferred by one bad chunk doesn't re-pay for chunks that already succeeded."""
     import os
     from ..config import load_config
     from .store import get_client, create_or_get_collection
-    from .llm_entity_extractor import _create_llm_fn
+    from .llm_entity_extractor import _create_llm_fn, _sidecar_path, _load_sidecar
 
     config = load_config(config_path)
     if output_path is None:
         output_path = os.path.join(config.chroma_persist_dir, 'verified_triples.json')
+    sidecar_path = _sidecar_path(output_path)
+    # The default LLM function routes its TEXT calls through the shared multi-provider
+    # fallback: _create_llm_fn tries Groq first (unchanged happy path) and rolls to
+    # Gemini/Anthropic/HuggingFace on failure (convention [A]). An explicitly injected
+    # llm_fn (e.g. tests) is used as-is.
     llm_fn = llm_fn or _create_llm_fn('groq')
 
     existing = {'papers': {}, 'triples': [], 'stats': {}}
     if os.path.exists(output_path):
         with open(output_path) as f:
             existing = json.load(f)
+
+    # Per-chunk checkpoint bank (tolerant of missing/corrupt sidecar).
+    bank = _load_sidecar(sidecar_path)
 
     client = get_client(config)
     collection = create_or_get_collection(config, client)
@@ -153,20 +194,34 @@ def run_verified_triple_extraction(config_path, output_path=None, llm_fn=None,
     todo = [p for p in sorted(by_paper) if p not in done]
     print(f"  [triples] papers: {len(by_paper)} | already done: {len(done)} | to process: {len(todo)}")
     for pid in todo:
-        out = extract_verified_triples(by_paper[pid], llm_fn, max_chunks=max_chunks_per_paper)
+        paper_bank = bank.get(pid, {})
+        n_resumed = len(paper_bank)
+
+        def _checkpoint(_pid=pid, _pbank=paper_bank):
+            bank[_pid] = _pbank
+            with open(sidecar_path, 'w') as f:
+                json.dump(bank, f, indent=1)
+
+        out = extract_verified_triples(by_paper[pid], llm_fn, max_chunks=max_chunks_per_paper,
+                                        banked_chunks=paper_bank, checkpoint_cb=_checkpoint)
         st = out['stats']
-        # A paper whose calls ALL errored (rate-limit exhaustion) must NOT be
-        # checkpointed as done — leave it out so the next resume retries it.
-        wholly_errored = st['llm_errors'] > 0 and st['kept'] == 0 and st['rejected_unverifiable_quote'] == 0
-        if wholly_errored:
-            print(f"  [triples] {pid}: DEFERRED ({st['llm_errors']} errors — rate-limited?); will retry on resume")
+        resumed_note = f" (resumed {n_resumed} chunks from checkpoint)" if n_resumed > 0 else ""
+        # ANY errored chunk this run defers the paper — banked chunks make the
+        # retry cheap now, so partial papers are no longer committed with
+        # silently missing chunks (previously only a WHOLLY-errored paper deferred).
+        if st['llm_errors'] > 0:
+            print(f"  [triples] {pid}: DEFERRED ({st['llm_errors']} errors — rate-limited?); will retry on resume{resumed_note}")
             continue
         existing['papers'][pid] = st
         existing['triples'].extend(out['triples'])
+        # Paper fully done — drop its chunk-level checkpoint.
+        bank.pop(pid, None)
+        with open(sidecar_path, 'w') as f:
+            json.dump(bank, f, indent=1)
         with open(output_path, 'w') as f:      # checkpoint per paper (resume-safe)
             json.dump(existing, f, indent=1)
         print(f"  [triples] {pid}: +{st['kept']} verified "
-              f"({st['rejected_unverifiable_quote']} quote-rejected)")
+              f"({st['rejected_unverifiable_quote']} quote-rejected){resumed_note}")
     total = len(existing.get('triples', []))
     existing['stats'] = {'n_triples': total, 'n_papers': len(existing.get('papers', {}))}
     with open(output_path, 'w') as f:

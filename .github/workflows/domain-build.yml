@@ -96,6 +96,29 @@ jobs:
             echo "No papers.zip found for ${SLUG}"
           fi
 
+      - name: Fetch missing PDFs (public OA sources)
+        # Resilient: a fetch hiccup (rate limit, source down, etc.) must never
+        # fail the whole build. The step's own report is still printed either way.
+        continue-on-error: true
+        run: |
+          DOMAIN="${{ steps.domain.outputs.domain }}"
+          python scripts/fetch_missing_pdfs.py --domain "$DOMAIN"
+
+      - name: Re-zip papers (persist fetched PDFs)
+        # Note: the ingestion pipeline itself reads from the already-unzipped
+        # datasets/<slug>/papers/ dir, so newly fetched PDFs are picked up
+        # automatically below. This step exists only so those PDFs also land
+        # back in papers.zip (the artifact tracked via Git LFS + "Commit
+        # results"), and only runs for domains that already ship a papers.zip.
+        run: |
+          SLUG="${{ steps.domain.outputs.slug }}"
+          if [ -f "datasets/${SLUG}/papers.zip" ] && [ -d "datasets/${SLUG}/papers" ]; then
+            (cd "datasets/${SLUG}/papers" && zip -q -r ../papers.zip .)
+            echo "Re-zipped datasets/${SLUG}/papers.zip"
+          else
+            echo "No existing papers.zip for ${SLUG}; skipping re-zip"
+          fi
+
       - name: Run ingestion pipeline
         env:
           GROBID_URL: http://localhost:8070
@@ -104,6 +127,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_HOME: ${{ github.workspace }}/.cache/huggingface
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           DOMAIN="${{ steps.domain.outputs.domain }}"
           PAGES="${{ github.event.client_payload.pages }}"

@@ -193,19 +193,20 @@ def main():
     crop_saver = _make_crop_saver(a.crops_dir, a.crops_url) if a.crops_dir else None
     vlm_client = None
     if not a.no_vlm:
-        # Anthropic when its key exists; else Groq vision (same JSON contract) so CI
-        # can run the VLM path with the GROQ_API_KEY it already has.
+        # Multi-provider vision fallback (Groq -> Gemini -> Anthropic), skipping any
+        # provider whose key env is unset. Only build a client when at least one
+        # vision key is present; otherwise stay born-digital (unchanged no-key
+        # behavior). The happy path (Groq only) is byte-identical to the old
+        # call_vlm_groq path.
         try:
-            if os.environ.get('ANTHROPIC_API_KEY'):
-                client = _default_client()
-                vlm_client = lambda png: call_vlm(png, client)
-            elif os.environ.get('GROQ_API_KEY'):
-                from benchmarks.extraction.vlm_extract import call_vlm_groq
-                groq_key = os.environ['GROQ_API_KEY']
-                vlm_client = lambda png: call_vlm_groq(png, groq_key)
-                print("  VLM: using Groq vision fallback")
+            if (os.environ.get('GROQ_API_KEY') or os.environ.get('GEMINI_API_KEY')
+                    or os.environ.get('ANTHROPIC_API_KEY')):
+                from benchmarks.extraction.vlm_extract import call_vlm_fallback
+                vlm_client = lambda png: call_vlm_fallback(png)
+                print("  VLM: multi-provider fallback (Groq -> Gemini -> Anthropic)")
             else:
-                print("  WARNING: no VLM key (ANTHROPIC_API_KEY or GROQ_API_KEY); born-digital only")
+                print("  WARNING: no VLM key (GROQ_API_KEY / GEMINI_API_KEY / "
+                      "ANTHROPIC_API_KEY); born-digital only")
         except Exception as e:
             print(f"  WARNING: VLM client unavailable ({e}); born-digital only")
     if a.engine == 'docling':
