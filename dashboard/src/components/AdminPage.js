@@ -290,6 +290,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
   const [editingDomain, setEditingDomain] = useState(null);
   const [editPdfZip, setEditPdfZip] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [showExtractionInfo, setShowExtractionInfo] = useState(false);
 
   const [uploadMode, setUploadMode] = useState(false);
   const [wizardStep, setWizardStep] = useState(1);
@@ -629,7 +630,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             <input type="checkbox" checked={!!explorerEnabled} onChange={e => onToggleExplorer(e.target.checked)} />
             <span>Show Explorer tab</span>
           </label>
-          <span className="admin-setting-hint">When off, Graph Reasoning is the landing page</span>
+          <span className="admin-setting-hint">When off, Graph Reasoning is the landing page. This toggle only affects this browser — for embeds, set <code>"explorerEnabled"</code> in the domain config (or add <code>?explorer=1</code> to the iframe URL), since localStorage does not cross the iframe boundary.</span>
         </div>
 
         {error && <div className="admin-error">{error}</div>}
@@ -726,6 +727,38 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             )}
           </div>
         )}
+
+        <div className="admin-info-callout">
+          <button
+            type="button"
+            className="admin-info-toggle"
+            onClick={() => setShowExtractionInfo(v => !v)}
+          >
+            {showExtractionInfo ? '▾' : '▸'} ⓘ Extraction keys &amp; models
+          </button>
+          {showExtractionInfo && (
+            <div className="admin-info-body">
+              <p>
+                <strong>Build</strong> and <strong>Build benchmarks</strong> trigger a cloud build (GitHub Actions)
+                that extracts benchmark tables and rebuilds the domain's data. It relies on API keys configured in
+                the GitHub repo's <strong>Settings → Secrets</strong> — not here in the dashboard, and separate from
+                the copilot's ⚙ Settings key.
+              </p>
+              <ul>
+                <li><code>GROQ_API_KEY</code> (required) — powers benchmark table extraction (Groq vision model) and the copilot chat model.</li>
+                <li><code>HF_TOKEN</code> (required for benchmark builds) — authenticates Docling's model downloads; without it the build fails with an HTTP 403.</li>
+                <li><code>ANTHROPIC_API_KEY</code> (optional) — if set, table extraction uses Claude vision (stronger) instead of the Groq vision model.</li>
+              </ul>
+              <p>
+                Extraction quality depends on which key is present: Claude vision (strongest) &gt; Groq vision
+                (<code>llama-4-scout</code>, weaker — can miss tables/rows, e.g. ~25 of 55 papers in a recent run;
+                never invents values) &gt; born-digital cell-text extraction only (no vision key). A free Groq key
+                gets the weaker tier and still needs <code>HF_TOKEN</code>; add an Anthropic key to improve
+                table-extraction quality. Sparse benchmark data after a rebuild usually means the weak-vision tier.
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="admin-domains">
           <h3>Existing Domains</h3>

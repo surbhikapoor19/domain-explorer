@@ -17,6 +17,16 @@ export default function ScatterPlot({
   const { shortNames } = useDomainConfig();
   const hasHighlights = highlightedMethods.length > 0;
 
+  // Plotly can't read CSS custom properties, so pick a label color that adapts to
+  // a dark host page (the CSS surfaces are already theme-aware). The plot background
+  // is left transparent so it inherits the app's theme-aware surface instead of a
+  // hardcoded light panel — otherwise the scatter renders dark-on-dark when embedded.
+  const isDarkTheme = useMemo(() => {
+    try { return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); }
+    catch (_) { return false; }
+  }, []);
+  const labelColor = isDarkTheme ? '#d5dae2' : '#333';
+
   const colorMap = useMemo(() => buildColorMap(data, colorBy), [data, colorBy]);
 
   let markerColors, useDiscreteColors;
@@ -65,7 +75,7 @@ export default function ScatterPlot({
       return '';
     }),
     textposition: 'top center',
-    textfont: { size: 9, color: '#333' },
+    textfont: { size: 9, color: labelColor },
     hovertemplate: '<b>%{customdata}</b><extra></extra>',
     customdata: data.map(d => d.name),
     marker: {
@@ -106,7 +116,7 @@ export default function ScatterPlot({
     height: 420,
     margin: { t: 12, b: 16, l: 12, r: 12 },
     paper_bgcolor: 'transparent',
-    plot_bgcolor: '#fafcfd'
+    plot_bgcolor: 'transparent'
   };
 
   return (

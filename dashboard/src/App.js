@@ -47,9 +47,29 @@ function App() {
   }, [detected.page]);
 
   const [page, setPage] = useState(detected.page === 'redirect' ? 'graph-reasoning' : detected.page);
-  const [explorerEnabled, setExplorerEnabled] = useState(() => {
-    try { return localStorage.getItem('explorer-enabled') === 'true'; } catch (_) { return false; }
-  });
+  // Explorer-tab visibility resolves in precedence order: a ?explorer=1/0 URL
+  // override (survives the cross-origin iframe boundary, unlike storage) > a local
+  // localStorage override > the domain config shipped with the data > off. The URL
+  // param and localStorage are read synchronously here; domainCfg.explorerEnabled is
+  // applied in an effect once the config loads (only when neither override is set).
+  const explorerUrlParam = useMemo(() => {
+    try {
+      const raw = new URLSearchParams(window.location.search).get('explorer');
+      if (raw == null) return null;
+      return raw === '1' || raw === 'true';
+    } catch (_) { return null; }
+  }, []);
+  const explorerLocalPref = useMemo(() => {
+    try {
+      const v = localStorage.getItem('explorer-enabled');
+      return v == null ? null : v === 'true';
+    } catch (_) { return null; }
+  }, []);
+  const [explorerEnabled, setExplorerEnabled] = useState(
+    explorerUrlParam != null ? explorerUrlParam
+      : explorerLocalPref != null ? explorerLocalPref
+      : false
+  );
   const [termDictionary, setTermDictionary] = useState(null);
   const [data, setData] = useState([]);
   const [vizMode, setVizMode] = useState('scatter');
@@ -156,6 +176,34 @@ function App() {
     setRecomputing(false);
   }, []);
 
+  // Shared MethodTable filter handler (identical across every page's table): a
+  // 3+-method selection recomputes the map on that subset, anything smaller resets.
+  const handleFilter = useCallback((methods) => {
+    if (methods && methods.length >= 3) {
+      setFilterActive(true);
+      setFilterCount(methods.length);
+      fetchUmap(null, methods);
+    } else {
+      setFilterActive(false);
+      setFilterCount(null);
+      fetchUmap();
+    }
+  }, [fetchUmap]);
+
+  // Explorer's cluster-legend filter narrows the method table to one cluster/facet.
+  // Applied ONLY in the Explorer render (below) so it never leaks onto the Graph
+  // Reasoning / Benchmarks tables, which have no legend and no way to clear it.
+  const clusterFilteredData = useMemo(() => {
+    if (activeCluster == null) return data;
+    return data.filter(d => {
+      if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
+        const parts = (d.metadata?.[activeCluster.column] || '').split(',').map(s => s.trim());
+        return parts.some(p => p === activeCluster.value);
+      }
+      return d.cluster === activeCluster;
+    });
+  }, [data, activeCluster]);
+
   useEffect(() => {
     if (typeof document !== 'undefined' && branding.productName) {
       document.title = branding.productName;
@@ -186,6 +234,7 @@ function App() {
           if (domainConfig.branding) cfg.branding = domainConfig.branding;
           if (domainConfig.methodNoun) cfg.methodNoun = domainConfig.methodNoun;
           if (domainConfig.priorityDims) cfg.priorityDims = domainConfig.priorityDims;
+          if (typeof domainConfig.explorerEnabled === 'boolean') cfg.explorerEnabled = domainConfig.explorerEnabled;
           setDomainCfg(cfg);
           if (domainConfig.defaultWeights) {
             defaultWeightsRef.current = domainConfig.defaultWeights;
@@ -220,6 +269,17 @@ function App() {
     }
     init();
   }, [applyQueryResult]);
+
+  // Domain config is the source of truth for Explorer visibility in embeds (where
+  // localStorage is partitioned/blocked). Apply it once the config loads — but only
+  // when neither a ?explorer URL param nor a local override is present (those already
+  // won at init and must not be clobbered by the config value).
+  useEffect(() => {
+    if (explorerUrlParam != null || explorerLocalPref != null) return;
+    if (typeof domainCfg.explorerEnabled === 'boolean') {
+      setExplorerEnabled(domainCfg.explorerEnabled);
+    }
+  }, [domainCfg.explorerEnabled, explorerUrlParam, explorerLocalPref]);
 
   const handleQuerySubmit = async (e) => {
     e.preventDefault();
@@ -453,9 +513,10 @@ function App() {
       <div className="copilot-app">
         {sharedHeader}
         <AdminPage explorerEnabled={explorerEnabled} onToggleExplorer={(v) => {
+          // Local override for THIS browser only. Embeds must use the domain-config
+          // explorerEnabled field or ?explorer=1 (localStorage can't cross iframes).
           try { localStorage.setItem('explorer-enabled', v ? 'true' : 'false'); } catch (_) {}
           setExplorerEnabled(v);
-          if (!v && page === 'explorer') setPage('graph-reasoning');
         }} />
       </div>
       </DomainContext.Provider>
@@ -475,15 +536,7 @@ function App() {
             most valuable thing on the page, so it renders first and the table
             follows — no more scrolling past 56 rows to reach the answer. */}
         {!suggestion && <MethodTable
-          data={activeCluster != null
-            ? data.filter(d => {
-                if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
-                  const parts = (d.metadata?.[activeCluster.column] || '').split(',').map(s => s.trim());
-                  return parts.some(p => p === activeCluster.value);
-                }
-                return d.cluster === activeCluster;
-              })
-            : data}
+          data={data}
           allData={data}
           highlightedMethods={highlightedMethods}
           selectedPoint={selectedPoint}
@@ -491,17 +544,7 @@ function App() {
           onSelect={setSelectedPoint}
           onHover={setHoveredIndex}
           onUnhover={() => setHoveredIndex(null)}
-          onFilter={(methods) => {
-            if (methods && methods.length >= 3) {
-              setFilterActive(true);
-              setFilterCount(methods.length);
-              fetchUmap(null, methods);
-            } else {
-              setFilterActive(false);
-              setFilterCount(null);
-              fetchUmap();
-            }
-          }}
+          onFilter={handleFilter}
         />}
 
         <GraphReasoningPage
@@ -523,30 +566,12 @@ function App() {
           onColorByChange={setColorBy}
           onWeightsChange={(w) => { setWeights(w); fetchUmap(w); }}
           onWeightsReset={() => { setAiAdjustedCols(new Set()); setWeights(defaultWeightsRef.current); fetchUmap(); }}
-          onFilter={(methods) => {
-            if (methods && methods.length >= 3) {
-              setFilterActive(true);
-              setFilterCount(methods.length);
-              fetchUmap(null, methods);
-            } else {
-              setFilterActive(false);
-              setFilterCount(null);
-              fetchUmap();
-            }
-          }}
+          onFilter={handleFilter}
         />
 
         {/* Answered state: the table follows the answer (see order note above). */}
         {suggestion && <MethodTable
-          data={activeCluster != null
-            ? data.filter(d => {
-                if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
-                  const parts = (d.metadata?.[activeCluster.column] || '').split(',').map(s => s.trim());
-                  return parts.some(p => p === activeCluster.value);
-                }
-                return d.cluster === activeCluster;
-              })
-            : data}
+          data={data}
           allData={data}
           highlightedMethods={highlightedMethods}
           selectedPoint={selectedPoint}
@@ -554,17 +579,7 @@ function App() {
           onSelect={setSelectedPoint}
           onHover={setHoveredIndex}
           onUnhover={() => setHoveredIndex(null)}
-          onFilter={(methods) => {
-            if (methods && methods.length >= 3) {
-              setFilterActive(true);
-              setFilterCount(methods.length);
-              fetchUmap(null, methods);
-            } else {
-              setFilterActive(false);
-              setFilterCount(null);
-              fetchUmap();
-            }
-          }}
+          onFilter={handleFilter}
         />}
       </div>
       </DomainContext.Provider>
@@ -578,15 +593,7 @@ function App() {
         {sharedHeader}
 
         <MethodTable
-          data={activeCluster != null
-            ? data.filter(d => {
-                if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
-                  const parts = (d.metadata?.[activeCluster.column] || '').split(',').map(s => s.trim());
-                  return parts.some(p => p === activeCluster.value);
-                }
-                return d.cluster === activeCluster;
-              })
-            : data}
+          data={data}
           allData={data}
           highlightedMethods={highlightedMethods}
           selectedPoint={selectedPoint}
@@ -594,17 +601,7 @@ function App() {
           onSelect={setSelectedPoint}
           onHover={setHoveredIndex}
           onUnhover={() => setHoveredIndex(null)}
-          onFilter={(methods) => {
-            if (methods && methods.length >= 3) {
-              setFilterActive(true);
-              setFilterCount(methods.length);
-              fetchUmap(null, methods);
-            } else {
-              setFilterActive(false);
-              setFilterCount(null);
-              fetchUmap();
-            }
-          }}
+          onFilter={handleFilter}
         />
 
         <BenchmarksPage
@@ -647,15 +644,7 @@ function App() {
 
       {/* Method Table: full width */}
       <MethodTable
-        data={activeCluster != null
-          ? data.filter(d => {
-              if (typeof activeCluster === 'object' && activeCluster.type === 'column') {
-                const parts = (d.metadata?.[activeCluster.column] || '').split(',').map(s => s.trim());
-                return parts.some(p => p === activeCluster.value);
-              }
-              return d.cluster === activeCluster;
-            })
-          : data}
+        data={clusterFilteredData}
         allData={data}
         highlightedMethods={highlightedMethods}
         selectedPoint={selectedPoint}
@@ -663,17 +652,7 @@ function App() {
         onSelect={setSelectedPoint}
         onHover={setHoveredIndex}
         onUnhover={() => setHoveredIndex(null)}
-        onFilter={(methods) => {
-          if (methods && methods.length >= 3) {
-            setFilterActive(true);
-            setFilterCount(methods.length);
-            fetchUmap(null, methods);
-          } else {
-            setFilterActive(false);
-            setFilterCount(null);
-            fetchUmap();
-          }
-        }}
+        onFilter={handleFilter}
       />
 
       {/* Scatter plot + cluster legend */}
