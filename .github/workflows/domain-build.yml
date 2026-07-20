@@ -158,6 +158,7 @@ jobs:
           git add -f "datasets/${SLUG}/chroma_db/extracted_entities.json" 2>/dev/null || true
           git add -f "datasets/${SLUG}/chroma_db/verified_triples.json" 2>/dev/null || true
           git add -f "datasets/${SLUG}/chroma_db/result-records.json" 2>/dev/null || true
+          git add -f "datasets/${SLUG}/chroma_db/extraction-cache.json" 2>/dev/null || true
           git add -f "datasets/${SLUG}/chroma_db/knowledge_graph.json" 2>/dev/null || true
           git add -f "datasets/${SLUG}/chroma_db/term_dictionary.json" 2>/dev/null || true
           git add -f "datasets/${SLUG}/chroma_db/hgt_schema/" 2>/dev/null || true

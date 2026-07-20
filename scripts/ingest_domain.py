@@ -228,14 +228,9 @@ def step_rag(paths):
     """Chunk TEI XMLs and ingest to ChromaDB."""
     tei_dir = paths['tei']
     chroma_dir = paths['chroma']
-    facts_path = chroma_dir / 'extracted_facts.json'
 
     if not tei_dir.exists() or not list(tei_dir.glob('*.tei.xml')):
         print("  No TEI files found. Skipping RAG ingestion.")
-        return
-
-    if facts_path.exists() and not FORCE:
-        print(f"  ChromaDB + facts already exist at {chroma_dir}. Skipping. (use --force to re-run)")
         return
 
     tei_files = list(tei_dir.glob('*.tei.xml'))
@@ -257,7 +252,9 @@ def step_rag(paths):
     config.parsing.grobid_url = grobid_url
 
     chroma_dir.mkdir(parents=True, exist_ok=True)
-    summary = run_ingestion(str(paths['papers']), config)
+    # Per-PDF incremental ingest: unchanged PDFs (same bytes + ingest salt) are
+    # skipped, removed PDFs are pruned. --force falls back to a full re-ingest.
+    summary = run_ingestion(str(paths['papers']), config, skip_unchanged=not FORCE)
     if summary.get('errors'):
         print(f"  WARNING: RAG ingestion had {len(summary['errors'])} errors")
     else:
@@ -488,19 +485,50 @@ def step_precompute(paths, domain_slug):
         print(f"  WARNING: precompute exited with code {result.returncode}")
 
 
+def _benchmark_stale(cache_file, papers_dir, cfg_path, vlm_enabled):
+    """True when the persisted per-PDF extraction cache doesn't fully cover the
+    current corpus under the current (pdf_sha256, salt): any papers/*.pdf not yet
+    cached, or a cached paper whose PDF is gone. On any import failure return True
+    (safe: rebuild). Mirrors run_docling's salt so the gate agrees with the extractor;
+    the methods CSV is deliberately excluded from the salt (see cache.compute_salt)."""
+    try:
+        pre = str(REPO_ROOT / 'dashboard' / 'scripts' / 'precompute')
+        if pre not in sys.path:
+            sys.path.insert(0, pre)
+        from benchmarks.extraction import cache as bcache
+        from benchmarks.normalize.registries import load_config
+    except ImportError:
+        return True
+    papers_dir = Path(papers_dir)
+    pdfs = sorted(papers_dir.glob('*.pdf')) if papers_dir.exists() else []
+    present_ids = {p.name[:-4] for p in pdfs}
+    manifest = bcache.load_cache(str(cache_file))
+    # A cached paper whose PDF has been removed -> the corpus changed -> stale.
+    for pid in (manifest.get('papers') or {}):
+        if pid not in present_ids:
+            return True
+    if not pdfs:
+        return False
+    try:
+        cfg = load_config(str(cfg_path))
+    except Exception:
+        return True
+    salt = bcache.compute_salt(cfg, engine='docling', vlm_enabled=vlm_enabled)
+    for p in pdfs:
+        if bcache.get_hit(manifest, p.name[:-4], bcache.sha256_file(str(p)), salt) is None:
+            return True
+    return False
+
+
 def step_benchmark(paths, domain):
     """Build benchmark-comparisons.json + crops for a domain via the Docling extractor.
-    Docling-only unless ANTHROPIC_API_KEY is set; skips if output exists (FORCE_BENCHMARK=1 to rebuild)."""
+    Docling-only unless ANTHROPIC_API_KEY is set; per-PDF cache means an unchanged
+    corpus skips entirely (FORCE_BENCHMARK=1 or --force to force a full re-extract)."""
     import os
     import subprocess
     import tempfile
     output_dir = paths['output']
     out_json = output_dir / 'benchmark-comparisons.json'
-    # Honor the global --force flag too (the CI workflow passes it via
-    # client_payload.force) — previously only the FORCE_BENCHMARK env re-ran this.
-    if out_json.exists() and not FORCE and os.environ.get('FORCE_BENCHMARK') != '1':
-        print(f"  [benchmark] {out_json} exists; skipping (--force or FORCE_BENCHMARK=1 to rebuild)")
-        return
     pre = Path(__file__).resolve().parent.parent / 'dashboard' / 'scripts' / 'precompute'
     # Config files use underscore slugs (grasp_planning.json) but dispatches may
     # carry either form ("grasp-planning" from the admin UI/API) — accept both.
@@ -510,6 +538,17 @@ def step_benchmark(paths, domain):
     if not cfg.exists():
         print(f"  [benchmark] no benchmarks config at {cfg}; skipping")
         return
+    cache_file = paths['chroma'] / 'extraction-cache.json'
+    # VLM runs with an Anthropic key OR the Groq vision fallback (GROQ_API_KEY).
+    vlm_enabled = bool(os.environ.get('ANTHROPIC_API_KEY') or os.environ.get('GROQ_API_KEY'))
+    force_bench = FORCE or os.environ.get('FORCE_BENCHMARK') == '1'
+    # Skip only when the output already exists AND the cache is warm (every PDF
+    # already extracted under the current hash+salt, no cached paper removed).
+    # A new/changed/removed PDF, a config/code/docling/vlm change (salt), or --force
+    # all fall through to a re-extract; the cache then makes that re-extract cheap.
+    if out_json.exists() and not force_bench and not _benchmark_stale(cache_file, paths['papers'], cfg, vlm_enabled):
+        print(f"  [benchmark] {out_json} exists and cache is warm; skipping (--force or FORCE_BENCHMARK=1 to rebuild)")
+        return
     csv_path = next(paths['dataset'].glob('*.csv'), None)
     if csv_path is None:
         print(f"  [benchmark] no methods CSV in {paths['dataset']}; skipping")
@@ -517,12 +556,15 @@ def step_benchmark(paths, domain):
     crops_dir = output_dir / 'crops'
     crops_url = f"/data-{paths['slug_dashed']}/crops"
     rr = Path(tempfile.mkdtemp()) / 'result-records.json'
-    # VLM runs with an Anthropic key OR the Groq vision fallback (GROQ_API_KEY).
-    no_vlm = [] if (os.environ.get('ANTHROPIC_API_KEY') or os.environ.get('GROQ_API_KEY')) else ['--no-vlm']
+    no_vlm = [] if vlm_enabled else ['--no-vlm']
     extract = [sys.executable, '-m', 'benchmarks.extraction.run_extraction',
                '--engine', 'docling', '--config', str(cfg), '--pdf-dir', str(paths['papers']),
                '--methods-csv', str(csv_path), '--crops-dir', str(crops_dir),
-               '--crops-url', crops_url, '--output', str(rr)] + no_vlm
+               '--crops-url', crops_url, '--output', str(rr),
+               '--cache', str(cache_file)]
+    if force_bench:
+        extract.append('--cache-refresh')
+    extract += no_vlm
     print(f"  [benchmark] extracting via Docling ({'born-digital' if no_vlm else 'with VLM'}) ...")
     subprocess.run(extract, cwd=str(pre), check=True)
     # Persist the raw extraction records: aggregation-only fixes can then re-run

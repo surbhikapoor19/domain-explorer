@@ -26,16 +26,20 @@ def create_or_get_collection(config: RAGConfig, client: chromadb.ClientAPI = Non
     )
 
 
-def upsert_chunks(collection, chunks: list, embeddings: np.ndarray):
+def upsert_chunks(collection, chunks: list, embeddings: np.ndarray, extra_metadata: dict = None):
     """Batch upsert chunks with embeddings and metadata into ChromaDB.
 
     Args:
         collection: ChromaDB collection.
         chunks: List of Chunk objects.
         embeddings: numpy array of shape (n_chunks, dim).
+        extra_metadata: optional dict merged into every chunk's metadata (e.g. the
+            incremental-memoization stamp {"pdf_sha256": ..., "ingest_salt": ...}).
     """
     if not chunks:
         return
+
+    extra = extra_metadata or {}
 
     # ChromaDB has a batch limit; process in batches of 500
     batch_size = 500
@@ -62,6 +66,7 @@ def upsert_chunks(collection, chunks: list, embeddings: np.ndarray):
                 "rhetorical_role": c.rhetorical_role or "",
                 "content_type": c.content_type or "",
                 "citations": ", ".join(c.metadata.get('citations', [])) if c.metadata.get('citations') else "",
+                **extra,
             } for c in batch_chunks]
         )
 
@@ -69,6 +74,31 @@ def upsert_chunks(collection, chunks: list, embeddings: np.ndarray):
 def delete_paper(collection, paper_id: str):
     """Remove all chunks for a paper (for re-ingestion)."""
     collection.delete(where={"paper_id": paper_id})
+
+
+def get_paper_hash(collection, paper_id: str):
+    """Return the (pdf_sha256, ingest_salt) stamped on a paper's chunks, or None.
+
+    None means the paper is absent, or it was ingested before the incremental
+    stamp existed (so it should be re-ingested). Reads a single chunk's metadata.
+    """
+    res = collection.get(where={"paper_id": paper_id}, limit=1, include=["metadatas"])
+    metas = (res or {}).get("metadatas") or []
+    if not metas:
+        return None
+    meta = metas[0] or {}
+    sha = meta.get("pdf_sha256")
+    salt = meta.get("ingest_salt")
+    if sha is None or salt is None:
+        return None
+    return (sha, salt)
+
+
+def list_paper_ids(collection) -> set:
+    """Return the distinct set of paper_ids currently stored in the collection."""
+    res = collection.get(include=["metadatas"])
+    metas = (res or {}).get("metadatas") or []
+    return {m.get("paper_id") for m in metas if m and m.get("paper_id")}
 
 
 def get_collection_stats(collection) -> dict:

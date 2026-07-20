@@ -8,6 +8,8 @@ and runs the full parse -> chunk -> embed -> store pipeline.
 """
 
 import argparse
+import dataclasses
+import hashlib
 import os
 import sys
 import time
@@ -20,8 +22,47 @@ from ..config import load_config, RAGConfig
 from .pdf_parser import parse_pdf
 from .chunker import chunk_paper
 from .embedder import ChunkEmbedder
-from .store import get_client, create_or_get_collection, upsert_chunks, delete_paper, get_collection_stats
+from .store import (
+    get_client,
+    create_or_get_collection,
+    upsert_chunks,
+    delete_paper,
+    get_collection_stats,
+    get_paper_hash,
+    list_paper_ids,
+)
 from .fact_extractor import extract_facts
+
+
+def _sha256_file(path: str, chunk_size: int = 1 << 20) -> str:
+    """Streaming sha256 (hex) of a file's bytes."""
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(chunk_size), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def compute_ingest_salt(config) -> str:
+    """16-hex salt folding in everything that changes RAG ingest output: the
+    embedding model, the chunking config, and the parsing backend. A change to
+    any of these mismatches the per-chunk `ingest_salt` metadata and forces a
+    full re-ingest. Stable across dict key ordering (sort_keys)."""
+    chunking = getattr(config, 'chunking', None)
+    if dataclasses.is_dataclass(chunking):
+        chunking_cfg = dataclasses.asdict(chunking)
+    elif chunking is not None:
+        chunking_cfg = dict(getattr(chunking, '__dict__', {}) or {})
+    else:
+        chunking_cfg = {}
+    payload = {
+        "rag_cache_format": 1,
+        "embedding_model": getattr(config, 'embedding_model', ''),
+        "chunking": chunking_cfg,
+        "backend": getattr(getattr(config, 'parsing', None), 'backend', ''),
+    }
+    blob = json.dumps(payload, sort_keys=True, default=str).encode()
+    return hashlib.sha256(blob).hexdigest()[:16]
 
 
 def find_pdfs(papers_dir: str) -> list:
@@ -79,9 +120,24 @@ def _parse_with_config(pdf_path: str, paper_id: str, config: RAGConfig):
     return parse_pdf(pdf_path, paper_id=paper_id)
 
 
-def ingest_single(pdf_path: str, config: RAGConfig, embedder: ChunkEmbedder, collection) -> dict:
-    """Ingest a single PDF. Returns stats dict."""
+def ingest_single(pdf_path: str, config: RAGConfig, embedder: ChunkEmbedder, collection,
+                  *, content_hash: str = None, skip_if_unchanged: bool = False) -> dict:
+    """Ingest a single PDF. Returns stats dict.
+
+    Incremental skip: when ``skip_if_unchanged`` is set and the collection already
+    holds this paper stamped with the same (pdf_sha256, ingest_salt), the PDF is
+    unchanged under the current embedding/chunking/backend, so parsing is skipped
+    entirely and a status="cached" result is returned.
+    """
     paper_id = paper_id_from_path(pdf_path)
+    ingest_salt = compute_ingest_salt(config)
+
+    if skip_if_unchanged and content_hash:
+        existing = get_paper_hash(collection, paper_id)
+        if existing == (content_hash, ingest_salt):
+            print(f"\n  Cached (unchanged): {os.path.basename(pdf_path)} (id={paper_id})")
+            return {"paper_id": paper_id, "status": "cached", "n_chunks": 0, "facts": None}
+
     print(f"\n  Parsing: {os.path.basename(pdf_path)} (id={paper_id})")
 
     # Parse using configured backend (pymupdf or docling)
@@ -132,8 +188,12 @@ def ingest_single(pdf_path: str, config: RAGConfig, embedder: ChunkEmbedder, col
     embeddings = embedder.embed_chunks(chunks)
     print(f"    Embeddings: {embeddings.shape}")
 
-    # Store
-    upsert_chunks(collection, chunks, embeddings)
+    # Store (stamp the incremental-memoization metadata so an unchanged PDF can
+    # be skipped on the next run).
+    extra_metadata = {"ingest_salt": ingest_salt}
+    if content_hash is not None:
+        extra_metadata["pdf_sha256"] = content_hash
+    upsert_chunks(collection, chunks, embeddings, extra_metadata=extra_metadata)
     print(f"    Stored in ChromaDB")
 
     # Extract structured facts from all chunks
@@ -158,12 +218,17 @@ def ingest_single(pdf_path: str, config: RAGConfig, embedder: ChunkEmbedder, col
     }
 
 
-def run_ingestion(papers_dir: str, config: RAGConfig) -> dict:
+def run_ingestion(papers_dir: str, config: RAGConfig, *, skip_unchanged: bool = False) -> dict:
     """Run the full ingestion pipeline.
 
     Args:
         papers_dir: Directory containing PDF files.
         config: RAG configuration.
+        skip_unchanged: when True, PDFs whose bytes + ingest salt already match
+            the stored chunks are skipped (incremental mode), papers whose facts
+            were computed on a previous run are preserved, and papers whose PDF is
+            gone are pruned from the collection. When False the pipeline behaves
+            exactly as a full rebuild.
 
     Returns:
         Summary dict with stats.
@@ -182,13 +247,38 @@ def run_ingestion(papers_dir: str, config: RAGConfig) -> dict:
     client = get_client(config)
     collection = create_or_get_collection(config, client)
 
+    # Load the PRIOR extracted_facts.json up front: it drives both the facts merge
+    # below AND the per-paper skip decision. Facts/Chroma desync must not silently
+    # starve the KG — a paper may only be treated as "cached" (skipped) when its
+    # facts are actually present in the prior file. If the Chroma stamp matches but
+    # its prior facts are missing (deleted / desynced), it is re-ingested instead so
+    # the facts are regenerated rather than silently lost.
+    facts_path = os.path.join(config.chroma_persist_dir, 'extracted_facts.json')
+    prior_facts = {}
+    if os.path.exists(facts_path):
+        try:
+            with open(facts_path) as f:
+                loaded = json.load(f)
+            if isinstance(loaded, dict):
+                prior_facts = loaded
+        except Exception as e:
+            print(f"  WARNING: could not read prior facts {facts_path} ({e}); starting fresh")
+
     results = []
     errors = []
     start = time.time()
 
     for pdf_path in pdfs:
         try:
-            result = ingest_single(pdf_path, config, embedder, collection)
+            content_hash = _sha256_file(pdf_path)
+            # Only honour the incremental skip when this paper's facts are present in
+            # the prior file; otherwise force a re-ingest so the facts are regenerated
+            # (facts/Chroma desync guard).
+            paper_skip = skip_unchanged and bool(prior_facts.get(paper_id_from_path(pdf_path)))
+            result = ingest_single(
+                pdf_path, config, embedder, collection,
+                content_hash=content_hash, skip_if_unchanged=paper_skip,
+            )
             results.append(result)
         except Exception as e:
             error_msg = f"{os.path.basename(pdf_path)}: {str(e)}"
@@ -200,14 +290,62 @@ def run_ingestion(papers_dir: str, config: RAGConfig) -> dict:
 
     stats = get_collection_stats(collection)
 
-    # Save extracted facts to JSON
+    # --- Facts merge (correctness-critical for incremental re-ingest) ---
+    # extracted_facts.json is always fully rewritten, but its contents are merged
+    # (prior_facts was loaded up front). Papers skipped this run (status="cached")
+    # keep the facts extracted last time; re-ingested papers get fresh facts. A
+    # paper's facts are only dropped when its PDF is genuinely gone (orphan cleanup
+    # below), never merely because a re-ingest produced nothing. On a full rebuild
+    # (nothing cached, no prior file) this reduces to the old all-fresh behaviour.
+    disk_ids = {paper_id_from_path(p) for p in pdfs}
+
     all_facts = {}
     for r in results:
         pid = r.get('paper_id', '')
-        facts = r.get('facts', [])
-        if facts:
-            all_facts[pid] = facts
-    facts_path = os.path.join(config.chroma_persist_dir, 'extracted_facts.json')
+        if not pid:
+            continue
+        if r.get('status') == 'cached':
+            prev = prior_facts.get(pid)
+            if prev:
+                all_facts[pid] = prev
+        else:
+            facts = r.get('facts') or []
+            if facts:
+                all_facts[pid] = facts
+            else:
+                # Re-ingested but yielded NO fresh facts (transient parse/extract
+                # failure, or a genuinely fact-free paper). Never drop a paper's
+                # prior facts while its PDF is still on disk — fall back rather than
+                # starving the KG. Genuine removals are handled by orphan cleanup.
+                prev = prior_facts.get(pid)
+                if prev and pid in disk_ids:
+                    all_facts[pid] = prev
+
+    # A paper whose ingest_single RAISED never reaches `results` (it is recorded in
+    # `errors`). Preserve its prior facts too, as long as its PDF is on disk, so a
+    # transient failure can never starve the KG for that paper.
+    for pid in disk_ids:
+        if pid not in all_facts:
+            prev = prior_facts.get(pid)
+            if prev:
+                all_facts[pid] = prev
+
+    # --- Orphan cleanup (incremental mode only) ---
+    # A paper whose PDF has been removed from disk should not linger in the
+    # collection or the facts file. Full-rebuild runs keep the legacy behaviour.
+    if skip_unchanged:
+        try:
+            existing_ids = list_paper_ids(collection)
+        except Exception as e:
+            print(f"  WARNING: could not list collection paper_ids ({e})")
+            existing_ids = set()
+        orphans = existing_ids - disk_ids
+        for pid in sorted(orphans):
+            delete_paper(collection, pid)
+            all_facts.pop(pid, None)
+        if orphans:
+            print(f"  Orphan cleanup: removed {len(orphans)} paper(s) with no PDF on disk: {sorted(orphans)}")
+
     with open(facts_path, 'w') as f:
         json.dump(all_facts, f, indent=2)
     total_facts = sum(len(v) for v in all_facts.values())

@@ -4,6 +4,8 @@ from benchmarks.extraction.tei_tables import records_from_tei_rows
 from benchmarks.extraction.vlm_extract import parse_vlm_rows, verify_records, call_vlm
 from benchmarks.extraction.render import find_caption_page, render_page_crop
 from benchmarks.extraction.merge import merge_records
+from benchmarks.extraction import cache as _cache
+from benchmarks.adapters.records_io import load_records
 
 
 def _page_text(pdf_path, page):
@@ -137,20 +139,74 @@ def run(tei_dir, pdf_dir, cfg, resolver, *, vlm_client=None, crop_saver=None):
     return records, unknown
 
 
-def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop_saver=None):
+def _refresh_resolution(records, resolver):
+    """Cheaply re-resolve method_id on CACHED records against the CURRENT resolver.
+
+    The methods CSV is deliberately kept OUT of the cache salt (a weekly CSV change
+    would else invalidate every entry), so a cached record whose method didn't
+    resolve when it was stored gets a second chance here under today's names. A
+    paper's own rows ("Ours") bind by paper_id; everything else by method_raw. A
+    non-None method_id is NEVER overwritten."""
+    for r in records:
+        if r.method_id is not None:
+            continue
+        if r.is_own_method:
+            r.method_id = resolver.resolve(r.paper_id).method_id
+        else:
+            r.method_id = resolver.resolve(r.method_raw).method_id
+
+
+def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop_saver=None,
+                cache_path=None, cache_refresh=False):
     """Iterate *.pdf in pdf_dir through ONE shared DocumentConverter -> ResultRecords.
-    Mirrors run() but uses the Docling path (no TEI needed)."""
-    if converter is None:
-        converter = _default_converter()
+    Mirrors run() but uses the Docling path (no TEI needed).
+
+    When cache_path is given, each paper is memoized by (paper_id, sha256(pdf), salt):
+    an unchanged PDF is served straight from the cache (no Docling, no VLM), and the
+    converter is built lazily on the FIRST miss only, so an all-cached run never loads
+    Docling's models. cache_refresh ignores existing hits (re-extract all) but still
+    rewrites the cache. The cache is saved after EACH extracted paper (crash-safe
+    resume) and stale entries are pruned at the end. Default (cache_path=None) is
+    byte-for-byte the pre-cache behavior."""
+    use_cache = cache_path is not None
+    cache = _cache.load_cache(cache_path) if use_cache else {'papers': {}}
+    salt = (_cache.compute_salt(cfg, engine='docling', vlm_enabled=bool(vlm_client))
+            if use_cache else None)
     records, unknown = [], []
+    seen_ids = set()
+    n_hit = n_extracted = 0
     for fn in sorted(os.listdir(pdf_dir)):
         if not fn.endswith('.pdf'):
             continue
         slug = fn[:-4]
-        recs = extract_paper_docling(os.path.join(pdf_dir, fn), slug, cfg, resolver,
-                                     converter=converter, crop_saver=crop_saver, vlm_client=vlm_client)
+        seen_ids.add(slug)
+        pdf_path = os.path.join(pdf_dir, fn)
+        pdf_sha = _cache.sha256_file(pdf_path) if use_cache else None
+        hit = None
+        if use_cache and not cache_refresh:
+            hit = _cache.get_hit(cache, slug, pdf_sha, salt)
+        if hit is not None:
+            recs = load_records({'records': hit})
+            _refresh_resolution(recs, resolver)
+            n_hit += 1
+        else:
+            # Lazily build the (expensive) converter on the first miss only.
+            if converter is None:
+                converter = _default_converter()
+            recs = extract_paper_docling(pdf_path, slug, cfg, resolver,
+                                         converter=converter, crop_saver=crop_saver, vlm_client=vlm_client)
+            n_extracted += 1
+            if use_cache:
+                # Save after each successful paper so a mid-run crash still leaves
+                # completed papers cached (a failing paper is never cached).
+                _cache.put_entry(cache, slug, pdf_sha, salt, recs)
+                _cache.save_cache(cache_path, cache)
         records.extend(recs)
         unknown += [r.metric_raw for r in recs if r.metric_id is None]
+    if use_cache:
+        pruned = _cache.prune_missing(cache, seen_ids)
+        _cache.save_cache(cache_path, cache)
+        print(f"  [cache] {n_hit} hits, {n_extracted} extracted, {len(pruned)} pruned (salt={salt})")
     return records, unknown
 
 
@@ -176,6 +232,10 @@ def main():
     p.add_argument('--crops-url', default=None)
     p.add_argument('--engine', choices=['tei', 'docling'], default='docling')
     p.add_argument('--no-vlm', action='store_true', help='born-digital only; skip image-table VLM')
+    p.add_argument('--cache', default=None,
+                   help='per-PDF extraction cache JSON (docling engine only); unchanged PDFs are reused')
+    p.add_argument('--cache-refresh', action='store_true',
+                   help='ignore cache hits and re-extract every paper (still rewrites the cache)')
     p.add_argument('--output', required=True)
     a = p.parse_args()
     cfg = load_config(a.config)
@@ -211,7 +271,9 @@ def main():
             print(f"  WARNING: VLM client unavailable ({e}); born-digital only")
     if a.engine == 'docling':
         try:
-            records, unknown = run_docling(pdf_dir, cfg, resolver, vlm_client=vlm_client, crop_saver=crop_saver)
+            records, unknown = run_docling(pdf_dir, cfg, resolver, vlm_client=vlm_client,
+                                           crop_saver=crop_saver,
+                                           cache_path=a.cache, cache_refresh=a.cache_refresh)
         except ImportError as e:
             # docling is an OPTIONAL dependency: a genuinely missing module must not
             # crash a whole domain build (grobid/rag/kg/hgt run in the same job).
