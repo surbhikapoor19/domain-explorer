@@ -614,8 +614,10 @@ def step_benchmark(paths, domain):
 
     import shutil
     from dataclasses import asdict
-    # result-records.json is the durable, monotonic UNION baseline (the 2114-row
-    # vision build seeded once, then new papers appended). Import the reconciliation
+    # result-records.json is a DERIVED artifact, not a hand-maintained baseline: on
+    # every build the benchmark baseline is RECONSTRUCTED from the currently-published
+    # benchmark-comparisons.json (the hand-curated vision hybrid), then the cache-
+    # bounded fresh Docling extraction is merged on top. Import the reconciliation
     # helpers from the precompute tree.
     pre_str = str(pre)
     if pre_str not in sys.path:
@@ -624,9 +626,6 @@ def step_benchmark(paths, domain):
     from benchmarks.extraction.merge import merge_by_paper
 
     records_keep = paths['chroma'] / 'result-records.json'
-
-    def _n_records(p):
-        return len(_read_json(p).get('records', []))
 
     def _load_recs(p):
         return load_records(_read_json(p))
@@ -637,19 +636,12 @@ def step_benchmark(paths, domain):
 
     present_ids = _present_paper_ids(csv_path)
 
-    # 1. SEED ONCE — while the durable store is still empty, reconstruct the
-    #    hand-curated vision baseline from the committed benchmark-comparisons.json,
-    #    so the first pipeline run starts from the full 2114-row union instead of
-    #    the ~119 rows Docling alone recovers. Idempotent: only fires at 0 records.
-    if _n_records(records_keep) == 0:
-        seed_payload = _read_json(out_json)
-        if seed_payload.get('results'):
-            seeded = records_from_comparisons(seed_payload)
-            try:
-                _write_recs(records_keep, seeded)
-                print(f"  [benchmark] seeded {len(seeded)} baseline records from {out_json.name}")
-            except OSError as e:
-                print(f"  [benchmark] could not seed baseline records ({e})")
+    # 1. RECONSTRUCT the baseline from the currently-published benchmark-comparisons
+    #    .json on EVERY build — the published vision hybrid is the source of truth,
+    #    so a stale/non-empty result-records.json left by a prior build (or any
+    #    Docling run) can never suppress it. Missing/empty comparisons -> [] baseline.
+    #    This is a cheap JSON reconstruction; it does NOT re-run Docling.
+    baseline_records = records_from_comparisons(_read_json(out_json))
 
     # 2. Docling-extract new/changed papers to a temp records file (cache-bounded:
     #    only new/changed PDFs are actually re-extracted).
@@ -666,22 +658,19 @@ def step_benchmark(paths, domain):
     print(f"  [benchmark] extracting via Docling ({'born-digital' if no_vlm else 'with VLM'}) ...")
     subprocess.run(extract, cwd=str(pre), check=True)
 
-    # 3. MERGE fresh rows into the durable union — the baseline (vision) wins per
-    #    paper_id, only NEW paper_ids contribute fresh Docling rows, and papers
-    #    removed from the CSV (present_ids) are pruned. Superset by construction.
-    #    Empty-extraction guard still applies: never let a silently-empty Docling
-    #    pass replace a good persisted union.
-    new_n, old_n = _n_records(rr), _n_records(records_keep)
-    if new_n == 0 and old_n > 0:
-        print(f"  [benchmark] REFUSING to overwrite {old_n} persisted records with an empty extraction; keeping existing union")
-    else:
-        merged = merge_by_paper(_load_recs(records_keep), _load_recs(rr),
-                                present_ids=(present_ids or None))
-        try:
-            _write_recs(records_keep, merged)
-            print(f"  [benchmark] durable union now {len(merged)} records ({records_keep})")
-        except OSError as e:
-            print(f"  [benchmark] could not persist union ({e})")
+    # 3. MERGE fresh rows onto the reconstructed baseline — the baseline (published,
+    #    incl. vision) WINS per paper_id, only paper_ids ABSENT from the baseline
+    #    contribute fresh Docling rows, and papers removed from the CSV (present_ids)
+    #    are pruned. Superset by construction and idempotent: on a later build the
+    #    published baseline already contains the previously-added papers, so
+    #    re-merging yields the same set.
+    merged = merge_by_paper(baseline_records, _load_recs(rr),
+                            present_ids=(present_ids or None))
+    try:
+        _write_recs(records_keep, merged)
+        print(f"  [benchmark] benchmark baseline now {len(merged)} records ({records_keep})")
+    except OSError as e:
+        print(f"  [benchmark] could not persist records ({e})")
 
     # 4. EXPORT from the persisted UNION (not the fresh Docling temp) so the export
     #    rebuilds benchmark-comparisons.json + _enrich_kg + cell_context +
