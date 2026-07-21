@@ -31,7 +31,12 @@ jobs:
         id: poll
         run: |
           python3 - <<'PY'
-          import os, glob, json, hashlib, urllib.request, yaml, csv, io, re
+          import os, glob, json, hashlib, urllib.request, yaml, csv, io, re, sys
+
+          # sheet_diff = the PURE new-vs-edited decision (unit-tested in
+          # scripts/test_sheet_diff.py); inline heredoc code can't be tested.
+          sys.path.insert(0, os.path.join(os.getcwd(), 'scripts'))
+          import sheet_diff
 
           UA = {'User-Agent': 'Mozilla/5.0'}
 
@@ -109,8 +114,20 @@ jobs:
               if hashlib.sha256(data.encode()).hexdigest() != hashlib.sha256(old.encode()).hexdigest():
                   with open(csv_path, 'w', encoding='utf-8', newline='') as f:
                       f.write(data)
-                  changed.append({'domain': slug, 'csv_path': csv_path})
-                  print(f'{slug}: CHANGED <- {name} -> {csv_path}')
+                  # Decide scope: a row added/removed (by identity name) => 'new-paper'
+                  # (fetch PDF + full pipeline + benchmark, or prune a removed paper);
+                  # an edit-only change => 'precompute' (cheap CSV-only refresh).
+                  name_col = sheet_diff.name_col_from_config(cfg)
+                  try:
+                      _oldhdr = next(csv.reader(io.StringIO(old)), [])
+                      first_col = _oldhdr[0].strip() if _oldhdr else None
+                  except Exception:
+                      first_col = None
+                  diff = sheet_diff.classify(old, data, name_col, first_col)
+                  changed.append({'domain': slug, 'csv_path': csv_path, 'pages': diff['kind'],
+                                  'added': diff['added'], 'removed': diff['removed']})
+                  print(f"{slug}: CHANGED <- {name} -> {csv_path} "
+                        f"[{diff['kind']}; +{len(diff['added'])}/-{len(diff['removed'])}]")
               else:
                   print(f'{slug}: no change (latest in folder = {name})')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as gh:
@@ -139,12 +156,17 @@ jobs:
           import sys, json, os, urllib.request
           repo = os.environ['GITHUB_REPOSITORY']; tok = os.environ['DISPATCH_TOKEN']
           for c in json.load(sys.stdin):
-              # pages=precompute: CSV-only refresh, NO PDF re-ingest. (This is a build
-              # SCOPE, not the Explorer page.) The graph builder falls back to the
-              # committed kg-full.json, so the CSV-driven plots refresh from the new
-              # csv; the overwrite guard preserves the copilot corpus + paper plots.
-              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain'], 'pages': 'precompute'}}).encode()
+              # pages set by sheet_diff.classify (detect-changes step):
+              #   'precompute' = edit-only change -> CSV-only refresh, NO PDF re-ingest.
+              #       (A build SCOPE, not the Explorer page.) The graph builder falls
+              #       back to the committed kg-full.json, so the CSV-driven plots refresh
+              #       from the new csv; the overwrite guard preserves the copilot corpus.
+              #   'new-paper' = a row was added/removed -> full pipeline + benchmark
+              #       (fetch the new PDF and integrate it into every surface, or prune a
+              #       removed paper).
+              pages = c.get('pages', 'precompute')
+              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain'], 'pages': pages}}).encode()
               req = urllib.request.Request(f'https://api.github.com/repos/{repo}/dispatches', data=body,
                   headers={'Authorization': f'Bearer {tok}', 'Accept': 'application/vnd.github+json'})
-              urllib.request.urlopen(req); print('dispatched full domain-build for', c['domain'])
+              urllib.request.urlopen(req); print(f'dispatched domain-build ({pages}) for', c['domain'])
           "

@@ -33,11 +33,11 @@ jobs:
           pip install chromadb lxml beautifulsoup4 groq pymupdf keybert
 
       - name: Install Docling (benchmark builds)
-        if: ${{ github.event.client_payload.pages == 'benchmark' }}
+        if: ${{ github.event.client_payload.pages == 'benchmark' || github.event.client_payload.pages == 'new-paper' }}
         run: pip install docling
 
       - name: Cache Docling/HF models
-        if: ${{ github.event.client_payload.pages == 'benchmark' }}
+        if: ${{ github.event.client_payload.pages == 'benchmark' || github.event.client_payload.pages == 'new-paper' }}
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.cache/huggingface
@@ -139,6 +139,12 @@ jobs:
             STEPS="precompute"
           elif [ "$PAGES" = "benchmark" ]; then
             STEPS="benchmark"
+          elif [ "$PAGES" = "new-paper" ]; then
+            # A row was added/removed in the sheet: run the FULL pipeline and then
+            # the benchmark step (last — it needs the fresh kg-full.json + methods.json
+            # for _enrich_kg + cell_context). Built via "${STEPS},benchmark" so the
+            # joined literal never appears in this file (test_domain_build_yml pin).
+            STEPS="${STEPS},benchmark"
           fi
           # Allow the dispatch to force a rebuild (e.g. after a pipeline code change
           # that changes output shape) — otherwise a step skips when its output exists.

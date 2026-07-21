@@ -14,3 +14,18 @@ def merge_records(tei_records, vlm_records):
         if cur is None or score > cur[0]:
             best[k] = (score, r)
     return [v[1] for v in best.values()]
+
+
+def merge_by_paper(baseline, fresh, present_ids=None):
+    """Per-PAPER union for the durable result-records baseline. The baseline (the
+    hand-curated vision build) WINS per paper_id: its rows are kept byte-identical
+    (same objects) and only paper_ids ABSENT from the baseline contribute their
+    fresh Docling rows. The result is a superset of the baseline by construction.
+
+    ``present_ids`` (the current CSV Name->slug set) drops removed papers: a
+    baseline paper whose slug is no longer in the CSV is pruned from the union, so
+    an intentional sheet removal propagates. When ``present_ids`` is None nothing is
+    dropped (pure monotonic union)."""
+    base_pids = {r.paper_id for r in baseline}
+    kept_base = [r for r in baseline if present_ids is None or r.paper_id in present_ids]
+    return kept_base + [r for r in fresh if r.paper_id not in base_pids]

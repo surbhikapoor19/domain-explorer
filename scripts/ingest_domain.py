@@ -71,6 +71,62 @@ def _benchmark_result_count(path):
         return 0
 
 
+def _read_json(path):
+    """Parse a JSON file, returning {} on any missing/unreadable/invalid file."""
+    try:
+        return json.loads(Path(path).read_text())
+    except Exception:
+        return {}
+
+
+def _benchmark_slug(name):
+    """Method name -> paper_id slug. Mirrors scripts/fetch_missing_pdfs.slugify /
+    backend/rag/method_paper_map._slugify: strip the robot emoji, lowercase,
+    collapse non-alphanumerics to '-'. Keeps present_ids aligned with PDF stems."""
+    import re
+    name = str(name or '').replace('\U0001f916 ', '').strip()
+    slug = re.sub(r'[^a-z0-9]+', '-', name.lower())
+    return slug.strip('-')
+
+
+def _present_paper_ids(csv_path):
+    """Current CSV Name column -> set of paper_id slugs (== PDF stems). Reads the
+    'Name' column the same way the extractor does (run_extraction), so the union's
+    present_ids match the extracted paper_ids. Empty set on any read failure."""
+    import csv as _csv
+    ids = set()
+    try:
+        with open(csv_path, newline='', encoding='utf-8') as f:
+            for row in _csv.DictReader(f):
+                name = (row.get('Name') or '').replace('\U0001f916 ', '').strip()
+                if name:
+                    ids.add(_benchmark_slug(name))
+    except Exception:
+        return set()
+    return ids
+
+
+def _benchmark_superset_guard(old_results, new_results, present_ids, force=False):
+    """Per-paper superset invariant for the benchmark export (replaces the old
+    count-ratio no-downgrade guard). Returns (ok, dropped, regressed):
+
+      dropped   = paper_ids in the old comparisons but missing from the new export,
+                  MINUS papers intentionally removed from the CSV this run
+                  (removed_pids = old paper_ids no longer in present_ids).
+      regressed = the new export has fewer total result rows than the old.
+      ok        = force OR neither dropped nor regressed.
+
+    A superset build (vision retained + new papers appended) passes; a Docling-only
+    pass that drops vision papers, or any row regression, is refused unless forced."""
+    old_pids = {r.get('paper_id') for r in (old_results or [])}
+    new_pids = {r.get('paper_id') for r in (new_results or [])}
+    removed_pids = old_pids - (present_ids or set())
+    dropped = (old_pids - new_pids) - removed_pids
+    regressed = len(new_results or []) < len(old_results or [])
+    ok = bool(force) or not (dropped or regressed)
+    return ok, dropped, regressed
+
+
 def resolve_domain_paths(domain_slug):
     """Resolve all paths for a domain. Accepts either slug form ("motion-planning"
     from admin dispatches or "motion_planning"): dataset dirs use dashes, the
@@ -555,6 +611,48 @@ def step_benchmark(paths, domain):
         return
     crops_dir = output_dir / 'crops'
     crops_url = f"/data-{paths['slug_dashed']}/crops"
+
+    import shutil
+    from dataclasses import asdict
+    # result-records.json is the durable, monotonic UNION baseline (the 2114-row
+    # vision build seeded once, then new papers appended). Import the reconciliation
+    # helpers from the precompute tree.
+    pre_str = str(pre)
+    if pre_str not in sys.path:
+        sys.path.insert(0, pre_str)
+    from benchmarks.adapters.records_io import records_from_comparisons, load_records
+    from benchmarks.extraction.merge import merge_by_paper
+
+    records_keep = paths['chroma'] / 'result-records.json'
+
+    def _n_records(p):
+        return len(_read_json(p).get('records', []))
+
+    def _load_recs(p):
+        return load_records(_read_json(p))
+
+    def _write_recs(p, recs):
+        Path(p).parent.mkdir(parents=True, exist_ok=True)
+        Path(p).write_text(json.dumps({'records': [asdict(r) for r in recs]}))
+
+    present_ids = _present_paper_ids(csv_path)
+
+    # 1. SEED ONCE — while the durable store is still empty, reconstruct the
+    #    hand-curated vision baseline from the committed benchmark-comparisons.json,
+    #    so the first pipeline run starts from the full 2114-row union instead of
+    #    the ~119 rows Docling alone recovers. Idempotent: only fires at 0 records.
+    if _n_records(records_keep) == 0:
+        seed_payload = _read_json(out_json)
+        if seed_payload.get('results'):
+            seeded = records_from_comparisons(seed_payload)
+            try:
+                _write_recs(records_keep, seeded)
+                print(f"  [benchmark] seeded {len(seeded)} baseline records from {out_json.name}")
+            except OSError as e:
+                print(f"  [benchmark] could not seed baseline records ({e})")
+
+    # 2. Docling-extract new/changed papers to a temp records file (cache-bounded:
+    #    only new/changed PDFs are actually re-extracted).
     rr = Path(tempfile.mkdtemp()) / 'result-records.json'
     no_vlm = [] if vlm_enabled else ['--no-vlm']
     extract = [sys.executable, '-m', 'benchmarks.extraction.run_extraction',
@@ -567,59 +665,63 @@ def step_benchmark(paths, domain):
     extract += no_vlm
     print(f"  [benchmark] extracting via Docling ({'born-digital' if no_vlm else 'with VLM'}) ...")
     subprocess.run(extract, cwd=str(pre), check=True)
-    # Persist the raw extraction records: aggregation-only fixes can then re-run
-    # via --from-records in seconds instead of re-paying a ~50-min Docling pass.
-    import shutil, json as _json
-    def _n_records(p):
-        try:
-            return len(_json.loads(Path(p).read_text()).get('records', []))
-        except Exception:
-            return 0
-    records_keep = paths['chroma'] / 'result-records.json'
-    new_n, old_n = _n_records(rr), (_n_records(records_keep) if records_keep.exists() else 0)
+
+    # 3. MERGE fresh rows into the durable union — the baseline (vision) wins per
+    #    paper_id, only NEW paper_ids contribute fresh Docling rows, and papers
+    #    removed from the CSV (present_ids) are pruned. Superset by construction.
+    #    Empty-extraction guard still applies: never let a silently-empty Docling
+    #    pass replace a good persisted union.
+    new_n, old_n = _n_records(rr), _n_records(records_keep)
     if new_n == 0 and old_n > 0:
-        # Never overwrite a good persisted artifact with an empty extraction (mirrors
-        # the benchmark-comparisons overwrite guard). A real failure already exits
-        # non-zero upstream; this covers a silent empty result.
-        print(f"  [benchmark] REFUSING to overwrite {old_n} persisted records with an empty extraction; keeping existing")
+        print(f"  [benchmark] REFUSING to overwrite {old_n} persisted records with an empty extraction; keeping existing union")
     else:
+        merged = merge_by_paper(_load_recs(records_keep), _load_recs(rr),
+                                present_ids=(present_ids or None))
         try:
-            shutil.copyfile(rr, records_keep)
-            print(f"  [benchmark] kept raw records at {records_keep} ({new_n} records)")
+            _write_recs(records_keep, merged)
+            print(f"  [benchmark] durable union now {len(merged)} records ({records_keep})")
         except OSError as e:
-            print(f"  [benchmark] could not persist records ({e})")
-    export = [sys.executable, 'graph/benchmark_data.py', '--from-records', str(rr),
+            print(f"  [benchmark] could not persist union ({e})")
+
+    # 4. EXPORT from the persisted UNION (not the fresh Docling temp) so the export
+    #    rebuilds benchmark-comparisons.json + _enrich_kg + cell_context +
+    #    leaderboards + cross_validations + method_index + copilot in one consistent
+    #    pass over the full vision+new corpus.
+    export = [sys.executable, 'graph/benchmark_data.py', '--from-records', str(records_keep),
               '--output-dir', str(output_dir), '--config', str(cfg)]
     # Enrich the domain's knowledge graph with the graded, protocol-scoped
-    # benchmark comparisons (table-derived `outperforms` edges beat prose claims;
-    # previously the export never received --kg-path, so the deployed graph kept
-    # only the ~7 prose-resolved edges).
+    # benchmark comparisons (table-derived `outperforms` edges beat prose claims).
     kg_full = output_dir / 'kg-full.json'
     if kg_full.exists():
         export += ['--kg-path', str(kg_full)]
-    # No-downgrade guard (convention [C]): benchmark-comparisons.json is a
-    # load-bearing, partly hand-produced artifact (e.g. the 2114-row vision
-    # build). Snapshot the existing result count before the export overwrites it,
-    # and if the fresh build carries < 60% of the old results, restore the old
-    # file rather than let a poorer rebuild (e.g. a ~518-row Docling pass) stand —
-    # unless FORCE_BENCHMARK_OVERWRITE=1. This never fails the build.
-    old_n_cmp = _benchmark_result_count(out_json) if out_json.exists() else 0
+
+    # 5. GUARD — per-paper superset invariant (replaces the count-ratio guard).
+    #    Snapshot the comparisons BEFORE the export overwrites it; afterwards refuse
+    #    (and restore the backup) only if a paper still present in the CSV was
+    #    DROPPED, or the total row count REGRESSED — unless FORCE_BENCHMARK_OVERWRITE
+    #    =1. The merge guarantees a superset, so the guard is a safety net that keeps
+    #    the load-bearing 2114-row vision build from being silently downgraded.
+    old_results = (_read_json(out_json) if out_json.exists() else {}).get('results', [])
     backup = None
-    if old_n_cmp > 0:
+    if out_json.exists():
         backup = out_json.parent / (out_json.name + '.bak')
         try:
             shutil.copyfile(out_json, backup)
         except OSError:
             backup = None
     subprocess.run(export, cwd=str(pre), check=True)
-    new_n_cmp = _benchmark_result_count(out_json)
-    if (old_n_cmp > 0 and new_n_cmp < 0.6 * old_n_cmp
-            and os.environ.get('FORCE_BENCHMARK_OVERWRITE') != '1'):
+    new_results = _read_json(out_json).get('results', [])
+    ok, dropped, regressed = _benchmark_superset_guard(
+        old_results, new_results, present_ids,
+        force=os.environ.get('FORCE_BENCHMARK_OVERWRITE') == '1')
+    if not ok:
         if backup and backup.exists():
             shutil.copyfile(backup, out_json)
-        print(f"::warning::benchmark no-downgrade guard: kept existing {old_n_cmp} results, refused {new_n_cmp}")
+        print("::warning::benchmark guard: kept existing (papers dropped/rows regressed)")
     else:
-        print(f"  [benchmark] wrote {out_json} ({new_n_cmp} results)")
+        old_pids = {r.get('paper_id') for r in old_results}
+        new_pids = {r.get('paper_id') for r in new_results}
+        print(f"  [benchmark] wrote {out_json} ({len(new_results)} results, +{len(new_pids - old_pids)} new papers)")
     if backup and backup.exists():
         try:
             backup.unlink()
