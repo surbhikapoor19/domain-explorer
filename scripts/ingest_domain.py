@@ -89,12 +89,19 @@ def _benchmark_slug(name):
     return slug.strip('-')
 
 
-def _present_paper_ids(csv_path):
-    """Current CSV Name column -> set of paper_id slugs (== PDF stems). Reads the
-    'Name' column the same way the extractor does (run_extraction), so the union's
-    present_ids match the extracted paper_ids. Empty set on any read failure."""
+def _present_paper_ids(csv_path, papers_dir=None):
+    """Present paper_ids = PDF stems on disk (the canonical paper_id) UNION current
+    CSV Name slugs. A paper counts as present if it has a PDF OR a CSV Name entry, so
+    a Name that diverges from its PDF stem (e.g. 'PointNetGPD' vs pointnet-plus-gpd.pdf)
+    never wrongly prunes a paper that has a PDF + benchmark data."""
     import csv as _csv
     ids = set()
+    try:
+        if papers_dir is not None:
+            for pdf in Path(papers_dir).glob('*.pdf'):
+                ids.add(pdf.stem)
+    except Exception:
+        pass
     try:
         with open(csv_path, newline='', encoding='utf-8') as f:
             for row in _csv.DictReader(f):
@@ -102,7 +109,7 @@ def _present_paper_ids(csv_path):
                 if name:
                     ids.add(_benchmark_slug(name))
     except Exception:
-        return set()
+        pass
     return ids
 
 
@@ -634,7 +641,7 @@ def step_benchmark(paths, domain):
         Path(p).parent.mkdir(parents=True, exist_ok=True)
         Path(p).write_text(json.dumps({'records': [asdict(r) for r in recs]}))
 
-    present_ids = _present_paper_ids(csv_path)
+    present_ids = _present_paper_ids(csv_path, paths['papers'])
 
     # 1. RECONSTRUCT the baseline from the currently-published benchmark-comparisons
     #    .json on EVERY build — the published vision hybrid is the source of truth,
