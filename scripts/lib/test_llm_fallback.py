@@ -75,10 +75,16 @@ def _install(monkeypatch, route):
 
 def _only(monkeypatch, *set_keys):
     """Set exactly the given provider key envs; clear all the others."""
-    for var in ("GROQ_API_KEY", "GEMINI_API_KEY", "ANTHROPIC_API_KEY", "HF_API_TOKEN"):
+    for var in ("GROQ_API_KEY", "GEMINI_API_KEY", "GEMINI_API_KEY_2",
+                "ANTHROPIC_API_KEY", "HF_API_TOKEN", "HF_TOKEN"):
         monkeypatch.delenv(var, raising=False)
     for var in set_keys:
         monkeypatch.setenv(var, "test-key")
+    # Deterministic vision dispatch in tests: no throttle wait and no quota retries, so
+    # provider-rollover assertions see exactly one attempt per provider. The dedicated
+    # throttle/backoff tests override these explicitly.
+    monkeypatch.setenv("LLM_VISION_MIN_INTERVAL", "0")
+    monkeypatch.setenv("LLM_VISION_QUOTA_RETRIES", "0")
 
 
 MSGS = [{"role": "user", "content": "hi"}]
@@ -185,41 +191,92 @@ def test_no_keys_raises_llm_unavailable(monkeypatch):
 
 
 def test_call_vision_routes_and_returns(monkeypatch):
-    # Vision path (image sent as data URL): gemini is primary and returns content,
-    # so groq is never reached (route would 429 groq, but it isn't called).
-    _only(monkeypatch, "GROQ_API_KEY", "GEMINI_API_KEY")
-    _install(monkeypatch, lambda url: (
-        _http_error(429) if "groq" in url else _Resp('{"rows": []}')))
+    # Vision path (image sent as data URL): Gemini is the primary VLM and returns content.
+    # (Docling stays the primary extractor; this VLM only reads image tables.)
+    _only(monkeypatch, "GEMINI_API_KEY")
+    _install(monkeypatch, lambda url: _Resp('{"rows": []}'))
 
     out = LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
     assert out == '{"rows": []}'
 
 
 def test_vision_tries_gemini_first(monkeypatch):
-    # Gemini is the PRIMARY vision provider: a 200-with-content from gemini is
-    # returned WITHOUT groq ever being requested.
-    _only(monkeypatch, "GROQ_API_KEY", "GEMINI_API_KEY")
-    calls = _install(monkeypatch, lambda url: (
-        _Resp("FROM_GEMINI_VISION") if "generativelanguage" in url
-        else _Resp("FROM_GROQ_VISION")))
+    # Gemini is the PRIMARY vision provider: a 200-with-content from gemini is returned
+    # (anthropic, the only other configured provider, is never reached).
+    _only(monkeypatch, "GEMINI_API_KEY", "ANTHROPIC_API_KEY")
+    calls = _install(monkeypatch, lambda url: _Resp("FROM_GEMINI_VISION"))
 
     out = LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
     assert out == "FROM_GEMINI_VISION"
     assert any("generativelanguage" in u for u in calls)   # gemini attempted first
-    assert not any("groq" in u for u in calls)             # groq never reached
 
 
-def test_vision_gemini_429_falls_over_to_groq(monkeypatch):
-    # Gemini (primary) 429s -> QUOTA -> roll over to groq, which returns content.
-    _only(monkeypatch, "GROQ_API_KEY", "GEMINI_API_KEY")
-    calls = _install(monkeypatch, lambda url: (
-        _http_error(429, b'{"error": "Too Many Requests"}') if "generativelanguage" in url
-        else _Resp("FROM_GROQ_AFTER_GEMINI_QUOTA")))
+def test_vision_gemini_key1_quota_falls_to_key2(monkeypatch):
+    # Primary Gemini key 429s -> the SECOND Gemini key (GEMINI_API_KEY_2) is tried against
+    # the same endpoint and succeeds. Both hit generativelanguage, so we assert TWO gemini
+    # attempts (key1 then key2) and the recovered content.
+    _only(monkeypatch, "GEMINI_API_KEY", "GEMINI_API_KEY_2")
+    state = {"n": 0}
 
+    def route(url):
+        if "generativelanguage" in url:
+            state["n"] += 1
+            return _http_error(429) if state["n"] == 1 else _Resp("FROM_GEMINI_KEY2")
+        return _http_error(500)
+
+    calls = _install(monkeypatch, route)
     out = LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
-    assert out == "FROM_GROQ_AFTER_GEMINI_QUOTA"
-    assert any("generativelanguage" in u for u in calls)   # gemini WAS attempted
-    assert any("groq" in u for u in calls)                 # ...then groq used
+    assert out == "FROM_GEMINI_KEY2"
+    assert sum("generativelanguage" in u for u in calls) == 2   # key1 (429) then key2 (200)
+
+
+def test_vision_groq_and_hf_absent_from_vision_path(monkeypatch):
+    # Groq VLMs are decommissioned and HuggingFace is a TEXT-only fallback -> neither is a
+    # vision provider even when its key is set. With only GROQ + HF keys, no vision
+    # provider is configured -> LLMUnavailable, and neither is requested / named.
+    _only(monkeypatch, "GROQ_API_KEY", "HF_API_TOKEN")
+    calls = _install(monkeypatch, lambda url: _Resp("SHOULD_NOT_BE_CALLED"))
+    with pytest.raises(LF.LLMUnavailable) as ei:
+        LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
+    assert not any("groq" in u or "huggingface" in u for u in calls)
+    assert "groq" not in ei.value.summary and "huggingface" not in ei.value.summary
+
+
+def test_text_hf_token_alias_selects_hf(monkeypatch):
+    # HF is a TEXT fallback whose token may live in HF_TOKEN (the CI secret name) rather
+    # than HF_API_TOKEN; the text HF provider must still be selected via the
+    # (HF_API_TOKEN, HF_TOKEN) key alias.
+    _only(monkeypatch, "HF_TOKEN")  # only the alias env is set
+    calls = _install(monkeypatch, lambda url: _Resp("FROM_HF_TEXT"))
+
+    assert LF.call_text(MSGS) == "FROM_HF_TEXT"
+    assert all("huggingface" in u for u in calls)
+
+
+def test_vision_quota_retry_backoff_before_rollover(monkeypatch):
+    # With LLM_VISION_QUOTA_RETRIES=2, a 429 on the sole Gemini provider is retried twice
+    # (initial + 2) before exhausting -> exactly 3 attempts. time.sleep is mocked.
+    _only(monkeypatch, "GEMINI_API_KEY")
+    monkeypatch.setenv("LLM_VISION_QUOTA_RETRIES", "2")
+    monkeypatch.setenv("LLM_VISION_MIN_INTERVAL", "0")
+    calls = _install(monkeypatch, lambda url: _http_error(429))
+    with pytest.raises(LF.LLMUnavailable):
+        LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
+    assert sum("generativelanguage" in u for u in calls) == 3   # initial + 2 backoff retries
+
+
+def test_throttle_spaces_successive_calls(monkeypatch):
+    # _throttle sleeps for the remaining interval when the previous call was too recent,
+    # and is a no-op when the interval is disabled.
+    slept = []
+    monkeypatch.setattr(LF.time, "monotonic", lambda: 100.0)
+    monkeypatch.setattr(LF.time, "sleep", lambda s: slept.append(s))
+    LF._last_throttled_ts[0] = 98.0            # last attempt 2s ago
+    LF._throttle(5.0)                          # need 5s spacing -> sleep the remaining 3s
+    assert slept and abs(slept[0] - 3.0) < 1e-6
+    slept.clear()
+    LF._throttle(0.0)                          # disabled -> no sleep
+    assert slept == []
 
 
 if __name__ == "__main__":

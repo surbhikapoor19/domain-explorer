@@ -62,11 +62,11 @@ def call_vlm_groq(png_bytes, api_key, model=None):
 
 def call_vlm_fallback(png_bytes, prompt=SCHEMA_INSTRUCTION, max_tokens=8000):
     """Route a table crop through the shared multi-provider VISION fallback
-    (Groq -> Gemini -> Anthropic), skipping any provider whose key env is unset.
-    Same return contract as call_vlm / call_vlm_groq: returns the model's raw text
-    for parse_vlm_rows. The Groq happy path is byte-identical to call_vlm_groq
-    (same model/UA/endpoint/messages, max_tokens=8000). Raises
-    llm_fallback.LLMUnavailable only when EVERY configured provider fails, so the
+    (Gemini -> Gemini(key2) -> Anthropic), skipping any provider whose key env is unset.
+    Docling stays the primary extractor; this VLM only reads image tables Docling can't. A
+    second Gemini key backs up the first on a 429; Groq/HF are absent from the vision path.
+    Same return contract as call_vlm: returns the model's raw text for parse_vlm_rows.
+    Raises llm_fallback.LLMUnavailable only when EVERY configured provider fails, so the
     build can surface why (convention [A]/[B])."""
     import os, sys
     lib = os.path.abspath(os.path.join(

@@ -81,10 +81,18 @@ def extract_paper(tei_path, pdf_path, cfg, resolver, *, vlm_client=None, render_
 
 
 def extract_paper_docling(pdf_path, paper_id, cfg, resolver, *, converter=None,
-                          render_fn=None, crop_saver=None, vlm_client=None):
+                          render_fn=None, crop_saver=None, vlm_client=None,
+                          vlm_failed_out=None):
     """Docling localizes tables (bbox->crop) and supplies cell text as ground truth.
     If vlm_client is given, the VLM reads the crop for semantics and is verified against
-    Docling's cells; otherwise the born-digital row parser is used."""
+    Docling's cells; otherwise the born-digital row parser is used.
+
+    vlm_failed_out (optional): when a list is passed, any table whose VLM read failed
+    because EVERY vision provider was exhausted (LLMUnavailable) AND that left the table
+    with zero rows (an image table with no Docling text cells to recover) is appended as
+    (paper_id, table_index). The caller uses a non-empty list to refuse caching this
+    paper so it retries on the next build. Born-digital tables recovered from Docling's
+    own cells are NOT flagged — their data is complete despite the VLM being down."""
     from benchmarks.extraction.docling_tables import convert_pdf, docling_tables_to_locations
     rf = render_fn or render_page_crop
     doc = convert_pdf(pdf_path, converter=converter)
@@ -99,15 +107,31 @@ def extract_paper_docling(pdf_path, paper_id, cfg, resolver, *, converter=None,
                 # docling page_no is 1-based; PyMuPDF load_page is 0-based
                 png = rf(pdf_path, loc.page - 1, loc.bbox)
             recs = []
+            vlm_errored = False
             if vlm_client and png is not None:
                 cell_text = " ".join((c or "") for row in loc.rows for c in row)
-                recs = merge_records([], verify_records(
-                    parse_vlm_rows(vlm_client(png), loc, cfg, resolver), cell_text))
-            # VLM produced nothing usable (truncated/invalid JSON, or nothing that
-            # verified against the crop) -> fall back to Docling's own extracted cells
-            # so a single bad VLM read never drops the table or crashes the run.
+                try:
+                    recs = merge_records([], verify_records(
+                        parse_vlm_rows(vlm_client(png), loc, cfg, resolver), cell_text))
+                except Exception as ve:
+                    # Every vision provider exhausted (quota/dead) -> don't sink the table:
+                    # fall through to Docling's own cells below. A non-LLM error (bad crop,
+                    # parser bug) is a genuine per-table fault -> re-raise to the outer
+                    # handler so only THIS table is skipped.
+                    if type(ve).__name__ != 'LLMUnavailable':
+                        raise
+                    vlm_errored = True
+            # VLM produced nothing usable (truncated/invalid JSON, nothing that verified,
+            # or every provider down) -> fall back to Docling's own extracted cells so a
+            # single bad VLM read never drops the table or crashes the run.
             if not recs:
                 recs = merge_records(records_from_tei_rows(loc, cfg, resolver), [])
+            # A VLM outage that left an IMAGE table with zero rows (Docling has no text
+            # cells to recover) is a real, recoverable loss -> flag it so the caller can
+            # refuse to cache this paper and retry it next build. A born-digital table
+            # recovered by Docling cells is NOT flagged (its data is complete).
+            if vlm_errored and not recs and vlm_failed_out is not None:
+                vlm_failed_out.append((loc.paper_id, loc.table_index))
             crop_url = crop_saver(loc.paper_id, loc.table_index, png) if (crop_saver and png is not None) else None
             for r in recs:
                 if r.page is None:
@@ -181,7 +205,7 @@ def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop
             if use_cache else None)
     records, unknown = [], []
     seen_ids = set()
-    n_hit = n_extracted = 0
+    n_hit = n_extracted = n_vlm_failed = 0
     for fn in sorted(os.listdir(pdf_dir)):
         if not fn.endswith('.pdf'):
             continue
@@ -193,6 +217,7 @@ def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop
         hit = None
         if use_cache and not cache_refresh:
             hit = _cache.get_hit(cache, slug, pdf_sha, salt)
+        vlm_failed = []
         if hit is not None:
             recs = load_records({'records': hit})
             _refresh_resolution(recs, resolver)
@@ -202,22 +227,32 @@ def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop
             if converter is None:
                 converter = _default_converter()
             recs = extract_paper_docling(pdf_path, slug, cfg, resolver,
-                                         converter=converter, crop_saver=crop_saver, vlm_client=vlm_client)
+                                         converter=converter, crop_saver=crop_saver,
+                                         vlm_client=vlm_client, vlm_failed_out=vlm_failed)
             n_extracted += 1
-            if use_cache:
+            if vlm_failed:
+                # An image table got zero rows because every vision provider was down.
+                # Do NOT cache: an empty cache entry would suppress the retry once quota
+                # recovers. Leaving it uncached re-runs this paper on the next build.
+                n_vlm_failed += 1
+                print(f"    [cache] NOT caching {slug}: {len(vlm_failed)} table(s) lost to a "
+                      f"VLM outage -> will retry next build")
+            elif use_cache:
                 # Save after each successful paper so a mid-run crash still leaves
                 # completed papers cached (a failing paper is never cached).
                 _cache.put_entry(cache, slug, pdf_sha, salt, recs)
                 _cache.save_cache(cache_path, cache)
         if want_manifest:
-            manifest_out[slug] = (
-                'cached' if hit is not None else 'extracted', pdf_sha, len(recs))
+            status = ('cached' if hit is not None
+                      else 'vlm-failed' if vlm_failed else 'extracted')
+            manifest_out[slug] = (status, pdf_sha, len(recs))
         records.extend(recs)
         unknown += [r.metric_raw for r in recs if r.metric_id is None]
     if use_cache:
         pruned = _cache.prune_missing(cache, seen_ids)
         _cache.save_cache(cache_path, cache)
-        print(f"  [cache] {n_hit} hits, {n_extracted} extracted, {len(pruned)} pruned (salt={salt})")
+        print(f"  [cache] {n_hit} hits, {n_extracted} extracted "
+              f"({n_vlm_failed} not cached: VLM outage), {len(pruned)} pruned (salt={salt})")
     return records, unknown
 
 
@@ -319,19 +354,18 @@ def main():
     crop_saver = _make_crop_saver(a.crops_dir, a.crops_url) if a.crops_dir else None
     vlm_client = None
     if not a.no_vlm:
-        # Multi-provider vision fallback (Groq -> Gemini -> Anthropic), skipping any
-        # provider whose key env is unset. Only build a client when at least one
-        # vision key is present; otherwise stay born-digital (unchanged no-key
-        # behavior). The happy path (Groq only) is byte-identical to the old
-        # call_vlm_groq path.
+        # Docling stays the PRIMARY extractor; the VLM only reads image tables Docling
+        # can't. Vision fallback = Gemini -> Gemini(key2) -> Anthropic, skipping any
+        # provider whose key env is unset. Only build a client when at least one vision
+        # key is present; otherwise stay born-digital (unchanged no-key behavior).
+        vlm_key_envs = ('GEMINI_API_KEY', 'GEMINI_API_KEY_2', 'ANTHROPIC_API_KEY')
         try:
-            if (os.environ.get('GROQ_API_KEY') or os.environ.get('GEMINI_API_KEY')
-                    or os.environ.get('ANTHROPIC_API_KEY')):
+            if any(os.environ.get(e) for e in vlm_key_envs):
                 from benchmarks.extraction.vlm_extract import call_vlm_fallback
                 vlm_client = lambda png: call_vlm_fallback(png)
-                print("  VLM: multi-provider fallback (Groq -> Gemini -> Anthropic)")
+                print("  VLM: multi-provider fallback (Gemini -> Gemini(key2) -> Anthropic)")
             else:
-                print("  WARNING: no VLM key (GROQ_API_KEY / GEMINI_API_KEY / "
+                print("  WARNING: no VLM key (GEMINI_API_KEY / GEMINI_API_KEY_2 / "
                       "ANTHROPIC_API_KEY); born-digital only")
         except Exception as e:
             print(f"  WARNING: VLM client unavailable ({e}); born-digital only")

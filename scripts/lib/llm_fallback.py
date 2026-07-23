@@ -17,8 +17,19 @@ Design constraints:
     a browser-like UA.
 
 Provider priority:
-  text:   Groq -> Gemini -> Anthropic -> HuggingFace
-  vision: Gemini -> Groq -> Anthropic
+  text:   Groq -> Gemini -> Gemini(fallback key) -> Anthropic -> HuggingFace
+  vision: Gemini -> Gemini(fallback key) -> Anthropic
+
+Vision notes:
+  - Docling remains the PRIMARY table extractor; this vision fallback only reads the
+    handful of image tables Docling can't (no text layer). Gemini is the VLM.
+  - A second Gemini key (GEMINI_API_KEY_2) is tried after the primary quota's (429),
+    doubling the effective free-tier headroom without swapping the primary key.
+  - Groq and HuggingFace vision are intentionally absent: Groq's VLMs are decommissioned,
+    and HuggingFace serves only as a TEXT fallback here.
+  - call_vision throttles calls (LLM_VISION_MIN_INTERVAL, default 4s apart) and retries a
+    429 with bounded backoff (LLM_VISION_QUOTA_RETRIES, default 2) before rolling over,
+    to stay under free-tier RPM limits.
 """
 import os
 import json
@@ -35,6 +46,13 @@ _UA = "Mozilla/5.0 (compatible; grasp-explorer/1.0)"
 _GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 _GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
 _HF_URL = "https://router.huggingface.co/v1/chat/completions"
+
+
+def _hf_token():
+    """The HF token (TEXT fallback), accepting either env name. The CI historically wired
+    the secret to HF_TOKEN while the code read HF_API_TOKEN; support both so HuggingFace
+    is never silently skipped for a name mismatch."""
+    return os.environ.get("HF_API_TOKEN") or os.environ.get("HF_TOKEN") or ""
 
 # Per-attempt error categories.
 AUTH = "AUTH"            # 401/403 -> the key is bad; skip it
@@ -183,18 +201,18 @@ def _groq_text(messages, max_tokens, temperature):
     return _openai_compat(_GROQ_URL, os.environ["GROQ_API_KEY"], payload)
 
 
-def _gemini_text(messages, max_tokens, temperature):
+def _gemini_text(messages, max_tokens, temperature, key_env="GEMINI_API_KEY"):
     model = os.environ.get("GEMINI_MODEL") or "gemini-flash-latest"
     payload = {"model": model, "messages": messages,
                "max_tokens": max_tokens, "temperature": temperature}
-    return _openai_compat(_GEMINI_URL, os.environ["GEMINI_API_KEY"], payload)
+    return _openai_compat(_GEMINI_URL, os.environ[key_env], payload)
 
 
 def _hf_text(messages, max_tokens, temperature):
     model = os.environ.get("HF_MODEL") or os.environ.get("AI_MODEL") or "Qwen/Qwen2.5-72B-Instruct"
     payload = {"model": model, "messages": messages,
                "max_tokens": max_tokens, "temperature": temperature}
-    return _openai_compat(_HF_URL, os.environ["HF_API_TOKEN"], payload)
+    return _openai_compat(_HF_URL, _hf_token(), payload)
 
 
 def _anthropic_text(messages, max_tokens, temperature):
@@ -229,14 +247,16 @@ def _anthropic_text(messages, max_tokens, temperature):
 # ---------------------------------------------------------------------------
 
 def _groq_vision(png_bytes, prompt, max_tokens):
+    # Retained for completeness only — NOT in the vision priority list: every Groq VLM
+    # (llama-4-scout/maverick, llama-3.2-vision previews) is 404/decommissioned.
     model = os.environ.get("VLM_GROQ_MODEL") or "meta-llama/llama-4-scout-17b-16e-instruct"
     return _openai_compat(_GROQ_URL, os.environ["GROQ_API_KEY"],
                           _openai_vision_payload(model, png_bytes, prompt, max_tokens))
 
 
-def _gemini_vision(png_bytes, prompt, max_tokens):
+def _gemini_vision(png_bytes, prompt, max_tokens, key_env="GEMINI_API_KEY"):
     model = os.environ.get("VLM_GEMINI_MODEL") or "gemini-flash-latest"
-    return _openai_compat(_GEMINI_URL, os.environ["GEMINI_API_KEY"],
+    return _openai_compat(_GEMINI_URL, os.environ[key_env],
                           _openai_vision_payload(model, png_bytes, prompt, max_tokens))
 
 
@@ -269,27 +289,64 @@ def _anthropic_vision(png_bytes, prompt, max_tokens):
 # Dispatch
 # ---------------------------------------------------------------------------
 
-def _run_once_with_retry(fn):
-    """Run one provider attempt; on TRANSIENT, sleep 2s and retry exactly once."""
-    try:
-        return fn()
-    except _ProviderError as e:
-        if e.category == TRANSIENT:
-            time.sleep(2)
-            return fn()  # single retry; a second failure propagates
-        raise
+# Process-global timestamp of the last throttled attempt (vision only). A list so the
+# closure can mutate it; monotonic clock so it is immune to wall-clock jumps.
+_last_throttled_ts = [0.0]
 
 
-def _dispatch(providers):
-    """Iterate (name, key_env, fn) in order, skipping unset keys, returning the
-    first non-empty content. Raise LLMUnavailable with a per-provider summary once
-    all are exhausted."""
+def _throttle(min_interval):
+    """Space successive (vision) attempts >= min_interval seconds apart, so a burst of
+    table crops stays under a free-tier RPM ceiling. No-op when min_interval <= 0."""
+    if min_interval <= 0:
+        return
+    wait = min_interval - (time.monotonic() - _last_throttled_ts[0])
+    if wait > 0:
+        time.sleep(wait)
+    _last_throttled_ts[0] = time.monotonic()
+
+
+def _run_once_with_retry(fn, *, min_interval=0.0, quota_retries=0):
+    """Run one provider attempt, spacing it by min_interval. Retries:
+      - TRANSIENT (5xx/timeout): sleep 2s and retry exactly once.
+      - QUOTA (429/quota body): retry up to quota_retries times with bounded exponential
+        backoff (2s, 4s, ... capped 30s) to ride out a per-minute rate limit before the
+        caller rolls over to the next provider.
+    A category not retried (or its budget exhausted) propagates."""
+    transient_used = False
+    quota_used = 0
+    while True:
+        _throttle(min_interval)
+        try:
+            return fn()
+        except _ProviderError as e:
+            if e.category == TRANSIENT and not transient_used:
+                transient_used = True
+                time.sleep(2)
+                continue
+            if e.category == QUOTA and quota_used < quota_retries:
+                quota_used += 1
+                time.sleep(min(2 * (2 ** (quota_used - 1)), 30))
+                continue
+            raise
+
+
+def _keys_present(key_env):
+    """True if ANY of the provider's candidate key envs is set/non-empty. key_env is a
+    single env name or a tuple of alternatives (e.g. ('HF_API_TOKEN', 'HF_TOKEN'))."""
+    envs = (key_env,) if isinstance(key_env, str) else tuple(key_env)
+    return any((os.environ.get(e) or "").strip() for e in envs)
+
+
+def _dispatch(providers, *, min_interval=0.0, quota_retries=0):
+    """Iterate (name, key_env, fn) in order, skipping providers whose key(s) are all
+    unset, returning the first non-empty content. Raise LLMUnavailable with a
+    per-provider summary once all are exhausted."""
     tried = []
     for name, key_env, fn in providers:
-        if not (os.environ.get(key_env) or "").strip():
+        if not _keys_present(key_env):
             continue  # key unset/empty -> skip (not recorded as an attempt)
         try:
-            content = _run_once_with_retry(fn)
+            content = _run_once_with_retry(fn, min_interval=min_interval, quota_retries=quota_retries)
         except _SkipProvider:
             continue
         except _ProviderError as e:
@@ -311,22 +368,28 @@ def call_text(messages, max_tokens=1024, temperature=0.0):
     response text; raises LLMUnavailable if every configured provider fails."""
     providers = [
         ("groq", "GROQ_API_KEY", lambda: _groq_text(messages, max_tokens, temperature)),
-        ("gemini", "GEMINI_API_KEY", lambda: _gemini_text(messages, max_tokens, temperature)),
+        ("gemini", "GEMINI_API_KEY", lambda: _gemini_text(messages, max_tokens, temperature, "GEMINI_API_KEY")),
+        ("gemini-2", "GEMINI_API_KEY_2", lambda: _gemini_text(messages, max_tokens, temperature, "GEMINI_API_KEY_2")),
         ("anthropic", "ANTHROPIC_API_KEY", lambda: _anthropic_text(messages, max_tokens, temperature)),
-        ("huggingface", "HF_API_TOKEN", lambda: _hf_text(messages, max_tokens, temperature)),
+        ("huggingface", ("HF_API_TOKEN", "HF_TOKEN"), lambda: _hf_text(messages, max_tokens, temperature)),
     ]
     return _dispatch(providers)
 
 
 def call_vision(png_bytes, prompt, max_tokens=2000):
     """Vision completion (a PNG crop + instruction) with multi-provider fallback
-    (Gemini -> Groq -> Anthropic). Gemini is primary because Groq's weak
-    llama-4-scout extracts image tables poorly/empty; Groq then Anthropic serve as
-    fallbacks on a Gemini quota/error/empty-completion. Returns the model's raw
-    text; raises LLMUnavailable if every configured provider fails."""
+    (Gemini -> Gemini(fallback key) -> Anthropic). Docling stays the PRIMARY extractor;
+    this VLM only reads the image tables Docling can't. A second Gemini key backs up the
+    first on a 429, doubling free-tier headroom without swapping the primary key. Groq and
+    HuggingFace are absent from the vision path (Groq's VLMs are decommissioned; HF is a
+    text-only fallback here). Calls are throttled and 429s are backoff-retried before
+    rolling over. Returns the model's raw text; raises LLMUnavailable if every provider
+    fails."""
+    min_interval = float(os.environ.get("LLM_VISION_MIN_INTERVAL", "4"))
+    quota_retries = int(os.environ.get("LLM_VISION_QUOTA_RETRIES", "2"))
     providers = [
-        ("gemini", "GEMINI_API_KEY", lambda: _gemini_vision(png_bytes, prompt, max_tokens)),
-        ("groq", "GROQ_API_KEY", lambda: _groq_vision(png_bytes, prompt, max_tokens)),
+        ("gemini", "GEMINI_API_KEY", lambda: _gemini_vision(png_bytes, prompt, max_tokens, "GEMINI_API_KEY")),
+        ("gemini-2", "GEMINI_API_KEY_2", lambda: _gemini_vision(png_bytes, prompt, max_tokens, "GEMINI_API_KEY_2")),
         ("anthropic", "ANTHROPIC_API_KEY", lambda: _anthropic_vision(png_bytes, prompt, max_tokens)),
     ]
-    return _dispatch(providers)
+    return _dispatch(providers, min_interval=min_interval, quota_retries=quota_retries)
