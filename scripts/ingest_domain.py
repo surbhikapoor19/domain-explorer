@@ -548,12 +548,13 @@ def step_precompute(paths, domain_slug):
         print(f"  WARNING: precompute exited with code {result.returncode}")
 
 
-def _benchmark_stale(cache_file, papers_dir, cfg_path, vlm_enabled):
-    """True when the persisted per-PDF extraction cache doesn't fully cover the
-    current corpus under the current (pdf_sha256, salt): any papers/*.pdf not yet
-    cached, or a cached paper whose PDF is gone. On any import failure return True
-    (safe: rebuild). Mirrors run_docling's salt so the gate agrees with the extractor;
-    the methods CSV is deliberately excluded from the salt (see cache.compute_salt)."""
+def _benchmark_stale(cache_file, papers_dir, cfg_path, vlm_enabled, published_json=None):
+    """True when a re-run could change the published benchmark build: any papers/*.pdf
+    not yet cached under (pdf_sha256, salt), a cached paper whose PDF is gone, OR a
+    cached paper that HAS rows but isn't yet in published_json (so the merge can still
+    integrate it — e.g. after a baseline restore, or a paper cached but never merged).
+    On any import failure return True (safe: rebuild). Mirrors run_docling's salt so
+    the gate agrees with the extractor; the methods CSV is excluded from the salt."""
     try:
         pre = str(REPO_ROOT / 'dashboard' / 'scripts' / 'precompute')
         if pre not in sys.path:
@@ -579,6 +580,17 @@ def _benchmark_stale(cache_file, papers_dir, cfg_path, vlm_enabled):
     salt = bcache.compute_salt(cfg, engine='docling', vlm_enabled=vlm_enabled)
     for p in pdfs:
         if bcache.get_hit(manifest, p.name[:-4], bcache.sha256_file(str(p)), salt) is None:
+            return True
+    # A cached paper that HAS benchmark rows but isn't yet in the published build must
+    # un-skip so the merge integrates it (baseline restore, or cached-but-never-merged).
+    if published_json is not None:
+        try:
+            import json as _json
+            pub_pids = {x.get('paper_id') for x in _json.loads(Path(published_json).read_text()).get('results', [])}
+            for pid, entry in (manifest.get('papers') or {}).items():
+                if (entry.get('n_records') or 0) > 0 and pid not in pub_pids:
+                    return True
+        except Exception:
             return True
     return False
 
@@ -609,7 +621,7 @@ def step_benchmark(paths, domain):
     # already extracted under the current hash+salt, no cached paper removed).
     # A new/changed/removed PDF, a config/code/docling/vlm change (salt), or --force
     # all fall through to a re-extract; the cache then makes that re-extract cheap.
-    if out_json.exists() and not force_bench and not _benchmark_stale(cache_file, paths['papers'], cfg, vlm_enabled):
+    if out_json.exists() and not force_bench and not _benchmark_stale(cache_file, paths['papers'], cfg, vlm_enabled, out_json):
         print(f"  [benchmark] {out_json} exists and cache is warm; skipping (--force or FORCE_BENCHMARK=1 to rebuild)")
         return
     csv_path = next(paths['dataset'].glob('*.csv'), None)
