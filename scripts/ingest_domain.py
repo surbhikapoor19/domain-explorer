@@ -79,6 +79,42 @@ def _read_json(path):
         return {}
 
 
+def _benchmark_manifest_summary(manifest_path):
+    """Markdown table of the per-paper Docling decisions in an extraction-manifest.json
+    (paper_id | sha256_short | source | cached/extracted | n_records), so an admin can
+    confirm at a glance which papers ran through Docling and why. Returns '' on a
+    missing/empty/unreadable manifest — a missing manifest must NEVER fail the build."""
+    try:
+        rows = json.loads(Path(manifest_path).read_text())
+    except Exception:
+        return ''
+    if not isinstance(rows, list) or not rows:
+        return ''
+    lines = ['', '#### Docling extraction manifest', '',
+             '| paper_id | sha256 | source | cached/extracted | n_records |',
+             '| --- | --- | --- | --- | --- |']
+    n_cached = n_extracted = 0
+    for r in rows:
+        if not isinstance(r, dict):
+            continue
+        status = str(r.get('status') or '')
+        if status == 'cached':
+            n_cached += 1
+        elif status == 'extracted':
+            n_extracted += 1
+        n_records = r.get('n_records')
+        lines.append('| {} | {} | {} | {} | {} |'.format(
+            r.get('paper_id') or '-',
+            r.get('pdf_sha256_short') or '-',
+            r.get('source_ref') or 'committed',
+            status or '-',
+            n_records if n_records is not None else '-'))
+    lines.append('')
+    lines.append(f'_{len(rows)} papers — {n_cached} cached, '
+                 f'{n_extracted} extracted via Docling._')
+    return '\n'.join(lines)
+
+
 def _benchmark_slug(name):
     """Method name -> paper_id slug. Mirrors scripts/fetch_missing_pdfs.slugify /
     backend/rag/method_paper_map._slugify: strip the robot emoji, lowercase,
@@ -665,17 +701,31 @@ def step_benchmark(paths, domain):
     # 2. Docling-extract new/changed papers to a temp records file (cache-bounded:
     #    only new/changed PDFs are actually re-extracted).
     rr = Path(tempfile.mkdtemp()) / 'result-records.json'
+    # Per-paper Docling-decision audit manifest, written alongside pdf-sources.json
+    # (from fetch_missing_pdfs) in chroma_db so the manifest writer can discover the
+    # provenance map next to it and label fetched vs committed papers.
+    manifest_file = paths['chroma'] / 'extraction-manifest.json'
+    pdf_sources_file = paths['chroma'] / 'pdf-sources.json'
     no_vlm = [] if vlm_enabled else ['--no-vlm']
     extract = [sys.executable, '-m', 'benchmarks.extraction.run_extraction',
                '--engine', 'docling', '--config', str(cfg), '--pdf-dir', str(paths['papers']),
                '--methods-csv', str(csv_path), '--crops-dir', str(crops_dir),
                '--crops-url', crops_url, '--output', str(rr),
-               '--cache', str(cache_file)]
+               '--cache', str(cache_file), '--manifest', str(manifest_file)]
+    if pdf_sources_file.exists():
+        extract += ['--pdf-sources', str(pdf_sources_file)]
     if force_bench:
         extract.append('--cache-refresh')
     extract += no_vlm
     print(f"  [benchmark] extracting via Docling ({'born-digital' if no_vlm else 'with VLM'}) ...")
     subprocess.run(extract, cwd=str(pre), check=True)
+
+    # Surface the per-paper Docling decisions to the GitHub Actions job summary so an
+    # admin can confirm which papers ran through Docling and why. Fully guarded: a
+    # missing/empty manifest yields '' and is skipped, never failing the build.
+    manifest_md = _benchmark_manifest_summary(manifest_file)
+    if manifest_md:
+        _step_summary(manifest_md)
 
     # 3. MERGE fresh rows onto the reconstructed baseline — the baseline (published,
     #    incl. vision) WINS per paper_id, only paper_ids ABSENT from the baseline

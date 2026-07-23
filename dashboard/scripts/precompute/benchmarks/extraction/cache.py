@@ -44,6 +44,12 @@ SALT_SOURCE_FILES = [
     # normalization), so a change here must invalidate the cache too.
     os.path.join(_HERE, '..', 'normalize', 'registries.py'),
     os.path.join(_HERE, '..', 'normalize', 'units.py'),
+    # The multi-provider vision fallback (repo-root scripts/lib/) drives the VLM
+    # extraction on the Docling image-table path, so its provider order/logic shapes
+    # record CONTENT too — a change must invalidate the cache. _HERE is
+    # .../dashboard/scripts/precompute/benchmarks/extraction, so five parents up is
+    # the repo root, then scripts/lib/llm_fallback.py.
+    os.path.join(_HERE, '..', '..', '..', '..', '..', 'scripts', 'lib', 'llm_fallback.py'),
 ]
 
 

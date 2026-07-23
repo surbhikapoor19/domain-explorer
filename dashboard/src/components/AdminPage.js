@@ -762,6 +762,14 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
 
         <div className="admin-domains">
           <h3>Existing Domains</h3>
+          {/* ADDED: concise explainer for the automated update pipeline + per-action notes below */}
+          <p className="admin-setting-hint" style={{ margin: '0 0 0.75rem' }}>
+            Domains also stay current on their own: a nightly job polls each domain&rsquo;s Google Drive CSV folder
+            (<code>drive_folder</code>) and triggers the right rebuild automatically — a full build (with the new
+            paper&rsquo;s PDF auto-fetched from arXiv/OpenAlex/Semantic Scholar) when a method is added, or a cheap
+            CSV-only refresh for an edit-only change. The buttons below trigger a build by hand, e.g. after
+            uploading new PDFs. See the Manual&rsquo;s Pipeline architecture section for details.
+          </p>
           {loadingDomains && <div className="admin-loading">Loading domains...</div>}
           {domains.length === 0 && !loadingDomains && (
             <div className="admin-empty">No domains configured yet.</div>
@@ -805,6 +813,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
                     className="admin-btn"
                     onClick={() => handleTriggerBuild(d.slug)}
                     disabled={building === d.slug}
+                    title="Full pipeline: GROBID, RAG, knowledge graph, link prediction, precompute. Re-parses PDFs — use for a new domain or after adding/removing papers by hand."
                   >
                     {building === d.slug ? 'Building...' : 'Build'}
                   </button>
@@ -812,6 +821,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
                     className="admin-btn"
                     onClick={() => handleTriggerBuild(d.slug, 'benchmark')}
                     disabled={building === d.slug}
+                    title="Docling + vision-fallback table extraction only. Only new/changed PDFs re-extract, and a superset guard never lets this drop an existing paper's results."
                   >
                     {building === d.slug ? 'Building...' : 'Build benchmarks'}
                   </button>
@@ -838,6 +848,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
                       className="admin-btn admin-btn-primary"
                       onClick={() => handleUpdateDomain(d.slug)}
                       disabled={updating || !editPdfZip}
+                      title="Commits the PDF zip into this domain's corpus. This only uploads the files — click Build afterward to ingest them."
                     >
                       {updating ? 'Uploading...' : 'Upload PDFs & Build'}
                     </button>

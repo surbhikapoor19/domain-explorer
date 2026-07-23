@@ -127,6 +127,29 @@ def test_3_salt_covers_resolution_sources(tmp_path, monkeypatch):
     assert s1 != s2
 
 
+# 3c ---- salt covers the vision-fallback source (Gemini-primary reorder) -----
+def test_3_salt_covers_llm_fallback_source(tmp_path, monkeypatch):
+    """The shared vision fallback (repo-root scripts/lib/llm_fallback.py) drives the
+    VLM image-table extraction; its provider order/logic shapes record CONTENT, so it
+    must be folded into the salt. Assert it's in SALT_SOURCE_FILES, that its path
+    actually RESOLVES (a wrong path would be a silent no-op in _source_digest), and
+    that changing its bytes changes the salt."""
+    import shutil
+    llm_srcs = [p for p in CACHE.SALT_SOURCE_FILES if 'llm_fallback.py' in p]
+    assert llm_srcs, "llm_fallback.py must be in SALT_SOURCE_FILES"
+    llm = llm_srcs[0]
+    assert os.path.exists(llm), f"llm_fallback.py salt path does not resolve: {llm}"
+    # changing its bytes changes the salt (cache invalidated)
+    copy = tmp_path / "llm_fallback.py"
+    shutil.copyfile(llm, copy)
+    monkeypatch.setattr(CACHE, "SALT_SOURCE_FILES", [str(copy)])
+    s1 = CACHE.compute_salt(CFG)
+    with open(copy, "ab") as f:
+        f.write(b"\n# vision provider reorder\n")
+    s2 = CACHE.compute_salt(CFG)
+    assert s1 != s2
+
+
 # 4 ---- warm run is free ----------------------------------------------------
 def test_4_warm_run_no_extractor_calls(tmp_path, monkeypatch):
     pdf_dir = _write_pdfs(tmp_path / "pdfs", ["a", "b"])

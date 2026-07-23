@@ -413,6 +413,52 @@
         <a href="#your-domain">Add your own domain</a>).</p>
         <p>The Admin button is <b>hidden when the dashboard is embedded on another site</b>; it stays reachable via
         the password-gated “Domain administration” link in this manual's footer.</p>
+
+        <h3>Extraction keys &amp; models</h3>
+        <p>Clicking Build kicks off a cloud run (GitHub Actions) that extracts benchmark tables from the papers and
+        rebuilds the site's data. That run needs its own credentials, <b>set once in the GitHub repo's
+        Settings → Secrets — not in this UI</b> — and they're a different thing from the copilot's <b>Bring your own
+        key</b> (⚙ Settings), which only supplies a client-side chat key for one visitor's answers.</p>
+        <table>
+          <tr><th>Secret (GitHub repo settings)</th><th>Needed for</th></tr>
+          <tr><td><code>GROQ_API_KEY</code></td><td><b>Required.</b> Powers both the copilot's default chat model
+            and, absent a stronger key, the benchmark-table extraction itself.</td></tr>
+          <tr><td><code>HF_TOKEN</code></td><td><b>Required for benchmark builds.</b> Authenticates Docling's model
+            downloads from Hugging Face — without it Docling gets rate-limited (HTTP 403) and extraction fails.</td></tr>
+          <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Optional. Upgrades the table-reading model — see below.</td></tr>
+        </table>
+        <p>Whichever key is present decides <b>which vision model reads the benchmark tables</b>, and that choice
+        directly affects coverage: with <code>ANTHROPIC_API_KEY</code> set, extraction uses <b>Claude vision</b>, the
+        strongest tier; falling back to <code>GROQ_API_KEY</code> alone uses a weaker Groq vision model
+        (<code>llama-4-scout</code>) that can miss tables or rows a stronger reader would catch — in one recent full
+        run it only pulled usable tables from about 25 of 55 papers. It never <i>invents</i> a value — every
+        extracted number is checked against the document's own cell text — it just under-covers. With no vision key
+        at all, extraction falls back to “born-digital” text pulled straight from the document's own cells.</p>
+        <div class="callout tip"><span class="lab">Maintainer note</span> A free Groq key (plus <code>HF_TOKEN</code>)
+        is enough to build, but it lands you on the weaker vision tier; add <code>ANTHROPIC_API_KEY</code> to raise
+        extraction quality. If a rebuild comes back with sparse benchmark data, the weak-vision tier is the first
+        thing to check.</div>
+
+        <!-- ADDED: Admin build-action reference -->
+        <h3>Build actions, at a glance</h3>
+        <table>
+          <tr><th>Action</th><th>What it runs</th></tr>
+          <tr><td><b>Build</b></td><td>Full main pipeline (GROBID → RAG → knowledge graph → link prediction →
+            precompute). Re-parses PDFs. Use it for a new domain, or after adding/removing papers by hand.</td></tr>
+          <tr><td><b>Build benchmarks</b></td><td>The Docling + vision-fallback table extraction only. Cache-bounded
+            (only new/changed PDFs re-extract) and safe to re-run any time — the superset guard never lets it
+            publish a rebuild that drops an existing paper's results.</td></tr>
+          <tr><td><b>Upload PDFs &amp; Build</b> (under a domain's <b>Update</b>)</td><td>Commits the new PDF
+            <code>.zip</code> into the domain's corpus. This step only uploads the files — click <b>Build</b>
+            afterward to actually ingest them.</td></tr>
+        </table>
+        <p>Every action above runs as a GitHub Actions job that commits its output straight to <code>main</code>;
+        Vercel then redeploys the site from that commit automatically (see the Vercel Deployments panel below the
+        build status). A third scope, <code>precompute</code> (CSV-only refresh, no PDF re-ingest), has no dedicated
+        button here — it's what the nightly Google-Drive sheet-poll dispatches automatically for an edit-only CSV
+        change (see <a href="#pipeline" class="plain">Pipeline architecture</a> for the full nightly-sync
+        mechanics).</p>
+        <!-- /ADDED -->
       </div>
     </section>
 
@@ -774,6 +820,44 @@
         Actions secret and degrade gracefully without it: they're skipped (or extraction runs born-digital-only),
         so a keyless build still produces a working, less-enriched domain.
       </div></details>
+
+      <!-- ADDED: automated nightly domain-update pipeline (sheet-poll) -->
+      <details><summary>Automated nightly domain updates (the sheet-poll workflow)</summary><div class="body">
+        A second, lighter workflow (<code>.github/workflows/sheet-poll.yml</code>) runs nightly and keeps every
+        domain's CSV in sync with its Google&nbsp;Drive folder (<code>drive_folder</code> in
+        <code>domains/&lt;domain&gt;.yaml</code>) without anyone touching Admin. For each domain it pulls the
+        newest exported CSV, hash-compares it to the committed one, and — only on a real change — commits the new
+        CSV and dispatches a rebuild scoped to what actually changed:
+        <ul>
+          <li><b>Edit-only change</b> (a value changed, no item added or removed) → a <code>precompute</code>-only
+            rebuild: cheap, CSV-driven, no PDFs re-parsed.</li>
+          <li><b>A new item row</b> (a new name appears) → a full <code>new-paper</code> build:
+            <code>scripts/fetch_missing_pdfs.py</code> resolves and downloads that paper's PDF from a public
+            open-access source — arXiv, then OpenAlex, then Semantic Scholar, each candidate verified by title +
+            author match before it's saved — the full ingestion pipeline runs on it, and the paper is integrated
+            into <i>every</i> surface: the Explorer similarity map, the knowledge graph, the copilot's RAG corpus,
+            and, as the pipeline's last step, the benchmark tables.</li>
+        </ul>
+        <p><b>Cheap by construction.</b> A per-PDF extraction cache (<code>extraction-cache.json</code>, keyed by
+        each PDF's own sha256 hash) means Docling only re-runs on a paper whose PDF is new or changed — every other
+        paper is served straight from the cache. A build that adds one paper therefore re-extracts one PDF, not the
+        whole corpus: minutes, not the roughly 50 minutes a full re-extract takes. That same cache file, committed
+        with every build, records per paper when it was last actually run through Docling and how many benchmark
+        rows it yielded, so you can tell afterward exactly which papers were fresh-extracted this run versus served
+        from cache (the fetch step's own Actions log records which open-access source a newly-downloaded PDF came
+        from).</p>
+        <p><b>The published benchmark table is never silently downgraded.</b>
+        <code>benchmark-comparisons.json</code> is the source of truth: every build reconstructs that baseline
+        first, then merges in only the papers the fresh Docling pass covers — <i>per paper</i>, so an existing
+        paper's curated rows are left untouched — and a superset guard refuses to publish a rebuild that would drop
+        a paper still present in the CSV or shrink the total row count (an intentional overwrite needs
+        <code>FORCE_BENCHMARK_OVERWRITE=1</code>).</p>
+        <p><b>Limitation.</b> Benchmark extraction is Docling plus a vision fallback: it reads born-digital tables
+        well, but a paper whose results live only in an image-based table can still extract sparsely and may need a
+        manual vision pass. That paper still gets full coverage in the Explorer, the knowledge graph, and the
+        copilot regardless of how its benchmark table extracted.</p>
+      </div></details>
+      <!-- /ADDED -->
 
       <details><summary>How the knowledge graph is built — and how edges work across domains</summary><div class="body">
         The graph is assembled from <b>four extraction tracks</b>, then normalized:

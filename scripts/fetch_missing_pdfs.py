@@ -382,7 +382,60 @@ def resolve_domain_paths(domain_slug):
     papers_dir = dataset_dir / 'papers'
     csv_path = next(dataset_dir.glob('*.csv'), None)
     return {'dataset': dataset_dir, 'papers': papers_dir,
-            'csv': csv_path, 'slug_dashed': slug_dashed}
+            'csv': csv_path, 'chroma': dataset_dir / 'chroma_db',
+            'slug_dashed': slug_dashed}
+
+
+# --------------------------------------------------------------------------- #
+# PDF-source provenance manifest (feeds the Docling audit manifest downstream)  #
+# --------------------------------------------------------------------------- #
+def _arxiv_id_from_url(url):
+    """Extract a bare arXiv id (e.g. 2507.18847) from a pdf/abs URL, else None."""
+    m = re.search(r'arxiv\.org/(?:abs|pdf)/([0-9]{4}\.[0-9]{4,5})',
+                  url or '', re.IGNORECASE)
+    return m.group(1) if m else None
+
+
+def _source_ref(candidate, saved_url):
+    """Semantic provenance label recorded as ``source`` in pdf-sources.json: an
+    ``arxiv:<id>`` ref when derivable (arXiv or scrape+arXiv resolvers), else the
+    OA host name (``openalex`` / ``semantic_scholar``), else ``project_page``."""
+    src = (candidate or {}).get('source', '') or ''
+    aid = _arxiv_id_from_url(saved_url)
+    if aid:
+        return f'arxiv:{aid}'
+    if src == 'openalex':
+        return 'openalex'
+    if src == 'semanticscholar':
+        return 'semantic_scholar'
+    if src.startswith('scrape'):
+        return 'project_page'
+    return src or 'unknown'
+
+
+def _write_pdf_sources(chroma_dir, entries):
+    """MERGE per-paper PDF provenance into ``<chroma_dir>/pdf-sources.json``,
+    preserving entries for papers we did NOT fetch this run (freshly-fetched
+    papers win). Returns the written path, or None on nothing-to-do / write error
+    (never raises, so the caller's exit-0 contract is untouched)."""
+    if not entries:
+        return None
+    path = Path(chroma_dir) / 'pdf-sources.json'
+    existing = {}
+    try:
+        loaded = json.loads(path.read_text())
+        if isinstance(loaded, dict):
+            existing = loaded
+    except (FileNotFoundError, ValueError, OSError):
+        existing = {}
+    existing.update(entries)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(existing, indent=2, sort_keys=True))
+    except OSError as e:
+        print(f"  WARNING: could not write {path} ({e})")
+        return None
+    return path
 
 
 def _col(row_keys):
@@ -436,6 +489,10 @@ def process(domain, dry_run=False):
     existing = {p.name for p in papers_dir.glob('*.pdf')}
 
     downloaded, present, unresolved = [], [], []
+    # Per-paper provenance for the PDFs we actually fetch this run (paper_id ==
+    # PDF slug == the downstream Docling paper_id). Papers already present are
+    # deliberately left out — they surface as 'committed' in the audit manifest.
+    provenance = {}
 
     for row in rows:
         name = row['name']
@@ -491,6 +548,12 @@ def process(domain, dry_run=False):
             print()
             existing.add(fname)
             downloaded.append((name, candidate['source'], saved_url))
+            provenance[slug] = {
+                'source': _source_ref(candidate, saved_url),
+                'url': saved_url,
+                'resolved_via': candidate['source'],
+                'similarity': round(float(candidate['score']), 4),
+            }
         else:
             print("    -> UNRESOLVED (candidate URL(s) were not a downloadable PDF)")
             print()
@@ -508,6 +571,14 @@ def process(domain, dry_run=False):
         print(f"      - {name}")
     print()
     print(f"  total CSV rows : {len(rows)}")
+
+    # Record provenance for the PDFs we actually fetched (real downloads only —
+    # dry-run stays side-effect-free). Merges into any existing pdf-sources.json.
+    if not dry_run and provenance:
+        written = _write_pdf_sources(paths['chroma'], provenance)
+        if written:
+            noun = 'entry' if len(provenance) == 1 else 'entries'
+            print(f"  provenance     : wrote {len(provenance)} {noun} -> {written}")
     return 0
 
 

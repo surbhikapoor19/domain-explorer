@@ -157,7 +157,7 @@ def _refresh_resolution(records, resolver):
 
 
 def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop_saver=None,
-                cache_path=None, cache_refresh=False):
+                cache_path=None, cache_refresh=False, manifest_out=None):
     """Iterate *.pdf in pdf_dir through ONE shared DocumentConverter -> ResultRecords.
     Mirrors run() but uses the Docling path (no TEI needed).
 
@@ -167,8 +167,15 @@ def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop
     Docling's models. cache_refresh ignores existing hits (re-extract all) but still
     rewrites the cache. The cache is saved after EACH extracted paper (crash-safe
     resume) and stale entries are pruned at the end. Default (cache_path=None) is
-    byte-for-byte the pre-cache behavior."""
+    byte-for-byte the pre-cache behavior.
+
+    manifest_out (optional): when a mutable dict is passed, the per-paper Docling
+    decision is threaded out into it as ``{paper_id: (status, pdf_sha256, n_records)}``
+    with status in {'cached', 'extracted'} — an audit record of which papers were
+    served from cache vs re-run through Docling. Default None keeps the return arity
+    (records, unknown) unchanged so existing callers are unaffected."""
     use_cache = cache_path is not None
+    want_manifest = manifest_out is not None
     cache = _cache.load_cache(cache_path) if use_cache else {'papers': {}}
     salt = (_cache.compute_salt(cfg, engine='docling', vlm_enabled=bool(vlm_client))
             if use_cache else None)
@@ -181,7 +188,8 @@ def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop
         slug = fn[:-4]
         seen_ids.add(slug)
         pdf_path = os.path.join(pdf_dir, fn)
-        pdf_sha = _cache.sha256_file(pdf_path) if use_cache else None
+        # Hash the PDF when the cache needs it OR the manifest wants to record it.
+        pdf_sha = _cache.sha256_file(pdf_path) if (use_cache or want_manifest) else None
         hit = None
         if use_cache and not cache_refresh:
             hit = _cache.get_hit(cache, slug, pdf_sha, salt)
@@ -201,6 +209,9 @@ def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop
                 # completed papers cached (a failing paper is never cached).
                 _cache.put_entry(cache, slug, pdf_sha, salt, recs)
                 _cache.save_cache(cache_path, cache)
+        if want_manifest:
+            manifest_out[slug] = (
+                'cached' if hit is not None else 'extracted', pdf_sha, len(recs))
         records.extend(recs)
         unknown += [r.metric_raw for r in recs if r.metric_id is None]
     if use_cache:
@@ -208,6 +219,55 @@ def run_docling(pdf_dir, cfg, resolver, *, converter=None, vlm_client=None, crop
         _cache.save_cache(cache_path, cache)
         print(f"  [cache] {n_hit} hits, {n_extracted} extracted, {len(pruned)} pruned (salt={salt})")
     return records, unknown
+
+
+def build_manifest_rows(decisions, pdf_sources=None):
+    """Assemble the per-paper Docling-decision AUDIT MANIFEST rows (pure, network-free).
+
+    decisions: ``{paper_id: (status, pdf_sha256, n_records)}`` as threaded out of
+    run_docling (status in {'cached', 'extracted'}).
+    pdf_sources: optional ``{paper_id: {'source': ...}}`` provenance map from
+    fetch_missing_pdfs' pdf-sources.json (a bare string value is also accepted). A
+    paper ABSENT from pdf_sources was shipped in-repo, so its source_ref is
+    'committed'. Rows are sorted by paper_id for a stable, diffable manifest."""
+    pdf_sources = pdf_sources or {}
+    rows = []
+    for paper_id in sorted(decisions):
+        status, pdf_sha, n_records = decisions[paper_id]
+        src = pdf_sources.get(paper_id)
+        if isinstance(src, dict):
+            source_ref = src.get('source') or 'committed'
+        elif isinstance(src, str) and src:
+            source_ref = src
+        else:
+            source_ref = 'committed'
+        rows.append({
+            'paper_id': paper_id,
+            'pdf_sha256': pdf_sha,
+            'pdf_sha256_short': (pdf_sha or '')[:12] or None,
+            'source_ref': source_ref,
+            'status': status,
+            'n_records': n_records,
+        })
+    return rows
+
+
+def _load_pdf_sources(explicit_path, manifest_path):
+    """Load the pdf-sources.json provenance map: the explicit path if given, else a
+    pdf-sources.json sitting NEXT TO the manifest. Returns {} on absent/unreadable
+    (so the manifest simply labels every paper 'committed')."""
+    path = explicit_path
+    if not path and manifest_path:
+        path = os.path.join(os.path.dirname(os.path.abspath(manifest_path)),
+                            'pdf-sources.json')
+    if not path or not os.path.exists(path):
+        return {}
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
 
 
 def _make_crop_saver(crops_dir, url_prefix):
@@ -236,6 +296,12 @@ def main():
                    help='per-PDF extraction cache JSON (docling engine only); unchanged PDFs are reused')
     p.add_argument('--cache-refresh', action='store_true',
                    help='ignore cache hits and re-extract every paper (still rewrites the cache)')
+    p.add_argument('--manifest', default=None,
+                   help='write a per-paper Docling-decision AUDIT MANIFEST JSON '
+                        '(paper_id, sha256, source, cached/extracted, n_records)')
+    p.add_argument('--pdf-sources', default=None,
+                   help='pdf-sources.json provenance map (labels fetched vs committed '
+                        'papers in the manifest); defaults to one next to --manifest')
     p.add_argument('--output', required=True)
     a = p.parse_args()
     cfg = load_config(a.config)
@@ -269,11 +335,15 @@ def main():
                       "ANTHROPIC_API_KEY); born-digital only")
         except Exception as e:
             print(f"  WARNING: VLM client unavailable ({e}); born-digital only")
+    # When --manifest is set, collect the per-paper cache-HIT vs EXTRACTED decision
+    # that run_docling already makes, so we can surface it as an auditable manifest.
+    manifest_decisions = {} if a.manifest else None
     if a.engine == 'docling':
         try:
             records, unknown = run_docling(pdf_dir, cfg, resolver, vlm_client=vlm_client,
                                            crop_saver=crop_saver,
-                                           cache_path=a.cache, cache_refresh=a.cache_refresh)
+                                           cache_path=a.cache, cache_refresh=a.cache_refresh,
+                                           manifest_out=manifest_decisions)
         except ImportError as e:
             # docling is an OPTIONAL dependency: a genuinely missing module must not
             # crash a whole domain build (grobid/rag/kg/hgt run in the same job).
@@ -295,6 +365,20 @@ def main():
     with open(a.output, 'w') as f:
         json.dump(payload, f, indent=2, default=str)
     print(f"  result-records.json: {payload['stats']}")
+
+    # AUDIT MANIFEST: surface each paper's cache-HIT vs EXTRACTED decision + its
+    # PDF provenance so an admin can confirm which papers actually ran through
+    # Docling and why. Only when --manifest is set (default: today's behavior).
+    if a.manifest and manifest_decisions is not None:
+        pdf_sources = _load_pdf_sources(a.pdf_sources, a.manifest)
+        rows = build_manifest_rows(manifest_decisions, pdf_sources)
+        with open(a.manifest, 'w') as f:
+            json.dump(rows, f, indent=2, default=str)
+        for row in rows:
+            print("    [manifest] {pid:<28} {sha:<12} {src:<20} {st:<9} n={n}".format(
+                pid=row['paper_id'], sha=row['pdf_sha256_short'] or '-',
+                src=row['source_ref'], st=row['status'], n=row['n_records']))
+        print(f"  extraction-manifest.json: {len(rows)} papers -> {a.manifest}")
 
 
 if __name__ == '__main__':

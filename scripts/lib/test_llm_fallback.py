@@ -185,13 +185,41 @@ def test_no_keys_raises_llm_unavailable(monkeypatch):
 
 
 def test_call_vision_routes_and_returns(monkeypatch):
-    # Vision path: groq QUOTAs, gemini returns content (image sent as data URL).
+    # Vision path (image sent as data URL): gemini is primary and returns content,
+    # so groq is never reached (route would 429 groq, but it isn't called).
     _only(monkeypatch, "GROQ_API_KEY", "GEMINI_API_KEY")
     _install(monkeypatch, lambda url: (
         _http_error(429) if "groq" in url else _Resp('{"rows": []}')))
 
     out = LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
     assert out == '{"rows": []}'
+
+
+def test_vision_tries_gemini_first(monkeypatch):
+    # Gemini is the PRIMARY vision provider: a 200-with-content from gemini is
+    # returned WITHOUT groq ever being requested.
+    _only(monkeypatch, "GROQ_API_KEY", "GEMINI_API_KEY")
+    calls = _install(monkeypatch, lambda url: (
+        _Resp("FROM_GEMINI_VISION") if "generativelanguage" in url
+        else _Resp("FROM_GROQ_VISION")))
+
+    out = LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
+    assert out == "FROM_GEMINI_VISION"
+    assert any("generativelanguage" in u for u in calls)   # gemini attempted first
+    assert not any("groq" in u for u in calls)             # groq never reached
+
+
+def test_vision_gemini_429_falls_over_to_groq(monkeypatch):
+    # Gemini (primary) 429s -> QUOTA -> roll over to groq, which returns content.
+    _only(monkeypatch, "GROQ_API_KEY", "GEMINI_API_KEY")
+    calls = _install(monkeypatch, lambda url: (
+        _http_error(429, b'{"error": "Too Many Requests"}') if "generativelanguage" in url
+        else _Resp("FROM_GROQ_AFTER_GEMINI_QUOTA")))
+
+    out = LF.call_vision(b"\x89PNG\r\n", "extract the table", max_tokens=2000)
+    assert out == "FROM_GROQ_AFTER_GEMINI_QUOTA"
+    assert any("generativelanguage" in u for u in calls)   # gemini WAS attempted
+    assert any("groq" in u for u in calls)                 # ...then groq used
 
 
 if __name__ == "__main__":

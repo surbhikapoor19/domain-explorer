@@ -18,7 +18,7 @@ Design constraints:
 
 Provider priority:
   text:   Groq -> Gemini -> Anthropic -> HuggingFace
-  vision: Groq -> Gemini -> Anthropic
+  vision: Gemini -> Groq -> Anthropic
 """
 import os
 import json
@@ -320,11 +320,13 @@ def call_text(messages, max_tokens=1024, temperature=0.0):
 
 def call_vision(png_bytes, prompt, max_tokens=2000):
     """Vision completion (a PNG crop + instruction) with multi-provider fallback
-    (Groq -> Gemini -> Anthropic). Returns the model's raw text; raises
-    LLMUnavailable if every configured provider fails."""
+    (Gemini -> Groq -> Anthropic). Gemini is primary because Groq's weak
+    llama-4-scout extracts image tables poorly/empty; Groq then Anthropic serve as
+    fallbacks on a Gemini quota/error/empty-completion. Returns the model's raw
+    text; raises LLMUnavailable if every configured provider fails."""
     providers = [
-        ("groq", "GROQ_API_KEY", lambda: _groq_vision(png_bytes, prompt, max_tokens)),
         ("gemini", "GEMINI_API_KEY", lambda: _gemini_vision(png_bytes, prompt, max_tokens)),
+        ("groq", "GROQ_API_KEY", lambda: _groq_vision(png_bytes, prompt, max_tokens)),
         ("anthropic", "ANTHROPIC_API_KEY", lambda: _anthropic_vision(png_bytes, prompt, max_tokens)),
     ]
     return _dispatch(providers)
