@@ -9,7 +9,7 @@ import { retrieveChunks } from './copilot/retrieval';
 import { buildKgContext } from './copilot/kg-context';
 import { computeCorpusFacts } from './copilot/corpus-facts';
 import { buildAnswerPrompt } from './copilot/prompt-builder';
-import { rankCandidates, parseStructuredAnswer, resolveMethods } from './copilot/answer-synthesis';
+import { rankCandidates, parseStructuredAnswer, resolveMethods, salvageAnswer } from './copilot/answer-synthesis';
 
 // Deterministic FORMAT intent from the query (mirrors the answer-engine router):
 // chooses the answer's shape (table vs ranked list vs bullets) before generation.
@@ -518,9 +518,10 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   let insightText = '';
   const history = domainOpts.history || null;
   // Overview answers enumerate the whole candidate set — give them the budget to
-  // finish. Budgets include headroom for gpt-oss REASONING tokens, which count
-  // against max_tokens before any visible answer is produced.
-  const tokenBudget = intent === 'overview' ? 3000 : 2000;
+  // finish. Budgets include headroom for gpt-oss REASONING tokens, which count against
+  // max_tokens before any visible answer is produced; too small a budget truncates the
+  // JSON mid-answer (which then can't parse). Kept under api/chat.js MAX_TOKENS_CAP (4000).
+  const tokenBudget = intent === 'overview' ? 3500 : 3000;
   for (let attempt = 0; attempt < 2 && !insightText; attempt++) {
     try {
       const { system, user } = buildAnswerPrompt({
@@ -536,9 +537,13 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
       // parseStructuredAnswer is robust to fenced/loose JSON, so plain mode is fine.
       const raw = await llmChat(msgs, { maxTokens: tokenBudget, temperature: 0 });
       parsed = parseStructuredAnswer(raw);
+      // Fallback ONLY when there is no recoverable structured answer. Never surface a raw
+      // JSON envelope: try one more salvage of the answer field, and if the leftover still
+      // looks like JSON (no answer to recover), drop it rather than dumping {"answer":"... .
+      const cleaned = String(raw || '').replace(/^```(?:json|markdown)?\s*/i, '').replace(/```\s*$/i, '').trim();
       insightText = parsed
         ? parsed.answer
-        : String(raw || '').replace(/^```(?:json|markdown)?\s*/i, '').replace(/```\s*$/i, '').trim();
+        : (salvageAnswer(cleaned) || (/^\s*[{[]/.test(cleaned) ? '' : cleaned));
     } catch (llmErr) {
       if (attempt === 0) {
         // transient failure (429/timeout) — one retry after a short backoff
@@ -550,6 +555,13 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
       const composed = composeDeterministicAnswer(intent, benchmarkText, corpusFacts, structuredText, candMethods);
       insightText = composed || `The copilot is temporarily unavailable (${llmErr.message}). ${responseData.length} methods are shown below.`;
     }
+  }
+
+  // If both attempts produced no usable prose (e.g. a response truncated before the answer
+  // field even began), serve the deterministic answer rather than rendering an empty box.
+  if (!insightText || !insightText.trim()) {
+    insightText = composeDeterministicAnswer(intent, benchmarkText, corpusFacts, structuredText, candMethods)
+      || `${responseData.length} methods are shown below.`;
   }
 
   // ENFORCE numeric grounding: any figure in the answer that does not literally

@@ -2,7 +2,7 @@
  * one structured LLM object yields the answer AND the method selection, so the
  * prose and the comparison table can never name different methods. */
 import {
-  parseStructuredAnswer, resolveDiscussed, methodId, markerIdsInProse, rankCandidates,
+  parseStructuredAnswer, salvageAnswer, resolveDiscussed, methodId, markerIdsInProse, rankCandidates,
 } from '../answer-synthesis';
 
 describe('parseStructuredAnswer', () => {
@@ -29,6 +29,30 @@ describe('parseStructuredAnswer', () => {
     expect(parseStructuredAnswer(JSON.stringify({ discussed: ['m_a'] }))).toBeNull();
     expect(parseStructuredAnswer('')).toBeNull();
     expect(parseStructuredAnswer(null)).toBeNull();
+  });
+
+  test('salvages the answer from a TRUNCATED response (model hit its token limit)', () => {
+    // No closing quote or brace; escaped \n and a bold marker sit mid-string. This is the
+    // exact shape of the prod bug (raw {"answer":"...\n\n* ... cut off).
+    const raw = '{"answer":"Multiple methods work in **piled** scenes.\\n\\n* Edge Grasp Network clears 5-object piles, achieving';
+    const o = parseStructuredAnswer(raw);
+    expect(o).not.toBeNull();
+    expect(o.answer).toContain('Multiple methods work in **piled** scenes.');
+    expect(o.answer).toContain('\n\n* Edge Grasp Network');   // \n decoded to real newlines
+    expect(o.answer).not.toContain('{"answer"');              // envelope never leaks
+    expect(o.answer).not.toContain('\\n');                    // no literal backslash-n
+    expect(o.discussed).toEqual([]);                          // truncated -> no reliable methods
+  });
+
+  test('salvage honors escaped quotes inside a truncated answer', () => {
+    const raw = '{"answer":"He said \\"grasp\\" then the JSON was cut';
+    expect(parseStructuredAnswer(raw).answer).toBe('He said "grasp" then the JSON was cut');
+  });
+
+  test('salvageAnswer returns empty when there is no answer key to recover', () => {
+    expect(salvageAnswer('{"discussed":["m_a"]}')).toBe('');
+    expect(salvageAnswer('plain prose, not json')).toBe('');
+    expect(salvageAnswer('')).toBe('');
   });
 });
 

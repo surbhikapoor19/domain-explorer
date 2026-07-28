@@ -34,30 +34,49 @@ export function methodId(name) {
   return 'm_' + slug(name);
 }
 
+/** Decode a JSON string body (the chars between the quotes) that may be TRUNCATED
+ * mid-string. Turns \n \t \" \\ \uXXXX etc. into their characters; a dangling backslash
+ * at a truncation point is dropped. */
+function decodeJsonStringBody(body) {
+  return String(body)
+    .replace(/\\(u[0-9a-fA-F]{4}|["\\/bfnrt])/g, (m, esc) => {
+      switch (esc[0]) {
+        case 'n': return '\n'; case 't': return '\t'; case 'r': return '\r';
+        case 'b': return '\b'; case 'f': return '\f';
+        case '"': return '"'; case '\\': return '\\'; case '/': return '/';
+        case 'u': return String.fromCharCode(parseInt(esc.slice(1), 16));
+        default: return m;
+      }
+    })
+    .replace(/\\$/, ''); // drop a lone trailing backslash left by a mid-escape truncation
+}
+
 /**
- * parseStructuredAnswer(raw) -> {answer, discussed:[{id,why}], citations} | null.
- * Robust to code fences, leading/trailing prose, and minor noise: extracts the
- * outermost {...} and JSON.parses it. Accepts `discussed` ([{id,why}] or [id]) and
- * tolerates a legacy `methods` (array of strings) by mapping it onto discussed.
- * Returns null if there is no usable object with a non-empty `answer`.
+ * salvageAnswer(s) -> the `answer` field's prose, recovered even when the surrounding JSON
+ * was TRUNCATED mid-string (the model hit its token limit before closing the object). Reads
+ * the "answer":"..." value honoring \" escapes, up to the first UNescaped closing quote OR
+ * the end of the (cut-off) input, then unescapes it. Returns '' when there is no answer key.
+ * This is what stops a cut-off response from ever surfacing as a raw {"answer":"...\n\n... .
  */
-export function parseStructuredAnswer(raw) {
-  if (!raw || typeof raw !== 'string') return null;
-  let s = raw.trim();
-  const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  if (fence) s = fence[1].trim();
-  const first = s.indexOf('{');
-  const last = s.lastIndexOf('}');
-  if (first === -1 || last === -1 || last <= first) return null;
-  let obj;
-  try {
-    obj = JSON.parse(s.slice(first, last + 1));
-  } catch {
-    return null;
+export function salvageAnswer(s) {
+  const str = String(s || '');
+  const key = str.search(/"answer"\s*:\s*"/);
+  if (key === -1) return '';
+  const colon = str.indexOf(':', key);
+  const open = str.indexOf('"', colon + 1); // opening quote of the value
+  if (open === -1) return '';
+  let body = '';
+  for (let i = open + 1; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === '\\') { body += ch + (str[i + 1] || ''); i++; continue; } // keep the escape pair
+    if (ch === '"') break; // unescaped closing quote -> end of the value
+    body += ch;
   }
-  if (!obj || typeof obj !== 'object' || typeof obj.answer !== 'string' || !obj.answer.trim()) {
-    return null;
-  }
+  return decodeJsonStringBody(body).trim();
+}
+
+/** Normalize a fully-parsed structured object into {answer, discussed, citations}. */
+function normalizeStructured(obj) {
   const rawDiscussed = Array.isArray(obj.discussed) ? obj.discussed
     : Array.isArray(obj.methods) ? obj.methods : [];
   const discussed = rawDiscussed.map(d => {
@@ -76,6 +95,40 @@ export function parseStructuredAnswer(raw) {
         }))
       : [],
   };
+}
+
+/**
+ * parseStructuredAnswer(raw) -> {answer, discussed:[{id,why}], citations} | null.
+ * Robust to code fences, leading/trailing prose, and minor noise: extracts the outermost
+ * {...} and JSON.parses it. Accepts `discussed` ([{id,why}] or [id]) and tolerates a legacy
+ * `methods` (array of strings) by mapping it onto discussed. If the JSON is TRUNCATED or
+ * malformed (e.g. the model ran out of tokens mid-answer), it FALLS BACK to salvaging just
+ * the answer prose so a cut-off response renders as clean text rather than raw JSON. Returns
+ * null only when there is no recoverable `answer` at all.
+ */
+export function parseStructuredAnswer(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  let s = raw.trim();
+  const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) s = fence[1].trim();
+  const first = s.indexOf('{');
+  if (first === -1) return null;
+  const last = s.lastIndexOf('}');
+  // Fast path: a well-formed object (has a plausible closing brace) parses strictly, which
+  // keeps discussed + citations intact.
+  if (last > first) {
+    try {
+      const obj = JSON.parse(s.slice(first, last + 1));
+      if (obj && typeof obj === 'object' && typeof obj.answer === 'string' && obj.answer.trim()) {
+        return normalizeStructured(obj);
+      }
+    } catch { /* truncated/malformed -> salvage below */ }
+  }
+  // Salvage path: recover just the answer prose. A truncated discussed/citations can't be
+  // trusted, so leave them empty (the pipeline falls back to the top-ranked candidates for
+  // the comparison table). This guarantees the raw {"answer":"... envelope never leaks.
+  const salvaged = salvageAnswer(s.slice(first));
+  return salvaged ? { answer: salvaged, discussed: [], citations: [] } : null;
 }
 
 /** Ids of the form m_<slug> actually written as [m_...] markers in the prose. */
