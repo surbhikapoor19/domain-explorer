@@ -6,5 +6,19 @@
     { "source": "/admin/(.*)", "destination": "/index.html" },
     { "source": "/:domain((?!data|papers|static|api|favicon|manifest|sockjs-node|_next)[a-z0-9-]+)", "destination": "/index.html" },
     { "source": "/:domain((?!data|papers|static|api|favicon|manifest|sockjs-node|_next)[a-z0-9-]+)/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/((?!static/|api/).*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
   ]
 }

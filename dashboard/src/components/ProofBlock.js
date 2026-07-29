@@ -15,6 +15,7 @@ import { HighlightedText } from '../highlighter';
 import { CLUSTER_COLORS } from '../constants';
 import { useDomainConfig } from '../DomainContext';
 import { GRASP_PRIORITY_DIMS } from './AnswerBlock';
+import { relativePct, maxScore } from '../lib/relevance';
 
 const MAX_QUOTES = 4;
 
@@ -30,9 +31,6 @@ function normalize(v) {
   return s;
 }
 
-function pct(score) {
-  return `${Math.round((score || 0) * 100)}%`;
-}
 
 export default function ProofBlock({
   suggestion, anchorMethods, query, termDictionary, onMethodClick,
@@ -96,6 +94,11 @@ export default function ProofBlock({
 
   const summaryLine = `${anchorMethods.length} anchor${anchorMethods.length === 1 ? '' : 's'} · ${topQuotes.length} quote${topQuotes.length === 1 ? '' : 's'} · ${extractionSummary.gap} gaps · ${extractionSummary.differs} disagreements`;
 
+  // Relative relevance: normalize each list against its OWN top score, so the most
+  // relevant item reads 100% instead of a misleading tiny absolute cosine value.
+  const topAnchorScore = maxScore(anchorMethods);
+  const topQuoteScore = maxScore(topQuotes);
+
   return (
     <div className={`gr-proof-block ${open ? 'open' : ''}`}>
       <button
@@ -136,7 +139,7 @@ export default function ProofBlock({
                     {edgesPerAnchor[m.name] > 0 && (
                       <> · {edgesPerAnchor[m.name]} edge{edgesPerAnchor[m.name] === 1 ? '' : 's'}</>
                     )}
-                    {m.score > 0 && <> · relevance {pct(m.score)}</>}
+                    {m.score > 0 && <> · relevance {relativePct(m.score, topAnchorScore)}%</>}
                   </span>
                 </li>
               ))}
@@ -161,7 +164,7 @@ export default function ProofBlock({
                       {c.section && <span className="gr-proof-quote-section"> · {c.section}</span>}
                     </span>
                     {c.score != null && (
-                      <span className="gr-proof-quote-score">{pct(c.score)}</span>
+                      <span className="gr-proof-quote-score">{relativePct(c.score, topQuoteScore)}%</span>
                     )}
                   </div>
                   <blockquote className="gr-proof-quote-text">

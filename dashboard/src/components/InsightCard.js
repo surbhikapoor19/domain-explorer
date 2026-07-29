@@ -5,6 +5,7 @@ import { useDomainConfig } from '../DomainContext';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { expandKeywordsWithAcronyms } from '../acronyms';
+import { relativePct, maxScore } from '../lib/relevance';
 
 const STOP_WORDS = new Set([
   'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
@@ -173,6 +174,9 @@ function PaperEvidencePanel({ citations, query, kgContext }) {
   });
   const papers = Object.values(paperMap).sort((a, b) => b.score - a.score);
   const shown = showAll ? papers : papers.slice(0, 5);
+  // Relative relevance: the top passage reads 100%, others scale against it — so a raw
+  // cosine of ~0.03 shows as "most relevant", not a misleading "3% relevant".
+  const topPaperScore = maxScore(papers);
 
   return (
     <div className="paper-evidence-panel">
@@ -188,7 +192,7 @@ function PaperEvidencePanel({ citations, query, kgContext }) {
           <div key={i} className="evidence-paper-row">
             <div className="evidence-paper-info">
               <span className="evidence-paper-name">{paper.paper_title || formatPaperId(paper.paper_id)}</span>
-              <span className="evidence-paper-score">{(paper.score * 100).toFixed(0)}% relevant</span>
+              <span className="evidence-paper-score">{relativePct(paper.score, topPaperScore)}% relevant</span>
             </div>
             <div className="evidence-paper-meta">
               {paper.section && <span className="evidence-tag">{paper.section}</span>}

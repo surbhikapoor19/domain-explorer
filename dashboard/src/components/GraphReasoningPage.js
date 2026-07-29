@@ -8,6 +8,7 @@ import KGLanding from './KGLanding';
 import AnswerBlock, { computeAnchorMethods } from './AnswerBlock';
 import CitationModal from './CitationModal';
 import ProofBlock from './ProofBlock';
+import { relativePct, maxScore } from '../lib/relevance';
 
 const EDGE_TYPES = [
   { key: 'cites', label: 'Cites' },
@@ -124,6 +125,9 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
     return true;
   });
   const hasFilter = filterRole || filterContent;
+  // Relative relevance against ALL citations (stable across filters): the top passage
+  // reads 100% instead of a misleading raw cosine like "3%".
+  const topCiteScore = maxScore(citations);
 
   return (
     <div className="gr-card">
@@ -174,7 +178,7 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
                 aria-expanded={isExpanded}
               >
                 <span className="gr-evidence-paper">{cite.paper_title || formatPaperId(cite.paper_id)}</span>
-                <span className="gr-evidence-score">{Math.round(cite.score * 100)}%</span>
+                <span className="gr-evidence-score">{relativePct(cite.score, topCiteScore)}%</span>
                 <span className={`gr-evidence-caret ${isExpanded ? 'open' : ''}`} aria-hidden="true">▾</span>
               </button>
               <div className="gr-evidence-meta">
