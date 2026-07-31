@@ -520,8 +520,11 @@ export async function runAIQuery(query, allMethods, queryKeywords, domainOpts = 
   // Overview answers enumerate the whole candidate set — give them the budget to
   // finish. Budgets include headroom for gpt-oss REASONING tokens, which count against
   // max_tokens before any visible answer is produced; too small a budget truncates the
-  // JSON mid-answer (which then can't parse). Kept under api/chat.js MAX_TOKENS_CAP (4000).
-  const tokenBudget = intent === 'overview' ? 3500 : 3000;
+  // JSON mid-answer (which then can't parse). Kept under api/chat.js MAX_TOKENS_CAP.
+  // Budgets are deliberately GENEROUS so answers always COMPLETE: an overview enumerates
+  // the whole corpus (dozens of methods), so it needs the most room, and on Groq's gpt-oss
+  // the hidden reasoning is spent from this budget before any answer text appears.
+  const tokenBudget = intent === 'overview' ? 12000 : 8000;
   for (let attempt = 0; attempt < 2 && !insightText; attempt++) {
     try {
       const { system, user } = buildAnswerPrompt({
