@@ -531,11 +531,10 @@ function App() {
         {queryError && <div className="query-error">{queryError}</div>}
 
         {/* MethodTable — identical render to Explorer (sibling of .copilot-app, full
-            width). ORDER: on the landing the table leads (it pairs with the KG
-            cross-highlighting below); once a question is ANSWERED the answer is the
-            most valuable thing on the page, so it renders first and the table
-            follows — no more scrolling past 56 rows to reach the answer. */}
-        {!suggestion && <MethodTable
+            width). Rendered ABOVE the answer on BOTH the landing and after a question,
+            so the Method Explorer stays at the top of the page (product decision to keep
+            the table first, over the earlier answer-first order). */}
+        <MethodTable
           data={data}
           allData={data}
           highlightedMethods={highlightedMethods}
@@ -545,7 +544,7 @@ function App() {
           onHover={setHoveredIndex}
           onUnhover={() => setHoveredIndex(null)}
           onFilter={handleFilter}
-        />}
+        />
 
         <GraphReasoningPage
           query={query}
@@ -568,19 +567,6 @@ function App() {
           onWeightsReset={() => { setAiAdjustedCols(new Set()); setWeights(defaultWeightsRef.current); fetchUmap(); }}
           onFilter={handleFilter}
         />
-
-        {/* Answered state: the table follows the answer (see order note above). */}
-        {suggestion && <MethodTable
-          data={data}
-          allData={data}
-          highlightedMethods={highlightedMethods}
-          selectedPoint={selectedPoint}
-          hoveredIndex={hoveredIndex}
-          onSelect={setSelectedPoint}
-          onHover={setHoveredIndex}
-          onUnhover={() => setHoveredIndex(null)}
-          onFilter={handleFilter}
-        />}
       </div>
       </DomainContext.Provider>
     );

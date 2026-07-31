@@ -228,17 +228,9 @@ export default function GraphReasoningPage({
   const [hiddenNodeTypes, setHiddenNodeTypes] = useState(new Set());
   const [dimOrphans, setDimOrphans] = useState(true);
 
-  // Auto-scroll: bring the answer into view the moment a NEW result lands, so
-  // the user never has to scroll past the table/landing to find it. `suggestion`
-  // only changes reference when a fresh answer replaces the old one — while a
-  // follow-up query is in flight it stays the same (previous) object, so this
-  // does not re-fire mid-query.
-  const answerTopRef = useRef(null);
-  useEffect(() => {
-    if (suggestion && answerTopRef.current) {
-      answerTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [suggestion]);
+  // No auto-scroll on a new answer: the Method Explorer table now sits at the TOP of the
+  // page (App.js), so after asking, the view stays put and the table — with the query's
+  // methods highlighted — is what the user sees first, with the answer just below it.
 
   const toggleEdge = useCallback(k => setHiddenEdgeTypes(prev => {
     const n = new Set(prev); if (n.has(k)) n.delete(k); else n.add(k); return n;
@@ -397,7 +389,7 @@ export default function GraphReasoningPage({
         </div>
       ) : (
         <div className="gr-querying-content" aria-hidden={querying}>
-          <div className="gr-page-header" ref={answerTopRef}>
+          <div className="gr-page-header">
             <h2>Answer</h2>
             <p>Question: <em>{query}</em> · Everything below is grounded in the corpus — click any [n] to see the source passage.</p>
           </div>
