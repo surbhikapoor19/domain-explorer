@@ -93,7 +93,7 @@ class DomainConfig:
                  short_names, derived_columns, priority_dims,
                  display_name='Explorer', method_noun='method',
                  column_roles=None, columns_config=None,
-                 branding=None):
+                 branding=None, explorer_enabled=False):
         self.domain = domain_name
         self.csv_path = csv_path
         self.papers_dir = papers_dir
@@ -106,6 +106,10 @@ class DomainConfig:
         self.column_roles = column_roles or {}
         self.columns_config = columns_config or {}
         self.branding = branding or {}
+        # Whether the optional Explorer tab is shown by default. Emitted to
+        # domain-config.json as `explorerEnabled`; in a cross-origin iframe this is the
+        # only lever that reaches the embed (localStorage/URL params don't).
+        self.explorer_enabled = explorer_enabled
 
     @property
     def table_columns(self):
@@ -208,6 +212,7 @@ class DomainConfig:
             column_roles=column_roles,
             columns_config=columns_config,
             branding=branding,
+            explorer_enabled=bool(cfg.get('explorer_enabled', False)),
         )
 
     @classmethod
@@ -276,4 +281,5 @@ class DomainConfig:
             column_roles=column_roles,
             columns_config=columns_config,
             branding=branding,
+            explorer_enabled=True,
         )

@@ -10,6 +10,9 @@
 
 domain: grasp_planning
 display_name: "Grasp Explorer"
+# Show the optional Explorer tab by default (incl. in the embedded iframe, where
+# localStorage/URL toggles can't reach). Emitted to domain-config.json as explorerEnabled.
+explorer_enabled: true
 display_subject: "grasp planning methods"
 display_short: "grasp planning"
 ecosystem: "COMPARE Ecosystem"

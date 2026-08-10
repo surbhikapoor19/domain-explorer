@@ -48,6 +48,7 @@ def _export_domain_config(domain_cfg, output_dir):
         'tableColumns': domain_cfg.table_columns,
         'colorByOptions': domain_cfg.color_by_options,
         'branding': domain_cfg.branding,
+        'explorerEnabled': domain_cfg.explorer_enabled,
     }
     with open(os.path.join(output_dir, 'domain-config.json'), 'w') as f:
         json.dump(payload, f)
