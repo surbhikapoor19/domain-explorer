@@ -49,9 +49,17 @@ jobs:
 
           def newest_csv(folder):
               """Most-recent .csv in a public Drive folder, picked by the timestamp in
-              the filename (the exports are named ..._YYYY-MM-DD_HH-MM-SS.csv)."""
-              html = _get('https://drive.google.com/drive/folders/' + _folder_id(folder))
-              pairs = re.findall(r'data-id="([A-Za-z0-9_-]{20,})"[\s\S]{0,800}?([^"<>]+?\.csv)', html)
+              the filename (the exports are named ..._YYYY-MM-DD_HH-MM-SS.csv).
+
+              Uses Drive's `embeddedfolderview`, which returns the FULL file listing. The
+              regular /drive/folders/<id> page is JS-driven and the server HTML it returns
+              is capped (~48 files for a large folder), so it silently hid every newer
+              export and the poll kept re-pulling a stale CSV (the 58-vs-60 bug)."""
+              fid = _folder_id(folder)
+              html = _get('https://drive.google.com/embeddedfolderview?id=' + fid + '#list')
+              pairs = re.findall(
+                  r'/file/d/([A-Za-z0-9_-]{20,})/[\s\S]{0,600}?flip-entry-title[^>]*>([^<]+?\.csv)',
+                  html)
               seen = {}
               for did, name in pairs:
                   seen.setdefault(name.strip(), did)
