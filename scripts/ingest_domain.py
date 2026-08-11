@@ -222,8 +222,14 @@ def fetch_latest_csv(paths):
     try:
         m = re.search(r'/folders/([A-Za-z0-9_-]+)', folder)
         fid = m.group(1) if m else folder.strip()
-        html = _get('https://drive.google.com/drive/folders/' + fid)
-        pairs = re.findall(r'data-id="([A-Za-z0-9_-]{20,})"[\s\S]{0,800}?([^"<>]+?\.csv)', html)
+        # embeddedfolderview returns the FULL folder listing; the regular /drive/folders/
+        # page is JS-driven and its server HTML is capped (~48 files for a large folder),
+        # which hid the newer exports so this re-fetch re-pulled a STALE CSV and overwrote
+        # the fresh one the poll had committed (the 58-vs-60 bug). Same fix as sheet-poll.yml.
+        html = _get('https://drive.google.com/embeddedfolderview?id=' + fid + '#list')
+        pairs = re.findall(
+            r'/file/d/([A-Za-z0-9_-]{20,})/[\s\S]{0,600}?flip-entry-title[^>]*>([^<]+?\.csv)',
+            html)
         seen = {}
         for did, nm in pairs:
             seen.setdefault(nm.strip(), did)
@@ -254,10 +260,21 @@ def fetch_latest_csv(paths):
                 if r and r[0].strip() == name_col:
                     rows = rows[i:]
                     break
+        # Safety net: never DOWNGRADE the committed CSV to a smaller one. A stale/capped
+        # fetch silently overwriting good data with fewer rows is exactly the failure that
+        # kept the explorer stuck at 58; if the fetch is smaller, keep what's committed.
+        new_rows = max(len(rows) - 1, 0)
+        if csv_path.exists():
+            with open(csv_path, encoding='utf-8') as cf:
+                existing_rows = max(len(list(_csv.reader(cf))) - 1, 0)
+            if new_rows < existing_rows:
+                print(f"  [csv] fetched {new_rows} rows < committed {existing_rows}; keeping "
+                      f"existing {csv_rel} (refusing to downgrade)")
+                return
         csv_path.parent.mkdir(parents=True, exist_ok=True)
         with open(csv_path, 'w', encoding='utf-8', newline='') as f:
             _csv.writer(f).writerows(rows)
-        print(f"  [csv] pulled latest from Drive folder: {name} ({max(len(rows) - 1, 0)} rows) → {csv_rel}")
+        print(f"  [csv] pulled latest from Drive folder: {name} ({new_rows} rows) → {csv_rel}")
     except Exception as e:
         print(f"  [csv] Drive fetch failed ({e}); keeping existing {csv_rel}")
 
