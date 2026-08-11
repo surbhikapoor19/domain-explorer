@@ -11,7 +11,10 @@ jobs:
   build:
     if: github.event.action == 'domain-build'
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    # One-time headroom: the FIRST build after the TEI/Chroma cache was added is a cache
+    # miss, so it regenerates everything once to populate the cache. Cached builds
+    # afterwards only process NEW papers and finish in minutes, well under this.
+    timeout-minutes: 240
 
     steps:
       - uses: actions/checkout@v4
@@ -118,6 +121,30 @@ jobs:
           else
             echo "No existing papers.zip for ${SLUG}; skipping re-zip"
           fi
+
+      - name: Cache TEI + Chroma (heavy compute, reused across runs; never committed)
+        # By design only the SLIM JSONs are committed; tei/ and chroma_db/ are gitignored
+        # and regenerated. Persisting them between CI runs (out of git) lets GROBID skip
+        # already-parsed PDFs and RAG skip already-embedded papers, so a build processes
+        # only NEW papers instead of re-doing all of them (which blew the 150-min timeout).
+        # github.run_id makes each run save a fresh cache; restore-keys restores the most
+        # recent one so reuse is incremental.
+        if: ${{ github.event.client_payload.pages != 'benchmark' && github.event.client_payload.pages != 'precompute' && github.event.client_payload.pages != 'explorer' }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            datasets/${{ steps.domain.outputs.slug }}/tei
+            datasets/${{ steps.domain.outputs.slug }}/chroma_db
+          key: pipeline-cache-${{ steps.domain.outputs.slug }}-${{ github.run_id }}
+          restore-keys: |
+            pipeline-cache-${{ steps.domain.outputs.slug }}-
+
+      - name: Keep git as source-of-truth for committed JSONs
+        # The restored cache may carry an OLDER copy of the committed slim JSONs; reset the
+        # git-TRACKED files back to HEAD so the cache only supplies the untracked heavy
+        # artifacts (TEI + the Chroma vector store), never a stale committed JSON.
+        if: ${{ github.event.client_payload.pages != 'benchmark' && github.event.client_payload.pages != 'precompute' && github.event.client_payload.pages != 'explorer' }}
+        run: git checkout -- "datasets/${{ steps.domain.outputs.slug }}/chroma_db" 2>/dev/null || true
 
       - name: Run ingestion pipeline
         env:
