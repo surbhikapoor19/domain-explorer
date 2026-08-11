@@ -193,7 +193,12 @@ def run_verified_triple_extraction(config_path, output_path=None, llm_fn=None,
     done = set(existing.get('papers', {}))
     todo = [p for p in sorted(by_paper) if p not in done]
     print(f"  [triples] papers: {len(by_paper)} | already done: {len(done)} | to process: {len(todo)}")
-    for pid in todo:
+    # Circuit breaker (same as the entity extractor): stop after this many papers in a row
+    # extract nothing (all chunks failed = quota dead), so the build finishes and commits
+    # progress instead of timing out on doomed retries.
+    consecutive_dead = 0
+    LLM_DEAD_LIMIT = int(os.environ.get('EXTRACT_ABORT_AFTER', '3'))
+    for i, pid in enumerate(todo):
         paper_bank = bank.get(pid, {})
         n_resumed = len(paper_bank)
 
@@ -211,7 +216,17 @@ def run_verified_triple_extraction(config_path, output_path=None, llm_fn=None,
         # silently missing chunks (previously only a WHOLLY-errored paper deferred).
         if st['llm_errors'] > 0:
             print(f"  [triples] {pid}: DEFERRED ({st['llm_errors']} errors — rate-limited?); will retry on resume{resumed_note}")
+            if not st.get('kept'):
+                consecutive_dead += 1
+                if consecutive_dead >= LLM_DEAD_LIMIT:
+                    print(f"  [triples] ABORT: {consecutive_dead} papers in a row extracted "
+                          f"nothing (LLM quota exhausted); stopping early. "
+                          f"{len(todo) - i - 1} papers deferred to a later run.")
+                    break
+            else:
+                consecutive_dead = 0
             continue
+        consecutive_dead = 0
         existing['papers'][pid] = st
         existing['triples'].extend(out['triples'])
         # Paper fully done — drop its chunk-level checkpoint.

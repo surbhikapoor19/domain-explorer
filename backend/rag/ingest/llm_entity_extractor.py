@@ -551,6 +551,11 @@ def run_entity_extraction(
     # Process each paper
     total_entities = 0
     errors = []
+    # Circuit breaker: if this many papers IN A ROW extract nothing (every chunk's LLM
+    # call failed), the provider is quota-exhausted — stop instead of burning the whole
+    # build (and its 150-min timeout) on doomed retries, which left NOTHING committed.
+    consecutive_dead = 0
+    LLM_DEAD_LIMIT = int(os.environ.get('EXTRACT_ABORT_AFTER', '3'))
 
     for i, paper_id in enumerate(todo):
         print(f"\n[{i+1}/{len(todo)}] Extracting: {paper_id}")
@@ -580,7 +585,20 @@ def run_entity_extraction(
             if n_llm_errors > 0:
                 print(f"  DEFERRED: {n_llm_errors} LLM errors (rate-limited?); will retry on resume{resumed_note}")
                 errors.append(f"{paper_id}: {n_llm_errors} LLM errors, deferred")
+                # Zero entities extracted = every chunk's LLM call failed = quota dead.
+                # After LLM_DEAD_LIMIT such papers in a row, stop so the build can finish
+                # and commit the papers that DID extract (deferred ones retry next run).
+                if not entities:
+                    consecutive_dead += 1
+                    if consecutive_dead >= LLM_DEAD_LIMIT:
+                        print(f"  ABORT: {consecutive_dead} papers in a row extracted nothing "
+                              f"(LLM quota exhausted); stopping early. "
+                              f"{len(todo) - i - 1} papers deferred to a later run.")
+                        break
+                else:
+                    consecutive_dead = 0
                 continue
+            consecutive_dead = 0
             existing[paper_id] = entities
             total_entities += len(entities)
 
