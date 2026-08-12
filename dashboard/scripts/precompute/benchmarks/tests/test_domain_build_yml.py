@@ -17,8 +17,8 @@ def test_yml_exists():
 def test_benchmark_is_opt_in_not_appended_to_all_default():
     t = _text()
     # the default full-build steps stay exactly as-is (no benchmark) — opt-in only
-    assert 'STEPS="grobid,rag,kg,hgt,precompute"' in t
-    assert 'grobid,rag,kg,hgt,precompute,benchmark' not in t
+    assert 'STEPS="grobid,rag,kg,precompute"' in t
+    assert 'grobid,rag,kg,precompute,benchmark' not in t
     # pages=benchmark -> benchmark-only run
     assert 'STEPS="benchmark"' in t
 
@@ -46,16 +46,16 @@ def test_anthropic_key_env_present_for_optional_vlm():
 def test_new_paper_scope_appends_benchmark_last_via_var():
     # W1: pages='new-paper' runs the full pipeline THEN benchmark (benchmark last),
     # built as "${STEPS},benchmark" off the unchanged base steps -> the effective
-    # order is grobid,rag,kg,hgt,precompute,benchmark.
+    # order is grobid,rag,kg,precompute,benchmark.
     t = _text()
-    assert 'STEPS="grobid,rag,kg,hgt,precompute"' in t          # base steps unchanged
+    assert 'STEPS="grobid,rag,kg,precompute"' in t          # base steps unchanged
     assert 'elif [ "$PAGES" = "new-paper" ]; then' in t         # new-paper branch present
     assert 'STEPS="${STEPS},benchmark"' in t                    # benchmark appended last
 
 
 def test_new_paper_forbidden_joined_literal_still_absent():
     # W2: the joined literal must NEVER appear (constructed via ${STEPS},benchmark).
-    assert 'grobid,rag,kg,hgt,precompute,benchmark' not in _text()
+    assert 'grobid,rag,kg,precompute,benchmark' not in _text()
 
 
 def test_docling_installed_for_benchmark_and_new_paper():

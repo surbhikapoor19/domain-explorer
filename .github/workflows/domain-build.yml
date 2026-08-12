@@ -162,7 +162,7 @@ jobs:
         run: |
           DOMAIN="${{ steps.domain.outputs.domain }}"
           PAGES="${{ github.event.client_payload.pages }}"
-          STEPS="grobid,rag,kg,hgt,precompute"
+          STEPS="grobid,rag,kg,precompute"
           # 'precompute' = CSV-only refresh (regenerates ALL data JSON for every
           # page from the CSV + committed KG; no PDF re-ingest). 'explorer' kept as
           # a back-compat alias. NOTE: this is a build SCOPE, not the Explorer page.
