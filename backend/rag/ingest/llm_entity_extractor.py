@@ -585,18 +585,18 @@ def run_entity_extraction(
             if n_llm_errors > 0:
                 print(f"  DEFERRED: {n_llm_errors} LLM errors (rate-limited?); will retry on resume{resumed_note}")
                 errors.append(f"{paper_id}: {n_llm_errors} LLM errors, deferred")
-                # Zero entities extracted = every chunk's LLM call failed = quota dead.
-                # After LLM_DEAD_LIMIT such papers in a row, stop so the build can finish
-                # and commit the papers that DID extract (deferred ones retry next run).
-                if not entities:
-                    consecutive_dead += 1
-                    if consecutive_dead >= LLM_DEAD_LIMIT:
-                        print(f"  ABORT: {consecutive_dead} papers in a row extracted nothing "
-                              f"(LLM quota exhausted); stopping early. "
-                              f"{len(todo) - i - 1} papers deferred to a later run.")
-                        break
-                else:
-                    consecutive_dead = 0
+                # A DEFERRED paper is not committed -> no progress this run. Several in a row
+                # means the provider is quota-exhausted, even if a stray early chunk
+                # succeeded (intermittent quota — this is what masked the old zero-entity
+                # check and let it grind through all 57 papers for hours). Stop so the build
+                # finishes and commits the fully-done papers; deferred ones (with their
+                # banked chunks) retry cheaply on the next run.
+                consecutive_dead += 1
+                if consecutive_dead >= LLM_DEAD_LIMIT:
+                    print(f"  ABORT: {consecutive_dead} papers in a row deferred "
+                          f"(LLM quota exhausted); stopping early. "
+                          f"{len(todo) - i - 1} papers deferred to a later run.")
+                    break
                 continue
             consecutive_dead = 0
             existing[paper_id] = entities

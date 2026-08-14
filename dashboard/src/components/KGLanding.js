@@ -1016,14 +1016,10 @@ export default function KGLanding({
           >
             Knowledge Graph
           </button>
-          <button
-            className={`viz-toggle-btn ${graphView === 'predictions' ? 'active' : ''}`}
-            onClick={() => setGraphView('predictions')}
-            title="Suggested relationships based on shared techniques, benchmarks, and research patterns. Dashed edges = suggested, not yet documented."
-          >
-            Predicted Relationships
-          </button>
-          {graphView === 'predictions' && (
+          {/* "Predicted Relationships" (HGT) tab removed from the UI per product decision —
+              the HGT graph isn't surfaced to users. graphView is now always 'macro'; the
+              prediction-view code below is unreachable and kept only to avoid a churny diff. */}
+          {false && graphView === 'predictions' && (
             <>
               <div className="kgl-pred-slider">
                 <label>min confidence</label>

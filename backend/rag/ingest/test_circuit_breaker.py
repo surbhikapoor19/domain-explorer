@@ -106,6 +106,25 @@ def test_triples_process_all_when_healthy():
     assert len(calls) == 10 and len(saved['papers']) == 10
 
 
+# --- The real-world failure: INTERMITTENT quota. Each paper gets a stray success but
+#     also LLM errors (deferred = not committed). The old zero-result check never tripped
+#     (the paper "had" a result), so it ground through all 57 papers for hours. The breaker
+#     must bail on consecutive DEFERRED papers regardless of a stray success. ---
+def test_entities_abort_on_intermittent_quota():
+    intermittent = lambda i: ([{'type': 't', 'value': 'v'}], 1)   # 1 entity + 1 error -> deferred
+    calls, saved = _run_entities(intermittent, n=10)
+    assert len(calls) == 3, f"must bail at 3 deferred papers, got {len(calls)}"
+    assert len(saved) == 0, "deferred papers must never be committed"
+
+
+def test_triples_abort_on_intermittent_quota():
+    intermittent = lambda i: {'triples': [{'s': 'a'}],
+                              'stats': {'kept': 1, 'llm_errors': 1, 'rejected_unverifiable_quote': 0}}
+    calls, saved = _run_triples(intermittent, n=10)
+    assert len(calls) == 3, f"must bail at 3 deferred papers, got {len(calls)}"
+    assert len(saved['papers']) == 0
+
+
 if __name__ == '__main__':
     import sys
     sys.exit(__import__('pytest').main([__file__, '-q']))

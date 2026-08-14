@@ -216,15 +216,15 @@ def run_verified_triple_extraction(config_path, output_path=None, llm_fn=None,
         # silently missing chunks (previously only a WHOLLY-errored paper deferred).
         if st['llm_errors'] > 0:
             print(f"  [triples] {pid}: DEFERRED ({st['llm_errors']} errors — rate-limited?); will retry on resume{resumed_note}")
-            if not st.get('kept'):
-                consecutive_dead += 1
-                if consecutive_dead >= LLM_DEAD_LIMIT:
-                    print(f"  [triples] ABORT: {consecutive_dead} papers in a row extracted "
-                          f"nothing (LLM quota exhausted); stopping early. "
-                          f"{len(todo) - i - 1} papers deferred to a later run.")
-                    break
-            else:
-                consecutive_dead = 0
+            # Deferred = no committed progress; several in a row = quota dead (even with a
+            # stray kept triple from intermittent quota). Stop so the build finishes and
+            # commits the fully-done papers; deferred ones retry cheaply next run.
+            consecutive_dead += 1
+            if consecutive_dead >= LLM_DEAD_LIMIT:
+                print(f"  [triples] ABORT: {consecutive_dead} papers in a row deferred "
+                      f"(LLM quota exhausted); stopping early. "
+                      f"{len(todo) - i - 1} papers deferred to a later run.")
+                break
             continue
         consecutive_dead = 0
         existing['papers'][pid] = st
