@@ -376,11 +376,30 @@ def _download_pdf(url, dest: Path) -> bool:
 # --------------------------------------------------------------------------- #
 # Domain resolution + CSV reading                                             #
 # --------------------------------------------------------------------------- #
+def _yaml_csv_path(domain_slug_us):
+    """Read ``csv_path:`` from ``domains/<domain>.yaml`` via a minimal stdlib
+    regex line-parse (this script must stay import-clean stdlib-only, so no
+    PyYAML). Returns the repo-resolved Path, or None when the YAML is absent
+    or declares no csv_path."""
+    yaml_path = REPO_ROOT / 'domains' / f'{domain_slug_us}.yaml'
+    if not yaml_path.exists():
+        return None
+    with open(yaml_path, encoding='utf-8') as fh:
+        for line in fh:
+            m = re.match(r'^\s*csv_path:\s*(.+?)\s*$', line)
+            if m:
+                value = m.group(1).strip('"\'')
+                value = re.sub(r'\s+#.*$', '', value).strip()
+                return REPO_ROOT / value if value else None
+    return None
+
+
 def resolve_domain_paths(domain_slug):
     slug_dashed = domain_slug.replace('_', '-')
+    slug_us = domain_slug.replace('-', '_')
     dataset_dir = REPO_ROOT / 'datasets' / slug_dashed
     papers_dir = dataset_dir / 'papers'
-    csv_path = next(dataset_dir.glob('*.csv'), None)
+    csv_path = _yaml_csv_path(slug_us) or next(dataset_dir.glob('*.csv'), None)
     return {'dataset': dataset_dir, 'papers': papers_dir,
             'csv': csv_path, 'chroma': dataset_dir / 'chroma_db',
             'slug_dashed': slug_dashed}

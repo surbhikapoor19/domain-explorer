@@ -5,12 +5,28 @@ title-similarity accept/reject, author matching, and slug computation. No
 network is touched (the resolver/download functions are never invoked).
 """
 import os
+import re
 import sys
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import fetch_missing_pdfs as f  # noqa: E402
+
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _yaml_csv_path(domain_us):
+    """Minimal stdlib parse of `csv_path:` from domains/<domain>.yaml (the
+    authoritative CSV every pipeline stage must agree on). Avoids a PyYAML dep so
+    this test runs in the fetcher's stdlib-only environment."""
+    path = os.path.join(REPO, 'domains', domain_us + '.yaml')
+    with open(path) as fh:
+        for line in fh:
+            m = re.match(r'\s*csv_path:\s*(.+?)\s*$', line)
+            if m:
+                return m.group(1).strip().strip('"\'')
+    return None
 
 
 # Real citation strings taken from datasets/grasp-planning/grasp_planning.csv.
@@ -169,6 +185,36 @@ class Slugify(unittest.TestCase):
                      'PointNet++ Grasping', 'UniGrasp',
                      'Single-Shot SE(3) Grasp Detection (S4G)']:
             self.assertEqual(f.slugify(name), _slugify(name), name)
+
+
+class ResolveCSVSource(unittest.TestCase):
+    """The fetcher must read the SAME authoritative CSV as the rest of the
+    pipeline — the domain YAML's ``csv_path`` — NOT a stale per-domain glob.
+
+    Regression: ``resolve_domain_paths`` used ``next(dataset_dir.glob('*.csv'))``,
+    which picked the orphaned 56-row ``datasets/grasp-planning/grasp_planning.csv``
+    while the authoritative source is the 60-row ``datasets/csv-gp-combined.csv``
+    named in ``domains/grasp_planning.yaml``. Newly-added methods lived only in the
+    combined CSV, so the fetcher never saw them and never fetched their PDFs.
+    """
+
+    def test_grasp_uses_yaml_csv_path_not_glob(self):
+        expected = _yaml_csv_path('grasp_planning')
+        self.assertTrue(expected and expected.endswith('csv-gp-combined.csv'),
+                        f"YAML csv_path should be the combined CSV, got {expected!r}")
+        got = f.resolve_domain_paths('grasp_planning')['csv']
+        self.assertIsNotNone(got, "fetcher must resolve a CSV for grasp_planning")
+        self.assertEqual(os.path.basename(str(got)), 'csv-gp-combined.csv',
+                         f"fetcher must read the YAML csv_path, got {got}")
+
+    def test_accepts_dashed_slug(self):
+        got = f.resolve_domain_paths('grasp-planning')['csv']
+        self.assertEqual(os.path.basename(str(got)), 'csv-gp-combined.csv')
+
+    def test_motion_stays_consistent_with_yaml(self):
+        # motion's YAML csv_path IS its per-domain file — resolution must honor it.
+        got = f.resolve_domain_paths('motion_planning')['csv']
+        self.assertEqual(os.path.basename(str(got)), 'motion_planning.csv')
 
 
 if __name__ == '__main__':

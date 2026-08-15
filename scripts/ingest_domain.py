@@ -27,6 +27,7 @@ Environment:
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -170,6 +171,23 @@ def _benchmark_superset_guard(old_results, new_results, present_ids, force=False
     return ok, dropped, regressed
 
 
+def _yaml_csv_path(yaml_path):
+    """Read ``csv_path:`` from a domain YAML via a minimal stdlib regex
+    line-parse (mirrors fetch_missing_pdfs._yaml_csv_path so every CSV
+    consumer agrees). Returns the repo-resolved Path, or None when the YAML
+    is absent or declares no csv_path."""
+    if not yaml_path.exists():
+        return None
+    with open(yaml_path, encoding='utf-8') as fh:
+        for line in fh:
+            m = re.match(r'^\s*csv_path:\s*(.+?)\s*$', line)
+            if m:
+                value = m.group(1).strip('"\'')
+                value = re.sub(r'\s+#.*$', '', value).strip()
+                return REPO_ROOT / value if value else None
+    return None
+
+
 def resolve_domain_paths(domain_slug):
     """Resolve all paths for a domain. Accepts either slug form ("motion-planning"
     from admin dispatches or "motion_planning"): dataset dirs use dashes, the
@@ -182,6 +200,7 @@ def resolve_domain_paths(domain_slug):
     tei_dir = dataset_dir / 'tei'
     chroma_dir = dataset_dir / 'chroma_db'
     output_dir = REPO_ROOT / 'dashboard' / 'public' / f'data-{slug_dashed}'
+    csv_path = _yaml_csv_path(yaml_path) or next(dataset_dir.glob('*.csv'), None)
 
     return {
         'yaml': yaml_path,
@@ -191,6 +210,7 @@ def resolve_domain_paths(domain_slug):
         'chroma': chroma_dir,
         'output': output_dir,
         'slug_dashed': slug_dashed,
+        'csv': csv_path,
     }
 
 
@@ -424,7 +444,7 @@ def step_kg(paths):
     from backend.rag.config import load_config
     from backend.rag.ingest.store import get_client, create_or_get_collection
 
-    csv_path = next(paths['dataset'].glob('*.csv'), None)
+    csv_path = paths['csv']
     method_paper_map = build_method_paper_map(
         csv_path=str(csv_path) if csv_path else None,
         papers_dir=str(paths['papers']),
@@ -573,7 +593,7 @@ def step_precompute(paths, domain_slug):
         return
 
     if methods_json.exists() and not FORCE:
-        csv_path = next(paths['dataset'].glob('*.csv'), None)
+        csv_path = paths['csv']
         kg_path = chroma_dir / 'knowledge_graph.json'
         latest_source = 0
         if csv_path:
@@ -677,7 +697,7 @@ def step_benchmark(paths, domain):
     if out_json.exists() and not force_bench and not _benchmark_stale(cache_file, paths['papers'], cfg, vlm_enabled, out_json):
         print(f"  [benchmark] {out_json} exists and cache is warm; skipping (--force or FORCE_BENCHMARK=1 to rebuild)")
         return
-    csv_path = next(paths['dataset'].glob('*.csv'), None)
+    csv_path = paths['csv']
     if csv_path is None:
         print(f"  [benchmark] no methods CSV in {paths['dataset']}; skipping")
         return

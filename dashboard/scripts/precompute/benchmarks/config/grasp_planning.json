@@ -79,6 +79,6 @@
   "corpus": {
     "tei_dir": "datasets/grasp-planning/tei",
     "pdf_dir": "datasets/grasp-planning/papers",
-    "methods_csv": "datasets/grasp-planning/grasp_planning.csv"
+    "methods_csv": "datasets/csv-gp-combined.csv"
   }
 }
