@@ -556,8 +556,13 @@ def run_entity_extraction(
     # build (and its 150-min timeout) on doomed retries, which left NOTHING committed.
     consecutive_dead = 0
     LLM_DEAD_LIMIT = int(os.environ.get('EXTRACT_ABORT_AFTER', '3'))
+    MAX_PER_RUN = int(os.environ.get('EXTRACT_MAX_PAPERS_PER_RUN', '12'))
 
     for i, paper_id in enumerate(todo):
+        if i >= MAX_PER_RUN:
+            print(f"  CAP: per-run limit of {MAX_PER_RUN} papers reached; "
+                  f"{len(todo) - i} papers deferred to the next run (keeps the build bounded).")
+            break
         print(f"\n[{i+1}/{len(todo)}] Extracting: {paper_id}")
         paper_bank = bank.get(paper_id, {})
         n_resumed = len(paper_bank)

@@ -125,6 +125,50 @@ def test_triples_abort_on_intermittent_quota():
     assert len(saved['papers']) == 0
 
 
+# --- Per-run cap: the enrichment backlog (papers with facts but no entities/triples)
+#     must NEVER grind the whole todo when quota is HEALTHY. If it does, step_rag runs
+#     for hours and step_kg never rebuilds, so newly-added papers never integrate and
+#     the build times out with nothing committed. A per-run cap
+#     (EXTRACT_MAX_PAPERS_PER_RUN) bounds each build so step_kg always runs; the rest of
+#     the backlog resumes on later builds. Distinct from the quota breaker: the cap fires
+#     even when every paper SUCCEEDS. ---
+import contextlib
+
+
+@contextlib.contextmanager
+def _cap(n):
+    prev = os.environ.get('EXTRACT_MAX_PAPERS_PER_RUN')
+    os.environ['EXTRACT_MAX_PAPERS_PER_RUN'] = str(n)
+    try:
+        yield
+    finally:
+        if prev is None:
+            os.environ.pop('EXTRACT_MAX_PAPERS_PER_RUN', None)
+        else:
+            os.environ['EXTRACT_MAX_PAPERS_PER_RUN'] = prev
+
+
+def test_entities_cap_bounds_papers_per_run_when_healthy():
+    with _cap(5):
+        calls, saved = _run_entities(_OK_E, n=20)
+    assert len(calls) == 5, f"per-run cap must stop at 5 healthy papers, processed {len(calls)}"
+    assert len(saved) == 5, "the 5 processed papers must be committed (progress persists)"
+
+
+def test_triples_cap_bounds_papers_per_run_when_healthy():
+    with _cap(5):
+        calls, saved = _run_triples(_OK_T, n=20)
+    assert len(calls) == 5, f"per-run cap must stop at 5 healthy papers, processed {len(calls)}"
+    assert len(saved['papers']) == 5
+
+
+def test_entities_cap_not_hit_when_todo_below_cap():
+    # A normal incremental build (few new papers) must process them all, not stall.
+    with _cap(50):
+        calls, saved = _run_entities(_OK_E, n=10)
+    assert len(calls) == 10 and len(saved) == 10
+
+
 if __name__ == '__main__':
     import sys
     sys.exit(__import__('pytest').main([__file__, '-q']))
