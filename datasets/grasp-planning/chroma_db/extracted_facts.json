@@ -672,6 +672,99 @@
       "paper_id": "6-dof-graspnet"
     }
   ],
+  "affordgen": [
+    {
+      "type": "backbone",
+      "value": "DINOv2",
+      "context": ", n), and the corresponding rendered image as I i . Each image I i is fed into DINOv2 [17] to obtain its semantic representation S i . We select m nearest mesh verti",
+      "chunk_id": "affordgen_coarse_sec_5",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "training_size",
+      "value": "1000 training",
+      "context": "e real world. For each task, 10 expert demonstrations are collected to generate 1000 training demonstrations. Following DemoGen, we increase the number of real demonstration",
+      "chunk_id": "affordgen_coarse_sec_13",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "epochs with a batch size of 512. To stabilize the training process, we use the Adam optimizer and cosine learning rate scheduler with 500 warmup steps. We set the",
+      "chunk_id": "affordgen_coarse_sec_19",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "backbone",
+      "value": "DINOv2",
+      "context": "arison, we simplified FUNCTO's keypoint selection process by directly employing DINOv2 for keypoint correspondence, which aligns with AffordGen's approach of selectin",
+      "chunk_id": "affordgen_coarse_sec_22",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "backbone",
+      "value": "DINOv2",
+      "context": "ence in 3D Canonical Space. The keypoints are mapped to the target mesh through DINOv2.\nFigure 4 . - Figure 4. Trajectory replay for grasp and skill segments. \u03c4g and",
+      "chunk_id": "affordgen_coarse_figures",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "backbone",
+      "value": "DINOv2",
+      "context": ", n), and the corresponding rendered image as I i . Each image I i is fed into DINOv2 [17] to obtain its semantic representation S i . We select m nearest mesh verti",
+      "chunk_id": "affordgen_mid_5_0",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "training_size",
+      "value": "1000 training",
+      "context": "e real world. For each task, 10 expert demonstrations are collected to generate 1000 training demonstrations. Following DemoGen, we increase the number of real demonstration",
+      "chunk_id": "affordgen_mid_13_0",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "epochs with a batch size of 512. To stabilize the training process, we use the Adam optimizer and cosine learning rate scheduler with 500 warmup steps. We set the",
+      "chunk_id": "affordgen_mid_19_0",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "backbone",
+      "value": "DINOv2",
+      "context": "arison, we simplified FUNCTO's keypoint selection process by directly employing DINOv2 for keypoint correspondence, which aligns with AffordGen's approach of selectin",
+      "chunk_id": "affordgen_mid_22_0",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "backbone",
+      "value": "DINOv2",
+      "context": ", n), and the corresponding rendered image as I i . Each image I i is fed into DINOv2 [17] to obtain its semantic representation S i . We select m nearest mesh verti",
+      "chunk_id": "affordgen_fine_5_0",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "training_size",
+      "value": "1000 training",
+      "context": "e real world. For each task, 10 expert demonstrations are collected to generate 1000 training demonstrations. Following DemoGen, we increase the number of real demonstration",
+      "chunk_id": "affordgen_fine_13_0",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "epochs with a batch size of 512. To stabilize the training process, we use the Adam optimizer and cosine learning rate scheduler with 500 warmup steps. We set the",
+      "chunk_id": "affordgen_fine_19_0",
+      "paper_id": "affordgen"
+    },
+    {
+      "type": "backbone",
+      "value": "DINOv2",
+      "context": "arison, we simplified FUNCTO's keypoint selection process by directly employing DINOv2 for keypoint correspondence, which aligns with AffordGen's approach of selectin",
+      "chunk_id": "affordgen_fine_22_0",
+      "paper_id": "affordgen"
+    }
+  ],
   "anygrasp": [
     {
       "type": "metric",
@@ -12676,6 +12769,646 @@
       "paper_id": "grasp-proposal-network-gpnet"
     }
   ],
+  "graspgen-x": [
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "on a dataset of 2 Billion sampled grasps generated with the ACRONYM pipeline Eppner et al. (2020) on our procedural grippers. T",
+      "chunk_id": "graspgen-x_coarse_sec_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ork includes gripper categories of parallel grippers (e.g., Franka Panda Hand), 2-finger revolute grippers (e.g., Robotiq-2F85",
+      "chunk_id": "graspgen-x_coarse_sec_2",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "ludes gripper categories of parallel grippers (e.g., Franka Panda Hand), 2-finger revolute grippers (e.g., Robotiq-2F85), and",
+      "chunk_id": "graspgen-x_coarse_sec_2",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "10 training",
+      "context": "al of 20 real-world grippers (Figure A2 , Appendix) and evenly divide them into 10 training grippers and 10 test grippers. In Section 5.4, we find that training with limit",
+      "chunk_id": "graspgen-x_coarse_sec_3",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "ger high-dof grippers. For each gripper and each object, we sample a maximal of 2K grasps and utilize Isaac-Sim isa to simulate the grasp outcome. In total, we have sam",
+      "chunk_id": "graspgen-x_coarse_sec_4",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "175M grasp",
+      "context": "-Sim isa to simulate the grasp outcome. In total, we have sampled and evaluated 175M grasps for generator training, which takes approximately 8.7K GPU hours. The generato",
+      "chunk_id": "graspgen-x_coarse_sec_4",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "8.5K object",
+      "context": "n to the CVPR model, we also provide our latest GraspGen-X, which is trained on 8.5K objects, 32 procedural grippers and a total of more than 2 Billion grasps. Please refe",
+      "chunk_id": "graspgen-x_coarse_sec_4",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "al sampling and simulation-based grasp labeling pipeline in ACRONYM procedural grippers, with 10 parallel grippers, 10 2-finger",
+      "chunk_id": "graspgen-x_coarse_sec_4",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5K grasp",
+      "context": "n Grasp-GenMurali et al. (2025) . For test grippers and test objects, we sample 5K grasps to curate the ground-truth grasp dataset with the ACRONYM pipeline. For each t",
+      "chunk_id": "graspgen-x_coarse_sec_5",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "the ACRONYM pipeline. For each test object and gripper, the generator generates 2K grasps, validated with the discriminator. We use ranked grasps to produce the precisi",
+      "chunk_id": "graspgen-x_coarse_sec_5",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "5K grasps to curate the ground-truth grasp dataset with the ACRONYM pipeline. For each test object and gripper, the generator g",
+      "chunk_id": "graspgen-x_coarse_sec_5",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "140K sample",
+      "context": "ly select 1/5 of all training objects to generate a small finetuning dataset of 140K sampled grasps following the same pipeline. For each gripper, this takes approximately",
+      "chunk_id": "graspgen-x_coarse_sec_7",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "spGen model from scratch (GraspGen-Scratch), finetuning the Franka Panda GraspGen in Sec 5.1 (GraspGen-Franka-SFT) and finetun",
+      "chunk_id": "graspgen-x_coarse_sec_7",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "odel from scratch (GraspGen-Scratch), finetuning the Franka Panda GraspGen in Sec 5.1 (GraspGen-Franka-SFT) and finetuning Gr",
+      "chunk_id": "graspgen-x_coarse_sec_7",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "s to improve performance, when using Swept Volume encoding, as well as TSDF and PointNet++ (Figure A3 , Appendix). Here, we only use 25 procedural grippers in GraspGen-",
+      "chunk_id": "graspgen-x_coarse_sec_10",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "50K grasp",
+      "context": "with the following set of grippers. For a fair comparison, we sample a total of 50K grasps for each object in all datasets.\n\n-10 Real Grippers (Train-Real10). With the 1",
+      "chunk_id": "graspgen-x_coarse_sec_10",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5K grasp",
+      "context": "in-Real10). With the 10 exclusive real grippers as training grippers, we sample 5K grasps for each gripper on each object. -25 procedural Grippers (Train-Proc25). With",
+      "chunk_id": "graspgen-x_coarse_sec_10",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "ippers (Train-Proc25). With the same 25 procedural grippers in Sec 3, we sample 2K grasps for each gripper on each object.\n\n-50 Procedural Grippers (Train-Proc50). We r",
+      "chunk_id": "graspgen-x_coarse_sec_10",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "1K grasp",
+      "context": "20 2-finger revolute grippers and 10 3-finger high-dof grippers. We then sample 1K grasps for each gripper on each object.\n\nCompared with training with existing real gr",
+      "chunk_id": "graspgen-x_coarse_sec_10",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "79.0",
+      "unit": "%",
+      "context": "in the bottom left of Figure 1 ).\n\nDiscussion: As shown in Table 3 , GraspGen-X achieved an overall success rate of 79.0 %, outperforming both GraspGen and AnyGrasp. GraspGen-X performed well across b",
+      "chunk_id": "graspgen-x_coarse_sec_13",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5 object",
+      "context": "luate on 12 isolated objects under 5 different poses without any clutter and on 5 objects under 3 different poses arranged on a cluttered shelf (an example is shown in",
+      "chunk_id": "graspgen-x_coarse_sec_13",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "aspGen, we retarget the predicted grasp poses meant for the Franka gripper to the Robotiq-2F140 by applying an offset along th",
+      "chunk_id": "graspgen-x_coarse_sec_13",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "100",
+      "unit": "%",
+      "context": "GraspGen-X can grasp a YCB Mustard bottle and ArUCo cube with 100 % success rate averaged across 10 trials, demonstrating proficiency in cross-embodiment transfer",
+      "chunk_id": "graspgen-x_coarse_sec_14",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "lizes to complete point cloud input. GraspGen-X can grasp a YCB Mustard bottle and ArUCo cube with 100 % success rate avera",
+      "chunk_id": "graspgen-x_coarse_sec_14",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": ") \u2248 175\ud835\udc40 sampled grasps and grasp labels evaluated with the ACRONYM pipeline (15) in Isaac-Sim simulation. Moreover, we also in",
+      "chunk_id": "graspgen-x_coarse_sec_17",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "100",
+      "unit": "%",
+      "context": "We observe that it achieves 100% success rate out of 5 trials",
+      "chunk_id": "graspgen-x_coarse_sec_18",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2k grasp",
+      "context": "or each gripper and each object, we plot the precision-coverage with the ranked 2k grasps iteratively.\n\nTable A2 shows the mAUC of each test gripper. We find that Grasp",
+      "chunk_id": "graspgen-x_coarse_sec_18",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Pybullet",
+      "context": "base frame of the robot. We then compute an IK solution in Pybullet and use a linearly interpolated trajectory to command the a",
+      "chunk_id": "graspgen-x_coarse_sec_18",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "ion, which is computed via IK.\n\nWe test GraspGen-X with the YCB mustard bottle with randomly placed stable poses. We observ",
+      "chunk_id": "graspgen-x_coarse_sec_18",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "| AdaGrasp Xu et al. (2021) UniGrasp Shao et al. (2020) PointNet++ Freiberg et al. (2024) GraspGen-X |\n|---|\n| 0.432 |",
+      "chunk_id": "graspgen-x_coarse_sec_24",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "n-X |\n|---|---|\n| ARX X5 | 0.270 |\n| Galaxea G1 | 0.319 |\n| Franka UMI | 0.267 |\n| Tesollo Delto2F | 0.002 |\n| Avg. Parallel 2",
+      "chunk_id": "graspgen-x_coarse_sec_26",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "3.5K training",
+      "context": "istribution for 3-finger gripper grasping.In our experiment, we use a subset of 3.5K training objects used in GraspGen Murali et \nFigure 4 : - Figure 4: Examples of our proc",
+      "chunk_id": "graspgen-x_coarse_figures",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "7M sample",
+      "context": "odel for the Franka gripper over the same set of 3.5K training objects and with 7M sampled grasps, and directly apply the model on test grippers. -GraspGen Retargeting (",
+      "chunk_id": "graspgen-x_coarse_figures",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "in the following way. For 2-finger parallel grippers (e.g., Franka Panda Hand) and revolute grippers whose fingers are always",
+      "chunk_id": "graspgen-x_coarse_figures",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "following way. For 2-finger parallel grippers (e.g., Franka Panda Hand) and revolute grippers whose fingers are always parall",
+      "chunk_id": "graspgen-x_coarse_figures",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "on a dataset of 2 Billion sampled grasps generated with the ACRONYM pipeline Eppner et al. (2020) on our procedural grippers. T",
+      "chunk_id": "graspgen-x_mid_0_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ork includes gripper categories of parallel grippers (e.g., Franka Panda Hand), 2-finger revolute grippers (e.g., Robotiq-2F85",
+      "chunk_id": "graspgen-x_mid_2_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "ludes gripper categories of parallel grippers (e.g., Franka Panda Hand), 2-finger revolute grippers (e.g., Robotiq-2F85), and",
+      "chunk_id": "graspgen-x_mid_2_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "10 training",
+      "context": "al of 20 real-world grippers (Figure A2 , Appendix) and evenly divide them into 10 training grippers and 10 test grippers. In Section 5.4, we find that training with limit",
+      "chunk_id": "graspgen-x_mid_3_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "ger high-dof grippers. For each gripper and each object, we sample a maximal of 2K grasps and utilize Isaac-Sim isa to simulate the grasp outcome. In total, we have sam",
+      "chunk_id": "graspgen-x_mid_4_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "175M grasp",
+      "context": "-Sim isa to simulate the grasp outcome. In total, we have sampled and evaluated 175M grasps for generator training, which takes approximately 8.7K GPU hours. The generato",
+      "chunk_id": "graspgen-x_mid_4_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "8.5K object",
+      "context": "n to the CVPR model, we also provide our latest GraspGen-X, which is trained on 8.5K objects, 32 procedural grippers and a total of more than 2 Billion grasps. Please refe",
+      "chunk_id": "graspgen-x_mid_4_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "al sampling and simulation-based grasp labeling pipeline in ACRONYM procedural grippers, with 10 parallel grippers, 10 2-finger",
+      "chunk_id": "graspgen-x_mid_4_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5K grasp",
+      "context": "n Grasp-GenMurali et al. (2025) . For test grippers and test objects, we sample 5K grasps to curate the ground-truth grasp dataset with the ACRONYM pipeline. For each t",
+      "chunk_id": "graspgen-x_mid_5_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "the ACRONYM pipeline. For each test object and gripper, the generator generates 2K grasps, validated with the discriminator. We use ranked grasps to produce the precisi",
+      "chunk_id": "graspgen-x_mid_5_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "5K grasps to curate the ground-truth grasp dataset with the ACRONYM pipeline. For each test object and gripper, the generator g",
+      "chunk_id": "graspgen-x_mid_5_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "140K sample",
+      "context": "ly select 1/5 of all training objects to generate a small finetuning dataset of 140K sampled grasps following the same pipeline. For each gripper, this takes approximately",
+      "chunk_id": "graspgen-x_mid_7_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "spGen model from scratch (GraspGen-Scratch), finetuning the Franka Panda GraspGen in Sec 5.1 (GraspGen-Franka-SFT) and finetun",
+      "chunk_id": "graspgen-x_mid_7_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "odel from scratch (GraspGen-Scratch), finetuning the Franka Panda GraspGen in Sec 5.1 (GraspGen-Franka-SFT) and finetuning Gr",
+      "chunk_id": "graspgen-x_mid_7_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "s to improve performance, when using Swept Volume encoding, as well as TSDF and PointNet++ (Figure A3 , Appendix). Here, we only use 25 procedural grippers in GraspGen-",
+      "chunk_id": "graspgen-x_mid_10_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "50K grasp",
+      "context": "with the following set of grippers. For a fair comparison, we sample a total of 50K grasps for each object in all datasets.\n\n-10 Real Grippers (Train-Real10). With the 1",
+      "chunk_id": "graspgen-x_mid_10_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5K grasp",
+      "context": "in-Real10). With the 10 exclusive real grippers as training grippers, we sample 5K grasps for each gripper on each object. -25 procedural Grippers (Train-Proc25). With",
+      "chunk_id": "graspgen-x_mid_10_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "ippers (Train-Proc25). With the same 25 procedural grippers in Sec 3, we sample 2K grasps for each gripper on each object.\n\n-50 Procedural Grippers (Train-Proc50). We r",
+      "chunk_id": "graspgen-x_mid_10_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "1K grasp",
+      "context": "20 2-finger revolute grippers and 10 3-finger high-dof grippers. We then sample 1K grasps for each gripper on each object. Compared with training with existing real gri",
+      "chunk_id": "graspgen-x_mid_10_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "79.0",
+      "unit": "%",
+      "context": "in the bottom left of Figure 1 ). Discussion: As shown in Table 3 , GraspGen-X achieved an overall success rate of 79.0 %, outperforming both GraspGen and AnyGrasp. GraspGen-X performed well across bo",
+      "chunk_id": "graspgen-x_mid_13_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5 object",
+      "context": "luate on 12 isolated objects under 5 different poses without any clutter and on 5 objects under 3 different poses arranged on a cluttered shelf (an example is shown in",
+      "chunk_id": "graspgen-x_mid_13_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "aspGen, we retarget the predicted grasp poses meant for the Franka gripper to the Robotiq-2F140 by applying an offset along th",
+      "chunk_id": "graspgen-x_mid_13_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "100",
+      "unit": "%",
+      "context": "GraspGen-X can grasp a YCB Mustard bottle and ArUCo cube with 100 % success rate averaged across 10 trials, demonstrating proficiency in cross-embodiment transfer",
+      "chunk_id": "graspgen-x_mid_14_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "lizes to complete point cloud input. GraspGen-X can grasp a YCB Mustard bottle and ArUCo cube with 100 % success rate avera",
+      "chunk_id": "graspgen-x_mid_14_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": ") \u2248 175\ud835\udc40 sampled grasps and grasp labels evaluated with the ACRONYM pipeline (15) in Isaac-Sim simulation. Moreover, we also in",
+      "chunk_id": "graspgen-x_mid_17_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "100",
+      "unit": "%",
+      "context": "We observe that it achieves 100% success rate out of 5 trials",
+      "chunk_id": "graspgen-x_mid_18_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2k grasp",
+      "context": "or each gripper and each object, we plot the precision-coverage with the ranked 2k grasps iteratively. Table A2 shows the mAUC of each test gripper. We find that GraspG",
+      "chunk_id": "graspgen-x_mid_18_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Pybullet",
+      "context": "base frame of the robot. We then compute an IK solution in Pybullet and use a linearly interpolated trajectory to command the a",
+      "chunk_id": "graspgen-x_mid_18_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "tion, which is computed via IK. We test GraspGen-X with the YCB mustard bottle with randomly placed stable poses. We observ",
+      "chunk_id": "graspgen-x_mid_18_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "| AdaGrasp Xu et al. (2021) UniGrasp Shao et al. (2020) PointNet++ Freiberg et al. (2024) GraspGen-X |\n|---|\n| 0.432 |",
+      "chunk_id": "graspgen-x_mid_24_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "n-X |\n|---|---|\n| ARX X5 | 0.270 |\n| Galaxea G1 | 0.319 |\n| Franka UMI | 0.267 |\n| Tesollo Delto2F | 0.002 |\n| Avg. Parallel 2",
+      "chunk_id": "graspgen-x_mid_26_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "on a dataset of 2 Billion sampled grasps generated with the ACRONYM pipeline Eppner et al. (2020) on our procedural grippers. T",
+      "chunk_id": "graspgen-x_fine_0_2",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ork includes gripper categories of parallel grippers (e.g., Franka Panda Hand), 2-finger revolute grippers (e.g., Robotiq-2F85",
+      "chunk_id": "graspgen-x_fine_2_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "ludes gripper categories of parallel grippers (e.g., Franka Panda Hand), 2-finger revolute grippers (e.g., Robotiq-2F85), and",
+      "chunk_id": "graspgen-x_fine_2_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "10 training",
+      "context": "al of 20 real-world grippers (Figure A2 , Appendix) and evenly divide them into 10 training grippers and 10 test grippers. In Section 5.4, we find that training with limit",
+      "chunk_id": "graspgen-x_fine_3_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "ger high-dof grippers. For each gripper and each object, we sample a maximal of 2K grasps and utilize Isaac-Sim isa to simulate the grasp outcome. In total, we have sam",
+      "chunk_id": "graspgen-x_fine_4_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "175M grasp",
+      "context": "-Sim isa to simulate the grasp outcome. In total, we have sampled and evaluated 175M grasps for generator training, which takes approximately 8.7K GPU hours. The generato",
+      "chunk_id": "graspgen-x_fine_4_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "al sampling and simulation-based grasp labeling pipeline in ACRONYM procedural grippers, with 10 parallel grippers, 10 2-finger",
+      "chunk_id": "graspgen-x_fine_4_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "To generate the on-generator data for discriminator training, we generate 2K grasps for each object and each gripper, and then we evaluate grasps with the same la",
+      "chunk_id": "graspgen-x_fine_4_1",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5K grasp",
+      "context": "n Grasp-GenMurali et al. (2025) . For test grippers and test objects, we sample 5K grasps to curate the ground-truth grasp dataset with the ACRONYM pipeline. For each t",
+      "chunk_id": "graspgen-x_fine_5_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "the ACRONYM pipeline. For each test object and gripper, the generator generates 2K grasps, validated with the discriminator. We use ranked grasps to produce the precisi",
+      "chunk_id": "graspgen-x_fine_5_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "5K grasps to curate the ground-truth grasp dataset with the ACRONYM pipeline. For each test object and gripper, the generator g",
+      "chunk_id": "graspgen-x_fine_5_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "140K sample",
+      "context": "ly select 1/5 of all training objects to generate a small finetuning dataset of 140K sampled grasps following the same pipeline. For each gripper, this takes approximately",
+      "chunk_id": "graspgen-x_fine_7_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "spGen model from scratch (GraspGen-Scratch), finetuning the Franka Panda GraspGen in Sec 5.1 (GraspGen-Franka-SFT) and finetun",
+      "chunk_id": "graspgen-x_fine_7_1",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "odel from scratch (GraspGen-Scratch), finetuning the Franka Panda GraspGen in Sec 5.1 (GraspGen-Franka-SFT) and finetuning Gr",
+      "chunk_id": "graspgen-x_fine_7_1",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "-SFT shows the most efficient learning compared to GraspGen-Franka-SFT and GraspGen-Scratch, suggesting that the GraspGen-X mo",
+      "chunk_id": "graspgen-x_fine_7_2",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "s to improve performance, when using Swept Volume encoding, as well as TSDF and PointNet++ (Figure A3 , Appendix). Here, we only use 25 procedural grippers in GraspGen-",
+      "chunk_id": "graspgen-x_fine_10_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "aspGen, we retarget the predicted grasp poses meant for the Franka gripper to the Robotiq-2F140 by applying an offset along th",
+      "chunk_id": "graspgen-x_fine_13_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "training_size",
+      "value": "5 object",
+      "context": "luate on 12 isolated objects under 5 different poses without any clutter and on 5 objects under 3 different poses arranged on a cluttered shelf (an example is shown in",
+      "chunk_id": "graspgen-x_fine_13_1",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "79.0",
+      "unit": "%",
+      "context": "Discussion: As shown in Table 3 , GraspGen-X achieved an overall success rate of 79.0 %, outperforming both GraspGen and AnyGrasp. GraspGen-X performed well across both environments, thou",
+      "chunk_id": "graspgen-x_fine_13_2",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "metric",
+      "value": "100",
+      "unit": "%",
+      "context": "GraspGen-X can grasp a YCB Mustard bottle and ArUCo cube with 100 % success rate averaged across 10 trials, demonstrating proficiency in cross-embodiment transfer",
+      "chunk_id": "graspgen-x_fine_14_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "lizes to complete point cloud input. GraspGen-X can grasp a YCB Mustard bottle and ArUCo cube with 100 % success rate avera",
+      "chunk_id": "graspgen-x_fine_14_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": ") \u2248 175\ud835\udc40 sampled grasps and grasp labels evaluated with the ACRONYM pipeline (15) in Isaac-Sim simulation. Moreover, we also in",
+      "chunk_id": "graspgen-x_fine_17_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Pybullet",
+      "context": "base frame of the robot. We then compute an IK solution in Pybullet and use a linearly interpolated trajectory to command the a",
+      "chunk_id": "graspgen-x_fine_18_0",
+      "paper_id": "graspgen-x"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "n-X |\n|---|---|\n| ARX X5 | 0.270 |\n| Galaxea G1 | 0.319 |\n| Franka UMI | 0.267 |\n| Tesollo Delto2F | 0.002 |\n| Avg. Parallel 2",
+      "chunk_id": "graspgen-x_fine_26_0",
+      "paper_id": "graspgen-x"
+    }
+  ],
   "graspgen": [
     {
       "type": "backbone",
@@ -15718,6 +16451,526 @@
       "context": "We attribute this to our hardware setup (a panda gripper that has a bigger collision shape and smaller gripp",
       "chunk_id": "icg-net_fine_4_9",
       "paper_id": "icg-net"
+    }
+  ],
+  "miscgrasp": [
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "based interaction between high-level and low-level features through the Insight Transformer, while the Empower Transformer selectively attends to the highest-level feature",
+      "chunk_id": "miscgrasp_coarse_abstract",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "s in the difficulty of detecting geometric features across different scales. As convolutional layers deepen, the fine-grained geometric details necessary for pinch grasp det",
+      "chunk_id": "miscgrasp_coarse_sec_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "uiring pinch grasps. The Evolved Grasping Analysis Dataset (EGAD) [13] utilizes evolutionary algorithms to generate objects",
+      "chunk_id": "miscgrasp_coarse_sec_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "m these datasets tend to learn power grasps. The objects in EGAD [13] are generated using evolutionary algorithms, ensuring",
+      "chunk_id": "miscgrasp_coarse_sec_5",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "Due to the regularity of volumetric grids, 3D convolutional neural networks are well-suited for per-voxel grasp prediction. The coarse-to-f",
+      "chunk_id": "miscgrasp_coarse_sec_6",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "s demonstrated in our experimental results. To this end, we propose the Insight Transformer (IT), inspired from [32] , which facilitates query-based interaction from highl",
+      "chunk_id": "miscgrasp_coarse_sec_6",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross-entropy",
+      "context": "entation, and gripper width. To mitigate sample imbalance, we employ a weighted binary cross-entropy loss with weights of 2 for positive samples and 1 for negative samples. The fin",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "astive losses:\n\nThe models are implemented in PyTorch [34] and trained with the Adam optimizer [35] for about 100 epochs on an Nvidia RTX 4090 GPU. A one-cycle lear",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 4",
+      "context": "RTX 4090 GPU. A one-cycle learning rate scheduler [36] is used, with an initial learning rate of 4 \u00d7 10 -5 and a maximum of 4 \u00d7 10 -4 .",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "5100 scene",
+      "context": "metric detail, we increase the TSDF grid resolution from 40 to 80.\n\nWe generate 5100 scenes for each scene type using the EGAD and VGN packed object sets, with each scene",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "5000 scene",
+      "context": ", with each scene containing 8 positive and 64 negative grasp labels. Of these, 5000 scenes are used for training, and 100 scenes for validation.\n\nFor feature extraction,",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "100 scene",
+      "context": "and 64 negative grasp labels. Of these, 5000 scenes are used for training, and 100 scenes for validation.\n\nFor feature extraction, we utilize an FPN with 3-level multi-",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "4 scene",
+      "context": "n are set to 32768 and 128, respectively. 2) Training: Each iteration processes 4 scenes, each with 8 positive and 16 negative samples. Following [4] , we supervise gr",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "80.\n\nWe generate 5100 scenes for each scene type using the EGAD and VGN packed object sets, with each scene containing 8 po",
+      "chunk_id": "miscgrasp_coarse_sec_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "or a fair comparison. The simulated environment is built in PyBullet [39] . A free-floating Franka Emika gripper is employed to",
+      "chunk_id": "miscgrasp_coarse_sec_10",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ted environment is built in PyBullet [39] . A free-floating Franka Emika gripper is employed to declutter objects within a 0.4",
+      "chunk_id": "miscgrasp_coarse_sec_10",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Open3D",
+      "context": "egrated from six depth images using the implementation from Open3D [40] .\n\nV. CONCLUSIONS In this paper, we proposed MISCGrasp",
+      "chunk_id": "miscgrasp_coarse_sec_10",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "|  |  |  |  |  |  |  | EGAD-Single |  |  |  |\n|---|---|---|---|---|---|---|---|---|---|",
+      "chunk_id": "miscgrasp_coarse_sec_11",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "ts and integrates diverse geometric features from different scales. The Insight Transformer facilitates querybased interactions, enriching high-level features with fine-gr",
+      "chunk_id": "miscgrasp_coarse_figures",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "s in the difficulty of detecting geometric features across different scales. As convolutional layers deepen, the fine-grained geometric details necessary for pinch grasp det",
+      "chunk_id": "miscgrasp_mid_0_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "uiring pinch grasps. The Evolved Grasping Analysis Dataset (EGAD) [13] utilizes evolutionary algorithms to generate objects",
+      "chunk_id": "miscgrasp_mid_0_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "m these datasets tend to learn power grasps. The objects in EGAD [13] are generated using evolutionary algorithms, ensuring",
+      "chunk_id": "miscgrasp_mid_5_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "Due to the regularity of volumetric grids, 3D convolutional neural networks are well-suited for per-voxel grasp prediction. The coarse-to-f",
+      "chunk_id": "miscgrasp_mid_6_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "s demonstrated in our experimental results. To this end, we propose the Insight Transformer (IT), inspired from [32] , which facilitates query-based interaction from highl",
+      "chunk_id": "miscgrasp_mid_6_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross-entropy",
+      "context": "entation, and gripper width. To mitigate sample imbalance, we employ a weighted binary cross-entropy loss with weights of 2 for positive samples and 1 for negative samples. The fin",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "astive losses:\n\nThe models are implemented in PyTorch [34] and trained with the Adam optimizer [35] for about 100 epochs on an Nvidia RTX 4090 GPU. A one-cycle lear",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 4",
+      "context": "RTX 4090 GPU. A one-cycle learning rate scheduler [36] is used, with an initial learning rate of 4 \u00d7 10 -5 and a maximum of 4 \u00d7 10 -4 .",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "5100 scene",
+      "context": "ometric detail, we increase the TSDF grid resolution from 40 to 80. We generate 5100 scenes for each scene type using the EGAD and VGN packed object sets, with each scene",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "5000 scene",
+      "context": ", with each scene containing 8 positive and 64 negative grasp labels. Of these, 5000 scenes are used for training, and 100 scenes for validation. For feature extraction,",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "100 scene",
+      "context": "and 64 negative grasp labels. Of these, 5000 scenes are used for training, and 100 scenes for validation. For feature extraction, we utilize an FPN with 3-level multi-s",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "4 scene",
+      "context": "n are set to 32768 and 128, respectively. 2) Training: Each iteration processes 4 scenes, each with 8 positive and 16 negative samples. Following [4] , we supervise gr",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "o 80. We generate 5100 scenes for each scene type using the EGAD and VGN packed object sets, with each scene containing 8 po",
+      "chunk_id": "miscgrasp_mid_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "49 object",
+      "context": "ngle: We conduct single-scene grasping experiments using the EGAD test set. The 49 objects in the set are scaled into 147 objects by creating small, medium, and large va",
+      "chunk_id": "miscgrasp_mid_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "147 object",
+      "context": "experiments using the EGAD test set. The 49 objects in the set are scaled into 147 objects by creating small, medium, and large variations of each object. Following [13]",
+      "chunk_id": "miscgrasp_mid_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 object",
+      "context": "random scaling of objects consistent with the training set. Each scene contains 10 objects. This experiment is specifically designed to test the performance on pinch gra",
+      "chunk_id": "miscgrasp_mid_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "or a fair comparison. The simulated environment is built in PyBullet [39] . A free-floating Franka Emika gripper is employed to",
+      "chunk_id": "miscgrasp_mid_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ted environment is built in PyBullet [39] . A free-floating Franka Emika gripper is employed to declutter objects within a 0.4",
+      "chunk_id": "miscgrasp_mid_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Open3D",
+      "context": "egrated from six depth images using the implementation from Open3D [40] . Three scene types are simulated: Single, with a sing",
+      "chunk_id": "miscgrasp_mid_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "a focus on evaluating both pinch grasp and power grasp:\n\n\u2022 EGAD-Single: We conduct single-scene grasping experiments using",
+      "chunk_id": "miscgrasp_mid_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "InfoNCE",
+      "context": "ng only the highest-level features for feature enhancement, (2) a variant using InfoNCE loss with both positive and negative samples, and (3) a variant that do not use",
+      "chunk_id": "miscgrasp_mid_10_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "9 object",
+      "context": ", and 9 cm to evaluate both power and pinch grasps. Multiobject experiments use 9 objects selected from EGAD, 14 objects from Berkeley adversarial set, 30 household ite",
+      "chunk_id": "miscgrasp_mid_10_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "14 object",
+      "context": "wer and pinch grasps. Multiobject experiments use 9 objects selected from EGAD, 14 objects from Berkeley adversarial set, 30 household items, and objects in the single-o",
+      "chunk_id": "miscgrasp_mid_10_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 object",
+      "context": "ich are rich in pinch grasps. Each test is repeated for 20 rounds and there are 10 objects in the scene.\n\n2) Results: Tab. III shows the results of single-object experim",
+      "chunk_id": "miscgrasp_mid_10_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "rates more diverse and feasible grasps. For example, in the EGAD-Single experiment, our method successfully predicts grasps",
+      "chunk_id": "miscgrasp_mid_10_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "UR5",
+      "context": "periments 1) Setup: Our experimental platform consists of a UR5 robotic arm equipped with a Robotiq 2-Finger 85 gripper, wh",
+      "chunk_id": "miscgrasp_mid_10_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "|  |  |  |  |  |  |  | EGAD-Single |  |  |  |\n|---|---|---|---|---|---|---|---|---|---|",
+      "chunk_id": "miscgrasp_mid_11_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "s in the difficulty of detecting geometric features across different scales. As convolutional layers deepen, the fine-grained geometric details necessary for pinch grasp det",
+      "chunk_id": "miscgrasp_fine_0_4",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "triplet loss",
+      "context": "l transfer. Liu et al. [29] enhances affordance cues with a Siamese encoder and triplet loss. Wang et al. [30] uses self-supervised pretraining to improve 6-DoF grasp detec",
+      "chunk_id": "miscgrasp_fine_3_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "m these datasets tend to learn power grasps. The objects in EGAD [13] are generated using evolutionary algorithms, ensuring",
+      "chunk_id": "miscgrasp_fine_5_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "Due to the regularity of volumetric grids, 3D convolutional neural networks are well-suited for per-voxel grasp prediction. The coarse-to-f",
+      "chunk_id": "miscgrasp_fine_6_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "s demonstrated in our experimental results. To this end, we propose the Insight Transformer (IT), inspired from [32] , which facilitates query-based interaction from highl",
+      "chunk_id": "miscgrasp_fine_6_1",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "Insight Transformer (IT): Low-level features in multiscale representations generally include detail",
+      "chunk_id": "miscgrasp_fine_6_2",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "on of V with that of the high-level feature volume, V is reshaped using several convolutional layers with strides. Finally, the combined result is passed through an output l",
+      "chunk_id": "miscgrasp_fine_6_3",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "A s . This attention map is multiplied with the value vector, refined through a convolutional layer, and finally added to the input highestlevel features X high via a residu",
+      "chunk_id": "miscgrasp_fine_6_5",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross-entropy",
+      "context": "entation, and gripper width. To mitigate sample imbalance, we employ a weighted binary cross-entropy loss with weights of 2 for positive samples and 1 for negative samples. The fin",
+      "chunk_id": "miscgrasp_fine_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "4 scene",
+      "context": "n are set to 32768 and 128, respectively. 2) Training: Each iteration processes 4 scenes, each with 8 positive and 16 negative samples. Following [4] , we supervise gr",
+      "chunk_id": "miscgrasp_fine_8_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "or a fair comparison. The simulated environment is built in PyBullet [39] . A free-floating Franka Emika gripper is employed to",
+      "chunk_id": "miscgrasp_fine_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ted environment is built in PyBullet [39] . A free-floating Franka Emika gripper is employed to declutter objects within a 0.4",
+      "chunk_id": "miscgrasp_fine_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Open3D",
+      "context": "egrated from six depth images using the implementation from Open3D [40] .",
+      "chunk_id": "miscgrasp_fine_10_0",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "49 object",
+      "context": "ngle: We conduct single-scene grasping experiments using the EGAD test set. The 49 objects in the set are scaled into 147 objects by creating small, medium, and large va",
+      "chunk_id": "miscgrasp_fine_10_2",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "147 object",
+      "context": "experiments using the EGAD test set. The 49 objects in the set are scaled into 147 objects by creating small, medium, and large variations of each object. Following [13]",
+      "chunk_id": "miscgrasp_fine_10_2",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "\u2022 EGAD-Single: We conduct single-scene grasping experiments using",
+      "chunk_id": "miscgrasp_fine_10_2",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 object",
+      "context": "random scaling of objects consistent with the training set. Each scene contains 10 objects. This experiment is specifically designed to test the performance on pinch gra",
+      "chunk_id": "miscgrasp_fine_10_3",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "esigned to evaluate the performance with regular objects. \u2022 EGAD+Adv-Pile: The Berkeley adversarial object set [41] includes",
+      "chunk_id": "miscgrasp_fine_10_3",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "Notably, in the EGAD+ADV-Pile experiment, VGN trained on our dataset outperforms",
+      "chunk_id": "miscgrasp_fine_10_6",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "rates more diverse and feasible grasps. For example, in the EGAD-Single experiment, our method successfully predicts grasps",
+      "chunk_id": "miscgrasp_fine_10_7",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "InfoNCE",
+      "context": "ng only the highest-level features for feature enhancement, (2) a variant using InfoNCE loss with both positive and negative samples, and (3) a variant that do not use",
+      "chunk_id": "miscgrasp_fine_10_8",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "but is overall inferior to our method, particularly in the EGAD+ADV-Pile experiment. Skip connections excel in EGAD+ADV-Pil",
+      "chunk_id": "miscgrasp_fine_10_9",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "formance drop especially in the easy and medium sets of the EGAD-Single experiment, though a slight improvement is observed",
+      "chunk_id": "miscgrasp_fine_10_10",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "9 object",
+      "context": ", and 9 cm to evaluate both power and pinch grasps. Multiobject experiments use 9 objects selected from EGAD, 14 objects from Berkeley adversarial set, 30 household ite",
+      "chunk_id": "miscgrasp_fine_10_12",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "14 object",
+      "context": "wer and pinch grasps. Multiobject experiments use 9 objects selected from EGAD, 14 objects from Berkeley adversarial set, 30 household items, and objects in the single-o",
+      "chunk_id": "miscgrasp_fine_10_12",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 object",
+      "context": "ich are rich in pinch grasps. Each test is repeated for 20 rounds and there are 10 objects in the scene.",
+      "chunk_id": "miscgrasp_fine_10_12",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "in real-world experiments. For single-object experiment, 5 EGAD objects are 3D-printed at sizes of 3 cm, 6 cm, and 9 cm to",
+      "chunk_id": "miscgrasp_fine_10_12",
+      "paper_id": "miscgrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "EGAD",
+      "context": "|  |  |  |  |  |  |  | EGAD-Single |  |  |  |\n|---|---|---|---|---|---|---|---|---|---|",
+      "chunk_id": "miscgrasp_fine_11_0",
+      "paper_id": "miscgrasp"
     }
   ],
   "multi-fingan": [
@@ -21523,14 +22776,14 @@
     {
       "type": "dataset",
       "value": "Cornell",
-      "context": "For evaluation in single-object scenes, we Cornell Grasp Dataset and Jacquard Dataset to train and validate ou",
+      "context": "For evaluation in single-object scenes, we use Cornell Grasp Dataset and Jacquard Dataset to train and validate ou",
       "chunk_id": "roi-gd_fine_8_2",
       "paper_id": "roi-gd"
     },
     {
       "type": "dataset",
       "value": "Jacquard",
-      "context": "ation in single-object scenes, we Cornell Grasp Dataset and Jacquard Dataset to train and validate our model. Cornell Grasp Data",
+      "context": "n in single-object scenes, we use Cornell Grasp Dataset and Jacquard Dataset to train and validate our model. Cornell Grasp Data",
       "chunk_id": "roi-gd_fine_8_2",
       "paper_id": "roi-gd"
     },

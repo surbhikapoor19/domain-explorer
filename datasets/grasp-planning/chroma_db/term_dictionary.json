@@ -2,1415 +2,1415 @@
   "terms": [
     {
       "term": "ELBO",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Evidence Lower Bound"
     },
     {
       "term": "Evidence Lower Bound",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GM1",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Generative Model"
     },
     {
       "term": "Generative Model",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "GD",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "The Gradient Descent"
     },
     {
       "term": "The Gradient Descent",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "IGQ",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Image-based Grasp Quality Metrics"
     },
     {
       "term": "Image-based Grasp Quality Metrics",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "sensor",
       "definition": ""
     },
     {
       "term": "ML",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Alternative Machine Learning Models"
     },
     {
       "term": "Alternative Machine Learning Models",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "RF",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Random Forest"
     },
     {
       "term": "Random Forest",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GIGA",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Implicit Geometry and Affordance"
     },
     {
       "term": "Implicit Geometry and Affordance",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "AUC",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Area Under Curve"
     },
     {
       "term": "Area Under Curve",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "USD",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Universal Scene Description"
     },
     {
       "term": "Universal Scene Description",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "KNN",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Nearest Neighbour"
     },
     {
       "term": "Nearest Neighbour",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
-      "term": "EGAD",
-      "idf": 7.257,
+      "term": "SR",
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
-      "definition": "Evolved Grasping Analysis Dataset"
+      "definition": "Success Rate"
     },
     {
-      "term": "Evolved Grasping Analysis Dataset",
-      "idf": 7.257,
+      "term": "Success Rate",
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "NC",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "acronym",
       "definition": "Normal consistency"
     },
     {
       "term": "Normal consistency",
-      "idf": 7.257,
+      "idf": 7.315,
       "df": 2,
       "type": "domain",
       "definition": ""
     },
     {
-      "term": "FPS",
-      "idf": 6.969,
-      "df": 3,
-      "type": "acronym",
-      "definition": "Farthest point sampling"
-    },
-    {
-      "term": "Farthest point sampling",
-      "idf": 6.969,
-      "df": 3,
-      "type": "domain",
-      "definition": ""
-    },
-    {
       "term": "ART",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "The average runtime"
     },
     {
       "term": "The average runtime",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "CVAE",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "We propose the Conditional Variational Autoencoder"
     },
     {
       "term": "We propose the Conditional Variational Autoencoder",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "NUNOCS",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Non-Uniform Normalized Object Coordinate Space"
     },
     {
       "term": "Non-Uniform Normalized Object Coordinate Space",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "TUM",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "University of Munich"
     },
     {
       "term": "University of Munich",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GA",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Gradient Ascent"
     },
     {
       "term": "Gradient Ascent",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GAP",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Global Average Pooling"
     },
     {
       "term": "Global Average Pooling",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "SGD",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Stochastic Gradient Descent"
     },
     {
       "term": "Stochastic Gradient Descent",
-      "idf": 6.969,
-      "df": 3,
-      "type": "domain",
-      "definition": ""
-    },
-    {
-      "term": "PCA",
-      "idf": 6.969,
-      "df": 3,
-      "type": "acronym",
-      "definition": "Principal Component Analysis"
-    },
-    {
-      "term": "Principal Component Analysis",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "SS",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Spring Stretch"
     },
     {
       "term": "Spring Stretch",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "WR",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Wrench Resistance"
     },
     {
       "term": "Wrench Resistance",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "RWR",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Robust Wrench Resistance"
     },
     {
       "term": "Robust Wrench Resistance",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "MPPH",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Mean Picks Per Hour"
     },
     {
       "term": "Mean Picks Per Hour",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GPU",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Xp graphics processing unit"
     },
     {
       "term": "Xp graphics processing unit",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "PCL",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Point Cloud Library"
     },
     {
       "term": "Point Cloud Library",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "sensor",
       "definition": ""
     },
     {
       "term": "BPS",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Basis Point Set"
     },
     {
       "term": "Basis Point Set",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "FC",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Fully Connected"
     },
     {
       "term": "Fully Connected",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "FM",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "We employ the Flow Matching"
     },
     {
       "term": "We employ the Flow Matching",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "EDA",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "We propose the Equivariant Deformable Attention"
     },
     {
       "term": "We propose the Equivariant Deformable Attention",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "MLP",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Multi-Layer Perceptron"
     },
     {
       "term": "Multi-Layer Perceptron",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "PSO",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "We use the particle swarm optimization"
     },
     {
       "term": "We use the particle swarm optimization",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "HFTS",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Hierarchical Fingertip Space"
     },
     {
       "term": "Hierarchical Fingertip Space",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "gripper",
       "definition": ""
     },
     {
       "term": "SP",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Success prediction"
     },
     {
       "term": "Success prediction",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "IL",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Imitation Learning"
     },
     {
       "term": "Imitation Learning",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "DDPG",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Deep Deterministic Policy Gradient"
     },
     {
       "term": "Deep Deterministic Policy Gradient",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GA-DDPG",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "We introduce a Goal-Auxiliary DDPG"
     },
     {
       "term": "We introduce a Goal-Auxiliary DDPG",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "BC",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Behavior Cloning"
     },
     {
       "term": "Behavior Cloning",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
-      "term": "FPN",
-      "idf": 6.969,
-      "df": 3,
-      "type": "acronym",
-      "definition": "We adapt the Feature Pyramid Network"
-    },
-    {
-      "term": "We adapt the Feature Pyramid Network",
-      "idf": 6.969,
-      "df": 3,
-      "type": "architecture",
-      "definition": ""
-    },
-    {
       "term": "NMS",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "We use Non-Maximum Suppression"
     },
     {
       "term": "We use Non-Maximum Suppression",
-      "idf": 6.969,
+      "idf": 7.028,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "OBB",
+      "idf": 7.028,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Oriented Bounding Box"
+    },
+    {
+      "term": "Oriented Bounding Box",
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "SMLD",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Langevin dynamics"
     },
     {
       "term": "Langevin dynamics",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "DDPM",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Denoising Diffusion Probabilistic Model"
     },
     {
       "term": "Denoising Diffusion Probabilistic Model",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "QA",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "navigation tasks in earlier work"
     },
     {
       "term": "navigation tasks in earlier work",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "MALA",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Metropolis-Adjusted Langevin Algorithm"
     },
     {
       "term": "Metropolis-Adjusted Langevin Algorithm",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "NLP",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "The fields of Natural Language Processing"
     },
     {
       "term": "The fields of Natural Language Processing",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "CV",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Computer Vision"
     },
     {
       "term": "Computer Vision",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "PAG",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Progressive Action Generation"
     },
     {
       "term": "Progressive Action Generation",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
+      "term": "ET",
+      "idf": 7.028,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Empower Transformer"
+    },
+    {
+      "term": "Empower Transformer",
+      "idf": 7.028,
+      "df": 3,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
       "term": "MISE",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Multiresolution IsoSurface Extraction"
     },
     {
       "term": "Multiresolution IsoSurface Extraction",
-      "idf": 6.969,
-      "df": 3,
-      "type": "domain",
-      "definition": ""
-    },
-    {
-      "term": "DR",
-      "idf": 6.969,
-      "df": 3,
-      "type": "acronym",
-      "definition": "Declutter Rate"
-    },
-    {
-      "term": "Declutter Rate",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "SH",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "The real spherical harmonics"
     },
     {
       "term": "The real spherical harmonics",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GWS",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Grasp Wrench Space"
     },
     {
       "term": "Grasp Wrench Space",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "NSFC",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "National Science Foundation of China"
     },
     {
       "term": "National Science Foundation of China",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "DFG",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "German Research Foundation"
     },
     {
       "term": "German Research Foundation",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "MAP",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Maximum a posteriori"
     },
     {
       "term": "Maximum a posteriori",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "ROC",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "The average receive operator characteristic"
     },
     {
       "term": "The average receive operator characteristic",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "AVH",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Angle-View Heatmap"
     },
     {
       "term": "Angle-View Heatmap",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "BNN",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Bayesian Neural Network"
     },
     {
       "term": "Bayesian Neural Network",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "USN",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Uncertain Shape Network"
     },
     {
       "term": "Uncertain Shape Network",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "RPN",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Region Proposal Network"
     },
     {
       "term": "Region Proposal Network",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "URDF",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Unified Robot Description Format"
     },
     {
       "term": "Unified Robot Description Format",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "DOF",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Degrees of Freedom"
     },
     {
       "term": "Degrees of Freedom",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "FCN",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "We train a Fully Convolutional Network"
     },
     {
       "term": "We train a Fully Convolutional Network",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "GPD",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "acronym",
       "definition": "Grasp Pose Detection"
     },
     {
       "term": "Grasp Pose Detection",
-      "idf": 6.969,
+      "idf": 7.028,
       "df": 3,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "PointNet++",
-      "idf": 6.746,
+      "idf": 6.804,
       "df": 4,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "UP",
-      "idf": 6.746,
+      "idf": 6.804,
       "df": 4,
       "type": "acronym",
       "definition": "Universal picking"
     },
     {
       "term": "Universal picking",
-      "idf": 6.746,
+      "idf": 6.804,
       "df": 4,
       "type": "domain",
       "definition": ""
     },
     {
+      "term": "EGAD",
+      "idf": 6.804,
+      "df": 4,
+      "type": "acronym",
+      "definition": "The Evolved Grasping Analysis Dataset"
+    },
+    {
+      "term": "The Evolved Grasping Analysis Dataset",
+      "idf": 6.804,
+      "df": 4,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "IT",
+      "idf": 6.804,
+      "df": 4,
+      "type": "acronym",
+      "definition": "Insight Transformer"
+    },
+    {
+      "term": "Insight Transformer",
+      "idf": 6.804,
+      "df": 4,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
       "term": "VGN",
-      "idf": 6.746,
+      "idf": 6.804,
       "df": 4,
       "type": "acronym",
       "definition": "Volumetric Grasping Network"
     },
     {
       "term": "Volumetric Grasping Network",
-      "idf": 6.746,
+      "idf": 6.804,
       "df": 4,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "SA",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "acronym",
       "definition": "Simulated Annealing"
     },
     {
       "term": "Simulated Annealing",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GQ",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "acronym",
       "definition": "Grasp Quality CNNs"
     },
     {
       "term": "Grasp Quality CNNs",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "VN",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "acronym",
       "definition": "Vector Neuron"
     },
     {
       "term": "Vector Neuron",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GCN",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "acronym",
       "definition": "Graph Convolutional Network"
     },
     {
       "term": "Graph Convolutional Network",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "architecture",
       "definition": ""
     },
     {
+      "term": "DR",
+      "idf": 6.622,
+      "df": 5,
+      "type": "acronym",
+      "definition": "Declutter Rate"
+    },
+    {
+      "term": "Declutter Rate",
+      "idf": 6.622,
+      "df": 5,
+      "type": "domain",
+      "definition": ""
+    },
+    {
       "term": "VMRD",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "acronym",
       "definition": "Visual Manipulation Relationship Dataset"
     },
     {
       "term": "Visual Manipulation Relationship Dataset",
-      "idf": 6.564,
+      "idf": 6.622,
       "df": 5,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "CEM",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "acronym",
       "definition": "We used the cross entropy method"
     },
     {
       "term": "We used the cross entropy method",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "DGA",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "acronym",
       "definition": "Grasp Anything"
     },
     {
       "term": "Grasp Anything",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "CU",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "acronym",
       "definition": "Contact uncertainty"
     },
     {
       "term": "Contact uncertainty",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "domain",
       "definition": ""
     },
     {
+      "term": "FPN",
+      "idf": 6.468,
+      "df": 6,
+      "type": "acronym",
+      "definition": "We adapt the Feature Pyramid Network"
+    },
+    {
+      "term": "We adapt the Feature Pyramid Network",
+      "idf": 6.468,
+      "df": 6,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
       "term": "SPL",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "acronym",
       "definition": "Success weighted by Path Length"
     },
     {
       "term": "Success weighted by Path Length",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GPG",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "acronym",
       "definition": "Grasp Pose Generator"
     },
     {
       "term": "Grasp Pose Generator",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "ROI",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "acronym",
       "definition": "Region of Interest"
     },
     {
       "term": "Region of Interest",
-      "idf": 6.409,
+      "idf": 6.468,
       "df": 6,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "AVN",
-      "idf": 6.276,
+      "idf": 6.334,
       "df": 7,
       "type": "acronym",
       "definition": "Angle-View Net"
     },
     {
       "term": "Angle-View Net",
-      "idf": 6.276,
+      "idf": 6.334,
       "df": 7,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "PSSN",
-      "idf": 6.276,
+      "idf": 6.334,
       "df": 7,
       "type": "acronym",
       "definition": "Point Set Selection Network"
     },
     {
       "term": "Point Set Selection Network",
-      "idf": 6.276,
+      "idf": 6.334,
       "df": 7,
       "type": "architecture",
       "definition": ""
     },
     {
-      "term": "transfer learning",
-      "idf": 6.158,
-      "df": 8,
-      "type": "domain",
-      "definition": ""
-    },
-    {
       "term": "Convolutional Neural Network",
-      "idf": 6.158,
+      "idf": 6.217,
       "df": 8,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "QP",
-      "idf": 6.158,
+      "idf": 6.217,
       "df": 8,
       "type": "acronym",
       "definition": "Quadratic Program"
     },
     {
       "term": "Quadratic Program",
-      "idf": 6.158,
+      "idf": 6.217,
       "df": 8,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "FAS",
-      "idf": 6.158,
+      "idf": 6.217,
       "df": 8,
       "type": "acronym",
       "definition": "Fast Analytic Searching"
     },
     {
       "term": "Fast Analytic Searching",
-      "idf": 6.158,
+      "idf": 6.217,
       "df": 8,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "reachability",
-      "idf": 6.053,
+      "idf": 6.111,
+      "df": 9,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "transfer learning",
+      "idf": 6.111,
       "df": 9,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "encoder-decoder",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "architecture",
       "definition": ""
     },
     {
+      "term": "FPS",
+      "idf": 6.111,
+      "df": 9,
+      "type": "acronym",
+      "definition": "Farthest point sampling"
+    },
+    {
+      "term": "Farthest point sampling",
+      "idf": 6.111,
+      "df": 9,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "PCA",
+      "idf": 6.111,
+      "df": 9,
+      "type": "acronym",
+      "definition": "Principal Component Analysis"
+    },
+    {
+      "term": "Principal Component Analysis",
+      "idf": 6.111,
+      "df": 9,
+      "type": "domain",
+      "definition": ""
+    },
+    {
       "term": "MDP",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "Markov decision process"
     },
     {
       "term": "Markov decision process",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "POMDP",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "Partially Observable Markov Decision Process"
     },
     {
       "term": "Partially Observable Markov Decision Process",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "AMT",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "We use Amazon Mechanical Turk"
     },
     {
       "term": "We use Amazon Mechanical Turk",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "SGN",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "Semantic Grasp Network"
     },
     {
       "term": "Semantic Grasp Network",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "UGR",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "Unique Grasp Rate"
     },
     {
       "term": "Unique Grasp Rate",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "GRN",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "Grasp Region Network"
     },
     {
       "term": "Grasp Region Network",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "RN",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "Refine Network"
     },
     {
       "term": "Refine Network",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "CD",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "acronym",
       "definition": "Chamfer distance"
     },
     {
       "term": "Chamfer distance",
-      "idf": 6.053,
+      "idf": 6.111,
       "df": 9,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "based on different samples from a",
-      "idf": 5.957,
+      "idf": 6.016,
       "df": 10,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "RL",
-      "idf": 5.957,
+      "idf": 6.016,
       "df": 10,
       "type": "acronym",
       "definition": "Reinforcement Learning"
     },
     {
       "term": "Reinforcement Learning",
-      "idf": 5.957,
+      "idf": 6.016,
       "df": 10,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "AP",
-      "idf": 5.87,
+      "idf": 5.929,
       "df": 11,
       "type": "acronym",
       "definition": "Average Precision"
     },
     {
       "term": "Average Precision",
-      "idf": 5.87,
+      "idf": 5.929,
       "df": 11,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "direct regression",
-      "idf": 5.79,
+      "idf": 5.849,
       "df": 12,
       "type": "domain",
       "definition": ""
     },
     {
       "term": "DNN",
-      "idf": 5.79,
+      "idf": 5.849,
       "df": 12,
       "type": "acronym",
       "definition": "Deep Neural Network"
     },
     {
       "term": "Deep Neural Network",
-      "idf": 5.79,
+      "idf": 5.849,
       "df": 12,
       "type": "architecture",
       "definition": ""
     },
     {
       "term": "SN",
-      "idf": 5.79,
+      "idf": 5.849,
       "df": 12,
       "type": "acronym",
       "definition": "Score Network"
-    },
-    {
-      "term": "Score Network",
-      "idf": 5.79,
-      "df": 12,
-      "type": "architecture",
-      "definition": ""
-    },
-    {
-      "term": "GSR",
-      "idf": 5.647,
-      "df": 14,
-      "type": "acronym",
-      "definition": "Table IV reports grasp success rates"
-    },
-    {
-      "term": "Table IV reports grasp success rates",
-      "idf": 5.647,
-      "df": 14,
-      "type": "domain",
-      "definition": ""
-    },
-    {
-      "term": "VGG",
-      "idf": 5.583,
-      "df": 15,
-      "type": "acronym",
-      "definition": ""
-    },
-    {
-      "term": "clearance",
-      "idf": 5.465,
-      "df": 17,
-      "type": "domain",
-      "definition": ""
-    },
-    {
-      "term": "piled",
-      "idf": 5.264,
-      "df": 21,
-      "type": "domain",
-      "definition": ""
-    },
-    {
-      "term": "point cloud from a side-view",
-      "idf": 5.264,
-      "df": 21,
-      "type": "sensor",
-      "definition": ""
-    },
-    {
-      "term": "SAM",
-      "idf": 5.264,
-      "df": 21,
-      "type": "acronym",
-      "definition": "Segment Anything Model"
     }
   ],
   "acronyms": [
     {
+      "acronym": "TSDF",
+      "full_form": "point cloud from a side-view",
+      "count": 24
+    },
+    {
       "acronym": "GQ-CNN",
       "full_form": "Grasp Quality Convolutional Neural Network",
       "count": 22
-    },
-    {
-      "acronym": "TSDF",
-      "full_form": "point cloud from a side-view",
-      "count": 21
     },
     {
       "acronym": "SAM",
@@ -1446,6 +1446,16 @@
       "acronym": "RL",
       "full_form": "Reinforcement Learning",
       "count": 10
+    },
+    {
+      "acronym": "FPS",
+      "full_form": "Farthest point sampling",
+      "count": 9
+    },
+    {
+      "acronym": "PCA",
+      "full_form": "Principal Component Analysis",
+      "count": 9
     },
     {
       "acronym": "MDP",
@@ -1528,6 +1538,11 @@
       "count": 6
     },
     {
+      "acronym": "FPN",
+      "full_form": "We adapt the Feature Pyramid Network",
+      "count": 6
+    },
+    {
       "acronym": "SPL",
       "full_form": "Success weighted by Path Length",
       "count": 6
@@ -1563,6 +1578,11 @@
       "count": 5
     },
     {
+      "acronym": "DR",
+      "full_form": "Declutter Rate",
+      "count": 5
+    },
+    {
       "acronym": "VMRD",
       "full_form": "Visual Manipulation Relationship Dataset",
       "count": 5
@@ -1573,14 +1593,19 @@
       "count": 4
     },
     {
-      "acronym": "VGN",
-      "full_form": "Volumetric Grasping Network",
+      "acronym": "EGAD",
+      "full_form": "The Evolved Grasping Analysis Dataset",
       "count": 4
     },
     {
-      "acronym": "FPS",
-      "full_form": "Farthest point sampling",
-      "count": 3
+      "acronym": "IT",
+      "full_form": "Insight Transformer",
+      "count": 4
+    },
+    {
+      "acronym": "VGN",
+      "full_form": "Volumetric Grasping Network",
+      "count": 4
     },
     {
       "acronym": "ART",
@@ -1615,11 +1640,6 @@
     {
       "acronym": "SGD",
       "full_form": "Stochastic Gradient Descent",
-      "count": 3
-    },
-    {
-      "acronym": "PCA",
-      "full_form": "Principal Component Analysis",
       "count": 3
     },
     {
@@ -1713,13 +1733,13 @@
       "count": 3
     },
     {
-      "acronym": "FPN",
-      "full_form": "We adapt the Feature Pyramid Network",
+      "acronym": "NMS",
+      "full_form": "We use Non-Maximum Suppression",
       "count": 3
     },
     {
-      "acronym": "NMS",
-      "full_form": "We use Non-Maximum Suppression",
+      "acronym": "OBB",
+      "full_form": "Oriented Bounding Box",
       "count": 3
     },
     {
@@ -1758,13 +1778,13 @@
       "count": 3
     },
     {
-      "acronym": "MISE",
-      "full_form": "Multiresolution IsoSurface Extraction",
+      "acronym": "ET",
+      "full_form": "Empower Transformer",
       "count": 3
     },
     {
-      "acronym": "DR",
-      "full_form": "Declutter Rate",
+      "acronym": "MISE",
+      "full_form": "Multiresolution IsoSurface Extraction",
       "count": 3
     },
     {
@@ -1888,8 +1908,8 @@
       "count": 2
     },
     {
-      "acronym": "EGAD",
-      "full_form": "Evolved Grasping Analysis Dataset",
+      "acronym": "SR",
+      "full_form": "Success Rate",
       "count": 2
     },
     {
@@ -1930,6 +1950,16 @@
     {
       "acronym": "VPN",
       "full_form": "Volumetric Point Network",
+      "count": 1
+    },
+    {
+      "acronym": "DTR",
+      "full_form": "Gen Direct Transfer",
+      "count": 1
+    },
+    {
+      "acronym": "RTG",
+      "full_form": "Gen Retargeting",
       "count": 1
     },
     {
