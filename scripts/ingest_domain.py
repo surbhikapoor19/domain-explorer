@@ -419,6 +419,21 @@ def step_rag(paths):
         print("  Skipping entity extraction (no GROQ_API_KEY)")
 
 
+def _kg_needs_rebuild(kg_path, source_paths, force=False):
+    """True if the knowledge graph should be (re)built: forced, the KG is missing, or
+    some EXISTING source file is strictly newer than the KG. Mirrors step_precompute's
+    mtime-freshness check so a new-paper build (which refreshes extracted_facts.json)
+    rebuilds the KG without --force. Pure mtime logic; missing sources are ignored and
+    an equal mtime does NOT trigger a rebuild (avoids rebuild loops)."""
+    if force or not kg_path.exists():
+        return True
+    kg_mtime = kg_path.stat().st_mtime
+    for p in source_paths:
+        if p.exists() and p.stat().st_mtime > kg_mtime:
+            return True
+    return False
+
+
 def step_kg(paths):
     """Build knowledge graph from ChromaDB data.
 
@@ -433,9 +448,12 @@ def step_kg(paths):
         print("  No extracted data found. Skipping KG build.")
         return
 
-    if kg_path.exists() and not FORCE:
-        print(f"  KG already exists at {kg_path}. Skipping. (use --force to re-run)")
+    triples_path = chroma_dir / 'verified_triples.json'
+    if not _kg_needs_rebuild(kg_path, (facts_path, entities_path, triples_path), force=FORCE):
+        print(f"  KG up-to-date (no source newer than {kg_path.name}). Skipping. (use --force to rebuild)")
         return
+    if kg_path.exists():
+        print("  KG sources changed (facts/entities/triples newer than KG); rebuilding.")
 
     print(f"  Building knowledge graph from {chroma_dir}")
 
