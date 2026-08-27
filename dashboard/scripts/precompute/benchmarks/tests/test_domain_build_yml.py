@@ -63,3 +63,53 @@ def test_docling_installed_for_benchmark_and_new_paper():
     t = _text()
     assert "github.event.client_payload.pages == 'benchmark'" in t
     assert "github.event.client_payload.pages == 'new-paper'" in t
+
+
+# --- LFS bandwidth fix: papers.zip (~349MB grasp + ~56MB motion) must NOT be pulled
+#     on every build. checkout lfs:true + a wildcard `git lfs pull datasets/*/papers.zip`
+#     fetched ~405MB per run, blowing GitHub's monthly LFS bandwidth quota and eventually
+#     failing checkout@v4 itself. Pull LFS explicitly, per-domain, and only for scopes
+#     that actually need PDFs (skip the CSV-only precompute/explorer nightly path). ---
+
+# CSV-only scopes need zero PDFs; the PDF steps must be gated off for them.
+PDF_GATE = ("github.event.client_payload.pages != 'precompute' && "
+            "github.event.client_payload.pages != 'explorer'")
+
+
+def _step_block(name):
+    """The YAML text of step '- name: <name>' up to the next '- name:' (for asserting
+    that step's own `if:` gate)."""
+    t = _text()
+    marker = f'- name: {name}'
+    i = t.find(marker)
+    assert i != -1, f"step '{name}' not found in domain-build.yml"
+    j = t.find('- name:', i + len(marker))
+    return t[i:] if j == -1 else t[i:j]
+
+
+def test_checkout_does_not_bulk_pull_lfs():
+    # 'lfs: true' on actions/checkout pulls EVERY LFS object on every build.
+    assert 'lfs: true' not in _text()
+
+
+def test_lfs_pull_is_domain_scoped_not_wildcard():
+    t = _text()
+    assert 'datasets/*/papers.zip' not in t, "LFS pull must target one domain, not all"
+    assert 'git lfs pull --include="datasets/${{ steps.domain.outputs.slug }}/papers.zip"' in t
+
+
+def test_pdf_steps_skip_csv_only_scopes():
+    # Pull LFS + unzip + fetch + re-zip must be gated so a precompute/explorer build
+    # pulls ZERO PDFs (the common nightly case) — that's what saves the bandwidth.
+    for step in ('Pull LFS files', 'Unzip PDFs if needed',
+                 'Fetch missing PDFs (public OA sources)',
+                 'Re-zip papers (persist fetched PDFs)'):
+        assert PDF_GATE in _step_block(step), \
+            f"step '{step}' must be gated with the PDF-scope condition"
+
+
+def test_git_lfs_skip_smudge_prevents_implicit_fetches():
+    # Belt-and-suspenders: even the commit step's `git checkout -- papers.zip` must not
+    # smudge-fetch LFS on a CSV-only build. A job-level GIT_LFS_SKIP_SMUDGE guarantees
+    # only the explicit gated `git lfs pull` ever fetches.
+    assert 'GIT_LFS_SKIP_SMUDGE: 1' in _text()
