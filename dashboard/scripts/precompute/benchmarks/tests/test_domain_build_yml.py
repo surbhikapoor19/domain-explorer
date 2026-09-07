@@ -1,6 +1,7 @@
 """domain-build.yml wires the benchmark step (opt-in, Docling) — AUTHORED BY ORCHESTRATOR.
 Implementers must NOT modify. Raw-text assertions (no PyYAML dependency) pinning the design decisions.
 """
+import re
 from pathlib import Path
 
 YML = Path(__file__).resolve().parents[5] / '.github' / 'workflows' / 'domain-build.yml'
@@ -113,3 +114,28 @@ def test_git_lfs_skip_smudge_prevents_implicit_fetches():
     # smudge-fetch LFS on a CSV-only build. A job-level GIT_LFS_SKIP_SMUDGE guarantees
     # only the explicit gated `git lfs pull` ever fetches.
     assert 'GIT_LFS_SKIP_SMUDGE: 1' in _text()
+
+
+# --- HGT removed + deps pinned (Sep-3 install failure was torch-scatter/torch-sparse
+#     built from the flaky data.pyg.org index; those exist only for HGT). ---
+
+def test_no_pyg_or_pyg_index_in_workflow():
+    t = _text()
+    for bad in ('torch-geometric', 'torch-scatter', 'torch-sparse', 'data.pyg.org'):
+        assert bad not in t, f"{bad} must be removed from the build (HGT gone)"
+
+
+def test_no_hgt_in_workflow():
+    t = _text()
+    assert 'hgt_schema' not in t, "the hgt_schema git-add must be removed"
+    assert 'HGT' not in t, "HGT references must be removed from the workflow"
+
+
+def test_deps_installed_from_pinned_requirements():
+    # Reproducible builds: install pinned deps from requirements-ci.txt instead of a
+    # bare, unversioned `pip install <pkgs>` that breaks on a surprise upstream release.
+    t = _text()
+    assert 'requirements-ci.txt' in t, "workflow must install from the pinned requirements file"
+    # torch still comes from the CPU wheel index and must be pinned too.
+    assert 'download.pytorch.org/whl/cpu' in t
+    assert re.search(r'pip install torch==\d', t), "torch must be pinned (torch==<ver>)"

@@ -38,14 +38,16 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install pandas scikit-learn umap-learn hdbscan sentence-transformers numpy requests
-          pip install torch --index-url https://download.pytorch.org/whl/cpu
-          pip install torch-geometric torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-2.5.0+cpu.html
-          pip install chromadb lxml beautifulsoup4 groq pymupdf keybert
+          # Pinned for reproducible builds (requirements-ci.txt) — an unpinned
+          # `pip install <pkgs>` broke when an upstream package released a new version.
+          # torch comes from the CPU wheel index (avoids the ~2GB CUDA build); the rest
+          # is pinned in requirements-ci.txt. (Graph-net training deps removed.)
+          pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-ci.txt
 
       - name: Install Docling (benchmark builds)
         if: ${{ github.event.client_payload.pages == 'benchmark' || github.event.client_payload.pages == 'new-paper' }}
-        run: pip install docling
+        run: pip install docling==2.120.1
 
       - name: Cache Docling/HF models
         if: ${{ github.event.client_payload.pages == 'benchmark' || github.event.client_payload.pages == 'new-paper' }}
@@ -214,7 +216,6 @@ jobs:
           git add -f "datasets/${SLUG}/chroma_db/extraction-cache.json" 2>/dev/null || true
           git add -f "datasets/${SLUG}/chroma_db/knowledge_graph.json" 2>/dev/null || true
           git add -f "datasets/${SLUG}/chroma_db/term_dictionary.json" 2>/dev/null || true
-          git add -f "datasets/${SLUG}/chroma_db/hgt_schema/" 2>/dev/null || true
           # ONE pathspec per git add: `git add A B` stages NOTHING when any
           # pathspec matches no file, and domains/<dashed>.yaml never existed
           # (files use underscores) — this silently discarded every build's data.
@@ -226,7 +227,7 @@ jobs:
           git commit -m "Build domain: ${DOMAIN}
 
           Automated build via admin panel.
-          Pipeline: GROBID -> RAG -> KG -> HGT -> Precompute"
+          Pipeline: GROBID -> RAG -> KG -> Precompute"
           # --autostash: a new-paper build leaves generated intermediates unstaged (only
           # the deploy-critical files above are added), and plain `pull --rebase` aborts on
           # a dirty tree ("cannot pull with rebase: You have unstaged changes"). Autostash

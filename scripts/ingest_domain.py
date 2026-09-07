@@ -6,7 +6,7 @@ dashboard data. Designed to be called by GitHub Actions or locally.
 
 Usage:
     python scripts/ingest_domain.py --domain motion_planning
-    python scripts/ingest_domain.py --domain motion_planning --steps grobid,rag,kg,hgt,precompute
+    python scripts/ingest_domain.py --domain motion_planning --steps grobid,rag,kg,precompute
     python scripts/ingest_domain.py --domain motion_planning --steps precompute
     python scripts/ingest_domain.py --domain motion_planning --force
 
@@ -14,7 +14,6 @@ Steps (in order):
     grobid     - Parse PDFs to TEI XML via GROBID service
     rag        - Chunk TEI, build embeddings, ingest to ChromaDB
     kg         - Build knowledge graph from chunks + entities
-    hgt        - Train HGT link prediction model
     precompute - Generate dashboard JSON files
 
 Each step checks if its output already exists and skips if so.
@@ -46,7 +45,7 @@ except ImportError:
         """Placeholder for scripts.lib.llm_fallback.LLMUnavailable (Track 1)."""
         summary = ''
 
-ALL_STEPS = ['grobid', 'rag', 'kg', 'hgt', 'precompute', 'benchmark']
+ALL_STEPS = ['grobid', 'rag', 'kg', 'precompute', 'benchmark']
 FORCE = False
 
 
@@ -569,34 +568,6 @@ def _build_paper_texts(chroma_dir, slug_dashed):
         return {}
 
 
-def step_hgt(paths):
-    """Train HGT link prediction model."""
-    chroma_dir = paths['chroma']
-    kg_path = chroma_dir / 'knowledge_graph.json'
-    model_path = chroma_dir / 'hgt_model.pt'
-
-    if not kg_path.exists():
-        print("  No knowledge_graph.json found. Skipping HGT training.")
-        return
-
-    if model_path.exists() and not FORCE:
-        print(f"  HGT model already exists at {model_path}. Skipping. (use --force to re-run)")
-        return
-
-    print(f"  Training HGT model (chroma_dir={chroma_dir})")
-
-    try:
-        from hgt.run import main as hgt_main
-        # --rebuild-schema derives the HGT schema from THIS domain's fresh
-        # knowledge_graph.json; --schema-dir points training at the domain's own
-        # schema (the old --chroma-dir flag never existed — argparse SystemExit'd).
-        hgt_main(['--schema-dir', str(chroma_dir / 'hgt_schema'),
-                  '--rebuild-schema', '--epochs', '300'])
-    except Exception as e:
-        print(f"  HGT training failed: {e}")
-        print("  This is OK for very small KGs (<100 edges).")
-
-
 def step_precompute(paths, domain_slug):
     """Generate dashboard JSON files."""
     import subprocess
@@ -880,8 +851,6 @@ def main():
             step_rag(paths)
         elif step == 'kg':
             step_kg(paths)
-        elif step == 'hgt':
-            step_hgt(paths)
         elif step == 'precompute':
             step_precompute(paths, args.domain)
         elif step == 'benchmark':

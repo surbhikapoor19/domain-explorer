@@ -1244,59 +1244,6 @@ def compute_graph_context(
                 'edges': [],
             })
 
-    # --- Inferred relationships from HGT link prediction ---
-    predicted_edges_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', 'chroma_db', 'hgt_schema', 'predicted_edges.json'
-    )
-    if os.path.exists(predicted_edges_path):
-        try:
-            with open(predicted_edges_path) as f:
-                all_predicted = json.load(f)
-
-            # Filter to predictions relevant to the top methods' papers
-            inferred_items = []
-            inferred_edges = []
-            for pred in all_predicted:
-                src_pid = pred.get('src_id', '').replace('paper:', '')
-                if src_pid not in top_pids:
-                    continue
-                # Skip outperforms (too noisy at this scale)
-                if pred['edge_type'] == 'outperforms':
-                    continue
-                sem_rel = pred.get('semantic_relevance', 0)
-                if sem_rel < 0.35:
-                    continue
-
-                paper_name = _format_paper_name(src_pid)
-                tgt_value = pred.get('tgt_value', pred.get('tgt_label', ''))
-                etype = pred['edge_type']
-                conf = pred['confidence']
-
-                inferred_items.append(
-                    f"- {paper_name} likely {etype.replace('_', ' ')}: {tgt_value} "
-                    f"({conf:.0%} graph confidence, {sem_rel:.0%} semantic match)"
-                )
-                inferred_edges.append({
-                    'source': pred['src_id'],
-                    'target': pred['tgt_id'],
-                    'type': etype,
-                    'confidence': conf,
-                    'semantic_relevance': sem_rel,
-                    'inferred': True,
-                })
-
-            if inferred_items:
-                sections.append("Inferred Relationships (from graph structure):\n" + "\n".join(inferred_items[:5]))
-                traversal.append({
-                    'step': 'inferred',
-                    'description': 'HGT link prediction on graph structure',
-                    'detail': f'{len(inferred_items)} relationships inferred for relevant papers',
-                    'nodes': [],
-                    'edges': inferred_edges[:5],
-                })
-        except Exception as e:
-            logger.warning(f"Failed to load predicted edges: {e}")
-
     # --- Summary stats for traversal ---
     all_traversed_nodes = set()
     all_traversed_edges = 0
