@@ -113,60 +113,6 @@ const STYLESHEET = [
   // Citation edges slightly thicker
   { selector: 'edge[type="cites"]', style: { 'width': 1.5, 'opacity': 0.5 } },
   { selector: 'edge[type="outperforms"]', style: { 'width': 2, 'opacity': 0.6, 'line-style': 'dashed' } },
-  // Inferred edges (from HGT link prediction) render dashed by default to
-  // visually distinguish "predicted" from "observed" relationships. The
-  // following per-type rules override color, and per-confidence rules drive
-  // a continuous width + opacity ramp so the visual signal mirrors what the
-  // model actually said (edge type + confidence) — no invented categories.
-  { selector: 'edge[inferred = 1]', style: { 'line-style': 'dashed' } },
-  { selector: 'edge[inferred = 1][type="outperforms"]', style: {
-    'line-color': '#b14b1f',
-    'target-arrow-color': '#b14b1f',
-  }},
-  { selector: 'edge[inferred = 1][type="compares"]', style: {
-    'line-color': '#c2410c',
-    'target-arrow-color': '#c2410c',
-  }},
-  { selector: 'edge[inferred = 1][type="compared_against"]', style: {
-    'line-color': '#b14b1f',
-    'target-arrow-color': '#b14b1f',
-  }},
-  { selector: 'edge[inferred = 1][type="contributes"]', style: {
-    'line-color': '#2b6cb0',
-    'target-arrow-color': '#2b6cb0',
-  }},
-  { selector: 'edge[inferred = 1][type="has_limitation"]', style: {
-    'line-color': '#b91c1c',
-    'target-arrow-color': '#b91c1c',
-  }},
-  { selector: 'edge[inferred = 1][type="addresses_problem"]', style: {
-    'line-color': '#ca8a04',
-    'target-arrow-color': '#ca8a04',
-  }},
-  { selector: 'edge[inferred = 1][type="uses_technique"]', style: {
-    'line-color': '#7c3aed',
-    'target-arrow-color': '#7c3aed',
-  }},
-  // Continuous width + opacity from confidence. The min_confidence cutoff
-  // in the precompute is 0.55, and the model's max in current data is ~0.73,
-  // so we map [0.55 → 0.80] across the visible width/opacity range. mapData
-  // clamps at the bounds, so any future runs that produce stronger or
-  // weaker scores still render sensibly.
-  { selector: 'edge[inferred = 1]', style: {
-    'width':   'mapData(confidence, 0.55, 0.80, 1.2, 3.5)',
-    'opacity': 'mapData(confidence, 0.55, 0.80, 0.40, 0.95)',
-  }},
-  // Bidirectional inferred edges render arrowless: the model scored both
-  // directions identically (within tolerance), which means it has no
-  // signal to prefer one direction over the other. Showing arrows would
-  // imply a directional claim the model cannot back up.
-  { selector: 'edge[inferred = 1][bidirectional = 1]', style: {
-    'target-arrow-shape': 'none',
-    'source-arrow-shape': 'none',
-  }},
-  // Observed overlay edges (on the Predictions tab): thin gray so the
-  // predicted purple reads as "new" against the observed baseline.
-  { selector: 'edge[source_type = "observed"]', style: { 'width': 0.8, 'opacity': 0.35, 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8' } },
   // Hover highlight
   { selector: 'node.highlighted', style: {
     'border-width': 2.5,
@@ -268,7 +214,7 @@ export default function KGGraphViz({
   onNodeSelect, onEdgeSelect, onNodeHover, onBackgroundTap, refitTrigger,
   hiddenEdgeTypes, hiddenNodeTypes: extHiddenNodeTypes, highlightedLabels, dimUnhighlighted,
   focusOnHighlight = false,
-  minDegree = 0, searchTerm = '', viewName, minConfidence = 0, hideTooltip = false,
+  minDegree = 0, searchTerm = '', viewName, hideTooltip = false,
 }) {
   const cyRef = useRef(null);
   const containerRef = useRef(null);
@@ -330,8 +276,6 @@ export default function KGGraphViz({
         const sub = kgLib.extractSubgraph(postData.paperIds, postData.intent || 'general');
         return { success: true, nodes: sub.nodes, links: sub.links, stats: sub.stats };
       });
-    } else if (dataUrl === 'kg-predictions' || (dataUrl || '').includes('kg-predictions')) {
-      loader = import('../lib/data-loader').then(m => m.loadKgPredictions());
     } else {
       loader = import('../lib/data-loader').then(m => m.loadKgMacro());
     }
@@ -370,7 +314,6 @@ export default function KGGraphViz({
     });
     const edges = graphData.links
       .filter(e => {
-        if (e.inferred && minConfidence > 0 && (e.confidence || 0) < minConfidence) return false;
         const srcId = e.source?.id || e.source;
         const tgtId = e.target?.id || e.target;
         return visibleIds.has(srcId) && visibleIds.has(tgtId);
@@ -381,28 +324,17 @@ export default function KGGraphViz({
           source: e.source?.id || e.source,
           target: e.target?.id || e.target,
           type: e.type || '',
-          inferred: e.inferred ? 1 : 0,
-          bidirectional: e.bidirectional ? 1 : 0,
-          confidence: e.confidence || 0,
-          semantic_relevance: e.semantic_relevance || 0,
-          source_type: e.source_type || '',
           sentiment: e.sentiment || '',
           contexts: e.contexts || [],
           mentions: e.mentions || 0,
-          // Enrichment fields for predicted edges (paper↔paper). The
-          // precompute baked these in on `kg-predictions.json`; we keep
-          // them on the cy edge so the click handler can pass them
-          // straight to the side panel without a re-fetch.
-          comparability: e.comparability || null,
-          shared_context: e.shared_context || [],
         },
       }));
-    // Remove orphan nodes (no edges after confidence filtering)
+    // Remove orphan nodes (no edges after visibility filtering)
     const connectedIds = new Set();
     edges.forEach(e => { connectedIds.add(e.data.source); connectedIds.add(e.data.target); });
     const filteredNodes = nodes.filter(n => connectedIds.has(n.data.id));
     return [...filteredNodes, ...edges];
-  }, [graphData, hiddenTypes, minConfidence]);
+  }, [graphData, hiddenTypes]);
 
   // Setup events after Cytoscape mounts
   const handleCy = useCallback(cy => {
@@ -476,11 +408,9 @@ export default function KGGraphViz({
       setTooltipNode(null);
     });
 
-    // Hover an edge — surface a four-line orientation tooltip. For
-    // predicted (inferred) edges this is the load-bearing UX: it tells
-    // the user what HGT actually said before they decide to click in.
-    // Per the no-redundancy rule, this stays orientation-only — the
-    // full comparability table lives in the side panel on click.
+    // Hover an edge — surface a short orientation tooltip. Per the
+    // no-redundancy rule, this stays orientation-only; clicking opens the
+    // full detail in the side panel.
     cy.on('mouseover', 'edge', e => {
       const edge = e.target;
       const srcNode = edge.source();
@@ -493,10 +423,6 @@ export default function KGGraphViz({
           src_type: srcNode.data('type'),
           tgt_type: tgtNode.data('type'),
           edge_type: edge.data('type'),
-          inferred: !!edge.data('inferred'),
-          bidirectional: !!edge.data('bidirectional'),
-          confidence: edge.data('confidence') || 0,
-          semantic_relevance: edge.data('semantic_relevance') || 0,
           sentiment: edge.data('sentiment') || '',
         });
       }, HOVER_DELAY);
@@ -519,14 +445,8 @@ export default function KGGraphViz({
         onEdgeSelect({
           edge: {
             type: edge.data('type'),
-            inferred: !!edge.data('inferred'),
-            bidirectional: !!edge.data('bidirectional'),
-            confidence: edge.data('confidence') || 0,
-            semantic_relevance: edge.data('semantic_relevance') || 0,
             sentiment: edge.data('sentiment') || '',
             contexts: edge.data('contexts') || [],
-            comparability: edge.data('comparability') || null,
-            shared_context: edge.data('shared_context') || [],
           },
           src: {
             id: srcNode.data('id'), label: srcNode.data('label'),
@@ -565,7 +485,6 @@ export default function KGGraphViz({
         const edges = node.connectedEdges().map(ed => ({
           ...ed.data(),
           source: ed.data('source'), target: ed.data('target'),
-          inferred: !!ed.data('inferred'),
         }));
         onNodeSelect({ node: { ...node.data() }, neighbors, edges, viewName });
       }
@@ -865,14 +784,12 @@ export default function KGGraphViz({
         <div className="kgv-tooltip kgv-tooltip-edge">
           <div className="kgv-tooltip-edge-pair">
             <span>{tooltipEdge.src}</span>
-            <span className="kgv-tooltip-edge-arrow">
-              {tooltipEdge.bidirectional ? '↔' : '→'}
-            </span>
+            <span className="kgv-tooltip-edge-arrow">→</span>
             <span>{tooltipEdge.tgt}</span>
           </div>
           <div className="kgv-tooltip-edge-type">
-            {tooltipEdge.inferred ? 'Predicted: ' : ''}{tooltipEdge.edge_type}
-            {tooltipEdge.sentiment && !tooltipEdge.inferred && (
+            {tooltipEdge.edge_type}
+            {tooltipEdge.sentiment && (
               <span className={`kgv-tooltip-stance stance-${tooltipEdge.sentiment}`}>
                 {tooltipEdge.sentiment === 'builds_on' ? 'builds on'
                   : tooltipEdge.sentiment === 'differs_from' ? 'differs'
@@ -880,14 +797,6 @@ export default function KGGraphViz({
               </span>
             )}
           </div>
-          {tooltipEdge.inferred && (
-            <div className="kgv-tooltip-edge-scores">
-              Confidence {Math.round(tooltipEdge.confidence * 100)}%
-              {tooltipEdge.semantic_relevance > 0 && (
-                <> · Similarity {Math.round(tooltipEdge.semantic_relevance * 100)}%</>
-              )}
-            </div>
-          )}
           <div className="kgv-tooltip-edge-hint">click to compare →</div>
         </div>
       )}

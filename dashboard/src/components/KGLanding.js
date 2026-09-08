@@ -433,10 +433,6 @@ export default function KGLanding({
   // surfaces carry only a line or two of info; a panel is overkill).
   const [miniInfo, setMiniInfo] = useState(null);
   const [nodeSelection, setNodeSelection] = useState(null);
-  // Edge selection — populated when the user clicks a predicted edge.
-  // Mutually exclusive with nodeSelection: clicking either type clears
-  // the other so the side-panel slot only ever holds one detail view.
-  const [edgeSelection, setEdgeSelection] = useState(null);
   const [macroGraph, setMacroGraph] = useState(null);
   // Most-Referenced (TopCited) selection — clicking a row highlights that
   // paper across the graph + every other chart. Same connect-everything
@@ -445,21 +441,6 @@ export default function KGLanding({
   // Hover preview: lights up a node on the graph without committing a selection.
   // Fired from side-panel connection rows and lineage items.
   const [hoverEntity, setHoverEntity] = useState(null);
-  // View tab: 'macro' = the full KG, 'predictions' = HGT latent edges only
-  const [graphView, setGraphView] = useState('macro');
-  const [predMinConf, setPredMinConf] = useState(0.55);
-  // Overlay existing KG edges on top of predictions → visual diff of "known vs new"
-  const [predShowExisting, setPredShowExisting] = useState(true);
-  // Edge-type filter for the predictions view. null = show both,
-  // 'outperforms' or 'uses_technique' = show only that type. Drives the
-  // 2-entry legend's click behavior.
-  const [predTypeFilter, setPredTypeFilter] = useState(null);
-  // Full predicted edges + nodes so the cross-card highlight resolver can
-  // fan out via predicted edges when the user is in the Predicted
-  // Relationships view. Same shape as macroGraph: { nodes, links }. We
-  // keep it separate (not merged into macroGraph) because the macro view
-  // should not bleed predicted edges back into the KG view.
-  const [predGraph, setPredGraph] = useState(null);
   // Side-panel expanded state — papers/methods open in a compact mode by
   // default showing just the first subheading (method spec + a hint of
   // the rest), and the user clicks Expand to see the full layout. Other
@@ -485,50 +466,6 @@ export default function KGLanding({
   const scrollToInsights = useCallback(() => {
     insightsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
-
-  // Load full predictions data once when the user opens the predictions view.
-  // PER-RELATION SUPPORT GATE: a link-prediction model cannot learn a relation
-  // from a handful of training edges (e.g. 7 outperforms edges), so predictions
-  // for under-supported relations are structurally-plausible noise. Keep inferred
-  // edges only for relations with >= PRED_MIN_SUPPORT observed (real) edges, and
-  // surface what was gated so the view is honest about it.
-  const PRED_MIN_SUPPORT = 30;
-  useEffect(() => {
-    if (graphView !== 'predictions' || predGraph) return;
-    let cancelled = false;
-    import('../lib/data-loader').then(({ loadKgPredictions }) => {
-      loadKgPredictions().then(d => {
-        if (cancelled || !d || !d.links) return;
-        const links = d.links || [];
-        const support = {};
-        for (const e of links) {
-          if (e.source_type === 'observed') support[e.type] = (support[e.type] || 0) + 1;
-        }
-        const gated = {};
-        const kept = links.filter(e => {
-          if (e.source_type === 'observed') return true;
-          if ((support[e.type] || 0) >= PRED_MIN_SUPPORT) return true;
-          gated[e.type] = (gated[e.type] || 0) + 1;
-          return false;
-        });
-        setPredGraph({ nodes: d.nodes || [], links: kept, gatedTypes: gated, support });
-      }).catch(() => {});
-    });
-    return () => { cancelled = true; };
-  }, [graphView, predGraph]);
-
-  // Recompute legend counts whenever the confidence slider changes.
-  // Only counts predicted (inferred) edges, not observed overlays.
-  const predCounts = useMemo(() => {
-    if (!predGraph || !predGraph.links) return null;
-    const counts = {};
-    for (const e of predGraph.links) {
-      if (e.source_type === 'observed') continue;
-      if ((e.confidence || 0) < predMinConf) continue;
-      counts[e.type] = (counts[e.type] || 0) + 1;
-    }
-    return counts;
-  }, [predGraph, predMinConf]);
 
   useEffect(() => {
     import('../lib/data-loader').then(({ loadKgLanding, loadKgMacro }) => {
@@ -761,46 +698,6 @@ export default function KGLanding({
       });
     });
 
-    // --- Step 2b: in Predicted Relationships view, also fan out via the
-    // predicted-edges adjacency. Reason: when the user clicks a paper in
-    // the predictions tab, the meaningful "related" set is whichever
-    // papers the model thinks belong in a head-to-head with it, plus the
-    // techniques it likely uses — NOT the macroGraph cites/uses edges
-    // (which would just re-light the observed neighborhood the user is
-    // explicitly trying to look past). We add these on top of the macro
-    // fan-out so observed metadata (author/institution) still highlights
-    // alongside the predicted papers. ---------------------------------
-    if (graphView === 'predictions' && predGraph && seedPaperIds.size > 0) {
-      const predNodeById = new Map();
-      (predGraph.nodes || []).forEach(n => { if (n && n.id) predNodeById.set(n.id, n); });
-      const predAdj = new Map();
-      (predGraph.links || []).forEach(l => {
-        const s = l.source?.id || l.source;
-        const t = l.target?.id || l.target;
-        if (!predAdj.has(s)) predAdj.set(s, []);
-        if (!predAdj.has(t)) predAdj.set(t, []);
-        predAdj.get(s).push([t, l.type]);
-        predAdj.get(t).push([s, l.type]);
-      });
-      seedPaperIds.forEach(pid => {
-        (predAdj.get(pid) || []).forEach(([otherId]) => {
-          // Prefer the predGraph node (richer) but fall back to macro for label.
-          const o = predNodeById.get(otherId) || nodeById.get(otherId);
-          if (!o) return;
-          labels.add(o.label);
-          if (o.type === 'paper') {
-            papers.add(o.label);
-            const mLabel = paperIdToMethod.get(otherId);
-            if (mLabel) { methods.add(mLabel); labels.add(mLabel); }
-          } else if (o.type === 'method') {
-            methods.add(o.label);
-          } else if (o.type === 'technique') {
-            techniques.add(o.label);
-          }
-        });
-      });
-    }
-
     // --- Step 3: derive year set from highlighted methods -----------------
     if (data.temporal && methods.size > 0) {
       const lower = new Set([...methods].map(m => m.toLowerCase()));
@@ -828,7 +725,7 @@ export default function KGLanding({
     return { methods, papers, techniques, institutions, authors, externalRefs, benchmarks, years, labels };
   }, [_kgMaps, data, selectedYear, selectedGraphNode, selectedTechnique,
       selectedTopCited, macroGraph, hoverEntity,
-      scatterData, hoveredIndex, selectedPoint, graphView, predGraph]);
+      scatterData, hoveredIndex, selectedPoint]);
 
   const highlightedMethods       = _highlightResolution.methods;
   const highlightedPapers        = _highlightResolution.papers;
@@ -887,7 +784,6 @@ export default function KGLanding({
     setSelectedTopCited(null);
     setSelectedGraphNode(null);
     setNodeSelection(null);
-    setEdgeSelection(null);
     setMiniInfo(null);
   }, []);
   const handleBackgroundClick = useCallback((e) => {
@@ -902,7 +798,7 @@ export default function KGLanding({
   }, [clearAllSelections]);
 
   const bottomPanelRef = React.useRef(null);
-  useEffect(() => { setPanelExpanded(false); }, [nodeSelection?.node?.id, edgeSelection?.edge?.id]);
+  useEffect(() => { setPanelExpanded(false); }, [nodeSelection?.node?.id]);
   useEffect(() => {
     if (panelExpanded && bottomPanelRef.current) {
       setTimeout(() => bottomPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
@@ -1010,72 +906,9 @@ export default function KGLanding({
       {/* ── Exact Explorer layout: scatter-section > viz-toolbar > content ── */}
       <div className="scatter-section">
         <div className="viz-toolbar">
-          <button
-            className={`viz-toggle-btn ${graphView === 'macro' ? 'active' : ''}`}
-            onClick={() => setGraphView('macro')}
-          >
+          <button className="viz-toggle-btn active">
             Knowledge Graph
           </button>
-          {/* "Predicted Relationships" (HGT) tab removed from the UI per product decision —
-              the HGT graph isn't surfaced to users. graphView is now always 'macro'; the
-              prediction-view code below is unreachable and kept only to avoid a churny diff. */}
-          {false && graphView === 'predictions' && (
-            <>
-              <div className="kgl-pred-slider">
-                <label>min confidence</label>
-                <input type="range" min="0.5" max="0.9" step="0.01"
-                       value={predMinConf}
-                       onChange={e => setPredMinConf(parseFloat(e.target.value))} />
-                <span>{predMinConf.toFixed(2)}</span>
-              </div>
-              <button
-                className={`kgl-pred-toggle ${predShowExisting ? 'on' : 'off'}`}
-                onClick={() => setPredShowExisting(v => !v)}
-                title="Show documented relationships alongside suggested ones for comparison."
-              >
-                <span className="kgl-pred-swatch kgl-pred-swatch-obs" />
-                <span className="kgl-pred-toggle-label">show existing</span>
-              </button>
-              {predCounts && (() => {
-                const PRED_GROUPS = [
-                  { key: 'comparisons', label: 'Comparisons', types: ['outperforms', 'compares', 'compared_against'],
-                    color: '#b14b1f', title: 'Performance comparisons and benchmark pairings between methods.' },
-                  { key: 'claims',      label: 'Claims',      types: ['contributes', 'has_limitation', 'addresses_problem'],
-                    color: '#2b6cb0', title: 'Research claims: contributions, limitations, and problems addressed.' },
-                  { key: 'methodology', label: 'Methodology', types: ['uses_technique'],
-                    color: '#7c3aed', title: 'Techniques and methods these papers likely use.' },
-                ];
-                const gated = predGraph && predGraph.gatedTypes ? Object.entries(predGraph.gatedTypes) : [];
-                return (
-                  <div className="kgl-pred-legend">
-                    {PRED_GROUPS.map(g => {
-                      const n = g.types.reduce((s, t) => s + (predCounts[t] || 0), 0);
-                      if (!n) return null;
-                      return (
-                        <button key={g.key}
-                          className={`kgl-pred-legend-btn ${predTypeFilter === g.key ? 'active' : ''} ${predTypeFilter && predTypeFilter !== g.key ? 'inactive' : ''}`}
-                          onClick={() => setPredTypeFilter(predTypeFilter === g.key ? null : g.key)}
-                          title={g.title}
-                        >
-                          <span className="kgl-pred-legend-swatch" style={{ background: g.color }} />
-                          {g.label}
-                          <span className="kgl-pred-legend-count">{n}</span>
-                        </button>
-                      );
-                    })}
-                    {gated.length > 0 && (
-                      <span
-                        className="kgl-pred-gated-note"
-                        title={`Predictions need enough real training edges to be trustworthy. Hidden: ${gated.map(([t, n]) => `${n} predicted "${t.replace(/_/g, ' ')}" edges (only ${(predGraph.support && predGraph.support[t]) || 0} real examples to learn from)`).join('; ')}.`}
-                      >
-                        {gated.reduce((s, [, n]) => s + n, 0)} low-evidence predictions hidden
-                      </span>
-                    )}
-                  </div>
-                );
-              })()}
-            </>
-          )}
           <button
             className={`viz-toggle-btn weights-toggle ${filtersOpen ? 'active' : ''}`}
             onClick={() => setFiltersOpen(v => !v)}
@@ -1106,17 +939,15 @@ export default function KGLanding({
             bottom panel docks below the graph inside .kgl-graph-panel.
             This reuses the existing 2-column CSS-column layout the
             bottom panel already has (.kgl-graph-panel .kgnd-panel). */}
-        <div className={`scatter-content kgl-graph-stage ${!panelExpanded && (nodeSelection || edgeSelection) ? 'has-side-panel' : ''}`}>
+        <div className={`scatter-content kgl-graph-stage ${!panelExpanded && nodeSelection ? 'has-side-panel' : ''}`}>
           <div className={`scatter-panel kgl-graph-panel ${panelExpanded && nodeSelection ? 'has-detail' : ''}`}>
             <KGGraphViz
-              key={graphView + '-' + predMinConf + '-' + (predShowExisting ? 'ov' : 'only') + '-' + (predTypeFilter || 'all')}
               height={440}
               onNodeClick={handleGraphNodeClick}
               onNodeHover={handleGraphNodeHover}
               onBackgroundTap={clearAllSelections}
               selectedNode={selectedGraphNode}
               onNodeSelect={(s) => {
-                setEdgeSelection(null);
                 // Papers get the full side panel; everything else (technique,
                 // dataset, author, …) just shows the bottom-left mini box.
                 if (s && s.node && s.node.type === 'paper') { setMiniInfo(null); setNodeSelection(s); }
@@ -1128,29 +959,12 @@ export default function KGLanding({
                 setNodeSelection(null); setSelectedGraphNode(null);
                 setMiniInfo({ title: `${e?.src?.label || '?'}  →  ${e?.tgt?.label || '?'}`, detail: prettyKind(e?.edge?.type) });
               }}
-              refitTrigger={`${!!nodeSelection}-${!!edgeSelection}-${searchTerm}-${predTypeFilter}-${panelExpanded}`}
-              hiddenEdgeTypes={(() => {
-                if (graphView !== 'predictions' || !predTypeFilter) return hiddenEdgeTypes;
-                const PRED_FILTER_MAP = {
-                  comparisons: new Set(['outperforms', 'compares', 'compared_against']),
-                  claims: new Set(['contributes', 'has_limitation', 'addresses_problem']),
-                  methodology: new Set(['uses_technique']),
-                };
-                const keep = PRED_FILTER_MAP[predTypeFilter];
-                if (!keep) return hiddenEdgeTypes;
-                const ALL_PRED_TYPES = ['outperforms', 'compares', 'compared_against',
-                  'contributes', 'has_limitation', 'addresses_problem', 'uses_technique'];
-                const toHide = ALL_PRED_TYPES.filter(t => !keep.has(t));
-                return new Set([...hiddenEdgeTypes, ...toHide]);
-              })()}
+              refitTrigger={`${!!nodeSelection}-${searchTerm}-${panelExpanded}`}
+              hiddenEdgeTypes={hiddenEdgeTypes}
               minDegree={minDegree}
               searchTerm={searchTerm}
-              dataUrl={graphView === 'predictions'
-                ? 'kg-predictions'
-                : 'kg-macro'}
-              viewName={graphView === 'predictions' ? 'predictions' : 'macro'}
-              inferredEdgesDashed={graphView === 'predictions'}
-              minConfidence={graphView === 'predictions' ? predMinConf : 0}
+              dataUrl="kg-macro"
+              viewName="macro"
               highlightedLabels={highlightedLabels}
               dimUnhighlighted={hasAnyHighlight}
               focusOnHighlight={!!(selectedTechnique || selectedYear || selectedTopCited)}

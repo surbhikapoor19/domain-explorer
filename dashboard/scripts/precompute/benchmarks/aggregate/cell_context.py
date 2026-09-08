@@ -2,13 +2,12 @@
 
 Joins each benchmark cell (a leaderboard, keyed e.g. ``success_rate||packed``)
 to its methods' attributes (from methods.json) and its papers' KG relations
-(citation stance, technique lineage, stated/predicted outperforms).
+(citation stance, technique lineage, stated outperforms).
 
 Honesty invariants:
   - the method-name join is normalized so emoji-prefixed names still join; a
     miss yields "not reported" on every field (never guessed);
-  - STATED outperforms (KG) carry evidence text but NO fabricated confidence;
-  - PREDICTED outperforms (HGT) are kept as data tagged kind='predicted'.
+  - STATED outperforms (KG) carry evidence text but NO fabricated confidence.
 """
 
 import re
@@ -35,16 +34,14 @@ def _field(rec, *keys):
     return dict(_MISSING)
 
 
-def build_cell_context(benchmark, kg, predictions, methods, resolver=None):
+def build_cell_context(benchmark, kg, methods, resolver=None):
     """-> { CELL_KEY: {method_attributes, relations:{citations,technique_lineage,outperforms}, differences} }"""
     benchmark = benchmark or {}
     kg = kg or {}
-    predictions = predictions or {}
 
     methods_index = {_norm(r['Name']): r for r in (methods or []) if r.get('Name')}
 
     kg_links = kg.get('links') or kg.get('edges') or []
-    pred_links = predictions.get('links') or predictions.get('predicted_edges') or []
 
     result = {}
 
@@ -123,21 +120,7 @@ def build_cell_context(benchmark, kg, predictions, methods, resolver=None):
                     'evidence': lk.get('evidence', ''),
                 })
 
-        predicted = []
-        for p in pred_links:
-            ptype = p.get('type') or p.get('edge_type')
-            src = p.get('source') or p.get('src_id')
-            tgt = p.get('target') or p.get('tgt_id')
-            if ptype == 'outperforms' and src in paper_ids and tgt in paper_ids:
-                predicted.append({
-                    'winner_paper': src.split(':', 1)[-1],
-                    'loser_paper': tgt.split(':', 1)[-1],
-                    'kind': 'predicted',
-                    'confidence': p.get('confidence'),
-                    'semantic_relevance': p.get('semantic_relevance'),
-                })
-
-        outperforms = stated + predicted
+        outperforms = stated
 
         # ── differences ────────────────────────────────────────────────────
         differences = []

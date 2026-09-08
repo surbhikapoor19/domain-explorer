@@ -105,5 +105,48 @@ class DepsPinned(unittest.TestCase):
             self.assertNotIn(bad, body, f"{bad} must not be in requirements (HGT removed)")
 
 
+class PredictionsFeatureRemoved(unittest.TestCase):
+    """Phase 2: the HGT link-prediction OUTPUT feature is fully removed — generation
+    (kg-predictions.json / hgt-metrics.json), benchmark consumption (predicted
+    outperforms in cell_context), and frontend rendering (KGGraphViz inferred edges,
+    data-loader prediction loaders). kg-contradictions is a SEPARATE, non-HGT feature
+    and MUST be preserved."""
+
+    def test_kg_predictions_generator_deleted(self):
+        self.assertFalse(
+            os.path.exists(os.path.join(REPO, 'dashboard/scripts/precompute/graph/kg_predictions.py')),
+            "the kg-predictions generator must be deleted")
+
+    def test_no_committed_prediction_artifacts(self):
+        gone = []
+        for d in ('grasp-planning', 'motion-planning'):
+            for f in ('kg-predictions.json', 'hgt-metrics.json'):
+                if os.path.exists(os.path.join(REPO, 'dashboard/public', f'data-{d}', f)):
+                    gone.append(f'{d}/{f}')
+        self.assertFalse(gone, f"these HGT-output artifacts must be removed: {gone}")
+
+    def test_cell_context_has_no_predictions(self):
+        src = open(os.path.join(REPO, 'dashboard/scripts/precompute/benchmarks/aggregate/cell_context.py'),
+                   encoding='utf-8').read()
+        self.assertNotIn('predict', src.lower(),
+                         "predicted-outperforms logic must be removed from cell_context.py")
+
+    def test_data_loader_has_no_prediction_loaders(self):
+        src = open(os.path.join(REPO, 'dashboard/src/lib/data-loader.js'), encoding='utf-8').read()
+        self.assertNotIn('kg-predictions', src)
+        self.assertNotIn('hgt-metrics', src)
+
+    def test_kggraphviz_has_no_inferred_edges(self):
+        src = open(os.path.join(REPO, 'dashboard/src/components/KGGraphViz.js'), encoding='utf-8').read()
+        self.assertNotIn('kg-predictions', src)
+        self.assertNotIn('inferred', src.lower())
+
+    def test_contradictions_feature_preserved(self):
+        # kg-contradictions is contradiction detection, NOT HGT — it must remain.
+        self.assertTrue(
+            os.path.exists(os.path.join(REPO, 'dashboard/public/data-grasp-planning/kg-contradictions.json')),
+            "kg-contradictions.json (separate, non-HGT feature) must NOT be removed")
+
+
 if __name__ == '__main__':
     unittest.main()

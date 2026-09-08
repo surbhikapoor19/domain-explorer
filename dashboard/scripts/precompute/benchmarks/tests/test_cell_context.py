@@ -1,13 +1,9 @@
-# AUTHORED BY ORCHESTRATOR. Implementers must NOT modify.
-#
 # Pins build_cell_context: the precompute that joins each benchmark cell to its
 # methods' attributes (methods.json) and its papers' KG relations (citation
 # stance, technique-lineage, outperforms). Honesty invariants pinned here:
 #   - method-name join is normalized (emoji-prefixed names still join); a miss
 #     yields "not reported" on every field (never guessed);
-#   - STATED outperforms (KG) carry evidence text but NO fabricated confidence;
-#   - PREDICTED outperforms (HGT) are kept as data but tagged kind='predicted'
-#     (the JS consumers gate them off — the copilot/drawer must never surface them).
+#   - STATED outperforms (KG) carry evidence text but NO fabricated confidence.
 
 from benchmarks.aggregate.cell_context import build_cell_context
 
@@ -49,14 +45,6 @@ KG = {
     ],
 }
 
-# HGT predictions (kg-predictions.json shape): outperforms WITH confidence.
-PREDICTIONS = {
-    "links": [
-        {"type": "outperforms", "source": "paper:graspqp", "target": "paper:vgn",
-         "confidence": 0.58, "semantic_relevance": 0.92, "inferred": True},
-    ],
-}
-
 # methods.json: GraspQP is stored WITHOUT the emoji (the ~16% divergence) — the
 # join must still land via normalization. MysteryNet is intentionally absent.
 METHODS = [
@@ -68,7 +56,7 @@ METHODS = [
 
 
 def _ctx():
-    return build_cell_context(BENCHMARK, KG, PREDICTIONS, METHODS)["success_rate||packed"]
+    return build_cell_context(BENCHMARK, KG, METHODS)["success_rate||packed"]
 
 
 def test_method_attributes_join_is_normalized_and_source_tagged():
@@ -104,13 +92,6 @@ def test_outperforms_stated_has_no_fabricated_confidence():
     assert len(stated) >= 1
     assert "evidence" in stated[0]
     assert "confidence" not in stated[0]  # GUARD: never fabricate a strength number
-
-
-def test_outperforms_predicted_is_kept_as_gated_data_with_confidence():
-    ctx = _ctx()
-    predicted = [o for o in ctx["relations"]["outperforms"] if o["kind"] == "predicted"]
-    assert len(predicted) >= 1
-    assert "confidence" in predicted[0]
 
 
 def test_differences_flag_a_differing_axis():
