@@ -232,8 +232,18 @@ jobs:
           # the deploy-critical files above are added), and plain `pull --rebase` aborts on
           # a dirty tree ("cannot pull with rebase: You have unstaged changes"). Autostash
           # sets them aside for the rebase and restores them, so the commit lands.
-          git pull --rebase --autostash origin main
-          git push
+          # Retry the rebase→push loop: grasp + motion builds are dispatched together
+          # and race on `main`; the loser's push is rejected ("cannot lock ref: is at X
+          # but expected Y"). Re-pull (now seeing the winner's commit), rebase, and push
+          # again — the loser succeeds on the next attempt instead of failing the build.
+          pushed=false
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main
+            if git push; then echo "pushed (attempt $attempt)"; pushed=true; break; fi
+            echo "push rejected (attempt $attempt) — concurrent build won the race; retrying"
+            sleep $((attempt * 5))
+          done
+          if [ "$pushed" != "true" ]; then echo "::error::push failed after 5 attempts"; exit 1; fi
 
       - name: Stop GROBID
         if: always()
@@ -267,5 +277,15 @@ jobs:
           # the deploy-critical files above are added), and plain `pull --rebase` aborts on
           # a dirty tree ("cannot pull with rebase: You have unstaged changes"). Autostash
           # sets them aside for the rebase and restores them, so the commit lands.
-          git pull --rebase --autostash origin main
-          git push
+          # Retry the rebase→push loop: grasp + motion builds are dispatched together
+          # and race on `main`; the loser's push is rejected ("cannot lock ref: is at X
+          # but expected Y"). Re-pull (now seeing the winner's commit), rebase, and push
+          # again — the loser succeeds on the next attempt instead of failing the build.
+          pushed=false
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main
+            if git push; then echo "pushed (attempt $attempt)"; pushed=true; break; fi
+            echo "push rejected (attempt $attempt) — concurrent build won the race; retrying"
+            sleep $((attempt * 5))
+          done
+          if [ "$pushed" != "true" ]; then echo "::error::push failed after 5 attempts"; exit 1; fi

@@ -131,6 +131,14 @@ def test_no_hgt_in_workflow():
     assert 'HGT' not in t, "HGT references must be removed from the workflow"
 
 
+def test_commit_push_retries_on_concurrent_race():
+    # grasp + motion builds push to main concurrently; the loser's push is rejected.
+    # The commit step must retry the pull-rebase-push loop instead of failing the build.
+    t = _text()
+    assert 'for attempt in 1 2 3 4 5' in t, "commit/push must retry on a concurrent-push race"
+    assert re.search(r'if git push; then', t), "retry loop must re-attempt the push"
+
+
 def test_deps_installed_from_pinned_requirements():
     # Reproducible builds: install pinned deps from requirements-ci.txt instead of a
     # bare, unversioned `pip install <pkgs>` that breaks on a surprise upstream release.
