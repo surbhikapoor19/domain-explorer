@@ -39,7 +39,7 @@ export default function DeleteDialog({ domain, onCancel, onConfirm, busy, error 
     <div className="admin-dialog-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
       <div className="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-delete-title" ref={dialogRef}>
         <h3 id="admin-delete-title">Delete {domain.displayName}?</h3>
-        <p className="admin-dialog-lead">This removes, on the next commit:</p>
+        <p className="admin-dialog-lead">This removes:</p>
         <ul className="admin-dialog-list">
           <li>Its config file</li>
           <li>Its CSV</li>

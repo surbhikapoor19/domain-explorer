@@ -60,10 +60,13 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     setError(null);
     try {
       const res = await fetch('/api/admin/domains', { headers: authHeaders() });
-      if (!res.ok) throw new Error(res.status === 401 ? 'Invalid token' : 'Failed to load domains');
-      const data = await res.json();
-      setDomains(data.domains || []);
+      if (res.status === 401) throw new Error('Invalid token');
+      const data = await res.json().catch(() => ({}));
+      // Only a 401 means a wrong admin token. Anything else (e.g. an expired GitHub token)
+      // still logs in, so Settings can show what's wrong instead of locking the user out.
       setAuthenticated(true);
+      if (!res.ok) throw new Error(data.error || 'Failed to load domains');
+      setDomains(data.domains || []);
     } catch (err) {
       setError(err.message);
       if (err.message === 'Invalid token') setAuthenticated(false);

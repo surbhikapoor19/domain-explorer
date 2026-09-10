@@ -665,7 +665,8 @@ describe('domains', async () => {
   const { default: handler } = await import('../../api/admin/domains.js');
   test('flags protected core domains and surfaces pdf_url / drive_folder', async () => {
     installFetch([
-      [/^GET .*\/contents\/domains$/, () => json([
+      [/^GET .*\/git\/ref\/heads\/main$/, () => json({ object: { sha: 'abc123sha' } })],
+      [/^GET .*\/contents\/domains\?ref=abc123sha$/, () => json([
         { name: 'grasp_planning.yaml', download_url: 'https://raw.example/grasp.yaml' },
         { name: 'test_domain.yaml', download_url: 'https://raw.example/test.yaml' },
       ])],
@@ -681,5 +682,25 @@ describe('domains', async () => {
     assert.equal(by.test_domain.protected, false);
     assert.equal(by.test_domain.pdfUrl, 'https://example.org/p.zip');
     assert.equal(by.grasp_planning.driveFolder, 'https://drive.google.com/drive/folders/abc');
+  });
+
+  test('reads are pinned to main\'s commit (fresh right after an admin commit) and GitHub errors surface', async () => {
+    installFetch([
+      [/^GET .*\/git\/ref\/heads\/main$/, () => json({ object: { sha: 'abc123sha' } })],
+      [/^GET .*\/contents\/domains\?ref=abc123sha$/, () => json([{ name: 'test_domain.yaml', download_url: 'https://raw.example/abc123sha/test.yaml' }])],
+      [/^GET https:\/\/raw\.example\/abc123sha\/test\.yaml$/, () => new Response('display_name: "Test Domain"\n')],
+      [/^GET .*\/contents\/dashboard\/public\/data-test-domain\?ref=abc123sha$/, () => json([])],
+    ]);
+    let res = mockRes();
+    await handler(mkReq('GET'), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.equal(res.body.domains.length, 1);
+    assert.ok(calls.some(c => /data-test-domain\?ref=abc123sha$/.test(c.url)), 'data listing pinned to the same commit');
+
+    installFetch([[/^GET .*\/contents\/domains/, () => json({ message: 'Bad credentials' }, 401)]]);
+    res = mockRes();
+    await handler(mkReq('GET'), res);
+    assert.equal(res.statusCode, 502);
+    assert.match(res.body.error, /token/i);
   });
 });

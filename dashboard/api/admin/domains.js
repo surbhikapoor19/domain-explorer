@@ -25,26 +25,28 @@ export default async function handler(req, res) {
   const ghToken = (process.env.GH_PAT || '').trim();
 
   try {
-    // List domains from the domains/ directory in the repo
-    const domainsRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/domains`,
-      {
-        headers: ghToken
-          ? { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
-          : { Accept: 'application/vnd.github.v3+json' },
-      }
-    );
+    const ghHeaders = ghToken
+      ? { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+      : { Accept: 'application/vnd.github.v3+json' };
+    const base = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`;
 
+    // Pin every read to main's current commit. The branch listing and raw.githubusercontent
+    // URLs are cached for minutes, so a domain the admin just deleted (or created) kept
+    // showing stale; SHA-pinned listings return SHA-pinned download URLs.
+    let ref = 'main';
+    try {
+      const refRes = await fetch(`${base}/git/ref/heads/main`, { headers: ghHeaders });
+      if (refRes.ok) ref = (await refRes.json()).object.sha;
+    } catch (_) { /* fall back to the branch name */ }
+
+    const domainsRes = await fetch(`${base}/contents/domains?ref=${ref}`, { headers: ghHeaders });
     if (!domainsRes.ok) {
-      return res.status(200).json({ domains: [] });
+      // Surface it: an empty list here used to read as "no domains" when the token had expired.
+      return res.status(502).json({ error: `GitHub returned ${domainsRes.status} while listing domains — check the GitHub token under Settings.` });
     }
 
     const files = await domainsRes.json();
     const yamlFiles = files.filter(f => f.name.endsWith('.yaml') || f.name.endsWith('.yml'));
-
-    const ghHeaders = ghToken
-      ? { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
-      : { Accept: 'application/vnd.github.v3+json' };
 
     const domains = [];
     for (const f of yamlFiles) {
@@ -65,7 +67,7 @@ export default async function handler(req, res) {
 
       try {
         const dataRes = await fetch(
-          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/dashboard/public/data-${slugDashed}`,
+          `${base}/contents/dashboard/public/data-${slugDashed}?ref=${ref}`,
           { headers: ghHeaders }
         );
         if (dataRes.ok) {
