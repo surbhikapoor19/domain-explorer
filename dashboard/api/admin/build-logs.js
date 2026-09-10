@@ -83,7 +83,7 @@ export function hintsFor(text) {
 }
 
 const TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T[\d:.]+Z /;
-const ERROR_LINE_RE = /##\[error\]|ERROR|Error:|Traceback|Exception|FAILED|fatal:/;
+const ERROR_LINE_RE = /##\[error\]|\berror\b|Traceback|Exception|\bfailed\b|fatal:|does not exist/i;
 const EXCERPT_CAP = 12000;
 
 export function extractFailure(logText) {

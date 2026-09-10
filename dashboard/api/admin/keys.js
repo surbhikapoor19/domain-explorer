@@ -71,7 +71,8 @@ async function handleGet(req, res, base, headers, ghToken) {
       getUrl: meta.getUrl,
       inGitHub: !!secret,
       githubUpdatedAt: secret ? secret.updated_at : null,
-      inVercel: !!process.env[name],
+      // The setup assistant also accepts HF_API_TOKEN on Vercel (propose-yaml.js).
+      inVercel: !!process.env[name] || (name === 'HF_TOKEN' && !!process.env.HF_API_TOKEN),
     };
   });
 
