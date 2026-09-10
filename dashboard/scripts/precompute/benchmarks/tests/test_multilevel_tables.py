@@ -8,9 +8,10 @@ import csv
 from benchmarks.extraction.tei_tables import records_from_tei_rows
 from benchmarks.extraction.locate import TableLocation
 from benchmarks.normalize.registries import load_config, MethodResolver
+from pathlib import Path
 
 CFG = load_config(os.path.join(os.path.dirname(__file__), '..', 'config', 'grasp_planning.json'))
-CSV_PATH = "/Users/surbhikapoor/Desktop/WPI/wpivis/domain-explorer/datasets/csv-gp-combined.csv"
+CSV_PATH = str(Path(__file__).resolve().parents[5] / "datasets" / "csv-gp-combined.csv")  # repo-relative (was a laptop path; broke CI)
 
 
 def _names():

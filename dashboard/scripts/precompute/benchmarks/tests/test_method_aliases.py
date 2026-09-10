@@ -7,9 +7,10 @@ Stays domain-agnostic: motion config carries its own (possibly empty) method_ali
 import os
 import csv
 from benchmarks.normalize.registries import load_config, MethodResolver
+from pathlib import Path
 
 CFG_DIR = os.path.join(os.path.dirname(__file__), '..', 'config')
-CSV_PATH = "/Users/surbhikapoor/Desktop/WPI/wpivis/domain-explorer/datasets/csv-gp-combined.csv"
+CSV_PATH = str(Path(__file__).resolve().parents[5] / "datasets" / "csv-gp-combined.csv")  # repo-relative (was a laptop path; broke CI)
 
 
 def _csv_names():

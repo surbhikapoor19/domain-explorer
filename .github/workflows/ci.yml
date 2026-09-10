@@ -68,7 +68,7 @@ jobs:
       - name: Install Python test dependencies
         # Only what the unit tests import; the heavy build stack (torch, docling, chromadb) is not
         # needed because those code paths are stubbed in the tests.
-        run: pip install pyyaml pytest pandas==3.0.5 numpy==2.5.2 lxml
+        run: pip install pyyaml pytest pandas==3.0.5 numpy==2.5.2 lxml pymupdf==1.28.2
 
       - name: Pipeline script tests (PDF fetch, Drive sync, sheet diff, ingest)
         run: python -m unittest discover -s scripts -p 'test_*.py'
