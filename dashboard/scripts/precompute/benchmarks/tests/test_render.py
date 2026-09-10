@@ -1,8 +1,28 @@
 """Tests for extraction.render — AUTHORED BY ORCHESTRATOR. Implementers must NOT modify."""
 import os
+import tempfile
+
+import fitz  # PyMuPDF
 from benchmarks.extraction.render import render_page_crop, find_caption_page
 
-FX_PDF = os.path.join(os.path.dirname(__file__), 'fixtures', 'mini.pdf')
+
+def _make_fixture_pdf():
+    """Build the one-page fixture at test time: PDFs are never committed to the repo."""
+    path = os.path.join(tempfile.mkdtemp(prefix='render-fixture-'), 'mini.pdf')
+    doc = fitz.open()
+    page = doc.new_page(width=400, height=500)
+    for y, size, text in [(60, 12, 'Table 1: Success rate on pile scenes (%)'),
+                          (120, 11, 'Method        Success Rate'),
+                          (150, 11, 'Ours          86.9'),
+                          (180, 11, 'GPD           70.1'),
+                          (300, 10, 'Some other body text far from the table region.')]:
+        page.insert_text((40, y), text, fontsize=size, fontname='helv')
+    doc.save(path)
+    doc.close()
+    return path
+
+
+FX_PDF = _make_fixture_pdf()
 
 
 def test_renders_full_page_png_bytes():

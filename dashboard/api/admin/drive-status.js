@@ -2,6 +2,7 @@ import { repoInfo } from '../../lib/admin-github.js';
 import {
   driveFolderId, matchPdfs, checkDriveFolder,
   readStoredStatus, writeStoredStatus,
+  findNewestCsvEntry, downloadDriveCsv,
 } from '../../lib/admin-drive.js';
 
 const MAX_STORED_FILES = 300; // keep the repo variable well under the 48 KB limit
@@ -206,11 +207,35 @@ export default async function handler(req, res) {
       }
 
       if (url) {
+        const { includeCsv } = req.body || {};
         if (!driveFolderId(url)) {
           return res.status(400).json({ error: 'Only Google Drive folder links can be tested here.' });
         }
         const result = await checkDriveFolder(url);
-        return res.status(200).json({ result });
+        const response = { result };
+
+        if (includeCsv) {
+          if (result.status !== 'ok' || !result.csv || !result.csv.count) {
+            response.csvFile = null;
+            response.csvError = result.message || 'No CSV export found in this folder.';
+          } else {
+            const entry = await findNewestCsvEntry(url);
+            if (!entry) {
+              response.csvFile = null;
+              response.csvError = 'No CSV export found in this folder.';
+            } else {
+              const dl = await downloadDriveCsv(entry.id);
+              if (dl.error) {
+                response.csvFile = null;
+                response.csvError = dl.error;
+              } else {
+                response.csvFile = { name: entry.name, content: dl.content, strippedRows: dl.strippedRows };
+              }
+            }
+          }
+        }
+
+        return res.status(200).json(response);
       }
 
       return res.status(400).json({ error: 'Provide a domain or a url.' });

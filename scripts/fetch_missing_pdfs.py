@@ -818,16 +818,23 @@ def process(domain, dry_run=False):
     # instead of aborting, so a pdf_url import (below) has somewhere to write.
     papers_dir.mkdir(parents=True, exist_ok=True)
 
-    # Import the domain's own shared PDF source (Drive folder/file, Dropbox,
-    # or a direct zip/PDF link), BEFORE scanning for what's already present,
-    # so freshly-imported PDFs are counted and the OA fetch below skips them.
-    # pdf_url wins when set; otherwise the domain's drive_folder IS the PDF
-    # source too (the same folder that holds the sheet's CSV exports).
+    # Import the domain's own shared PDF source(s) (Drive folder/file, Dropbox,
+    # or a direct zip/PDF link), BEFORE scanning for what's already present, so
+    # freshly-imported PDFs are counted and the OA fetch below skips them.
+    # Adding PDFs never replaces the existing set: BOTH the drive_folder (when
+    # set) and a separate pdf_url (when set and different) are imported —
+    # each import is additive since import_pdf_source skips files already on disk.
     domain_us = domain.replace('-', '_')
-    pdf_url = _yaml_pdf_url(domain_us) or _yaml_drive_folder(domain_us)
-    if pdf_url:
-        print(f"  pdf_url : {pdf_url}")
-        import_result = import_pdf_source(pdf_url, papers_dir, dry_run=dry_run)
+    drive_folder = _yaml_drive_folder(domain_us)
+    pdf_url = _yaml_pdf_url(domain_us)
+    pdf_sources = []
+    if drive_folder:
+        pdf_sources.append(drive_folder)
+    if pdf_url and pdf_url != drive_folder:
+        pdf_sources.append(pdf_url)
+    for src in pdf_sources:
+        print(f"  pdf_url : {src}")
+        import_result = import_pdf_source(src, papers_dir, dry_run=dry_run)
         if import_result.get('error'):
             print(f"  WARNING: pdf_url import failed: {import_result['error']}")
         print()

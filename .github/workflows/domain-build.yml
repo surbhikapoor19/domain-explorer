@@ -100,24 +100,36 @@ jobs:
           echo "Building domain: $DOMAIN (slug: $SLUG)"
 
       - name: Pull LFS files
-        # Only for scopes that need PDFs (skip CSV-only precompute/explorer), and only
-        # THIS domain's papers.zip — never the wildcard. This is the fix that stops the
-        # per-build ~405MB LFS pull from exhausting the monthly bandwidth quota.
+        # Only for scopes that need PDFs (skip CSV-only precompute/explorer). Adding
+        # PDFs never replaces the existing set (upload.js), so a domain can have
+        # papers.zip AND one or more papers-<timestamp>.zip added later — pull them all,
+        # still scoped to THIS domain only (never the repo-wide wildcard), which is
+        # what stops the per-build LFS pull from exhausting the monthly bandwidth quota.
         if: ${{ github.event.client_payload.pages != 'precompute' && github.event.client_payload.pages != 'explorer' }}
-        run: git lfs pull --include="datasets/${{ steps.domain.outputs.slug }}/papers.zip"
+        run: git lfs pull --include="datasets/${{ steps.domain.outputs.slug }}/papers*.zip"
 
       - name: Unzip PDFs if needed
         if: ${{ github.event.client_payload.pages != 'precompute' && github.event.client_payload.pages != 'explorer' }}
-        # Unzip into a scratch dir first, then flatten every *.pdf found at ANY
-        # depth into datasets/${SLUG}/papers/ — works whether the zip has the
-        # legacy `papers/` prefix (existing grasp/motion zips), loose PDFs at
-        # the root, or PDFs nested under some other folder name.
+        # Every papers*.zip is unpacked: papers.zip first, then papers-*.zip (the
+        # timestamped zips added later, oldest first). Each zip gets its own scratch
+        # dir, then every *.pdf found at ANY depth is flattened into
+        # datasets/${SLUG}/papers/ — works whether a zip has the legacy `papers/`
+        # prefix, loose PDFs at the root, or PDFs nested under some other folder
+        # name — and a file already placed by an earlier zip is never overwritten,
+        # so the first copy (oldest zip) wins.
         run: |
           SLUG="${{ steps.domain.outputs.slug }}"
-          if [ -f "datasets/${SLUG}/papers.zip" ]; then
-            mkdir -p "datasets/${SLUG}/papers"
+          mkdir -p "datasets/${SLUG}/papers"
+          ZIPS=()
+          [ -f "datasets/${SLUG}/papers.zip" ] && ZIPS+=("datasets/${SLUG}/papers.zip")
+          while IFS= read -r z; do ZIPS+=("$z"); done < <(ls "datasets/${SLUG}"/papers-*.zip 2>/dev/null | sort)
+          if [ ${#ZIPS[@]} -eq 0 ]; then
+            echo "No papers*.zip found for ${SLUG}"
+          fi
+          TOTAL=0
+          for ZIP in "${ZIPS[@]}"; do
             TMP=$(mktemp -d)
-            unzip -o "datasets/${SLUG}/papers.zip" -d "$TMP"
+            unzip -o "$ZIP" -d "$TMP"
             COUNT=0
             while IFS= read -r -d '' f; do
               base="$(basename "$f")"
@@ -130,10 +142,10 @@ jobs:
               fi
             done < <(find "$TMP" -type f -iname '*.pdf' ! -path '*/__MACOSX/*' ! -name '._*' -print0)
             rm -rf "$TMP"
-            echo "Extracted $COUNT PDFs"
-          else
-            echo "No papers.zip found for ${SLUG}"
-          fi
+            echo "Extracted $COUNT PDFs from $ZIP"
+            TOTAL=$((TOTAL + COUNT))
+          done
+          echo "Extracted $TOTAL PDFs total"
 
       - name: Fetch missing PDFs (public OA sources)
         # CSV-only scopes (precompute/explorer) have no PDFs unzipped and need none.

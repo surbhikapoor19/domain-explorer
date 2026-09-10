@@ -95,8 +95,9 @@ def test_checkout_does_not_bulk_pull_lfs():
 
 def test_lfs_pull_is_domain_scoped_not_wildcard():
     t = _text()
-    assert 'datasets/*/papers.zip' not in t, "LFS pull must target one domain, not all"
-    assert 'git lfs pull --include="datasets/${{ steps.domain.outputs.slug }}/papers.zip"' in t
+    assert 'datasets/*/papers' not in t, "LFS pull must target one domain, not all"
+    # One domain's zips only: papers.zip plus any papers-<timestamp>.zip added later.
+    assert 'git lfs pull --include="datasets/${{ steps.domain.outputs.slug }}/papers*.zip"' in t
 
 
 def test_pdf_steps_skip_csv_only_scopes():

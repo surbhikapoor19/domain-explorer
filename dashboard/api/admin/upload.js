@@ -40,6 +40,14 @@ function setPdfUrlLine(yamlText, pdfUrl) {
   return yamlText.replace(/\n?$/, `\n${line}\n`);
 }
 
+// datasets/<slug>/papers-YYYYMMDD-HHMMSS.zip (UTC) — the suffix used for an
+// additional PDF zip so it never overwrites the existing papers.zip.
+function utcTimestamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}-${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}`;
+}
+
 function setDriveFolderLine(yamlText, driveFolder) {
   const line = `drive_folder: "${escapeYamlDoubleQuoted(driveFolder)}"`;
   if (/^drive_folder:.*$/m.test(yamlText)) {
@@ -155,6 +163,7 @@ export default async function handler(req, res) {
     const filesToCommit = [];
     let lfsPointer = null;
     const zipPath = `datasets/${domainSlug}/papers.zip`;
+    let zipCommittedPath = null;
     let message;
 
     if (updateOnly) {
@@ -198,8 +207,16 @@ export default async function handler(req, res) {
       if (pdfZipBase64) {
         const zipBuffer = Buffer.from(pdfZipBase64, 'base64');
         lfsPointer = await uploadToLFS(GITHUB_OWNER, GITHUB_REPO, ghToken, zipBuffer);
+        // Adding PDFs must never replace existing ones: if papers.zip is already
+        // committed, this zip lands alongside it as papers-<timestamp>.zip so the
+        // build's "Unzip PDFs" step can extract both (first copy wins).
+        const zipExistsRes = await fetch(
+          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${zipPath}?ref=main`,
+          { headers }
+        );
+        zipCommittedPath = zipExistsRes.ok ? `datasets/${domainSlug}/papers-${utcTimestamp()}.zip` : zipPath;
         filesToCommit.push({
-          path: zipPath,
+          path: zipCommittedPath,
           content: Buffer.from(lfsPointer).toString('base64'),
           isLfs: true,
         });
@@ -232,6 +249,7 @@ export default async function handler(req, res) {
       if (pdfZipBase64) {
         const zipBuffer = Buffer.from(pdfZipBase64, 'base64');
         lfsPointer = await uploadToLFS(GITHUB_OWNER, GITHUB_REPO, ghToken, zipBuffer);
+        zipCommittedPath = zipPath; // a brand-new domain has no existing papers.zip to collide with
         filesToCommit.push({
           path: zipPath,
           content: Buffer.from(lfsPointer).toString('base64'),
@@ -266,6 +284,7 @@ export default async function handler(req, res) {
       success: true,
       commitSha,
       files: filesToCommit.map(f => f.path),
+      zipPath: zipCommittedPath,
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });

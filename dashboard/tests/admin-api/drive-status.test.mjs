@@ -246,6 +246,20 @@ describe('api/admin/drive-status.js', () => {
     assert.equal(res.statusCode, 400, 'only Google Drive folder links are fetched');
   });
 
+  test('POST {url, includeCsv}: returns the newest CSV export, banner rows above the Name header stripped', async () => {
+    const exportCsv = '"Latest update:  | 🤖 = latest additions","September 3, 2026"\n,,\nName,Citation\nGraspGen,"x"\nAffordGen,"y"\n';
+    installFetch([...driveRoutes(),
+      [/^GET https:\/\/drive\.usercontent\.google\.com\/download\?id=1CSVBBBBBBBBBBBBBBBBBBBBB/, () => new Response(exportCsv)]]);
+    const res = mockRes();
+    await handler(mkReq('POST', { body: { url: FOLDER_URL, includeCsv: true } }), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    const f = res.body.csvFile;
+    assert.equal(f.name, 'Test Sheet_2026-09-03_22-41-54.csv');
+    assert.ok(f.content.startsWith('Name,Citation'), f.content.slice(0, 40));
+    assert.equal(f.strippedRows, 2);
+    assert.ok(!calls.some(c => c.url.includes('1CSVAAAAAAAAAAAAAAAAAAAAA')), 'only the newest export is downloaded');
+  });
+
   test('POST {domain} for a domain with no folder -> 400 with a helpful message', async () => {
     installFetch(repoRoutes());
     const res = mockRes();

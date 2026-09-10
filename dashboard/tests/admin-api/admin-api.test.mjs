@@ -668,6 +668,31 @@ describe('upload', async () => {
     assert.equal(cap.patches.length, 0);
   });
 
+  test('PDF zip for an EXISTING domain is added alongside papers.zip (never replaces it)', async () => {
+    const lfsOk = [
+      [/^POST https:\/\/github\.com\/o\/r\.git\/info\/lfs\/objects\/batch$/, (u, o, body) => json({ objects: [{
+        oid: body.objects[0].oid, size: body.objects[0].size, actions: {} }] })],   // already stored -> no PUT needed
+    ];
+    let cap = {};
+    installFetch([...lfsOk, contentsRoute(YAML),
+      [/^GET .*\/contents\/datasets\/test-domain\/papers\.zip/, () => json({ type: 'file', size: 132, sha: 'z' })],
+      ...gitChain({ captured: cap })]);
+    let res = mockRes();
+    await handler(mkReq('POST', { body: { domain: 'test_domain', updateOnly: true, pdfZipBase64: Buffer.from('PK').toString('base64') } }), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    let paths = cap.trees[0].tree.map(i => i.path);
+    assert.ok(!paths.includes('datasets/test-domain/papers.zip'), 'must not overwrite the existing papers.zip');
+    const added = paths.find(x => /^datasets\/test-domain\/papers-\d{8}-\d{6}\.zip$/.test(x));
+    assert.ok(added, `expected papers-<YYYYMMDD-HHMMSS>.zip, got ${paths}`);
+
+    cap = {};
+    installFetch([...lfsOk, contentsRoute(YAML), ...gitChain({ captured: cap })]);   // no papers.zip yet -> 404
+    res = mockRes();
+    await handler(mkReq('POST', { body: { domain: 'test_domain', updateOnly: true, pdfZipBase64: Buffer.from('PK').toString('base64') } }), res);
+    paths = cap.trees[0].tree.map(i => i.path);
+    assert.ok(paths.includes('datasets/test-domain/papers.zip'), 'first zip is papers.zip');
+  });
+
   test('upload survives a concurrent push (ref 422 then 200)', async () => {
     const cap = {};
     installFetch([contentsRoute(YAML), ...gitChain({ captured: cap, patchStatuses: [422, 200] })]);
@@ -722,5 +747,42 @@ describe('domains', async () => {
     await handler(mkReq('GET'), res);
     assert.equal(res.statusCode, 502);
     assert.match(res.body.error, /token/i);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* settings (maintainer contact for "Ask for help")                     */
+/* ------------------------------------------------------------------ */
+describe('settings', async () => {
+  const { default: handler } = await import('../../api/admin/settings.js');
+  test('GET null when unset; POST validates and stores ADMIN_MAINTAINER_EMAIL as a repo variable', async () => {
+    installFetch([[/^GET .*\/actions\/variables\/ADMIN_MAINTAINER_EMAIL$/, () => json({ message: 'Not Found' }, 404)]]);
+    let res = mockRes();
+    await handler(mkReq('GET'), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.equal(res.body.maintainerEmail, null);
+
+    installFetch([
+      [/^GET .*\/actions\/variables\/ADMIN_MAINTAINER_EMAIL$/, () => json({ message: 'Not Found' }, 404)],
+      [/^POST .*\/actions\/variables$/, () => new Response(null, { status: 201 })],
+    ]);
+    res = mockRes();
+    await handler(mkReq('POST', { body: { maintainerEmail: ' student@wpi.edu ' } }), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    const create = calls.find(c => c.method === 'POST' && /\/actions\/variables$/.test(c.url));
+    assert.deepEqual(create.body, { name: 'ADMIN_MAINTAINER_EMAIL', value: 'student@wpi.edu' });
+
+    installFetch([[/^GET .*\/actions\/variables\/ADMIN_MAINTAINER_EMAIL$/, () => json({ name: 'ADMIN_MAINTAINER_EMAIL', value: 'student@wpi.edu' })]]);
+    res = mockRes();
+    await handler(mkReq('GET'), res);
+    assert.equal(res.body.maintainerEmail, 'student@wpi.edu');
+
+    installFetch([]);
+    res = mockRes();
+    await handler(mkReq('POST', { body: { maintainerEmail: 'not-an-email' } }), res);
+    assert.equal(res.statusCode, 400);
+    res = mockRes();
+    await handler(mkReq('POST', { body: { maintainerEmail: 'a@b.co' }, token: null }), res);
+    assert.equal(res.statusCode, 401);
   });
 });

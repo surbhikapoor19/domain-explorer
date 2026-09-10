@@ -242,6 +242,36 @@ class ImportFromDomainFolder(unittest.TestCase):
         self.assertEqual(seen, [FOLDER])
 
 
+class ImportFromBothSources(unittest.TestCase):
+    """Adding papers never replaces the existing set: the Drive folder AND a PDF link are both imported."""
+
+    def setUp(self):
+        self._root = f.REPO_ROOT
+        self.td = tempfile.TemporaryDirectory()
+        root = Path(self.td.name)
+        (root / 'domains').mkdir()
+        (root / 'datasets' / 'x-dom').mkdir(parents=True)
+        (root / 'datasets' / 'x-dom' / 'x.csv').write_text('Name,Citation,Link(s)\n')
+        (root / 'domains' / 'x_dom.yaml').write_text(
+            f'domain: x_dom\ncsv_path: datasets/x-dom/x.csv\npdf_url: "https://example.org/extra.zip"\ndrive_folder: "{FOLDER}"\n')
+        f.REPO_ROOT = root
+
+    def tearDown(self):
+        f.REPO_ROOT = self._root
+        self.td.cleanup()
+
+    def test_both_sources(self):
+        seen = []
+        orig = f.import_pdf_source
+        f.import_pdf_source = lambda url, papers_dir, dry_run=False: seen.append(url) or {'kind': 'x', 'added': [], 'skipped': [], 'error': None}
+        try:
+            with redirect_stdout(io.StringIO()):
+                f.process('x_dom', dry_run=False)
+        finally:
+            f.import_pdf_source = orig
+        self.assertEqual(sorted(seen), sorted([FOLDER, 'https://example.org/extra.zip']))
+
+
 class WorkflowPins(unittest.TestCase):
     def test_sheet_poll_runs_drive_sync_and_dispatches_pdf_changes(self):
         t = (Path(HERE).parent / '.github' / 'workflows' / 'sheet-poll.yml').read_text()
@@ -249,6 +279,13 @@ class WorkflowPins(unittest.TestCase):
         self.assertIn('id: drive', t)
         self.assertIn('pdf_changed', t)
         self.assertIn('secrets.GH_PAT', t)
+
+    def test_builds_unpack_every_papers_zip(self):
+        t = (Path(HERE).parent / '.github' / 'workflows' / 'domain-build.yml').read_text()
+        self.assertIn('git lfs pull --include="datasets/${{ steps.domain.outputs.slug }}/papers*.zip"', t)
+        i = t.index('name: Unzip PDFs if needed')
+        step = t[i:t.index('- name:', i + 10)]
+        self.assertIn('papers-*.zip', step)          # zips added later sit next to papers.zip
 
     def test_sheet_poll_compares_csv_bytes_exactly(self):
         # Committed CSVs have CRLF rows; a text-mode read made every night a false 'edit' (+0/-0).

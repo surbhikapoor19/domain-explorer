@@ -240,6 +240,92 @@ export async function checkDriveFolder(url, { pdfUrl } = {}) {
   };
 }
 
+// The newest top-level .csv entry (with its file id, needed to download it) —
+// same "newest" rule as checkDriveFolder's csv.newest. Returns null when the
+// folder link is invalid/unreachable/not public/empty.
+export async function findNewestCsvEntry(url) {
+  const folderId = driveFolderId(url);
+  if (!folderId) return null;
+  let listing;
+  try {
+    listing = await fetchListing(folderId);
+  } catch (_) {
+    return null;
+  }
+  if (listing.httpStatus !== 200) return null;
+  const parsed = parseDriveListing(listing.html);
+  if (!parsed.public) return null;
+  const csvEntries = parsed.entries.filter(e => e.kind === 'file' && /\.csv$/i.test(e.name));
+  return pickNewestCsv(csvEntries);
+}
+
+const CSV_BANNER_SCAN_ROWS = 25; // only look this many rows deep for the header
+const CSV_MAX_BYTES = 4 * 1024 * 1024; // ~4 MB cap on a CSV export download
+
+// Google Sheet CSV exports often carry banner/preamble rows above the real
+// header (e.g. "Latest update: ..."). Quote-aware parse to find the header —
+// the first row (within the first 25) with a cell equal to "Name" (case-
+// insensitive, trimmed) — then slice the ORIGINAL text from there onward
+// (never re-serialised, so quoting/newlines in the data rows are untouched).
+export function stripCsvBanner(text) {
+  const t = String(text || '');
+  const records = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+  let recordStart = 0;
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i];
+    if (inQuotes) {
+      if (ch === '"' && t[i + 1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQuotes = false;
+      else field += ch;
+    } else if (ch === '"') inQuotes = true;
+    else if (ch === ',') { row.push(field); field = ''; }
+    else if (ch === '\n') {
+      row.push(field);
+      records.push({ fields: row, start: recordStart });
+      row = []; field = ''; recordStart = i + 1;
+      if (records.length >= CSV_BANNER_SCAN_ROWS) break;
+    } else field += ch;
+  }
+  if (records.length < CSV_BANNER_SCAN_ROWS && (field !== '' || row.length)) {
+    row.push(field);
+    records.push({ fields: row, start: recordStart });
+  }
+  for (let idx = 0; idx < records.length; idx++) {
+    if (records[idx].fields.some(v => v.trim().toLowerCase() === 'name')) {
+      return { content: t.slice(records[idx].start), strippedRows: idx };
+    }
+  }
+  return null;
+}
+
+// Download one Drive file (a CSV export) and strip its banner rows. Returns
+// {content, strippedRows} or {error: '<plain message>'} — never throws.
+export async function downloadDriveCsv(fileId) {
+  let text;
+  try {
+    const res = await fetch(`https://drive.usercontent.google.com/download?id=${fileId}&export=download&confirm=t`, {
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    });
+    text = await res.text();
+  } catch (_) {
+    return { error: "Couldn't reach Google Drive — try again." };
+  }
+  if (Buffer.byteLength(text, 'utf8') > CSV_MAX_BYTES) {
+    return { error: 'CSV export is larger than the 4 MB limit.' };
+  }
+  if (/^\s*<(!doctype|html)/i.test(text)) {
+    return { error: "Could not download the CSV — make sure the folder is shared publicly ('Anyone with the link')." };
+  }
+  const stripped = stripCsvBanner(text);
+  if (!stripped) {
+    return { error: 'No "Name" header row found in the CSV export.' };
+  }
+  return stripped;
+}
+
 // GitHub Actions repo variable DRIVE_STATUS_<DOMAIN> — domain id upper-cased,
 // non-alphanumerics collapsed to a single '_'.
 export function driveStatusVariableName(domain) {
