@@ -64,7 +64,11 @@ async function uploadToLFS(owner, repo, ghToken, fileBuffer) {
     throw new Error(`LFS batch failed (${batchRes.status}): ${errText.slice(0, 200)}`);
   }
   const batchData = await batchRes.json();
-  const obj = batchData.objects[0];
+  const obj = (batchData.objects || [])[0] || {};
+  // Per-object errors (quota, permissions) come back inside a 200 batch response.
+  if (obj.error) {
+    throw new Error(`LFS rejected the PDF zip (${obj.error.code}): ${obj.error.message}`);
+  }
 
   if (obj.actions?.upload) {
     const uploadUrl = obj.actions.upload.href;
@@ -75,6 +79,20 @@ async function uploadToLFS(owner, repo, ghToken, fileBuffer) {
       body: fileBuffer,
     });
     if (!putRes.ok) throw new Error(`LFS upload failed: ${putRes.status}`);
+    // GitHub only makes the object downloadable after the verify call; skipping it
+    // left a pointer to a missing object and the build's `git lfs pull` 404'd.
+    if (obj.actions.verify) {
+      const verifyRes = await fetch(obj.actions.verify.href, {
+        method: 'POST',
+        headers: {
+          ...(obj.actions.verify.header || {}),
+          'Content-Type': 'application/vnd.git-lfs+json',
+          Accept: 'application/vnd.git-lfs+json',
+        },
+        body: JSON.stringify({ oid: sha256, size }),
+      });
+      if (!verifyRes.ok) throw new Error(`LFS verify failed: ${verifyRes.status}`);
+    }
   }
 
   const pointer = `version https://git-lfs.github.com/spec/v1\noid sha256:${sha256}\nsize ${size}\n`;

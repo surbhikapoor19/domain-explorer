@@ -24,6 +24,11 @@ const HINT_RULES = [
     fix: 'Free tiers reset daily; wait and re-run (finished work is cached), or add the backup Gemini key.',
   },
   {
+    re: /Object does not exist on the server|Failed to fetch some objects/i,
+    title: 'Uploaded PDF zip is missing from storage',
+    fix: 'The zip never finished uploading to Git LFS. Upload it again under Update data (or use a PDF link instead), then re-run the build.',
+  },
+  {
     re: /papers dir not found|no PDFs|0 PDFs|No papers\.zip/i,
     title: 'No paper PDFs found',
     fix: 'PDFs are auto-fetched from arXiv/OpenAlex/Semantic Scholar using the Citation column; otherwise link a shared Drive folder/zip (PDF link) or upload a small zip.',

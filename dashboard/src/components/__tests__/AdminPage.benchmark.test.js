@@ -35,7 +35,7 @@ test('Build benchmarks triggers a benchmark-only build (pages=benchmark)', async
   fireEvent.click(screen.getByRole('button', { name: /authenticate/i }));
 
   // domain card appears
-  await screen.findByText('Motion Planning');
+  await screen.findByRole('heading', { name: 'Motion Planning' });
 
   // the new control
   const btn = screen.getByRole('button', { name: /build benchmarks/i });
@@ -52,7 +52,7 @@ test('the plain Build button still triggers a full build (no pages=benchmark)', 
   render(<AdminPage explorerEnabled={false} onToggleExplorer={() => {}} />);
   fireEvent.change(screen.getByPlaceholderText(/admin token/i), { target: { value: 'tok' } });
   fireEvent.click(screen.getByRole('button', { name: /authenticate/i }));
-  await screen.findByText('Motion Planning');
+  await screen.findByRole('heading', { name: 'Motion Planning' });
 
   // the existing full "Build" button (exact match, not "Build benchmarks")
   fireEvent.click(screen.getByRole('button', { name: /^build$/i }));

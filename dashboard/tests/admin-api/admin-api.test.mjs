@@ -325,6 +325,7 @@ describe('build-logs', async () => {
       ['::error::push failed after 5 attempts', /push|conflict|race|concurrent/i],
       ['ERROR: Could not find a version that satisfies the requirement torch==9.9', /depend|install|package/i],
       ['yaml.scanner.ScannerError: mapping values are not allowed here', /YAML|config/i],
+      ["[32da80e1] Object does not exist on the server: [404] Object does not exist on the server\nFailed to fetch some objects from 'https://github.com/o/r.git/info/lfs'", /zip|LFS|storage/i],
     ];
     for (const [text, re] of cases) {
       const h = hintsFor(text);
@@ -607,6 +608,44 @@ describe('upload', async () => {
     yaml = committed(cap)['domains/test_domain.yaml'];
     assert.equal((yaml.match(/^pdf_url:/gm) || []).length, 1, 'exactly one pdf_url line');
     assert.match(yaml, /^pdf_url: "https:\/\/example\.org\/p\.zip"$/m);
+  });
+
+  test('PDF zip: uploads to LFS, then VERIFIES (object is only downloadable after verify)', async () => {
+    const cap = {};
+    const lfs = [];
+    installFetch([
+      [/^POST https:\/\/github\.com\/o\/r\.git\/info\/lfs\/objects\/batch$/, (u, o, body) => json({ objects: [{
+        oid: body.objects[0].oid, size: body.objects[0].size,
+        actions: { upload: { href: 'https://lfs.example/put', header: { 'X-Sig': '1' } },
+                   verify: { href: 'https://lfs.example/verify', header: { Authorization: 'RemoteAuth v' } } },
+      }] })],
+      [/^PUT https:\/\/lfs\.example\/put$/, () => { lfs.push('put'); return new Response(null, { status: 200 }); }],
+      [/^POST https:\/\/lfs\.example\/verify$/, (u, o, body) => { lfs.push(['verify', body]); return new Response(null, { status: 200 }); }],
+      contentsRoute(YAML), ...gitChain({ captured: cap }),
+    ]);
+    const res = mockRes();
+    const zip = Buffer.from('PK\u0003\u0004fake-zip-bytes');
+    await handler(mkReq('POST', { body: { domain: 'test_domain', updateOnly: true, pdfZipBase64: zip.toString('base64') } }), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.equal(lfs[0], 'put');
+    assert.equal(lfs[1][0], 'verify', 'verify must follow the PUT');
+    assert.equal(lfs[1][1].size, zip.length);
+    assert.match(lfs[1][1].oid, /^[0-9a-f]{64}$/);
+    assert.match(committed(cap)['datasets/test-domain/papers.zip'], /^version https:\/\/git-lfs\.github\.com\/spec\/v1\noid sha256:[0-9a-f]{64}\nsize \d+\n$/);
+  });
+
+  test('PDF zip: a per-object LFS error fails the upload instead of committing a dangling pointer', async () => {
+    const cap = {};
+    installFetch([
+      [/^POST https:\/\/github\.com\/o\/r\.git\/info\/lfs\/objects\/batch$/, () => json({ objects: [{
+        oid: 'x', size: 1, error: { code: 507, message: 'Insufficient storage' } }] })],
+      contentsRoute(YAML), ...gitChain({ captured: cap }),
+    ]);
+    const res = mockRes();
+    await handler(mkReq('POST', { body: { domain: 'test_domain', updateOnly: true, pdfZipBase64: Buffer.from('PK').toString('base64') } }), res);
+    assert.equal(res.statusCode, 500);
+    assert.match(res.body.error, /Insufficient storage/);
+    assert.equal(cap.patches.length, 0, 'nothing committed');
   });
 
   test('upload survives a concurrent push (ref 422 then 200)', async () => {

@@ -22,6 +22,17 @@ import { runAIQuery } from './lib/ai-pipeline';
 import useTruncationTitles from './lib/useTruncationTitles';
 import './App.css';
 
+// A domain that has no built data yet (just created and still building, or
+// deleted) 404s on its data files; because Vercel's SPA rewrite serves
+// index.html (200 OK) for any unknown path, that surfaces here as a JSON-parse
+// error on HTML, not a fetch failure — detect that shape so we can show a
+// friendly explanation instead of a raw parser error.
+function isMissingDomainError(message) {
+  if (!message) return false;
+  const m = message.toLowerCase();
+  return m.includes('<!doctype') || m.includes("unexpected token '<'") || m.includes('is not valid json') || /:\s*404\b/.test(message);
+}
+
 function detectDomainFromPath() {
   const path = window.location.pathname.replace(/^\//, '').split('/')[0];
   if (path === 'admin') return { page: 'admin', dataPrefix: '/data-grasp-planning', domainSlug: null };
@@ -363,10 +374,31 @@ function App() {
   }
 
   if (error) {
+    const missingDomain = isMissingDomainError(error) && detected.domainSlug;
     return (
       <DomainContext.Provider value={domainCfg}>
         <div className="copilot-app">
-          <div className="error-screen">Error: {error}</div>
+          <div className="error-screen">
+            {missingDomain ? (
+              <div className="error-card">
+                <h2>&ldquo;{detected.domainSlug}&rdquo; isn&rsquo;t available yet</h2>
+                <p>
+                  If you just added this domain in Admin, its first build is still running — this page
+                  appears once the build finishes and the site updates (usually 20&ndash;45 min). Track
+                  progress in Admin &rarr; Activity.
+                </p>
+                <div className="error-card-links">
+                  <a href="/admin">Go to Admin</a>
+                  <a href="/grasp-planning">Go to Grasp Planning</a>
+                </div>
+              </div>
+            ) : (
+              <div className="error-card">
+                <h2>Something went wrong</h2>
+                <p>{error}</p>
+              </div>
+            )}
+          </div>
         </div>
       </DomainContext.Provider>
     );
@@ -511,7 +543,12 @@ function App() {
     return (
       <DomainContext.Provider value={domainCfg}>
       <div className="copilot-app">
-        {sharedHeader}
+        {/* Slim bar instead of the public header: the evidence filter, page tabs and the
+            copilot Ask bar don't apply here, and their sticky block covered the admin nav. */}
+        <header className="admin-shell-bar">
+          <span className="admin-shell-brand">{branding.productName}<span className="admin-shell-tag">Admin</span></span>
+          <a className="admin-shell-link" href="/">View the site &#8599;</a>
+        </header>
         <AdminPage explorerEnabled={explorerEnabled} onToggleExplorer={(v) => {
           // Local override for THIS browser only. Embeds must use the domain-config
           // explorerEnabled field or ?explorer=1 (localStorage can't cross iframes).
