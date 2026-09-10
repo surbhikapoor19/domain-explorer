@@ -396,7 +396,13 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Proposal failed');
       if (data.yaml) {
-        patchWizard({ proposedConfig: data.yaml, editedConfig: JSON.parse(JSON.stringify(data.yaml)) });
+        // What the user typed in step 1 wins over the AI's guess (it renamed "Test Domain"
+        // to "Test Domain Explorer" in testing).
+        const proposed = { ...data.yaml };
+        if (wizard.displayName.trim()) proposed.display_name = wizard.displayName.trim();
+        // 'method' is the prefilled default, so only an edited noun overrides the AI's.
+        if ((wizard.methodNoun || '').trim() && wizard.methodNoun.trim() !== 'method') proposed.method_noun = wizard.methodNoun.trim();
+        patchWizard({ proposedConfig: proposed, editedConfig: JSON.parse(JSON.stringify(proposed)) });
       } else {
         throw new Error(data.parseError || 'The AI response could not be parsed — try "Use default mapping" instead.');
       }
@@ -597,17 +603,16 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
           )}
         </section>
 
-        {pendingCreate && (
-          <div className="admin-pending-banner">
-            {pendingCreate.timedOut
-              ? <span>Not started — press Build on the card for &ldquo;{pendingCreate.domain}&rdquo;.</span>
-              : <span>Saved to GitHub &rarr; Build queued (~1 min) &rarr; Building (~15&ndash;40 min) &rarr; Website update (~3 min) &rarr; Live at /{pendingCreate.domain.replace(/_/g, '-')}</span>}
-            <button type="button" className="admin-btn" onClick={() => setPendingCreate(null)}>Dismiss</button>
-          </div>
-        )}
-
         <section id="activity" className="admin-section">
           <h2>Activity</h2>
+          {pendingCreate && (
+            <div className="admin-pending-banner">
+              {pendingCreate.timedOut
+                ? <span>Not started — press Build on the card for &ldquo;{pendingCreate.domain}&rdquo;.</span>
+                : <span>Saved to GitHub &rarr; Build queued (~1 min) &rarr; Building (~15&ndash;40 min) &rarr; Website update (~3 min) &rarr; Live at /{pendingCreate.domain.replace(/_/g, '-')}</span>}
+              <button type="button" className="admin-btn" onClick={() => setPendingCreate(null)}>Dismiss</button>
+            </div>
+          )}
           <ActivitySection
             runs={buildStatus}
             domains={domains}
