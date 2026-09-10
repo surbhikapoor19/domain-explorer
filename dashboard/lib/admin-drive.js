@@ -152,25 +152,34 @@ function pickNewestCsv(entries) {
   return newest;
 }
 
-// Top level + one subfolder level (<=10 subfolders), deduped by file id.
-async function gatherPdfs(entries) {
-  const byId = new Map();
-  for (const e of entries) {
-    if (e.kind === 'file' && /\.pdf$/i.test(e.name)) byId.set(e.id, e.name);
-  }
+// Top level + one subfolder level (<=10 subfolders), deduped by file id. Also
+// collects .csv entries from the SAME top+subfolder listings (reused, never
+// fetched twice) — a CSV kept next to the PDFs (e.g. inside a "papers/"
+// subfolder) is still found and counted.
+async function gatherFolderContents(entries) {
+  const pdfById = new Map();
+  const csvById = new Map();
+  const collect = (list) => {
+    for (const e of list) {
+      if (e.kind !== 'file') continue;
+      if (/\.pdf$/i.test(e.name)) pdfById.set(e.id, e.name);
+      else if (/\.csv$/i.test(e.name)) csvById.set(e.id, e);
+    }
+  };
+  collect(entries);
   const subfolderEntries = entries.filter(e => e.kind === 'folder').slice(0, 10);
   const subfolders = subfolderEntries.map(e => e.name);
   for (const sub of subfolderEntries) {
     try {
       const { html } = await fetchListing(sub.id);
-      const parsed = parseDriveListing(html);
-      for (const e of parsed.entries) {
-        if (e.kind === 'file' && /\.pdf$/i.test(e.name)) byId.set(e.id, e.name);
-      }
+      collect(parseDriveListing(html).entries);
     } catch (_) { /* an unreachable subfolder just contributes nothing */ }
   }
-  const files = [...byId.entries()].map(([id, name]) => ({ id, name }));
-  return { files, subfolders };
+  return {
+    files: [...pdfById.entries()].map(([id, name]) => ({ id, name })),
+    subfolders,
+    csvEntries: [...csvById.values()],
+  };
 }
 
 function errorResult(status, folderId, title, checkedAt) {
@@ -185,8 +194,9 @@ function errorResult(status, folderId, title, checkedAt) {
   };
 }
 
-// Live check of a Drive folder: CSVs (top level only) + PDFs (top level + one
-// subfolder level, or from `pdfUrl` when it is itself a separate Drive folder).
+// Live check of a Drive folder: CSVs + PDFs, both from the top level plus one
+// subfolder level (or PDFs from `pdfUrl` when it is itself a separate Drive
+// folder — CSV exports still come from the main folder either way).
 export async function checkDriveFolder(url, { pdfUrl } = {}) {
   const checkedAt = new Date().toISOString();
   const folderId = driveFolderId(url);
@@ -203,7 +213,8 @@ export async function checkDriveFolder(url, { pdfUrl } = {}) {
   const parsed = parseDriveListing(listing.html);
   if (!parsed.public) return errorResult('not_public', folderId, parsed.title, checkedAt);
 
-  const csvEntries = parsed.entries.filter(e => e.kind === 'file' && /\.csv$/i.test(e.name));
+  const mainContents = await gatherFolderContents(parsed.entries);
+  const csvEntries = mainContents.csvEntries;
   const newest = pickNewestCsv(csvEntries);
 
   const pdfFolderId = pdfUrl ? driveFolderId(pdfUrl) : null;
@@ -211,12 +222,12 @@ export async function checkDriveFolder(url, { pdfUrl } = {}) {
   if (pdfFolderId && pdfFolderId !== folderId) {
     try {
       const pdfListing = await fetchListing(pdfFolderId);
-      pdfResult = await gatherPdfs(parseDriveListing(pdfListing.html).entries);
+      pdfResult = await gatherFolderContents(parseDriveListing(pdfListing.html).entries);
     } catch (_) {
       pdfResult = { files: [], subfolders: [] };
     }
   } else {
-    pdfResult = await gatherPdfs(parsed.entries);
+    pdfResult = mainContents;
   }
 
   const status = (csvEntries.length > 0 || pdfResult.files.length > 0) ? 'ok' : 'empty';
@@ -255,7 +266,7 @@ export async function findNewestCsvEntry(url) {
   if (listing.httpStatus !== 200) return null;
   const parsed = parseDriveListing(listing.html);
   if (!parsed.public) return null;
-  const csvEntries = parsed.entries.filter(e => e.kind === 'file' && /\.csv$/i.test(e.name));
+  const { csvEntries } = await gatherFolderContents(parsed.entries);
   return pickNewestCsv(csvEntries);
 }
 

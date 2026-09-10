@@ -103,12 +103,26 @@ def _pick_newest_csv(entries):
     return newest
 
 
-def _gather_pdfs(entries, fetch_html):
-    """Top level (``entries``) + one subfolder level (<=10), deduped by id."""
+def _gather_folder_contents(entries, fetch_html):
+    """Top level (``entries``) + one subfolder level (<=10), deduped by id.
+    Collects BOTH .pdf and .csv entries from the SAME listings (reused, never
+    fetched twice) — a CSV kept next to the PDFs (e.g. inside a "papers/"
+    subfolder) is still found and counted. Returns (files, subfolder_names,
+    csv_entries)."""
     files = {}
-    for e in entries:
-        if e['kind'] == 'file' and e['name'].lower().endswith('.pdf'):
-            files[e['id']] = e['name']
+    csv_by_id = {}
+
+    def collect(items):
+        for e in items:
+            if e['kind'] != 'file':
+                continue
+            name_lower = e['name'].lower()
+            if name_lower.endswith('.pdf'):
+                files.setdefault(e['id'], e['name'])
+            elif name_lower.endswith('.csv'):
+                csv_by_id.setdefault(e['id'], e)
+
+    collect(entries)
     subfolders = [e for e in entries if e['kind'] == 'folder'][:10]
     for sub in subfolders:
         try:
@@ -117,10 +131,8 @@ def _gather_pdfs(entries, fetch_html):
             continue
         if status != 200:
             continue
-        for e in _parse_listing(html)['entries']:
-            if e['kind'] == 'file' and e['name'].lower().endswith('.pdf'):
-                files.setdefault(e['id'], e['name'])
-    return files, [s['name'] for s in subfolders]
+        collect(_parse_listing(html)['entries'])
+    return files, [s['name'] for s in subfolders], list(csv_by_id.values())
 
 
 def _empty_pdf(status, source_url):
@@ -152,7 +164,7 @@ def _check_folder(url, fetch_html, pdf_url=None):
         folder = {'url': url, 'id': folder_id, 'status': 'not_public', 'title': parsed['title'] or None, 'message': MESSAGES['not_public']}
         return folder, {'count': 0, 'newest': None, 'newest_modified': None}, _empty_pdf('not_public', pdf_url or url)
 
-    csv_entries = [e for e in parsed['entries'] if e['kind'] == 'file' and e['name'].lower().endswith('.csv')]
+    main_files, main_subfolders, csv_entries = _gather_folder_contents(parsed['entries'], fetch_html)
     newest = _pick_newest_csv(csv_entries)
 
     pdf_folder_id = _drive_folder_id(pdf_url) if pdf_url else None
@@ -162,9 +174,9 @@ def _check_folder(url, fetch_html, pdf_url=None):
             pdf_entries = _parse_listing(phtml)['entries'] if pstatus == 200 else []
         except Exception:
             pdf_entries = []
-        files, subfolders = _gather_pdfs(pdf_entries, fetch_html)
+        files, subfolders, _pdf_folder_csvs = _gather_folder_contents(pdf_entries, fetch_html)
     else:
-        files, subfolders = _gather_pdfs(parsed['entries'], fetch_html)
+        files, subfolders = main_files, main_subfolders
 
     status_val = 'ok' if (csv_entries or files) else 'empty'
     folder = {'url': url, 'id': folder_id, 'status': status_val, 'title': parsed['title'] or None, 'message': None}

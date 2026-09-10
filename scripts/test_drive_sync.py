@@ -109,6 +109,16 @@ class BuildStatus(unittest.TestCase):
         self.assertEqual(st['csv']['count'], 2)          # sheet exports still from drive_folder
         self.assertEqual(st['pdf']['count'], 1)          # PDFs from the dedicated folder
 
+    def test_csv_next_to_pdfs_in_a_subfolder_is_counted(self):
+        top = listing('Flat', [entry('1FOLDERPDFSSSSSSSSSSSSSSS', 'papers', folder=True)])
+        sub = listing('papers', [entry('1SUBCSVVVVVVVVVVVVVVVVVVV', 'Test Sheet_2026-09-05_08-00-00.csv'),
+                                 entry('1CCCCCCCCCCCCCCCCCCCCCCCC', 'AffordGen.pdf')])
+        st = ds.build_status({'domain': 'x', 'drive_folder': FOLDER},
+                             fetch_html=fake_fetch({'1TOPFOLDERXXXXXXXXXXXXXXX': (200, top), '1FOLDERPDFSSSSSSSSSSSSSSS': (200, sub)}))
+        self.assertEqual(st['csv']['count'], 1)
+        self.assertEqual(st['csv']['newest'], 'Test Sheet_2026-09-05_08-00-00.csv')
+        self.assertEqual(st['pdf']['count'], 1)
+
     def test_no_folder_configured(self):
         self.assertIsNone(ds.build_status({'domain': 'x'}, fetch_html=FETCH))
 
@@ -286,6 +296,12 @@ class WorkflowPins(unittest.TestCase):
         i = t.index('name: Unzip PDFs if needed')
         step = t[i:t.index('- name:', i + 10)]
         self.assertIn('papers-*.zip', step)          # zips added later sit next to papers.zip
+
+    def test_sheet_poll_finds_exports_one_subfolder_deep(self):
+        t = (Path(HERE).parent / '.github' / 'workflows' / 'sheet-poll.yml').read_text()
+        i = t.index('def newest_csv(folder):')
+        body = t[i:t.index('def normalize_export', i)]
+        self.assertIn('parse_drive_subfolders', body)   # same one-level rule as the admin and the PDF import
 
     def test_sheet_poll_compares_csv_bytes_exactly(self):
         # Committed CSVs have CRLF rows; a text-mode read made every night a false 'edit' (+0/-0).

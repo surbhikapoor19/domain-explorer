@@ -121,6 +121,38 @@ describe('lib/admin-drive.js (pure helpers)', () => {
     assert.ok(!Number.isNaN(Date.parse(r.checkedAt)));
   });
 
+  test('checkDriveFolder: a CSV kept next to the PDFs inside a subfolder is still found (one level deep)', async () => {
+    const top = listing('Flat', [entry('1FOLDERPDFSSSSSSSSSSSSSSS', 'papers', { folder: true })]);
+    const sub = listing('papers', [
+      entry('1SUBCSVVVVVVVVVVVVVVVVVVV', 'Test Sheet_2026-09-05_08-00-00.csv', { modified: 'Sep 5' }),
+      entry('1CCCCCCCCCCCCCCCCCCCCCCCC', 'AffordGen.pdf'),
+    ]);
+    installFetch([
+      [/embeddedfolderview\?id=1TOPFOLDERXXXXXXXXXXXXXXX/, () => html(top)],
+      [/embeddedfolderview\?id=1FOLDERPDFSSSSSSSSSSSSSSS/, () => html(sub)],
+      [/^GET https:\/\/drive\.usercontent\.google\.com\/download\?id=1SUBCSVVVVVVVVVVVVVVVVVVV/, () => new Response('Name,Citation\nAffordGen,"y"\n')],
+    ]);
+    const r = await lib.checkDriveFolder(FOLDER_URL);
+    assert.equal(r.csv.count, 1);
+    assert.equal(r.csv.newest, 'Test Sheet_2026-09-05_08-00-00.csv');
+    assert.equal(r.pdf.count, 1);
+    const res = mockRes();
+    await handler(mkReq('POST', { body: { url: FOLDER_URL, includeCsv: true } }), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.equal(res.body.csvFile && res.body.csvFile.name, 'Test Sheet_2026-09-05_08-00-00.csv');
+  });
+
+  test('checkDriveFolder: with exports at the top AND in a subfolder, the newest by timestamp wins', async () => {
+    const sub = listing('PDFs', [entry('1SUBCSVVVVVVVVVVVVVVVVVVV', 'Test Sheet_2026-09-09_09-00-00.csv')]);
+    installFetch([
+      [/embeddedfolderview\?id=1TOPFOLDERXXXXXXXXXXXXXXX/, () => html(TOP)],
+      [/embeddedfolderview\?id=1FOLDERPDFSSSSSSSSSSSSSSS/, () => html(sub)],
+    ]);
+    const r = await lib.checkDriveFolder(FOLDER_URL);
+    assert.equal(r.csv.count, 3);
+    assert.equal(r.csv.newest, 'Test Sheet_2026-09-09_09-00-00.csv');
+  });
+
   test('checkDriveFolder: not found (404), not public (sign-in page), empty, unreachable, invalid', async () => {
     installFetch([[/embeddedfolderview/, () => html('<title>Error 404 (Not Found)!!1</title>', 404)]]);
     assert.equal((await lib.checkDriveFolder(FOLDER_URL)).status, 'not_found');
