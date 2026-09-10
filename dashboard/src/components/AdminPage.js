@@ -564,6 +564,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             domains={domains}
             loading={loadingDomains}
             runsByDomain={latestRunByDomain}
+          latestDeploy={deployments[0]}
             activeDomainSlugs={activeDomainSlugs}
             buildingMap={buildingMap}
             updateOpenSlug={updateOpenSlug}

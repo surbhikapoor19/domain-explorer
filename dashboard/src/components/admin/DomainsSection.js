@@ -2,7 +2,7 @@ import React from 'react';
 import DomainCard from './DomainCard';
 
 export default function DomainsSection({
-  domains, loading, runsByDomain, activeDomainSlugs, buildingMap,
+  domains, loading, runsByDomain, latestDeploy, activeDomainSlugs, buildingMap,
   updateOpenSlug, onToggleUpdate, updating, updateError,
   onSubmitCsv, onSubmitPdfUrl, onSubmitZip,
   onBuild, onBuildBenchmarks, onDelete, onOpenWizard,
@@ -18,6 +18,7 @@ export default function DomainsSection({
           key={d.slug}
           domain={d}
           latestRun={runsByDomain[d.slug]}
+          latestDeploy={latestDeploy}
           hasActiveRun={activeDomainSlugs.has(d.slug)}
           buildingAction={buildingMap[d.slug]}
           updateOpen={updateOpenSlug === d.slug}

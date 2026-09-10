@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StatusTag, IconLock } from './icons';
 import { relativeTime, absoluteTime, ZIP_HARD_LIMIT_MB } from './utils';
 
-function domainStatus(domain, latestRun) {
+function domainStatus(domain, latestRun, latestDeploy) {
   if (latestRun && (latestRun.status === 'in_progress' || latestRun.status === 'queued')) {
     const job = (latestRun.jobs || [])[0];
     const steps = job?.steps || [];
@@ -12,6 +12,17 @@ function domainStatus(domain, latestRun) {
   }
   if (latestRun && latestRun.conclusion === 'failure') {
     return { tone: 'failed', text: 'Last build failed', link: latestRun.html_url };
+  }
+  // A build that just passed is committed but not yet on the site until Vercel redeploys
+  // (~2-3 min); "Live" there would send the user to the "isn't available yet" page. Bounded to
+  // 10 min so a no-op build (nothing committed, so no new deploy) can't stick here.
+  if (latestRun && latestRun.conclusion === 'success' && latestDeploy && latestRun.updated_at) {
+    const finished = new Date(latestRun.updated_at).getTime();
+    const deployedAfter = new Date(latestDeploy.created_at).getTime() >= finished - 60 * 1000;
+    const deployReady = ['success', 'ready'].includes((latestDeploy.state || '').toLowerCase());
+    if (Date.now() - finished < 10 * 60 * 1000 && !(deployedAfter && deployReady)) {
+      return { tone: 'running', text: 'Publishing to the website (~3 min)' };
+    }
   }
   if (domain.hasData) return { tone: 'success', text: 'Live' };
   return { tone: 'muted', text: 'Not built yet' };
@@ -75,11 +86,11 @@ function UpdateDataPanel({ domain, busy, error, onSubmitCsv, onSubmitPdfUrl, onS
 }
 
 export default function DomainCard({
-  domain, latestRun, hasActiveRun, buildingAction, updating, updateError,
+  domain, latestRun, latestDeploy, hasActiveRun, buildingAction, updating, updateError,
   updateOpen, onToggleUpdate, onSubmitCsv, onSubmitPdfUrl, onSubmitZip,
   onBuild, onBuildBenchmarks, onDelete,
 }) {
-  const status = domainStatus(domain, latestRun);
+  const status = domainStatus(domain, latestRun, latestDeploy);
   const domainPath = `/${domain.slug.replace(/_/g, '-')}`;
   const lastBuildIso = latestRun?.updated_at || latestRun?.created_at;
   const waitReason = 'Wait for the current build to finish';
