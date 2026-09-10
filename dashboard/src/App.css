@@ -6341,6 +6341,8 @@ body {
 }
 .admin-log-actions { display: flex; gap: 8px; }
 
+.admin-log-details summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-mid); padding: 4px 0; }
+.admin-log-details[open] summary { margin-bottom: 6px; }
 .admin-step-rail { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
 .admin-step-rail .admin-step { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; padding: 2px 0; }
 .admin-step-rail .admin-step-duration { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--text-muted); }

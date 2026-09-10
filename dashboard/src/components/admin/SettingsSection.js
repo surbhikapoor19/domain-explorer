@@ -2,6 +2,14 @@ import React from 'react';
 import { StatusTag, IconEye, IconEyeOff, IconCheck } from './icons';
 import { absoluteTime, daysUntil } from './utils';
 
+// What each provider's key looks like, so a pasted value is easy to sanity-check.
+const KEY_PLACEHOLDER = {
+  GEMINI_API_KEY: 'Paste the Gemini key (starts with AIza)',
+  GEMINI_API_KEY_2: 'Paste the backup Gemini key (starts with AIza)',
+  GROQ_API_KEY: 'Paste the Groq key (starts with gsk_)',
+  HF_TOKEN: 'Paste the Hugging Face token (starts with hf_)',
+};
+
 function KeyRow({ provider, revealed, onReveal, onCancel, keyValue, onKeyValueChange, showPassword, onToggleShowPassword, saveState, onSave, onSaveSkipValidation }) {
   const inputId = `admin-key-${provider.name}`;
   const saving = saveState?.phase === 'saving';
@@ -21,7 +29,7 @@ function KeyRow({ provider, revealed, onReveal, onCancel, keyValue, onKeyValueCh
         <div className="admin-key-row-status">
           <span className="admin-key-row-status-label">Website (Vercel)</span>
           {/* Muted either way (the website copy never blocks the pipeline), but a set key gets a check. */}
-          <StatusTag tone="muted" icon={provider.inVercel ? IconCheck : undefined}>{provider.inVercel ? 'set' : 'not set · set separately in Vercel'}</StatusTag>
+          <StatusTag tone="muted" icon={provider.inVercel ? IconCheck : undefined}>{provider.inVercel ? 'set' : 'not set on the website'}</StatusTag>
         </div>
         <div className="admin-key-row-actions">
           {provider.getUrl && <a href={provider.getUrl} target="_blank" rel="noopener noreferrer">Get a key &#8599;</a>}
@@ -40,6 +48,7 @@ function KeyRow({ provider, revealed, onReveal, onCancel, keyValue, onKeyValueCh
             <input
               id={inputId} type={showPassword ? 'text' : 'password'} value={keyValue}
               onChange={e => onKeyValueChange(e.target.value)} autoComplete="off"
+              placeholder={KEY_PLACEHOLDER[provider.name] || 'Paste the key here'}
             />
             <button type="button" className="admin-password-toggle" onClick={onToggleShowPassword} aria-label={showPassword ? 'Hide key' : 'Show key'}>
               {showPassword ? <IconEyeOff /> : <IconEye />}

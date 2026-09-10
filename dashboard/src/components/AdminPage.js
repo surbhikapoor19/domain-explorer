@@ -319,6 +319,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
 
   // ─── New domain wizard ──────────────────────────────────────────────────
   const [wizardOpen, setWizardOpen] = useState(false);
+  const wizardRef = useRef(null);
   const [wizard, setWizard] = useState(loadPersistedWizard);
   const [csvFile, setCsvFile] = useState(null);
   const [pdfZipFile, setPdfZipFile] = useState(null);
@@ -357,6 +358,10 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     setWizardOpen(true);
     setCreateError(null);
   };
+  // Bring the wizard (rendered below the cards) into view when it opens.
+  useEffect(() => {
+    if (wizardOpen) wizardRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+  }, [wizardOpen]);
   const handleCancelWizard = () => {
     setWizardOpen(false);
     setWizard(emptyWizard());
@@ -549,7 +554,27 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
           <div className="admin-section-header">
             <h2 ref={domainsHeadingRef} tabIndex={-1}>Domains</h2>
           </div>
-          {wizardOpen ? (
+          <DomainsSection
+            domains={domains}
+            loading={loadingDomains}
+            runsByDomain={latestRunByDomain}
+            activeDomainSlugs={activeDomainSlugs}
+            buildingMap={buildingMap}
+            updateOpenSlug={updateOpenSlug}
+            onToggleUpdate={handleToggleUpdate}
+            updating={updatingSlug}
+            updateError={updateError}
+            onSubmitCsv={handleUpdateCsv}
+            onSubmitPdfUrl={handleUpdatePdfUrl}
+            onSubmitZip={handleUpdateZip}
+            onBuild={slug => handleTriggerBuild(slug)}
+            onBuildBenchmarks={slug => handleTriggerBuild(slug, 'benchmark')}
+            onDelete={domain => { setDeleteTarget(domain); setDeleteError(null); }}
+            onOpenWizard={handleOpenWizard}
+          />
+          {/* The wizard opens BELOW the cards so existing domains stay in view. */}
+          {wizardOpen && (
+            <div ref={wizardRef} className="admin-wizard-anchor">
             <DomainWizard
               wizard={wizard}
               csvFile={csvFile}
@@ -568,25 +593,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
               onCreate={handleCreate}
               onCancel={handleCancelWizard}
             />
-          ) : (
-            <DomainsSection
-              domains={domains}
-              loading={loadingDomains}
-              runsByDomain={latestRunByDomain}
-              activeDomainSlugs={activeDomainSlugs}
-              buildingMap={buildingMap}
-              updateOpenSlug={updateOpenSlug}
-              onToggleUpdate={handleToggleUpdate}
-              updating={updatingSlug}
-              updateError={updateError}
-              onSubmitCsv={handleUpdateCsv}
-              onSubmitPdfUrl={handleUpdatePdfUrl}
-              onSubmitZip={handleUpdateZip}
-              onBuild={slug => handleTriggerBuild(slug)}
-              onBuildBenchmarks={slug => handleTriggerBuild(slug, 'benchmark')}
-              onDelete={domain => { setDeleteTarget(domain); setDeleteError(null); }}
-              onOpenWizard={handleOpenWizard}
-            />
+            </div>
           )}
         </section>
 

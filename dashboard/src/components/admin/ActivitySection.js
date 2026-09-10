@@ -75,7 +75,11 @@ function LogPanel({ state, run, onRerun }) {
             <div className="admin-log-error-line" key={i}>{line}</div>
           ))}
           {data.failure.excerpt && (
-            <pre className="admin-log-excerpt">{data.failure.excerpt}</pre>
+            // The raw log is supporting detail: collapsed when a plain-language hint exists.
+            <details className="admin-log-details" open={!(data.failure.hints || []).length}>
+              <summary>Raw log excerpt</summary>
+              <pre className="admin-log-excerpt">{data.failure.excerpt}</pre>
+            </details>
           )}
         </>
       ) : (
