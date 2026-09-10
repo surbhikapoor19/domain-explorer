@@ -1,9 +1,0 @@
-domain: fresh_check
-csv_path: datasets/fresh-check/fresh.csv
-papers_dir: datasets/fresh-check/papers/
-display_name: "Fresh Check"
-method_noun: "method"
-explorer_enabled: true
-
-# Column → role mappings will be auto-generated during build.
-columns: {}
