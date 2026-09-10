@@ -1,0 +1,75 @@
+domain: test_domain
+display_name: "Test Domain Explorer"
+display_subject: "6-DoF grasp planning methods"
+display_short: "grasp planning"
+ecosystem: "COMPARE Ecosystem"
+tagline: "AI-in-the-Loop"
+query_hint: 'sampling-based 6-DoF grasp methods using point clouds'
+method_noun: "method"
+explorer_enabled: true
+
+csv_path: datasets/test-domain/test_domain.csv
+papers_dir: datasets/test-domain/papers/
+
+columns:
+  "Name": { role: identity.name, facet: identifier }
+  "Description": { role: identity.description, facet: text }
+  "Planning Method": { role: method.family, facet: categorical }
+  "Input Data": { role: input.modality, facet: categorical }
+  "End-effector Hardware": { role: hardware.platform, facet: categorical }
+  "Language": { role: meta.language, facet: categorical }
+  "Link(s)": { role: identity.code, facet: url }
+  "License": { role: meta.license, facet: categorical }
+  "Citation": { role: identity.citation, facet: text }
+  "Year (Initial Release)": { role: identity.year, facet: numeric }
+
+llm:
+  domain_subject: "6-DoF grasp planning"
+  claim_extraction_focus:
+    - "success rate on standard grasping benchmarks"
+    - "comparative analysis between sampling and direct regression methods"
+    - "limitations related to sensor noise, occlusions, and object geometry"
+    - "sim-to-real transfer performance and real-world deployment considerations"
+  query_rewrite_examples:
+    - "What are the latest sampling-based 6-DoF grasp methods that use point clouds?"
+    - "Which grasp planning algorithms achieve the highest success rate on the YCB dataset?"
+    - "How do direct regression methods compare to sampling methods in terms of computation time?"
+
+default_color_by_roles:
+  - method.family
+  - input.modality
+  - hardware.platform
+
+extra_datasets:
+  - "YCB"
+  - "Dex-YCB"
+  - "GraspNet-1B"
+  - "Cornell Grasping Dataset"
+  - "Jacquard"
+  - "BigBIRD"
+  - "ObjectNet3D"
+  - "EGAD"
+  - "ContactDB"
+  - "6-DoF Grasp Dataset"
+
+extra_keywords:
+  - "variational autoencoder"
+  - "grasp sampler"
+  - "grasp refinement"
+  - "6-DoF pose"
+  - "point cloud"
+  - "RGB-D"
+  - "depth image"
+  - "sim-to-real"
+  - "self-supervised learning"
+  - "analytic grasp metric"
+  - "grasp quality convolutional neural network"
+  - "contact points"
+  - "grasp width"
+  - "two-finger gripper"
+  - "TensorFlow"
+  - "PyTorch"
+  - "Monte Carlo sampling"
+  - "collision checking"
+  - "grasp evaluator"
+  - "domain randomization"
