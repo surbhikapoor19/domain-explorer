@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Fill in missing paper PDFs from PUBLIC open-access sources.
+"""Fill in missing paper PDFs from PUBLIC open-access sources, and (new) import a
+domain's own ``pdf_url`` link (a shared Drive folder/file, Dropbox link, or a
+direct zip/PDF URL) before that OA fetch runs.
 
 For a domain, this finds every methods-CSV row whose expected PDF is missing,
 parses the paper title (and first author) from the row's ``Citation`` column,
@@ -25,11 +27,13 @@ import argparse
 import json
 import re
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import zipfile
 from csv import DictReader
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -43,6 +47,7 @@ HTTP_TIMEOUT = 30          # seconds per request
 DOWNLOAD_TIMEOUT = 90      # seconds for a PDF body
 REQUEST_DELAY = 1.0        # polite pause between network requests
 TITLE_SIM_THRESHOLD = 0.85 # normalized token-set ratio required to accept
+MAX_DOWNLOAD_BYTES = 2 * 1024 * 1024 * 1024  # 2 GB cap for a single pdf_url download
 
 ARXIV_API = 'http://export.arxiv.org/api/query'
 ATOM_NS = {'a': 'http://www.w3.org/2005/Atom'}
@@ -394,6 +399,27 @@ def _yaml_csv_path(domain_slug_us):
     return None
 
 
+def _yaml_pdf_url(domain_slug_us):
+    """Read ``pdf_url:`` from ``domains/<domain>.yaml`` (same minimal stdlib
+    line-parse as ``_yaml_csv_path``). Returns the stripped URL string, or None
+    when the YAML is absent or declares no pdf_url.
+
+    Unlike ``_yaml_csv_path``, the trailing comment is stripped BEFORE the
+    quotes so a quoted value followed by a ``# comment`` (e.g.
+    ``pdf_url: "https://..."  # shared zip``) doesn't leave a stray quote."""
+    yaml_path = REPO_ROOT / 'domains' / f'{domain_slug_us}.yaml'
+    if not yaml_path.exists():
+        return None
+    with open(yaml_path, encoding='utf-8') as fh:
+        for line in fh:
+            m = re.match(r'^\s*pdf_url:\s*(.+?)\s*$', line)
+            if m:
+                value = re.sub(r'\s+#.*$', '', m.group(1)).strip()
+                value = value.strip('"\'')
+                return value or None
+    return None
+
+
 def resolve_domain_paths(domain_slug):
     slug_dashed = domain_slug.replace('_', '-')
     slug_us = domain_slug.replace('-', '_')
@@ -403,6 +429,205 @@ def resolve_domain_paths(domain_slug):
     return {'dataset': dataset_dir, 'papers': papers_dir,
             'csv': csv_path, 'chroma': dataset_dir / 'chroma_db',
             'slug_dashed': slug_dashed}
+
+
+# --------------------------------------------------------------------------- #
+# pdf_url import — a domain's own shared PDF source (Drive/Dropbox/direct link) #
+# --------------------------------------------------------------------------- #
+def classify_pdf_source(url):
+    """Classify a ``pdf_url`` value.
+
+    Returns ``('drive_folder', folder_id)`` | ``('direct', download_url)`` |
+    ``(None, None)`` for an empty/non-URL value. A Drive FILE share link is
+    turned into a direct download URL (skipping the virus-scan interstitial);
+    a Dropbox link is forced to ``dl=1``; anything else is passed through.
+    """
+    if not url or not isinstance(url, str):
+        return None, None
+    url = url.strip()
+    if not re.match(r'^https?://', url, re.IGNORECASE):
+        return None, None
+
+    m = re.search(r'drive\.google\.com/drive/folders/([\w-]+)', url)
+    if m:
+        return 'drive_folder', m.group(1)
+
+    m = (re.search(r'drive\.google\.com/file/d/([\w-]+)', url) or
+         re.search(r'drive\.google\.com/(?:open|uc)\?.*?\bid=([\w-]+)', url))
+    if m:
+        file_id = m.group(1)
+        return 'direct', (f'https://drive.usercontent.google.com/download'
+                          f'?id={file_id}&export=download&confirm=t')
+
+    if 'dropbox.com' in url.lower():
+        if re.search(r'[?&]dl=\d', url):
+            url = re.sub(r'([?&]dl=)\d', r'\g<1>1', url)
+        else:
+            url = f"{url}{'&' if '?' in url else '?'}dl=1"
+        return 'direct', url
+
+    return 'direct', url
+
+
+def parse_drive_folder_listing(html):
+    """Parse Drive's ``embeddedfolderview`` HTML into deduped ``(file_id, name)``
+    pairs for every ``.pdf`` entry (case-insensitive).
+
+    Scoped per-entry (bounded by the NEXT ``/file/d/...`` occurrence) rather
+    than a single windowed regex over the whole page: sheet-poll.yml's
+    equivalent ``.csv`` regex (``/file/d/(<id>{20,})/[\\s\\S]{0,600}?
+    flip-entry-title[^>]*>([^<]+?\\.csv)``) can otherwise pair one entry's id
+    with a LATER entry's title when a non-matching entry (e.g. a .csv) sits
+    within the 600-char window in between.
+    """
+    html = html or ''
+    starts = [m.start() for m in re.finditer(r'/file/d/[A-Za-z0-9_-]{20,}/', html)]
+    seen = {}
+    for i, start in enumerate(starts):
+        end = starts[i + 1] if i + 1 < len(starts) else len(html)
+        block = html[start:end]
+        id_m = re.match(r'/file/d/([A-Za-z0-9_-]{20,})/', block)
+        name_m = re.search(r'flip-entry-title[^>]*>([^<]+?\.pdf)', block, re.IGNORECASE)
+        if id_m and name_m:
+            seen.setdefault(id_m.group(1), name_m.group(1).strip())
+    return list(seen.items())
+
+
+def extract_pdfs_from_zip(zip_path, papers_dir):
+    """Flatten every ``.pdf`` in a zip into ``papers_dir``.
+
+    Basename only (zip-slip safe — a ``../../evil.pdf`` member can never
+    escape papers_dir), skips ``__MACOSX/`` and ``._*`` junk, normalises the
+    extension to lower-case ``.pdf`` (the pipeline globs ``*.pdf`` case-
+    sensitively), and never overwrites an existing file. Returns
+    ``{'added': [...], 'skipped': [...]}``."""
+    papers_dir = Path(papers_dir)
+    added, skipped = [], []
+    with zipfile.ZipFile(zip_path) as z:
+        for info in z.infolist():
+            name = info.filename
+            if name.endswith('/'):
+                continue  # directory entry
+            if '__MACOSX' in name.split('/'):
+                continue
+            base = Path(name).name  # basename only -> zip-slip safe
+            if not base or base.startswith('._'):
+                continue
+            if not base.lower().endswith('.pdf'):
+                continue
+            out_name = f'{base[:-4]}.pdf'  # normalise the extension's case
+            dest = papers_dir / out_name
+            if dest.exists():
+                skipped.append(out_name)
+                continue
+            dest.write_bytes(z.read(info))
+            added.append(out_name)
+    return {'added': added, 'skipped': skipped}
+
+
+def _download_to_file(url, dest_path, timeout=DOWNLOAD_TIMEOUT, max_bytes=MAX_DOWNLOAD_BYTES):
+    """Stream a URL to disk, aborting once it exceeds max_bytes."""
+    req = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
+    with urllib.request.urlopen(req, timeout=timeout) as resp, open(dest_path, 'wb') as out:
+        total = 0
+        while True:
+            chunk = resp.read(1024 * 1024)
+            if not chunk:
+                break
+            total += len(chunk)
+            if total > max_bytes:
+                raise ValueError(f'download exceeded the {max_bytes}-byte cap')
+            out.write(chunk)
+
+
+def _print_import_summary(url, dry_run, result):
+    verb = 'would-import' if dry_run else 'imported'
+    print(f"=== import_pdf_source: {url} ===")
+    print(f"  kind    : {result['kind']}")
+    print(f"  mode    : {'DRY-RUN (no downloads)' if dry_run else 'download'}")
+    print(f"  {verb:>12}: {len(result['added'])}")
+    for name in result['added']:
+        print(f"      + {name}")
+    if result['skipped']:
+        print(f"  skipped     : {len(result['skipped'])}")
+        for name in result['skipped']:
+            print(f"      - {name}")
+    if result['error']:
+        print(f"  ERROR   : {result['error']}")
+    print()
+
+
+def import_pdf_source(url, papers_dir, dry_run=False):
+    """Import PDFs from a domain's ``pdf_url`` into ``papers_dir``.
+
+    NEVER raises: a bad/unreachable/non-public link is reported in the
+    returned dict so it never aborts the whole fetch run. Returns
+    ``{'kind', 'added', 'skipped', 'error'}``."""
+    papers_dir = Path(papers_dir)
+    kind, ref = classify_pdf_source(url)
+    result = {'kind': kind, 'added': [], 'skipped': [], 'error': None}
+
+    if kind is None:
+        result['error'] = f'Could not understand pdf_url: {url!r}'
+        _print_import_summary(url, dry_run, result)
+        return result
+
+    try:
+        if kind == 'drive_folder':
+            html = _http_get(f'https://drive.google.com/embeddedfolderview?id={ref}').decode('utf-8', 'replace')
+            existing = {p.name for p in papers_dir.glob('*.pdf')} if papers_dir.is_dir() else set()
+            for file_id, name in parse_drive_folder_listing(html):
+                stem = name.rsplit('.', 1)[0] if '.' in name else name
+                out_name = f'{stem}.pdf'
+                if out_name in existing:
+                    result['skipped'].append(out_name)
+                    continue
+                if dry_run:
+                    result['added'].append(out_name)
+                    continue
+                dl_url = (f'https://drive.usercontent.google.com/download'
+                          f'?id={file_id}&export=download&confirm=t')
+                try:
+                    data = _http_get(dl_url, timeout=DOWNLOAD_TIMEOUT, accept='application/pdf')
+                except (urllib.error.URLError, OSError):
+                    continue
+                if not _looks_like_pdf(data):
+                    continue
+                papers_dir.mkdir(parents=True, exist_ok=True)
+                (papers_dir / out_name).write_bytes(data)
+                existing.add(out_name)
+                result['added'].append(out_name)
+        elif not dry_run:
+            # direct: a zip or a single PDF — we don't know which without
+            # downloading it, so dry-run has nothing honest to preview.
+            with tempfile.TemporaryDirectory() as td:
+                tmp_path = Path(td) / 'download.bin'
+                _download_to_file(ref, tmp_path)
+                with open(tmp_path, 'rb') as fh:
+                    head = fh.read(4)
+                if head.startswith(b'PK\x03\x04'):
+                    papers_dir.mkdir(parents=True, exist_ok=True)
+                    zres = extract_pdfs_from_zip(tmp_path, papers_dir)
+                    result['added'] = zres['added']
+                    result['skipped'] = zres['skipped']
+                elif head.startswith(b'%PDF'):
+                    name = Path(urllib.parse.urlparse(ref).path).name or 'linked.pdf'
+                    name = f'{name[:-4]}.pdf' if name.lower().endswith('.pdf') else 'linked.pdf'
+                    papers_dir.mkdir(parents=True, exist_ok=True)
+                    dest = papers_dir / name
+                    if dest.exists():
+                        result['skipped'].append(name)
+                    else:
+                        dest.write_bytes(tmp_path.read_bytes())
+                        result['added'].append(name)
+                else:
+                    result['error'] = ("PDF link did not return a zip or PDF — make sure it is "
+                                        "shared publicly ('Anyone with the link')")
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        result['error'] = f'Could not fetch {url}: {e}'
+
+    _print_import_summary(url, dry_run, result)
+    return result
 
 
 # --------------------------------------------------------------------------- #
@@ -500,9 +725,21 @@ def process(domain, dry_run=False):
     if csv_path is None:
         print(f"ERROR: no methods CSV (*.csv) in {dataset_dir}")
         return 2
-    if not papers_dir.is_dir():
-        print(f"ERROR: papers dir not found: {papers_dir}")
-        return 2
+
+    # A brand-new domain has no papers dir yet (and no papers.zip) — create it
+    # instead of aborting, so a pdf_url import (below) has somewhere to write.
+    papers_dir.mkdir(parents=True, exist_ok=True)
+
+    # Import the domain's own shared PDF source (Drive folder/file, Dropbox,
+    # or a direct zip/PDF link), BEFORE scanning for what's already present,
+    # so freshly-imported PDFs are counted and the OA fetch below skips them.
+    pdf_url = _yaml_pdf_url(domain.replace('-', '_'))
+    if pdf_url:
+        print(f"  pdf_url : {pdf_url}")
+        import_result = import_pdf_source(pdf_url, papers_dir, dry_run=dry_run)
+        if import_result.get('error'):
+            print(f"  WARNING: pdf_url import failed: {import_result['error']}")
+        print()
 
     rows = read_rows(csv_path)
     existing = {p.name for p in papers_dir.glob('*.pdf')}

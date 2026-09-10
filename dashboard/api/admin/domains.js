@@ -1,3 +1,15 @@
+import { isProtected } from '../../lib/admin-github.js';
+
+// Read a top-level `key: value` line, stripping surrounding quotes and a
+// trailing `# comment` (same regex style as fetch_missing_pdfs.py's _yaml_csv_path).
+function yamlValue(text, key) {
+  const m = text.match(new RegExp(`^\\s*${key}:\\s*(.+?)\\s*$`, 'm'));
+  if (!m) return '';
+  let value = m[1].trim().replace(/^['"]|['"]$/g, '');
+  value = value.replace(/\s+#.*$/, '').trim();
+  return value;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -43,6 +55,9 @@ export default async function handler(req, res) {
       const displayName = yamlText.match(/display_name:\s*["']?([^"'\n]+)/)?.[1] || slug;
       const methodNoun = yamlText.match(/method_noun:\s*["']?([^"'\n]+)/)?.[1] || 'method';
       const csvPath = yamlText.match(/csv_path:\s*["']?([^"'\n]+)/)?.[1] || '';
+      const pdfUrl = yamlValue(yamlText, 'pdf_url');
+      const driveFolder = yamlValue(yamlText, 'drive_folder');
+      const explorerEnabled = yamlValue(yamlText, 'explorer_enabled') === 'true';
 
       let hasData = false;
       let hasKG = false;
@@ -79,6 +94,10 @@ export default async function handler(req, res) {
         hasData,
         hasKG,
         methodCount,
+        protected: isProtected(slug),
+        pdfUrl,
+        driveFolder,
+        explorerEnabled,
       });
     }
 

@@ -4,6 +4,10 @@ on:
   repository_dispatch:
     types: [domain-build, domain-switch]
 
+# Labels the run for the admin Activity feed (api/admin/build-status.js parses
+# "Build <domain> (<scope>[, forced])"; domain-switch runs get their own label).
+run-name: "${{ github.event.action == 'domain-switch' && format('Switch domain: {0}', github.event.client_payload.domain) || format('Build {0} ({1}{2})', github.event.client_payload.domain, github.event.client_payload.pages || 'all', github.event.client_payload.force == 'true' && ', forced' || '') }}"
+
 permissions:
   contents: write
 
@@ -104,12 +108,29 @@ jobs:
 
       - name: Unzip PDFs if needed
         if: ${{ github.event.client_payload.pages != 'precompute' && github.event.client_payload.pages != 'explorer' }}
+        # Unzip into a scratch dir first, then flatten every *.pdf found at ANY
+        # depth into datasets/${SLUG}/papers/ — works whether the zip has the
+        # legacy `papers/` prefix (existing grasp/motion zips), loose PDFs at
+        # the root, or PDFs nested under some other folder name.
         run: |
           SLUG="${{ steps.domain.outputs.slug }}"
           if [ -f "datasets/${SLUG}/papers.zip" ]; then
             mkdir -p "datasets/${SLUG}/papers"
-            unzip -o "datasets/${SLUG}/papers.zip" -d "datasets/${SLUG}/"
-            echo "Extracted $(find datasets/${SLUG}/papers -name '*.pdf' | wc -l) PDFs"
+            TMP=$(mktemp -d)
+            unzip -o "datasets/${SLUG}/papers.zip" -d "$TMP"
+            COUNT=0
+            while IFS= read -r -d '' f; do
+              base="$(basename "$f")"
+              stem="${base%.*}"
+              ext_lower="$(echo "${base##*.}" | tr '[:upper:]' '[:lower:]')"
+              dest="datasets/${SLUG}/papers/${stem}.${ext_lower}"
+              if [ ! -f "$dest" ]; then
+                mv "$f" "$dest"
+                COUNT=$((COUNT + 1))
+              fi
+            done < <(find "$TMP" -type f -iname '*.pdf' ! -path '*/__MACOSX/*' ! -name '._*' -print0)
+            rm -rf "$TMP"
+            echo "Extracted $COUNT PDFs"
           else
             echo "No papers.zip found for ${SLUG}"
           fi

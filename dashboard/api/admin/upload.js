@@ -1,8 +1,43 @@
 import crypto from 'crypto';
+import { repoInfo, commitChanges } from '../../lib/admin-github.js';
 
 export const config = {
   api: { bodyParser: { sizeLimit: '100mb' } },
 };
+
+// Escape a value for a double-quoted YAML scalar (pdf_url etc).
+function escapeYamlDoubleQuoted(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+// Read a top-level `key: value` line, stripping quotes + a trailing comment
+// (same regex style as fetch_missing_pdfs.py's _yaml_csv_path).
+function yamlValue(text, key) {
+  const m = text.match(new RegExp(`^\\s*${key}:\\s*(.+?)\\s*$`, 'm'));
+  if (!m) return null;
+  let value = m[1].trim().replace(/^['"]|['"]$/g, '');
+  value = value.replace(/\s+#.*$/, '').trim();
+  return value || null;
+}
+
+function addCsvPathLine(yamlText, csvPath) {
+  const line = `csv_path: ${csvPath}`;
+  if (/^domain:.*$/m.test(yamlText)) {
+    return yamlText.replace(/^(domain:.*)$/m, `$1\n${line}`);
+  }
+  return `${line}\n${yamlText}`;
+}
+
+function setPdfUrlLine(yamlText, pdfUrl) {
+  const line = `pdf_url: "${escapeYamlDoubleQuoted(pdfUrl)}"`;
+  if (/^pdf_url:.*$/m.test(yamlText)) {
+    return yamlText.replace(/^pdf_url:.*$/m, line);
+  }
+  if (/^papers_dir:.*$/m.test(yamlText)) {
+    return yamlText.replace(/^(papers_dir:.*)$/m, `$1\n${line}`);
+  }
+  return yamlText.replace(/\n?$/, `\n${line}\n`);
+}
 
 async function uploadToLFS(owner, repo, ghToken, fileBuffer) {
   const sha256 = crypto.createHash('sha256').update(fileBuffer).digest('hex');
@@ -65,27 +100,55 @@ export default async function handler(req, res) {
   if (!domain) {
     return res.status(400).json({ error: 'domain is required' });
   }
+  if (!/^[a-z0-9][a-z0-9_-]*$/.test(domain)) {
+    return res.status(400).json({ error: 'Domain id may only use lowercase letters, digits, _ and -' });
+  }
   if (!updateOnly && !csvContent) {
     return res.status(400).json({ error: 'csvContent is required for new domains' });
   }
 
-  const GITHUB_OWNER = process.env.GITHUB_OWNER || 'surbhikapoor19';
-  const GITHUB_REPO = process.env.GITHUB_REPO || 'domain-explorer';
-  const branch = 'main';
-
+  const { owner: GITHUB_OWNER, repo: GITHUB_REPO, headers } = repoInfo();
   const domainSlug = domain.replace(/_/g, '-');
-  const headers = {
-    Authorization: `Bearer ${ghToken}`,
-    Accept: 'application/vnd.github.v3+json',
-    'Content-Type': 'application/json',
-  };
 
   try {
     const filesToCommit = [];
     let lfsPointer = null;
     const zipPath = `datasets/${domainSlug}/papers.zip`;
+    let message;
 
     if (updateOnly) {
+      // Read the existing YAML so csv_path/pdf_url edits land in place.
+      const contentsRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/domains/${domain}.yaml?ref=main`,
+        { headers }
+      );
+      if (contentsRes.status === 404) {
+        return res.status(404).json({ error: `Domain ${domain} not found` });
+      }
+      if (!contentsRes.ok) throw new Error(`Failed to fetch domain YAML: ${contentsRes.status}`);
+      const contentsData = await contentsRes.json();
+      let yamlText = Buffer.from(contentsData.content, 'base64').toString('utf8');
+      let yamlModified = false;
+
+      if (!csvContent && !pdfUrl && !pdfZipBase64) {
+        return res.status(400).json({ error: 'Provide csvContent, pdfUrl, or pdfZipBase64 to update' });
+      }
+
+      if (csvContent) {
+        let csvPath = yamlValue(yamlText, 'csv_path');
+        if (!csvPath) {
+          csvPath = `datasets/${domainSlug}/${csvFilename || `${domain}.csv`}`;
+          yamlText = addCsvPathLine(yamlText, csvPath);
+          yamlModified = true;
+        }
+        filesToCommit.push({ path: csvPath, content: Buffer.from(csvContent).toString('base64') });
+      }
+
+      if (pdfUrl) {
+        yamlText = setPdfUrlLine(yamlText, pdfUrl);
+        yamlModified = true;
+      }
+
       if (pdfZipBase64) {
         const zipBuffer = Buffer.from(pdfZipBase64, 'base64');
         lfsPointer = await uploadToLFS(GITHUB_OWNER, GITHUB_REPO, ghToken, zipBuffer);
@@ -95,8 +158,25 @@ export default async function handler(req, res) {
           isLfs: true,
         });
       }
+
+      if (yamlModified) {
+        filesToCommit.push({
+          path: `domains/${domain}.yaml`,
+          content: Buffer.from(yamlText).toString('base64'),
+        });
+      }
+
+      message = `Update domain: ${domain}`;
     } else {
-      // New domain mode
+      // New domain mode. Never overwrite an existing domain's config (e.g. re-using
+      // "grasp_planning") — updates go through updateOnly.
+      const existsRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/domains/${domain}.yaml?ref=main`,
+        { headers }
+      );
+      if (existsRes.ok) {
+        return res.status(409).json({ error: `A domain called ${domain} already exists. Pick another id, or use Update data on its card.` });
+      }
       const csvPath = `datasets/${domainSlug}/${csvFilename || `${domain}.csv`}`;
       filesToCommit.push({
         path: csvPath,
@@ -130,89 +210,15 @@ export default async function handler(req, res) {
           content: Buffer.from(JSON.stringify(benchmarkConfig, null, 2)).toString('base64'),
         });
       }
+
+      message = `Add domain: ${displayName || domain}\n\nUploaded via admin panel`;
     }
 
-    // Get the current commit SHA for the branch
-    const refRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/ref/heads/${branch}`,
-      { headers }
-    );
-    if (!refRes.ok) throw new Error(`Failed to get branch ref: ${refRes.status}`);
-    const refData = await refRes.json();
-    const baseSha = refData.object.sha;
-
-    // Get the base tree
-    const commitRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/commits/${baseSha}`,
-      { headers }
-    );
-    if (!commitRes.ok) throw new Error(`Failed to get commit: ${commitRes.status}`);
-    const commitData = await commitRes.json();
-    const baseTreeSha = commitData.tree.sha;
-
-    // Create blobs for each file
-    const treeItems = [];
-    for (const file of filesToCommit) {
-      const blobRes = await fetch(
-        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/blobs`,
-        {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ content: file.content, encoding: 'base64' }),
-        }
-      );
-      if (!blobRes.ok) throw new Error(`Failed to create blob for ${file.path}: ${blobRes.status}`);
-      const blobData = await blobRes.json();
-      treeItems.push({
-        path: file.path,
-        mode: '100644',
-        type: 'blob',
-        sha: blobData.sha,
-      });
-    }
-
-    // Create a new tree
-    const treeRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/trees`,
-      {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ base_tree: baseTreeSha, tree: treeItems }),
-      }
-    );
-    if (!treeRes.ok) throw new Error(`Failed to create tree: ${treeRes.status}`);
-    const treeData = await treeRes.json();
-
-    // Create a commit
-    const newCommitRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/commits`,
-      {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          message: `${updateOnly ? 'Update' : 'Add'} domain: ${displayName || domain}\n\nUploaded via admin panel`,
-          tree: treeData.sha,
-          parents: [baseSha],
-        }),
-      }
-    );
-    if (!newCommitRes.ok) throw new Error(`Failed to create commit: ${newCommitRes.status}`);
-    const newCommitData = await newCommitRes.json();
-
-    // Update branch ref
-    const updateRefRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/git/refs/heads/${branch}`,
-      {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ sha: newCommitData.sha }),
-      }
-    );
-    if (!updateRefRes.ok) throw new Error(`Failed to update ref: ${updateRefRes.status}`);
+    const { commitSha } = await commitChanges({ files: filesToCommit, message });
 
     return res.status(200).json({
       success: true,
-      commitSha: newCommitData.sha,
+      commitSha,
       files: filesToCommit.map(f => f.path),
     });
   } catch (err) {
@@ -230,10 +236,11 @@ function buildFullYaml(domain, csvPath, domainSlug, pdfUrl, cfg) {
   lines.push(`tagline: "AI-in-the-Loop"`);
   lines.push(`query_hint: '${(cfg.query_hint || '').replace(/'/g, "''")}'`);
   lines.push(`method_noun: "${cfg.method_noun || 'method'}"`);
+  lines.push('explorer_enabled: true');
   lines.push('');
   lines.push(`csv_path: ${csvPath}`);
   lines.push(`papers_dir: datasets/${domainSlug}/papers/`);
-  if (pdfUrl) lines.push(`pdf_url: "${pdfUrl}"`);
+  if (pdfUrl) lines.push(`pdf_url: "${escapeYamlDoubleQuoted(pdfUrl)}"`);
   // Google Drive folder of CSV exports — the nightly sheet-poll workflow pulls the
   // newest CSV from here and rebuilds this domain when it changes.
   if (cfg.drive_folder) lines.push(`drive_folder: "${String(cfg.drive_folder).replace(/"/g, '\\"')}"`);
@@ -304,9 +311,10 @@ csv_path: ${csvPath}
 papers_dir: datasets/${domainSlug}/papers/
 display_name: "${displayName || domain.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}"
 method_noun: "${methodNoun || 'method'}"
+explorer_enabled: true
 `;
   if (pdfUrl) {
-    yaml += `pdf_url: "${pdfUrl}"\n`;
+    yaml += `pdf_url: "${escapeYamlDoubleQuoted(pdfUrl)}"\n`;
   }
   yaml += `\n# Column → role mappings will be auto-generated during build.\ncolumns: {}\n`;
   return yaml;

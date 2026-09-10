@@ -16,6 +16,7 @@
     "graphology": "^0.26.0",
     "graphology-traversal": "^0.3.1",
     "katex": "^0.16.39",
+    "libsodium-wrappers": "^0.7.15",
     "ml-kmeans": "^7.0.0",
     "plotly.js": "^3.4.0",
     "react": "^19.2.4",
