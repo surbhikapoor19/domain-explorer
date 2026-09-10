@@ -44,7 +44,6 @@ function mockLoaders() {
   jest.spyOn(loader, 'loadKgLanding').mockResolvedValue(LANDING);
   jest.spyOn(loader, 'loadKgMacro').mockResolvedValue({ nodes: [], links: [] });
   jest.spyOn(loader, 'loadMethods').mockResolvedValue([]);
-  jest.spyOn(loader, 'loadKgPredictions').mockResolvedValue({ nodes: [], links: [] });
 }
 
 function renderLanding(extra = {}) {

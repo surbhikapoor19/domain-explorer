@@ -250,6 +250,11 @@ class WorkflowPins(unittest.TestCase):
         self.assertIn('pdf_changed', t)
         self.assertIn('secrets.GH_PAT', t)
 
+    def test_sheet_poll_compares_csv_bytes_exactly(self):
+        # Committed CSVs have CRLF rows; a text-mode read made every night a false 'edit' (+0/-0).
+        t = (Path(HERE).parent / '.github' / 'workflows' / 'sheet-poll.yml').read_text()
+        self.assertIn("old = open(csv_path, encoding='utf-8', newline='').read()", t)
+
 
 if __name__ == '__main__':
     unittest.main()

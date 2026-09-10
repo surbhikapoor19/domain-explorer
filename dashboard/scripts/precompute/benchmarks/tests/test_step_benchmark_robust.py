@@ -97,7 +97,8 @@ def _paths(tmp_path, slug="motion-planning"):
     chroma = tmp_path / "chroma"
     chroma.mkdir()
     return {"dataset": dataset, "papers": papers, "output": output,
-            "slug_dashed": slug, "chroma": chroma}
+            "slug_dashed": slug, "chroma": chroma,
+            "csv": dataset / "motion_planning.csv"}  # resolve_paths() has carried the YAML csv_path since 980dbe5
 
 
 def _install_fake_run(monkeypatch, fresh_records):

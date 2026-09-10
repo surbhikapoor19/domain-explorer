@@ -25,7 +25,8 @@ def _paths(tmp_path, slug="motion-planning"):
     output = tmp_path / "out-data"
     output.mkdir()
     return {"dataset": dataset, "papers": papers, "output": output,
-            "slug_dashed": slug, "chroma": tmp_path / "chroma"}
+            "slug_dashed": slug, "chroma": tmp_path / "chroma",
+            "csv": dataset / "motion_planning.csv"}  # resolve_paths() has carried the YAML csv_path since 980dbe5
 
 
 def test_step_benchmark_registered_in_all_steps():

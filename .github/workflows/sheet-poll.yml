@@ -118,7 +118,9 @@ jobs:
                   print(f'{slug}: download returned HTML (folder/file not public?); skipping')
                   continue
               data = normalize_export(data, csv_path)   # strip banner/preamble rows
-              old = open(csv_path, encoding='utf-8').read() if os.path.exists(csv_path) else ''
+              # newline='': compare the exact bytes that would be written. Text mode turned the committed
+              # CRLF rows into LF, so every night looked like an edit and rebuilt both domains for nothing.
+              old = open(csv_path, encoding='utf-8', newline='').read() if os.path.exists(csv_path) else ''
               if hashlib.sha256(data.encode()).hexdigest() != hashlib.sha256(old.encode()).hexdigest():
                   with open(csv_path, 'w', encoding='utf-8', newline='') as f:
                       f.write(data)

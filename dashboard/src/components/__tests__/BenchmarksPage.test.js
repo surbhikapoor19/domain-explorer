@@ -38,7 +38,7 @@ test('renders a TABLE row per extracted record by default (no chart, no ranking)
   const results = await screen.findByTestId('bmr-results');
   // table view is the default: column headers + one row per record
   expect(within(results).getByRole('columnheader', { name: 'Method' })).toBeInTheDocument();
-  expect(within(results).getByRole('columnheader', { name: 'Protocol' })).toBeInTheDocument();
+  expect(within(results).getByRole('columnheader', { name: /^Protocol/ })).toBeInTheDocument();
   expect(within(results).getByText('GIGA')).toBeInTheDocument();
   expect(within(results).getByText('AnyGrasp')).toBeInTheDocument();
   expect(screen.getByText(/3 of 3 results/)).toBeInTheDocument();

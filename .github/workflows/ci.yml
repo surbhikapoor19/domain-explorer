@@ -1,0 +1,103 @@
+name: Tests
+
+# Fast test suites on every code change — branches, pull requests and main. Nightly builds and admin
+# uploads only commit data (datasets/, dashboard/public/data-*, domains/), so they don't trigger this.
+on:
+  push:
+    paths:
+      - 'dashboard/src/**'
+      - 'dashboard/api/**'
+      - 'dashboard/lib/**'
+      - 'dashboard/tests/**'
+      - 'dashboard/scripts/**'
+      - '!dashboard/scripts/precompute/benchmarks/config/**'
+      - 'dashboard/package.json'
+      - 'dashboard/package-lock.json'
+      - 'scripts/**'
+      - 'backend/**'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'dashboard/src/**'
+      - 'dashboard/api/**'
+      - 'dashboard/lib/**'
+      - 'dashboard/tests/**'
+      - 'dashboard/scripts/**'
+      - 'dashboard/package.json'
+      - 'dashboard/package-lock.json'
+      - 'scripts/**'
+      - 'backend/**'
+      - '.github/workflows/**'
+  workflow_dispatch: {}
+
+# A newer push to the same branch cancels the run it supersedes.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api-and-pipeline:
+    name: Admin API + pipeline tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Install dashboard dependencies
+        working-directory: dashboard
+        run: npm ci --ignore-scripts
+
+      - name: Admin API tests (node:test, GitHub/Drive/providers mocked)
+        working-directory: dashboard
+        run: node --test tests/admin-api/admin-api.test.mjs tests/admin-api/drive-status.test.mjs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install Python test dependencies
+        # Only what the unit tests import; the heavy build stack (torch, docling, chromadb) is not
+        # needed because those code paths are stubbed in the tests.
+        run: pip install pyyaml pytest pandas==3.0.5 numpy==2.5.2 lxml
+
+      - name: Pipeline script tests (PDF fetch, Drive sync, sheet diff, ingest)
+        run: python -m unittest discover -s scripts -p 'test_*.py'
+
+      - name: Benchmark pipeline + workflow tests
+        working-directory: dashboard/scripts/precompute
+        run: python -m pytest -q benchmarks/tests
+
+  frontend:
+    name: Frontend tests + production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Install dashboard dependencies
+        working-directory: dashboard
+        run: npm ci
+
+      - name: Jest suite
+        working-directory: dashboard
+        run: CI=true npx craco test --watchAll=false
+
+      - name: Production build (same command Vercel runs)
+        working-directory: dashboard
+        run: CI=false npm run build

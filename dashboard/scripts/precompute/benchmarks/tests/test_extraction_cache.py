@@ -360,7 +360,8 @@ def test_13_step_benchmark_appends_cache_refresh_under_force(tmp_path, monkeypat
     output = tmp_path / "out"; output.mkdir()
     chroma = tmp_path / "chroma"; chroma.mkdir()
     paths = {"dataset": dataset, "papers": papers, "output": output,
-             "slug_dashed": "motion-planning", "chroma": chroma}
+             "slug_dashed": "motion-planning", "chroma": chroma,
+             "csv": dataset / "motion_planning.csv"}  # resolve_paths() has carried the YAML csv_path since 980dbe5
 
     # FORCE_BENCHMARK=1 -> --cache-refresh appended; --cache always present.
     monkeypatch.setenv("FORCE_BENCHMARK", "1")
