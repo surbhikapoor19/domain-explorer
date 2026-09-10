@@ -1,10 +1,6 @@
 // Shared formatting + parsing helpers for the admin page. Pure functions only —
 // no React here — so they're easy to unit-reason-about and reuse across sections.
 
-export const ZIP_HARD_LIMIT_MB = 3;
-export const PAYLOAD_HARD_LIMIT_MB = 4.5;
-export const BASE64_EXPANSION = 1.37; // base64 inflates raw bytes by ~4/3
-
 export function relativeTime(iso) {
   if (!iso) return '';
   const t = new Date(iso).getTime();
@@ -70,6 +66,66 @@ export function websiteStatus(deployment) {
   if (s === 'building' || s === 'pending' || s === 'in_progress' || s === 'queued') return { text: 'Updating…', tone: 'running' };
   if (s === 'error' || s === 'failure' || s === 'canceled' || s === 'cancelled') return { text: 'Update failed', tone: 'failed' };
   return { text: deployment.state || 'Unknown', tone: 'muted' };
+}
+
+export function scopeLabel(scope) {
+  if (scope === 'benchmark') return 'benchmark tables';
+  if (scope === 'new-paper') return 'new paper';
+  if (scope === 'precompute') return 'precompute';
+  return 'full';
+}
+
+// A plain-text "Ask for help" report for a failed build — shared by the mailto
+// link, the GitHub issue link and the "Copy report" button in Activity. Trims
+// error lines first so the eventual mailto href stays under ~1800 characters.
+export function buildHelpReport({ title, domainLabel, scope, when, failure, runUrl, adminUrl }) {
+  const subject = `Build failed: ${title}`;
+  const whenText = when ? new Date(when).toISOString() : 'unknown';
+  const logUrl = failure?.logUrl || runUrl || '';
+  const buildBody = (maxErrorLines) => {
+    const lines = [
+      `Domain: ${domainLabel}`,
+      `Build scope: ${scope}`,
+      `When: ${whenText} (UTC)`,
+    ];
+    if (failure?.step) lines.push(`Failing step: ${failure.step}`);
+    lines.push('');
+    for (const hint of (failure?.hints || [])) {
+      lines.push(hint.title);
+      lines.push(`Fix: ${hint.fix}`);
+      lines.push('');
+    }
+    const errorLines = (failure?.errorLines || []).slice(0, maxErrorLines);
+    if (errorLines.length) {
+      lines.push('Error lines:');
+      lines.push(...errorLines);
+      lines.push('');
+    }
+    if (logUrl) lines.push(`Log: ${logUrl}`);
+    if (adminUrl) lines.push(`Admin: ${adminUrl}`);
+    lines.push('');
+    lines.push('Anything else I noticed:');
+    return lines.join('\n');
+  };
+  const OVERHEAD = 60; // "mailto:" + a typical email address + "?subject=&body="
+  let maxErrorLines = 10;
+  let body = buildBody(maxErrorLines);
+  while (maxErrorLines > 0 && encodeURIComponent(subject).length + encodeURIComponent(body).length + OVERHEAD > 1800) {
+    maxErrorLines = Math.max(0, maxErrorLines - 2);
+    body = buildBody(maxErrorLines);
+  }
+  return { subject, body };
+}
+
+export function mailtoHref(email, subject, body) {
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+// Derives owner/repo from a GitHub Actions run URL (…/github.com/<owner>/<repo>/actions/runs/…).
+export function githubIssueHref(runUrl, subject, body) {
+  const m = (runUrl || '').match(/github\.com\/([^/]+)\/([^/]+)\//);
+  if (!m) return null;
+  return `https://github.com/${m[1]}/${m[2]}/issues/new?title=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 export function slugifyDomain(name) {
@@ -173,12 +229,4 @@ export function defaultColumnMapping(headers) {
     else columns[h] = { facet: 'categorical' };
   }
   return columns;
-}
-
-// Client-side estimate of the JSON request body size for the "Create domain" /
-// "Update data" upload, BEFORE base64-encoding a zip (base64 inflates bytes ~37%).
-export function estimatePayloadMB(csvText, zipFile) {
-  const csvBytes = csvText ? new Blob([csvText]).size : 0;
-  const zipBytes = zipFile ? zipFile.size : 0;
-  return (csvBytes + zipBytes * BASE64_EXPANSION) / (1024 * 1024);
 }

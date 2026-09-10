@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusTag } from './icons';
-import { relativeTime, absoluteTime, formatDuration, friendlyStepName, websiteStatus } from './utils';
+import {
+  relativeTime, absoluteTime, formatDuration, friendlyStepName, websiteStatus,
+  scopeLabel, buildHelpReport, mailtoHref, githubIssueHref,
+} from './utils';
 
 function isActiveRun(run) {
   return run.status === 'in_progress' || run.status === 'queued';
@@ -19,13 +22,6 @@ function runStatusText(run) {
   if (run.conclusion === 'success') return 'Passed';
   if (run.conclusion === 'failure') return 'Failed';
   return run.status || 'Unknown';
-}
-
-function scopeLabel(scope) {
-  if (scope === 'benchmark') return 'benchmark tables';
-  if (scope === 'new-paper') return 'new paper';
-  if (scope === 'precompute') return 'precompute';
-  return 'full';
 }
 
 function titleFor(run, domains) {
@@ -53,7 +49,50 @@ function stepDuration(step) {
   return formatDuration(sec);
 }
 
-function LogPanel({ state, run, onRerun }) {
+// A quick way out of a failed build: a prefilled email to the maintainer, a
+// prefilled GitHub issue, or a copyable plain-text report — all built from the
+// same failure diagnosis already on screen.
+function AskForHelp({ run, domains, failure, maintainerEmail }) {
+  const [copied, setCopied] = useState(false);
+  const domain = domains.find(d => d.slug === run.domain);
+  const domainLabel = domain ? `${domain.displayName} (${run.domain})` : (run.domain || 'unknown domain');
+  const adminUrl = typeof window !== 'undefined' ? `${window.location.origin}/admin` : undefined;
+  const { subject, body } = buildHelpReport({
+    title: titleFor(run, domains),
+    domainLabel,
+    scope: scopeLabel(run.scope),
+    when: run.updated_at || run.created_at,
+    failure,
+    runUrl: run.html_url,
+    adminUrl,
+  });
+  const issueHref = githubIssueHref(run.html_url, subject, body);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(body);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (_) { /* clipboard unavailable — nothing to crash */ }
+  };
+
+  return (
+    <div className="admin-ask-help">
+      <div className="admin-ask-help-actions">
+        {maintainerEmail ? (
+          <a href={mailtoHref(maintainerEmail, subject, body)}>Email the maintainer</a>
+        ) : (
+          <span className="admin-hint">Set a maintainer email in Settings to email the maintainer from here.</span>
+        )}
+        {issueHref && <a href={issueHref} target="_blank" rel="noopener noreferrer">Open a GitHub issue</a>}
+        <button type="button" className="admin-btn admin-btn-text" onClick={handleCopy}>{copied ? 'Copied' : 'Copy report'}</button>
+      </div>
+      <p className="admin-hint">Your email app opens with the details filled in &mdash; nothing is sent until you press Send.</p>
+    </div>
+  );
+}
+
+function LogPanel({ state, run, domains, maintainerEmail, onRerun }) {
   if (state?.loading) return <div className="admin-log-panel admin-loading">Loading log&hellip;</div>;
   if (state?.error) return <div className="admin-log-panel admin-inline-error">{state.error}</div>;
   const data = state?.data;
@@ -74,6 +113,7 @@ function LogPanel({ state, run, onRerun }) {
           {(data.failure.errorLines || []).map((line, i) => (
             <div className="admin-log-error-line" key={i}>{line}</div>
           ))}
+          <AskForHelp run={run} domains={domains} failure={data.failure} maintainerEmail={maintainerEmail} />
           {data.failure.excerpt && (
             // The raw log is supporting detail: collapsed when a plain-language hint exists.
             <details className="admin-log-details" open={!(data.failure.hints || []).length}>
@@ -104,7 +144,7 @@ function LogPanel({ state, run, onRerun }) {
   );
 }
 
-function RunRow({ run, domains, expanded, logState, onToggleLog, onRerun }) {
+function RunRow({ run, domains, expanded, logState, maintainerEmail, onToggleLog, onRerun }) {
   const active = isActiveRun(run);
   const job = (run.jobs || [])[0];
   const steps = job?.steps || [];
@@ -132,13 +172,13 @@ function RunRow({ run, domains, expanded, logState, onToggleLog, onRerun }) {
           <span className="admin-run-progress-step">{currentStep ? friendlyStepName(currentStep.name) : `Step ${done}/${steps.length}`}</span>
         </div>
       )}
-      {!active && expanded && <LogPanel state={logState} run={run} onRerun={onRerun} />}
+      {!active && expanded && <LogPanel state={logState} run={run} domains={domains} maintainerEmail={maintainerEmail} onRerun={onRerun} />}
     </div>
   );
 }
 
 export default function ActivitySection({
-  runs, domains, deployments, filter, onFilterChange,
+  runs, domains, deployments, maintainerEmail, filter, onFilterChange,
   expandedLogRunId, logStates, onToggleLog, onRerun,
   visibleCount, onShowOlder,
 }) {
@@ -178,6 +218,7 @@ export default function ActivitySection({
             key={run.id} run={run} domains={domains}
             expanded={expandedLogRunId === run.id}
             logState={logStates[run.id]}
+            maintainerEmail={maintainerEmail}
             onToggleLog={onToggleLog}
             onRerun={onRerun}
           />

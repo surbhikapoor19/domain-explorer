@@ -5,7 +5,7 @@ import DomainWizard from './admin/DomainWizard';
 import ActivitySection from './admin/ActivitySection';
 import SettingsSection from './admin/SettingsSection';
 import DeleteDialog from './admin/DeleteDialog';
-import { parseCSV, defaultColumnMapping, ZIP_HARD_LIMIT_MB, isDriveFolderUrl } from './admin/utils';
+import { parseCSV, defaultColumnMapping } from './admin/utils';
 
 const POLL_SLOW = 15000;
 const POLL_FAST = 5000;
@@ -17,7 +17,8 @@ const emptyWizard = () => ({
   step: 1,
   newDomain: '', slugEdited: false,
   displayName: '', methodNoun: 'method', domainDescription: '',
-  csvFileName: '', csvHeaders: [], csvSampleRows: [], rowCount: 0,
+  csvSource: 'upload', csvFileName: '', csvHeaders: [], csvSampleRows: [], rowCount: 0,
+  csvDriveMeta: null, csvError: '',
   papersMode: 'auto', pdfUrl: '', driveFolder: '',
   proposedConfig: null, editedConfig: null,
   startBuildNow: true, includeBenchmarks: true,
@@ -100,6 +101,37 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     } catch (_) { /* ignore */ }
   }, [authHeaders]);
 
+  // ─── Settings: maintainer email (used by "Ask for help") ────────────────
+  const [maintainerEmail, setMaintainerEmail] = useState('');
+  const [maintainerSaveState, setMaintainerSaveState] = useState(null);
+
+  const fetchSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/settings', { headers: authHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        setMaintainerEmail(data.maintainerEmail || '');
+      }
+    } catch (_) { /* ignore */ }
+  }, [authHeaders]);
+
+  const handleSaveMaintainerEmail = useCallback(async (email) => {
+    setMaintainerSaveState({ phase: 'saving' });
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ maintainerEmail: email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not save the email.');
+      setMaintainerEmail(data.maintainerEmail ?? email);
+      setMaintainerSaveState({ phase: 'success', message: 'Saved' });
+    } catch (err) {
+      setMaintainerSaveState({ phase: 'error', message: err.message });
+    }
+  }, [authHeaders]);
+
   // ─── Google Drive folder status ─────────────────────────────────────────
   const [driveStatus, setDriveStatus] = useState({});
   const [driveCheckingMap, setDriveCheckingMap] = useState({});
@@ -174,6 +206,20 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     return data;
   }, [authHeaders]);
 
+  // Step 1 of the wizard: pull the newest CSV export out of a Drive folder instead
+  // of an upload. Returns the raw response — the wizard builds a File from it and
+  // feeds that through the same handleCsvSelected path a real upload takes.
+  const handleDriveLoadCsv = useCallback(async (url) => {
+    const res = await fetch('/api/admin/drive-status', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, includeCsv: true }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || data.result?.message || 'That link could not be tested.');
+    return data;
+  }, [authHeaders]);
+
   const handleDriveSaveFolder = useCallback(async (slug, url) => {
     const res = await fetch('/api/admin/upload', {
       method: 'POST',
@@ -216,11 +262,12 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
   useEffect(() => {
     if (!authenticated) return undefined;
     fetchKeys();
+    fetchSettings();
     fetchBuildStatus().then(runs => {
       startPolling(anyRunActive(runs) ? POLL_FAST : POLL_SLOW);
     });
     return () => clearInterval(pollRef.current);
-  }, [authenticated, fetchBuildStatus, startPolling, fetchKeys]);
+  }, [authenticated, fetchBuildStatus, startPolling, fetchKeys, fetchSettings]);
 
   useEffect(() => {
     if (!authenticated) return;
@@ -239,7 +286,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
 
   const handleRefreshAll = async () => {
     setRefreshing(true);
-    await Promise.all([fetchDomains(), fetchBuildStatus(), fetchKeys(), fetchDriveStatus()]);
+    await Promise.all([fetchDomains(), fetchBuildStatus(), fetchKeys(), fetchDriveStatus(), fetchSettings()]);
     setRefreshing(false);
   };
 
@@ -284,7 +331,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     handleTriggerBuild(run.domain, run.scope || undefined);
   };
 
-  // ─── Update data (Replace CSV / Set PDF link / Upload small PDF zip) ──
+  // ─── Update data (Replace CSV / Set PDF link) ──────────────────────────
   const [updateOpenSlug, setUpdateOpenSlug] = useState(null);
   const [updatingSlug, setUpdatingSlug] = useState(null);
   const [updateError, setUpdateError] = useState(null);
@@ -321,18 +368,6 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
   };
   const handleUpdatePdfUrl = async (slug, url) => {
     await submitUpdate(slug, { pdfUrl: url });
-  };
-  const handleUpdateZip = async (slug, file) => {
-    if (file.size > ZIP_HARD_LIMIT_MB * 1024 * 1024) {
-      setUpdateError(`This zip is over the ${ZIP_HARD_LIMIT_MB} MB limit — use "Set PDF link" instead.`);
-      return;
-    }
-    const base64 = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(file);
-    });
-    await submitUpdate(slug, { pdfZipBase64: base64, pdfZipFilename: file.name });
   };
 
   // ─── Delete domain ──────────────────────────────────────────────────────
@@ -436,7 +471,6 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
   const wizardRef = useRef(null);
   const [wizard, setWizard] = useState(loadPersistedWizard);
   const [csvFile, setCsvFile] = useState(null);
-  const [pdfZipFile, setPdfZipFile] = useState(null);
   const [proposing, setProposing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [createError, setCreateError] = useState(null);
@@ -480,14 +514,20 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     setWizardOpen(false);
     setWizard(emptyWizard());
     setCsvFile(null);
-    setPdfZipFile(null);
     try { sessionStorage.removeItem(WIZARD_STORAGE_KEY); } catch (_) { /* ignore */ }
   };
 
   const handleCsvSelected = async (file) => {
     setCsvFile(file || null);
     if (!file) { patchWizard({ csvFileName: '', csvHeaders: [], csvSampleRows: [], rowCount: 0 }); return; }
-    const text = await file.text();
+    // FileReader (not File.prototype.text) so this also works for a File built in memory
+    // from a Drive-loaded CSV, not just one picked from disk.
+    const text = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error || new Error('Could not read the CSV file.'));
+      reader.readAsText(file);
+    });
     const { headers, rows, rowCount } = parseCSV(text);
     patchWizard({ csvFileName: file.name, csvHeaders: headers, csvSampleRows: rows, rowCount });
   };
@@ -560,22 +600,14 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
         corpus: { tei_dir: `datasets/${dashed}/tei`, pdf_dir: `datasets/${dashed}/papers`, methods_csv: `datasets/${dashed}/${csvFile.name}` },
       } : undefined;
 
-      let pdfZipBase64;
-      let pdfZipFilename;
-      if (wizard.papersMode === 'zip' && pdfZipFile) {
-        pdfZipBase64 = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result.split(',')[1]);
-          reader.readAsDataURL(pdfZipFile);
-        });
-        pdfZipFilename = pdfZipFile.name;
-      }
-      // A Drive FOLDER link is a config field (drive_folder — nightly sync), not a one-off
-      // pdfUrl; a zip/pdf link (or a Drive file share) still goes through pdfUrl as before.
-      const driveLink = wizard.papersMode === 'drive' ? wizard.pdfUrl.trim() : '';
-      const driveFolderLink = isDriveFolderUrl(driveLink) ? driveLink : '';
+      // A Drive FOLDER link is a config field (drive_folder — nightly sync); a link to a
+      // zip/pdf hosted elsewhere still goes through pdfUrl (downloaded at build time,
+      // never committed). "Same Google Drive folder" reuses the link the CSV was
+      // loaded from in step 1.
+      const driveFolderLink = wizard.papersMode === 'same-drive' ? wizard.driveFolder.trim()
+        : wizard.papersMode === 'drive' ? wizard.pdfUrl.trim() : '';
       if (driveFolderLink) cfg.drive_folder = driveFolderLink;
-      const pdfUrl = driveLink && !driveFolderLink ? driveLink : undefined;
+      const pdfUrl = wizard.papersMode === 'link' ? (wizard.pdfUrl.trim() || undefined) : undefined;
 
       const res = await fetch('/api/admin/upload', {
         method: 'POST',
@@ -585,8 +617,6 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
           csvContent,
           csvFilename: csvFile.name,
           pdfUrl,
-          pdfZipBase64,
-          pdfZipFilename,
           displayName: cfg.display_name || wizard.displayName.trim() || undefined,
           methodNoun: cfg.method_noun || wizard.methodNoun.trim() || undefined,
           yamlConfig: cfg,
@@ -705,7 +735,6 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             updateError={updateError}
             onSubmitCsv={handleUpdateCsv}
             onSubmitPdfUrl={handleUpdatePdfUrl}
-            onSubmitZip={handleUpdateZip}
             onBuild={slug => handleTriggerBuild(slug)}
             onBuildBenchmarks={slug => handleTriggerBuild(slug, 'benchmark')}
             onDelete={domain => { setDeleteTarget(domain); setDeleteError(null); }}
@@ -723,7 +752,6 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             <DomainWizard
               wizard={wizard}
               csvFile={csvFile}
-              pdfZipFile={pdfZipFile}
               domains={domains}
               keyProviders={keyProviders}
               proposing={proposing}
@@ -732,12 +760,12 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
               patch={patchWizard}
               setEditedConfig={cfg => patchWizard({ editedConfig: cfg })}
               onCsvSelected={handleCsvSelected}
-              onZipSelected={file => setPdfZipFile(file || null)}
               onPropose={handlePropose}
               onUseDefaultMapping={handleUseDefaultMapping}
               onCreate={handleCreate}
               onCancel={handleCancelWizard}
               onTestDriveLink={handleDriveTestLink}
+              onLoadDriveCsv={handleDriveLoadCsv}
             />
             </div>
           )}
@@ -757,6 +785,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             runs={buildStatus}
             domains={domains}
             deployments={deployments}
+            maintainerEmail={maintainerEmail}
             filter={activityFilter}
             onFilterChange={setActivityFilter}
             expandedLogRunId={expandedLogRunId}
@@ -782,6 +811,9 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             onToggleShowPassword={() => setShowPassword(v => !v)}
             onSave={provider => handleSaveKey(provider)}
             onSaveSkipValidation={provider => handleSaveKey(provider, { skipValidation: true })}
+            maintainerEmail={maintainerEmail}
+            maintainerSaveState={maintainerSaveState}
+            onSaveMaintainerEmail={handleSaveMaintainerEmail}
             explorerEnabled={explorerEnabled}
             onToggleExplorer={onToggleExplorer}
           />

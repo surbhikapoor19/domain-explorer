@@ -6260,11 +6260,11 @@ body {
 .admin-radio-card-title { font-size: 13px; font-weight: 600; }
 .admin-radio-card input[type="url"],
 .admin-radio-card input[type="file"] { margin-top: 4px; }
-
-.admin-payload-meter { margin-top: 6px; max-width: 320px; }
-.admin-payload-meter-track { height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
-.admin-payload-meter-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.3s ease; }
-.admin-payload-meter-fill.over { background: var(--accent); }
+/* When a radio card wraps extra, non-toggling content (a nested label + input),
+   only the top row is the click target — .admin-radio-card-body is a plain sibling. */
+.admin-radio-card-label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.admin-radio-card-body { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.admin-radio-card-body label { font-size: 12px; font-weight: 600; color: var(--text-mid); }
 
 .admin-mapping-summary { margin-bottom: 12px; }
 .admin-mapping-summary table { border-collapse: collapse; font-size: 12px; width: 100%; }
@@ -6357,6 +6357,11 @@ body {
   max-height: 320px; overflow: auto; white-space: pre-wrap;
 }
 .admin-log-actions { display: flex; gap: 8px; }
+
+.admin-ask-help { display: flex; flex-direction: column; gap: 4px; margin: 4px 0; }
+.admin-ask-help-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 12px; }
+.admin-ask-help-actions a { color: var(--primary); text-decoration: none; font-weight: 500; }
+.admin-ask-help-actions a:hover { text-decoration: underline; }
 
 .admin-log-details summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-mid); padding: 4px 0; }
 .admin-log-details[open] summary { margin-bottom: 6px; }

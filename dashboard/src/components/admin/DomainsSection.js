@@ -4,7 +4,7 @@ import DomainCard from './DomainCard';
 export default function DomainsSection({
   domains, loading, runsByDomain, latestDeploy, activeDomainSlugs, buildingMap,
   updateOpenSlug, onToggleUpdate, updating, updateError,
-  onSubmitCsv, onSubmitPdfUrl, onSubmitZip,
+  onSubmitCsv, onSubmitPdfUrl,
   onBuild, onBuildBenchmarks, onDelete, onOpenWizard,
   driveStatus, driveCheckingMap, driveErrorMap, onDriveCheckNow, onDriveTestLink, onDriveSaveFolder,
 }) {
@@ -28,7 +28,6 @@ export default function DomainsSection({
           updateError={updateOpenSlug === d.slug ? updateError : null}
           onSubmitCsv={(file) => onSubmitCsv(d.slug, file)}
           onSubmitPdfUrl={(url) => onSubmitPdfUrl(d.slug, url)}
-          onSubmitZip={(file) => onSubmitZip(d.slug, file)}
           onBuild={onBuild}
           onBuildBenchmarks={onBuildBenchmarks}
           onDelete={onDelete}

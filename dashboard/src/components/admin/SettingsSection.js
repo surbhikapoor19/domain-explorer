@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusTag, IconEye, IconEyeOff, IconCheck } from './icons';
 import { absoluteTime, daysUntil } from './utils';
 
@@ -103,9 +103,39 @@ function GhTokenCard({ ghPat }) {
   );
 }
 
+function HelpRequestsCard({ maintainerEmail, saveState, onSave }) {
+  const [draft, setDraft] = useState(maintainerEmail || '');
+  useEffect(() => { setDraft(maintainerEmail || ''); }, [maintainerEmail]);
+  const saving = saveState?.phase === 'saving';
+  return (
+    <div className="admin-token-card">
+      <h3>Help requests</h3>
+      <p className="admin-hint">
+        Used by &ldquo;Ask for help&rdquo; on a failed build in Activity, to prefill an email with the diagnosis.
+      </p>
+      <div className="admin-config-row">
+        <label htmlFor="admin-maintainer-email">Maintainer email (for help requests)</label>
+        <input
+          id="admin-maintainer-email" type="email" value={draft}
+          onChange={e => setDraft(e.target.value)}
+          placeholder="you@wpi.edu"
+        />
+      </div>
+      <div className="admin-key-form-actions">
+        <button type="button" className="admin-btn admin-btn-primary" disabled={saving || !draft.trim()} onClick={() => onSave(draft.trim())}>
+          {saving ? 'Saving…' : 'Save email'}
+        </button>
+      </div>
+      {saveState?.phase === 'success' && <StatusTag tone="success">{saveState.message || 'Saved'}</StatusTag>}
+      {saveState?.phase === 'error' && <div className="admin-inline-error">{saveState.message}</div>}
+    </div>
+  );
+}
+
 export default function SettingsSection({
   providers, ghPat, revealedProvider, keyDraft, showPassword, keySaveState,
   onReveal, onCancelReveal, onKeyDraftChange, onToggleShowPassword, onSave, onSaveSkipValidation,
+  maintainerEmail, maintainerSaveState, onSaveMaintainerEmail,
   explorerEnabled, onToggleExplorer,
 }) {
   return (
@@ -137,6 +167,8 @@ export default function SettingsSection({
       </div>
 
       <GhTokenCard ghPat={ghPat} />
+
+      <HelpRequestsCard maintainerEmail={maintainerEmail} saveState={maintainerSaveState} onSave={onSaveMaintainerEmail} />
 
       <div className="admin-setting-row">
         <label className="admin-toggle-label">

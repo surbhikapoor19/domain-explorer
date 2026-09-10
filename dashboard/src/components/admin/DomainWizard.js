@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { ConfigEditor, generateYamlPreview } from './ConfigEditor';
 import {
-  slugifyDomain, isValidSlug, nameColumnStatus, hasCitationColumn,
-  estimatePayloadMB, ZIP_HARD_LIMIT_MB, PAYLOAD_HARD_LIMIT_MB, formatDriveTestResult,
+  slugifyDomain, isValidSlug, nameColumnStatus, hasCitationColumn, formatDriveTestResult,
 } from './utils';
 
 const STEPS = ['Data', 'Papers', 'Configure', 'Review & create'];
@@ -36,15 +35,16 @@ function filesToCreate(wizard) {
 }
 
 export default function DomainWizard({
-  wizard, csvFile, pdfZipFile, domains, keyProviders,
+  wizard, csvFile, domains, keyProviders,
   proposing, uploading, createError,
-  patch, setEditedConfig, onCsvSelected, onZipSelected,
+  patch, setEditedConfig, onCsvSelected,
   onPropose, onUseDefaultMapping, onCreate, onCancel,
-  onTestDriveLink,
+  onTestDriveLink, onLoadDriveCsv,
 }) {
   const step = wizard.step;
   const [driveTesting, setDriveTesting] = useState(false);
   const [driveTestResult, setDriveTestResult] = useState(null);
+  const [csvLoading, setCsvLoading] = useState(false);
 
   const handleTestDriveLink = async () => {
     const url = wizard.pdfUrl.trim();
@@ -60,6 +60,35 @@ export default function DomainWizard({
     setDriveTesting(false);
   };
 
+  // Loads the newest CSV export out of a Drive folder, then feeds it through the
+  // SAME path a real file upload takes (onCsvSelected) so headers/preview/checks
+  // all work unchanged.
+  const handleLoadNewestCsv = async () => {
+    const url = (wizard.driveFolder || '').trim();
+    if (!url) return;
+    setCsvLoading(true);
+    patch({ csvError: '' });
+    try {
+      const data = await onLoadDriveCsv(url);
+      if (data.csvFile) {
+        const file = new File([data.csvFile.content], data.csvFile.name, { type: 'text/csv' });
+        await onCsvSelected(file);
+        patch({
+          csvDriveMeta: {
+            name: data.csvFile.name,
+            strippedRows: data.csvFile.strippedRows || 0,
+            count: data.result?.csv?.count || 1,
+          },
+        });
+      } else {
+        patch({ csvError: data.csvError || 'No CSV export was found in that folder.' });
+      }
+    } catch (err) {
+      patch({ csvError: err.message });
+    }
+    setCsvLoading(false);
+  };
+
   const dashed = (wizard.newDomain || '').replace(/_/g, '-');
   const slugValid = isValidSlug(wizard.newDomain);
   const slugTaken = domains.some(d => d.slug === wizard.newDomain);
@@ -68,10 +97,6 @@ export default function DomainWizard({
 
   const canLeaveStep1 = !!wizard.displayName.trim() && slugValid && !slugTaken && wizard.csvHeaders.length > 0 && nameCol.ok;
 
-  const zipMB = pdfZipFile ? pdfZipFile.size / (1024 * 1024) : 0;
-  const zipTooBig = pdfZipFile && zipMB > ZIP_HARD_LIMIT_MB;
-  const canLeaveStep2 = wizard.papersMode !== 'zip' || (pdfZipFile && !zipTooBig);
-
   const canGenerateWithAi = keyProviders.some(p => (p.name === 'HF_TOKEN' || p.name === 'GROQ_API_KEY') && p.inVercel);
   const canLeaveStep3 = !!wizard.editedConfig;
 
@@ -79,7 +104,12 @@ export default function DomainWizard({
     .filter(([, m]) => m.role)
     .map(([col, m]) => ({ col, role: m.role }));
 
-  const payloadMB = estimatePayloadMB('', pdfZipFile);
+  // What the Review step's YAML preview should show for the papers source, mirroring
+  // the routing handleCreate uses at submit time.
+  const previewDriveFolder = wizard.papersMode === 'same-drive' ? wizard.driveFolder.trim()
+    : wizard.papersMode === 'drive' ? wizard.pdfUrl.trim() : '';
+  const previewPdfUrl = wizard.papersMode === 'link' ? wizard.pdfUrl.trim() : '';
+  const previewConfig = previewDriveFolder ? { ...(wizard.editedConfig || {}), drive_folder: previewDriveFolder } : wizard.editedConfig;
 
   return (
     <div className="admin-wizard">
@@ -122,14 +152,52 @@ export default function DomainWizard({
             <input id="wiz-method-noun" type="text" value={wizard.methodNoun} onChange={e => patch({ methodNoun: e.target.value })} />
           </div>
           <div className="admin-field">
-            <label htmlFor="wiz-csv">CSV file</label>
-            <div
-              className="admin-dropzone"
-              onDragOver={e => e.preventDefault()}
-              onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) onCsvSelected(f); }}
-            >
-              <input id="wiz-csv" type="file" accept=".csv" onChange={e => onCsvSelected(e.target.files[0])} />
-              <span className="admin-hint">or drag a .csv file here</span>
+            <label>CSV source</label>
+            <div className="admin-radio-cards">
+              <div className={`admin-radio-card ${wizard.csvSource !== 'drive' ? 'selected' : ''}`}>
+                <label className="admin-radio-card-label">
+                  <input type="radio" name="csv-source" checked={wizard.csvSource !== 'drive'} onChange={() => patch({ csvSource: 'upload' })} />
+                  <span className="admin-radio-card-title">Upload a CSV file</span>
+                </label>
+                {wizard.csvSource !== 'drive' && (
+                  <div
+                    className="admin-radio-card-body admin-dropzone"
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) onCsvSelected(f); }}
+                  >
+                    <input id="wiz-csv" type="file" accept=".csv" onChange={e => onCsvSelected(e.target.files[0])} />
+                    <span className="admin-hint">or drag a .csv file here</span>
+                  </div>
+                )}
+              </div>
+              <div className={`admin-radio-card ${wizard.csvSource === 'drive' ? 'selected' : ''}`}>
+                <label className="admin-radio-card-label">
+                  <input type="radio" name="csv-source" checked={wizard.csvSource === 'drive'} onChange={() => patch({ csvSource: 'drive' })} />
+                  <span className="admin-radio-card-title">Use the newest export in a Google Drive folder</span>
+                </label>
+                {wizard.csvSource === 'drive' && (
+                  <div className="admin-radio-card-body">
+                    <label htmlFor="wiz-csv-drive-url">Drive folder link</label>
+                    <input
+                      id="wiz-csv-drive-url" type="url" value={wizard.driveFolder}
+                      onChange={e => patch({ driveFolder: e.target.value, csvError: '' })}
+                      placeholder="https://drive.google.com/..."
+                    />
+                    <div className="admin-drive-test-row">
+                      <button type="button" className="admin-btn" disabled={!wizard.driveFolder.trim() || csvLoading} onClick={handleLoadNewestCsv}>
+                        {csvLoading ? 'Loading…' : 'Load newest CSV'}
+                      </button>
+                    </div>
+                    {wizard.csvDriveMeta && (
+                      <p className="admin-hint">
+                        Loaded &lsquo;{wizard.csvDriveMeta.name}&rsquo; (newest of {wizard.csvDriveMeta.count} export{wizard.csvDriveMeta.count === 1 ? '' : 's'};
+                        {' '}skipped {wizard.csvDriveMeta.strippedRows} banner row{wizard.csvDriveMeta.strippedRows === 1 ? '' : 's'})
+                      </p>
+                    )}
+                    {wizard.csvError && <div className="admin-inline-error">{wizard.csvError}</div>}
+                  </div>
+                )}
+              </div>
             </div>
             {wizard.csvHeaders.length > 0 && (
               <div className="admin-csv-preview">
@@ -161,7 +229,16 @@ export default function DomainWizard({
           </div>
           <div className="admin-wizard-actions">
             <button type="button" className="admin-btn" onClick={onCancel}>Cancel</button>
-            <button type="button" className="admin-btn admin-btn-primary" disabled={!canLeaveStep1} onClick={() => patch({ step: 2 })}>Next</button>
+            <button
+              type="button" className="admin-btn admin-btn-primary" disabled={!canLeaveStep1}
+              onClick={() => patch({
+                step: 2,
+                // Loaded the CSV from a Drive folder? Preselect reusing it for PDFs too.
+                ...(wizard.driveFolder.trim() && wizard.papersMode === 'auto' ? { papersMode: 'same-drive' } : {}),
+              })}
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
@@ -171,15 +248,17 @@ export default function DomainWizard({
           <h3>Papers</h3>
           <p className="admin-wizard-hint">How should we get the PDFs for these methods?</p>
           <div className="admin-radio-cards">
-            <label className={`admin-radio-card ${wizard.papersMode === 'auto' ? 'selected' : ''}`}>
-              <input type="radio" name="papers-mode" checked={wizard.papersMode === 'auto'} onChange={() => patch({ papersMode: 'auto' })} />
-              <span className="admin-radio-card-title">Find them automatically (recommended)</span>
-              <span className="admin-hint">Searches arXiv, OpenAlex and Semantic Scholar using the Citation column. Closed-access papers won&rsquo;t be found.</span>
-            </label>
+            {wizard.driveFolder.trim() && (
+              <label className={`admin-radio-card ${wizard.papersMode === 'same-drive' ? 'selected' : ''}`}>
+                <input type="radio" name="papers-mode" checked={wizard.papersMode === 'same-drive'} onChange={() => patch({ papersMode: 'same-drive' })} />
+                <span className="admin-radio-card-title">Same Google Drive folder (PDFs in it or a subfolder)</span>
+                <span className="admin-hint">Reuses the folder the CSV was loaded from in step 1 &mdash; put the PDFs there too, at the top level or in a subfolder.</span>
+              </label>
+            )}
             <label className={`admin-radio-card ${wizard.papersMode === 'drive' ? 'selected' : ''}`}>
               <input type="radio" name="papers-mode" checked={wizard.papersMode === 'drive'} onChange={() => patch({ papersMode: 'drive' })} />
-              <span className="admin-radio-card-title">Google Drive folder (recommended for ongoing updates)</span>
-              <span className="admin-hint">Put the PDFs (and, if you like, the sheet&rsquo;s CSV exports) in one folder shared &ldquo;Anyone with the link&rdquo;. New PDFs are picked up every night.</span>
+              <span className="admin-radio-card-title">Google Drive folder (PDFs)</span>
+              <span className="admin-hint">Shared &ldquo;Anyone with the link&rdquo;. Name each PDF after its method, e.g. GraspGen &rarr; graspgen.pdf. New PDFs are picked up every night.</span>
               {wizard.papersMode === 'drive' && (
                 <>
                   <input
@@ -198,31 +277,23 @@ export default function DomainWizard({
                 </>
               )}
             </label>
-            <label className={`admin-radio-card ${wizard.papersMode === 'zip' ? 'selected' : ''}`}>
-              <input type="radio" name="papers-mode" checked={wizard.papersMode === 'zip'} onChange={() => patch({ papersMode: 'zip' })} />
-              <span className="admin-radio-card-title">Upload a small zip (&le; {ZIP_HARD_LIMIT_MB} MB)</span>
-              <span className="admin-hint">Hard limit — the server rejects anything bigger. For a bigger corpus, use the Drive link option above. Still auto-fetches anything missing.</span>
-              {wizard.papersMode === 'zip' && (
-                <>
-                  <input type="file" accept=".zip" onChange={e => onZipSelected(e.target.files[0])} />
-                  {pdfZipFile && <span className="admin-hint">{pdfZipFile.name} ({zipMB.toFixed(1)} MB)</span>}
-                  {zipTooBig && <div className="admin-inline-error">Over the {ZIP_HARD_LIMIT_MB} MB limit — use the Drive link option instead.</div>}
-                  <div className="admin-payload-meter">
-                    <div className="admin-payload-meter-track">
-                      <div
-                        className={`admin-payload-meter-fill ${payloadMB > PAYLOAD_HARD_LIMIT_MB ? 'over' : ''}`}
-                        style={{ width: `${Math.min(100, (payloadMB / PAYLOAD_HARD_LIMIT_MB) * 100)}%` }}
-                      />
-                    </div>
-                    <span className="admin-hint">{payloadMB.toFixed(1)} of {PAYLOAD_HARD_LIMIT_MB} MB request limit</span>
-                  </div>
-                </>
+            <label className={`admin-radio-card ${wizard.papersMode === 'link' ? 'selected' : ''}`}>
+              <input type="radio" name="papers-mode" checked={wizard.papersMode === 'link'} onChange={() => patch({ papersMode: 'link' })} />
+              <span className="admin-radio-card-title">Link to a zip or PDF hosted elsewhere</span>
+              <span className="admin-hint">Downloaded at build time and never committed to the repo. Still auto-fetches anything missing.</span>
+              {wizard.papersMode === 'link' && (
+                <input type="url" value={wizard.pdfUrl} onChange={e => patch({ pdfUrl: e.target.value })} placeholder="https://..." />
               )}
+            </label>
+            <label className={`admin-radio-card ${wizard.papersMode === 'auto' ? 'selected' : ''}`}>
+              <input type="radio" name="papers-mode" checked={wizard.papersMode === 'auto'} onChange={() => patch({ papersMode: 'auto' })} />
+              <span className="admin-radio-card-title">Find them automatically only</span>
+              <span className="admin-hint">Searches arXiv, OpenAlex and Semantic Scholar using the Citation column. Closed-access papers won&rsquo;t be found.</span>
             </label>
           </div>
           <div className="admin-wizard-actions">
             <button type="button" className="admin-btn" onClick={() => patch({ step: 1 })}>Back</button>
-            <button type="button" className="admin-btn admin-btn-primary" disabled={!canLeaveStep2} onClick={() => patch({ step: 3 })}>Next</button>
+            <button type="button" className="admin-btn admin-btn-primary" onClick={() => patch({ step: 3 })}>Next</button>
           </div>
         </div>
       )}
@@ -290,7 +361,7 @@ export default function DomainWizard({
           <details className="admin-advanced-disclosure">
             <summary>YAML preview</summary>
             <div className="admin-yaml-preview">
-              <pre>{generateYamlPreview(wizard.newDomain, wizard.editedConfig, wizard.csvFileName, wizard.papersMode === 'drive' ? wizard.pdfUrl : '')}</pre>
+              <pre>{generateYamlPreview(wizard.newDomain, previewConfig, wizard.csvFileName, previewPdfUrl)}</pre>
             </div>
           </details>
           {createError && <div className="admin-inline-error">{createError}</div>}

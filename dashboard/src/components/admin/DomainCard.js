@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StatusTag, IconLock } from './icons';
-import { relativeTime, absoluteTime, ZIP_HARD_LIMIT_MB } from './utils';
+import { relativeTime, absoluteTime } from './utils';
 import DriveFolderBlock from './DriveFolder';
 
 function domainStatus(domain, latestRun, latestDeploy) {
@@ -29,20 +29,21 @@ function domainStatus(domain, latestRun, latestDeploy) {
   return { tone: 'muted', text: 'Not built yet' };
 }
 
-function UpdateDataPanel({ domain, busy, error, onSubmitCsv, onSubmitPdfUrl, onSubmitZip }) {
+function UpdateDataPanel({ domain, busy, error, onSubmitCsv, onSubmitPdfUrl }) {
   const [mode, setMode] = useState('csv');
   const [csvFile, setCsvFile] = useState(null);
   const [pdfUrl, setPdfUrl] = useState('');
-  const [zipFile, setZipFile] = useState(null);
-  const zipTooBig = zipFile && zipFile.size > ZIP_HARD_LIMIT_MB * 1024 * 1024;
 
   return (
     <div className="admin-update-panel">
       <div className="admin-update-tabs">
         <button type="button" className={`admin-update-tab ${mode === 'csv' ? 'active' : ''}`} onClick={() => setMode('csv')}>Replace CSV</button>
         <button type="button" className={`admin-update-tab ${mode === 'url' ? 'active' : ''}`} onClick={() => setMode('url')}>Set PDF link</button>
-        <button type="button" className={`admin-update-tab ${mode === 'zip' ? 'active' : ''}`} onClick={() => setMode('zip')}>Upload small PDF zip</button>
       </div>
+      <p className="admin-hint">
+        To add papers, put the PDFs in this domain&rsquo;s Google Drive folder &mdash; existing papers are kept; new ones
+        are pulled in at the next build (tonight, or press Build).
+      </p>
 
       {mode === 'csv' && (
         <div className="admin-update-body">
@@ -56,28 +57,12 @@ function UpdateDataPanel({ domain, busy, error, onSubmitCsv, onSubmitPdfUrl, onS
       )}
       {mode === 'url' && (
         <div className="admin-update-body">
-          <label htmlFor={`pdfurl-${domain.slug}`}>Google Drive folder or zip link (shared &ldquo;Anyone with the link&rdquo;)</label>
-          <input id={`pdfurl-${domain.slug}`} type="url" value={pdfUrl} onChange={e => setPdfUrl(e.target.value)} placeholder="https://drive.google.com/..." />
-          <p className="admin-hint">Still auto-fetches anything missing from arXiv / OpenAlex / Semantic Scholar.</p>
+          <label htmlFor={`pdfurl-${domain.slug}`}>Link to a zip or PDF hosted elsewhere</label>
+          <input id={`pdfurl-${domain.slug}`} type="url" value={pdfUrl} onChange={e => setPdfUrl(e.target.value)} placeholder="https://..." />
+          <p className="admin-hint">Downloaded at build time, never committed. Still auto-fetches anything missing from arXiv / OpenAlex / Semantic Scholar.</p>
           <button type="button" className="admin-btn admin-btn-primary" disabled={!pdfUrl.trim() || busy}
             onClick={() => onSubmitPdfUrl(pdfUrl.trim())}>
             {busy ? 'Saving…' : 'Save link'}
-          </button>
-        </div>
-      )}
-      {mode === 'zip' && (
-        <div className="admin-update-body">
-          <label htmlFor={`zip-${domain.slug}`}>Zip of PDF files (&le; {ZIP_HARD_LIMIT_MB} MB — the server rejects bigger ones)</label>
-          <input id={`zip-${domain.slug}`} type="file" accept=".zip" onChange={e => setZipFile(e.target.files[0] || null)} />
-          {zipFile && <span className="admin-hint">{zipFile.name} ({(zipFile.size / 1024 / 1024).toFixed(1)} MB)</span>}
-          {zipTooBig && (
-            <div className="admin-inline-error">
-              That zip is over {ZIP_HARD_LIMIT_MB} MB. Use &ldquo;Set PDF link&rdquo; with a shared Drive folder instead.
-            </div>
-          )}
-          <button type="button" className="admin-btn admin-btn-primary" disabled={!zipFile || zipTooBig || busy}
-            onClick={() => onSubmitZip(zipFile)}>
-            {busy ? 'Uploading…' : 'Upload zip'}
           </button>
         </div>
       )}
@@ -88,7 +73,7 @@ function UpdateDataPanel({ domain, busy, error, onSubmitCsv, onSubmitPdfUrl, onS
 
 export default function DomainCard({
   domain, latestRun, latestDeploy, hasActiveRun, buildingAction, updating, updateError,
-  updateOpen, onToggleUpdate, onSubmitCsv, onSubmitPdfUrl, onSubmitZip,
+  updateOpen, onToggleUpdate, onSubmitCsv, onSubmitPdfUrl,
   onBuild, onBuildBenchmarks, onDelete,
   driveEntry, driveChecking, driveCheckError, onDriveCheckNow, onDriveTestLink, onDriveSaveFolder,
 }) {
@@ -151,7 +136,6 @@ export default function DomainCard({
           error={updateError}
           onSubmitCsv={onSubmitCsv}
           onSubmitPdfUrl={onSubmitPdfUrl}
-          onSubmitZip={onSubmitZip}
         />
       )}
 
