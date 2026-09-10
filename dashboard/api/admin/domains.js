@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
   const GITHUB_OWNER = process.env.GITHUB_OWNER || 'surbhikapoor19';
   const GITHUB_REPO = process.env.GITHUB_REPO || 'domain-explorer';
-  const ghToken = process.env.GH_PAT;
+  const ghToken = (process.env.GH_PAT || '').trim();
 
   try {
     // List domains from the domains/ directory in the repo

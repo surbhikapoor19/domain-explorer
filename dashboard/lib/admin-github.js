@@ -20,7 +20,7 @@ export function ghHeaders(token) {
 export function repoInfo() {
   const owner = process.env.GITHUB_OWNER || 'surbhikapoor19';
   const repo = process.env.GITHUB_REPO || 'domain-explorer';
-  return { owner, repo, headers: ghHeaders(process.env.GH_PAT) };
+  return { owner, repo, headers: ghHeaders((process.env.GH_PAT || '').trim()) };
 }
 
 const MAX_ATTEMPTS = 3;

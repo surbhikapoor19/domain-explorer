@@ -162,7 +162,7 @@ export default async function handler(req, res) {
 
   const { owner, repo, headers } = repoInfo();
   const base = `https://api.github.com/repos/${owner}/${repo}`;
-  const ghToken = process.env.GH_PAT;
+  const ghToken = (process.env.GH_PAT || '').trim();
 
   try {
     if (req.method === 'GET') return await handleGet(req, res, base, headers, ghToken);

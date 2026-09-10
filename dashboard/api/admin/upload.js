@@ -91,7 +91,9 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const ghToken = process.env.GH_PAT;
+  // Trim: an env value pasted with a trailing newline still works for Bearer headers (fetch strips
+  // it) but corrupts the base64 Basic credentials the LFS upload uses -> "Bad credentials".
+  const ghToken = (process.env.GH_PAT || '').trim();
   if (!ghToken) {
     return res.status(500).json({ error: 'GH_PAT not configured' });
   }

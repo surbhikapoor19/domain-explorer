@@ -119,7 +119,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'run_id (digits) is required' });
   }
 
-  const ghToken = process.env.GH_PAT;
+  const ghToken = (process.env.GH_PAT || '').trim();
   if (!ghToken) {
     return res.status(500).json({ error: 'GH_PAT not configured' });
   }
