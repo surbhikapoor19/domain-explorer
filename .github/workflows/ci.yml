@@ -56,6 +56,14 @@ jobs:
         working-directory: dashboard
         run: npm ci --ignore-scripts
 
+      - name: Vercel function limit (Hobby plan deploys at most 12)
+        # Every .js file in dashboard/api is one serverless function. A 13th made the Vercel deploy fail
+        # while every test still passed, so catch it here.
+        run: |
+          n=$(find dashboard/api -name '*.js' ! -name '_*' | wc -l | tr -d ' ')
+          echo "serverless functions: $n"
+          if [ "$n" -gt 12 ]; then echo "::error::$n functions in dashboard/api — Vercel Hobby allows 12. Merge endpoints or move helpers to dashboard/lib/."; exit 1; fi
+
       - name: Admin API tests (node:test, GitHub/Drive/providers mocked)
         working-directory: dashboard
         run: node --test tests/admin-api/admin-api.test.mjs tests/admin-api/drive-status.test.mjs
