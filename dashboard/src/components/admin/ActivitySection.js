@@ -29,7 +29,7 @@ function scopeLabel(scope) {
 }
 
 function titleFor(run, domains) {
-  if (run.kind === 'nightly') return 'Nightly sheet sync';
+  if (run.kind === 'nightly') return 'Nightly Drive sync';
   if (run.kind === 'switch') return 'Domain switch';
   // Runs from before the workflow's run-name label carry no domain/scope.
   if (!run.domain) return 'Domain build';

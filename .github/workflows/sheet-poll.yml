@@ -142,6 +142,13 @@ jobs:
               gh.write(f'changed={json.dumps(changed)}\n')
           PY
 
+      - name: Check Drive folders for new PDFs
+        id: drive
+        continue-on-error: true
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: python3 scripts/drive_sync.py
+
       - name: Commit changed CSVs
         if: steps.poll.outputs.changed != '[]'
         run: |
@@ -152,29 +159,43 @@ jobs:
           git pull --rebase origin "${GITHUB_REF_NAME}" && git push
 
       - name: Trigger rebuilds for changed domains
-        if: steps.poll.outputs.changed != '[]'
+        if: steps.poll.outputs.changed != '[]' || (steps.drive.outputs.pdf_changed != '' && steps.drive.outputs.pdf_changed != '[]')
         env:
           DISPATCH_TOKEN: ${{ secrets.GH_PAT }}
+          POLL_CHANGED: ${{ steps.poll.outputs.changed }}
+          DRIVE_CHANGED: ${{ steps.drive.outputs.pdf_changed }}
         run: |
           if [ -z "$DISPATCH_TOKEN" ]; then
-            echo "::warning::GH_PAT secret not set — CSV committed but cannot dispatch domain-build. Set GH_PAT (a PAT with repo scope) to enable auto-rebuild."
+            echo "::warning::GH_PAT secret not set — cannot dispatch domain-build. Set GH_PAT (a PAT with repo scope) to enable auto-rebuild."
             exit 0
           fi
-          echo '${{ steps.poll.outputs.changed }}' | python3 -c "
-          import sys, json, os, urllib.request
+          python3 -c "
+          import json, os, urllib.request
           repo = os.environ['GITHUB_REPOSITORY']; tok = os.environ['DISPATCH_TOKEN']
-          for c in json.load(sys.stdin):
-              # pages set by sheet_diff.classify (detect-changes step):
-              #   'precompute' = edit-only change -> CSV-only refresh, NO PDF re-ingest.
-              #       (A build SCOPE, not the Explorer page.) The graph builder falls
-              #       back to the committed kg-full.json, so the CSV-driven plots refresh
-              #       from the new csv; the overwrite guard preserves the copilot corpus.
-              #   'new-paper' = a row was added/removed -> full pipeline + benchmark
-              #       (fetch the new PDF and integrate it into every surface, or prune a
-              #       removed paper).
-              pages = c.get('pages', 'precompute')
-              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': c['domain'], 'pages': pages}}).encode()
+          poll = json.loads(os.environ.get('POLL_CHANGED') or '[]')
+          drive = json.loads(os.environ.get('DRIVE_CHANGED') or '[]')
+
+          # Merge per domain: a 'new-paper' from either source (an edited sheet row,
+          # or a PDF added/removed in the Drive folder) wins over 'precompute', and
+          # each domain is dispatched exactly once even when both sources flagged it.
+          #   'precompute' = edit-only change -> CSV-only refresh, NO PDF re-ingest.
+          #       (A build SCOPE, not the Explorer page.) The graph builder falls
+          #       back to the committed kg-full.json, so the CSV-driven plots refresh
+          #       from the new csv; the overwrite guard preserves the copilot corpus.
+          #   'new-paper' = a row (or a Drive-folder PDF) was added/removed -> full
+          #       pipeline + benchmark (fetch the new PDF and integrate it into every
+          #       surface, or prune a removed paper).
+          merged = {}
+          for c in poll:
+              merged[c['domain']] = c.get('pages', 'precompute')
+          for c in drive:
+              d = c['domain']
+              if merged.get(d) != 'new-paper':
+                  merged[d] = c.get('pages', 'new-paper')
+
+          for domain, pages in merged.items():
+              body = json.dumps({'event_type': 'domain-build', 'client_payload': {'domain': domain, 'pages': pages}}).encode()
               req = urllib.request.Request(f'https://api.github.com/repos/{repo}/dispatches', data=body,
                   headers={'Authorization': f'Bearer {tok}', 'Accept': 'application/vnd.github+json'})
-              urllib.request.urlopen(req); print(f'dispatched domain-build ({pages}) for', c['domain'])
+              urllib.request.urlopen(req); print(f'dispatched domain-build ({pages}) for', domain)
           "

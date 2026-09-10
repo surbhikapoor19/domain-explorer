@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { repoInfo, commitChanges } from '../../lib/admin-github.js';
+import { driveFolderId } from '../../lib/admin-drive.js';
 
 export const config = {
   api: { bodyParser: { sizeLimit: '100mb' } },
@@ -35,6 +36,23 @@ function setPdfUrlLine(yamlText, pdfUrl) {
   }
   if (/^papers_dir:.*$/m.test(yamlText)) {
     return yamlText.replace(/^(papers_dir:.*)$/m, `$1\n${line}`);
+  }
+  return yamlText.replace(/\n?$/, `\n${line}\n`);
+}
+
+function setDriveFolderLine(yamlText, driveFolder) {
+  const line = `drive_folder: "${escapeYamlDoubleQuoted(driveFolder)}"`;
+  if (/^drive_folder:.*$/m.test(yamlText)) {
+    return yamlText.replace(/^drive_folder:.*$/m, line);
+  }
+  if (/^pdf_url:.*$/m.test(yamlText)) {
+    return yamlText.replace(/^(pdf_url:.*)$/m, `$1\n${line}`);
+  }
+  if (/^papers_dir:.*$/m.test(yamlText)) {
+    return yamlText.replace(/^(papers_dir:.*)$/m, `$1\n${line}`);
+  }
+  if (/^csv_path:.*$/m.test(yamlText)) {
+    return yamlText.replace(/^(csv_path:.*)$/m, `$1\n${line}`);
   }
   return yamlText.replace(/\n?$/, `\n${line}\n`);
 }
@@ -116,7 +134,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'GH_PAT not configured' });
   }
 
-  const { domain, csvContent, csvFilename, pdfUrl, displayName, methodNoun, updateOnly, pdfZipBase64, yamlConfig, benchmarkConfig } = req.body || {};
+  const { domain, csvContent, csvFilename, pdfUrl, driveFolder, displayName, methodNoun, updateOnly, pdfZipBase64, yamlConfig, benchmarkConfig } = req.body || {};
   if (!domain) {
     return res.status(400).json({ error: 'domain is required' });
   }
@@ -125,6 +143,9 @@ export default async function handler(req, res) {
   }
   if (!updateOnly && !csvContent) {
     return res.status(400).json({ error: 'csvContent is required for new domains' });
+  }
+  if (driveFolder && !driveFolderId(driveFolder)) {
+    return res.status(400).json({ error: 'driveFolder must be a Google Drive folder link (drive.google.com/drive/folders/...)' });
   }
 
   const { owner: GITHUB_OWNER, repo: GITHUB_REPO, headers } = repoInfo();
@@ -150,8 +171,8 @@ export default async function handler(req, res) {
       let yamlText = Buffer.from(contentsData.content, 'base64').toString('utf8');
       let yamlModified = false;
 
-      if (!csvContent && !pdfUrl && !pdfZipBase64) {
-        return res.status(400).json({ error: 'Provide csvContent, pdfUrl, or pdfZipBase64 to update' });
+      if (!csvContent && !pdfUrl && !pdfZipBase64 && !driveFolder) {
+        return res.status(400).json({ error: 'Provide csvContent, pdfUrl, pdfZipBase64, or driveFolder to update' });
       }
 
       if (csvContent) {
@@ -166,6 +187,11 @@ export default async function handler(req, res) {
 
       if (pdfUrl) {
         yamlText = setPdfUrlLine(yamlText, pdfUrl);
+        yamlModified = true;
+      }
+
+      if (driveFolder) {
+        yamlText = setDriveFolderLine(yamlText, driveFolder);
         yamlModified = true;
       }
 

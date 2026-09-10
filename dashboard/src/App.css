@@ -6175,6 +6175,23 @@ body {
 
 .admin-loading, .admin-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 2rem 0; }
 
+/* Google Drive folder block — sits under the status line, above the build/update actions */
+.admin-drive-block { border-top: 1px solid var(--border-light); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+.admin-drive-status-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.admin-drive-title { font-weight: 600; color: var(--text); }
+.admin-drive-open-link { color: var(--primary); text-decoration: none; font-weight: 500; }
+.admin-drive-open-link:hover { text-decoration: underline; }
+.admin-drive-facts { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--text-mid); }
+.admin-drive-details summary { cursor: pointer; font-weight: 600; color: var(--text-mid); }
+.admin-drive-counted { margin: 0; }
+.admin-drive-empty { margin: 0; }
+.admin-drive-actions { display: flex; gap: 6px; }
+.admin-drive-form { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 2px; }
+.admin-drive-form label { font-size: 12px; font-weight: 600; color: var(--text-mid); }
+.admin-drive-form input[type="url"] { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; box-sizing: border-box; }
+.admin-drive-form-actions { display: flex; gap: 6px; }
+.admin-drive-test-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
 /* Update-data inline panel */
 .admin-update-panel { border-top: 1px solid var(--border-light); padding-top: 8px; margin-top: 4px; }
 .admin-update-tabs { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }

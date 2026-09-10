@@ -5,7 +5,7 @@ import DomainWizard from './admin/DomainWizard';
 import ActivitySection from './admin/ActivitySection';
 import SettingsSection from './admin/SettingsSection';
 import DeleteDialog from './admin/DeleteDialog';
-import { parseCSV, defaultColumnMapping, ZIP_HARD_LIMIT_MB } from './admin/utils';
+import { parseCSV, defaultColumnMapping, ZIP_HARD_LIMIT_MB, isDriveFolderUrl } from './admin/utils';
 
 const POLL_SLOW = 15000;
 const POLL_FAST = 5000;
@@ -100,6 +100,97 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     } catch (_) { /* ignore */ }
   }, [authHeaders]);
 
+  // ─── Google Drive folder status ─────────────────────────────────────────
+  const [driveStatus, setDriveStatus] = useState({});
+  const [driveCheckingMap, setDriveCheckingMap] = useState({});
+  const [driveErrorMap, setDriveErrorMap] = useState({});
+
+  const fetchDriveStatus = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/drive-status', { headers: authHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        const entries = data.domains || [];
+        const map = {};
+        entries.forEach(e => { map[e.domain] = e; });
+        setDriveStatus(map);
+        return entries;
+      }
+    } catch (_) { /* ignore — the block below renders nothing until data arrives */ }
+    return [];
+  }, [authHeaders]);
+
+  // Merge a { stored, matching } response (from a check or a markSynced call) into
+  // the card's slice of driveStatus without disturbing folderUrl/pdfUrl/pdfSource.
+  const applyDriveResult = useCallback((slug, data) => {
+    setDriveStatus(prev => ({
+      ...prev,
+      [slug]: { ...(prev[slug] || { domain: slug }), stored: data.stored, matching: data.matching },
+    }));
+  }, []);
+
+  const handleDriveCheckNow = useCallback(async (slug) => {
+    setDriveCheckingMap(prev => ({ ...prev, [slug]: true }));
+    setDriveErrorMap(prev => { const next = { ...prev }; delete next[slug]; return next; });
+    try {
+      const res = await fetch('/api/admin/drive-status', {
+        method: 'POST',
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain: slug }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not check the folder right now.');
+      applyDriveResult(slug, data);
+      if (data.warning) setDriveErrorMap(prev => ({ ...prev, [slug]: data.warning }));
+    } catch (err) {
+      setDriveErrorMap(prev => ({ ...prev, [slug]: err.message }));
+    }
+    setDriveCheckingMap(prev => { const next = { ...prev }; delete next[slug]; return next; });
+  }, [authHeaders, applyDriveResult]);
+
+  // Marks the folder's current PDF set as "picked up by a build" — called right after
+  // a full build (not a benchmark-only or precompute-only one) is successfully triggered
+  // for a domain that has a Drive folder, so the "changed since the last build" note clears.
+  const markDriveSynced = useCallback(async (slug) => {
+    try {
+      const res = await fetch('/api/admin/drive-status', {
+        method: 'POST',
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain: slug, markSynced: true }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) applyDriveResult(slug, data);
+    } catch (_) { /* best-effort — the card's own "Check now" can recover */ }
+  }, [authHeaders, applyDriveResult]);
+
+  const handleDriveTestLink = useCallback(async (url) => {
+    const res = await fetch('/api/admin/drive-status', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || data.result?.message || 'That link could not be tested.');
+    return data;
+  }, [authHeaders]);
+
+  const handleDriveSaveFolder = useCallback(async (slug, url) => {
+    const res = await fetch('/api/admin/upload', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ domain: slug, updateOnly: true, driveFolder: url }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not connect that folder.');
+    await fetch('/api/admin/drive-status', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ domain: slug }),
+    }).catch(() => { /* the domain card's own "Check now" can retry */ });
+    await Promise.all([fetchDomains(), fetchDriveStatus()]);
+    setToast('Folder connected — new PDFs are pulled in at the next build (nightly, or press Build)');
+  }, [authHeaders, fetchDomains, fetchDriveStatus]);
+
   const startPolling = useCallback((interval) => {
     clearInterval(pollRef.current);
     pollIntervalRef.current = interval;
@@ -131,9 +222,24 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     return () => clearInterval(pollRef.current);
   }, [authenticated, fetchBuildStatus, startPolling, fetchKeys]);
 
+  useEffect(() => {
+    if (!authenticated) return;
+    let cancelled = false;
+    (async () => {
+      const entries = await fetchDriveStatus();
+      // A domain that has a folder but has never been counted (stored === null) gets
+      // exactly one live count on load — sequentially, so we never storm the API.
+      for (const entry of entries) {
+        if (cancelled) return;
+        if (entry.folderUrl && !entry.stored) await handleDriveCheckNow(entry.domain);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [authenticated, fetchDriveStatus, handleDriveCheckNow]);
+
   const handleRefreshAll = async () => {
     setRefreshing(true);
-    await Promise.all([fetchDomains(), fetchBuildStatus(), fetchKeys()]);
+    await Promise.all([fetchDomains(), fetchBuildStatus(), fetchKeys(), fetchDriveStatus()]);
     setRefreshing(false);
   };
 
@@ -158,6 +264,11 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Build trigger failed');
+      // A full build (not a benchmark- or precompute-only one) picks up whatever PDFs
+      // are in the Drive folder right now — mark it synced so the "changed since the
+      // last build" note clears until the folder changes again.
+      const isFullBuild = pages === undefined || pages === 'all' || pages === 'new-paper';
+      if (isFullBuild && driveStatus[slug]?.folderUrl) markDriveSynced(slug);
       setTimeout(async () => {
         await fetchBuildStatus();
         startPolling(POLL_FAST);
@@ -433,7 +544,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
     setCreateError(null);
     try {
       const csvContent = await csvFile.text();
-      const cfg = wizard.editedConfig || {};
+      const cfg = { ...(wizard.editedConfig || {}) };
       const slug = wizard.newDomain.trim().replace(/\s+/g, '_').toLowerCase();
       const dashed = slug.replace(/_/g, '-');
       const bm = cfg.benchmarks || {};
@@ -459,7 +570,12 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
         });
         pdfZipFilename = pdfZipFile.name;
       }
-      const pdfUrl = wizard.papersMode === 'drive' ? (wizard.pdfUrl.trim() || undefined) : undefined;
+      // A Drive FOLDER link is a config field (drive_folder — nightly sync), not a one-off
+      // pdfUrl; a zip/pdf link (or a Drive file share) still goes through pdfUrl as before.
+      const driveLink = wizard.papersMode === 'drive' ? wizard.pdfUrl.trim() : '';
+      const driveFolderLink = isDriveFolderUrl(driveLink) ? driveLink : '';
+      if (driveFolderLink) cfg.drive_folder = driveFolderLink;
+      const pdfUrl = driveLink && !driveFolderLink ? driveLink : undefined;
 
       const res = await fetch('/api/admin/upload', {
         method: 'POST',
@@ -481,6 +597,18 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
       let data;
       try { data = JSON.parse(text); } catch (_) { throw new Error(text.slice(0, 200)); }
       if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      if (driveFolderLink) {
+        // Store the first count so the new domain's card doesn't sit on "never checked".
+        // If a build is starting right below, mark that first count synced in the same
+        // call instead of a separate plain check.
+        fetch('/api/admin/drive-status', {
+          method: 'POST',
+          headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify(wizard.startBuildNow ? { domain: slug, markSynced: true } : { domain: slug }),
+        }).catch(() => { /* the domain card's own "Check now" can retry */ })
+          .finally(() => fetchDriveStatus());
+      }
 
       if (wizard.startBuildNow) {
         handleTriggerBuild(slug, includeBenchmarks ? 'new-paper' : 'all');
@@ -553,6 +681,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             domains={domains}
             keyProviders={keyProviders}
             ghPat={ghPat}
+            driveStatus={driveStatus}
             lastRefreshedAt={lastRefreshedAt}
             refreshing={refreshing}
             onRefresh={handleRefreshAll}
@@ -581,6 +710,12 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
             onBuildBenchmarks={slug => handleTriggerBuild(slug, 'benchmark')}
             onDelete={domain => { setDeleteTarget(domain); setDeleteError(null); }}
             onOpenWizard={handleOpenWizard}
+            driveStatus={driveStatus}
+            driveCheckingMap={driveCheckingMap}
+            driveErrorMap={driveErrorMap}
+            onDriveCheckNow={handleDriveCheckNow}
+            onDriveTestLink={handleDriveTestLink}
+            onDriveSaveFolder={handleDriveSaveFolder}
           />
           {/* The wizard opens BELOW the cards so existing domains stay in view. */}
           {wizardOpen && (
@@ -602,6 +737,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
               onUseDefaultMapping={handleUseDefaultMapping}
               onCreate={handleCreate}
               onCancel={handleCancelWizard}
+              onTestDriveLink={handleDriveTestLink}
             />
             </div>
           )}

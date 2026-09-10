@@ -85,6 +85,27 @@ export function isValidSlug(s) {
   return /^[a-z][a-z0-9_]*$/.test(s || '');
 }
 
+// A Google Drive FOLDER link (as opposed to a file/zip share link) — the only
+// kind that can be saved as `drive_folder` / the nightly sync source.
+export function isDriveFolderUrl(url) {
+  return /drive\.google\.com\/.*\/folders\//i.test(url || '');
+}
+
+// Shared "Test connection" result line for a Drive folder link — used by both
+// the domain card's Connect/Change form and the new-domain wizard's Papers step.
+export function formatDriveTestResult(data) {
+  const r = data?.result;
+  if (!r || (r.status && r.status !== 'ok')) {
+    return { ok: false, text: r?.message || 'That link could not be reached.' };
+  }
+  const pdfCount = r.pdf?.count ?? 0;
+  const csvCount = r.csv?.count ?? 0;
+  return {
+    ok: true,
+    text: `Connected to ‘${r.title || 'folder'}’ · ${pdfCount} PDF${pdfCount === 1 ? '' : 's'} · ${csvCount} sheet export${csvCount === 1 ? '' : 's'}`,
+  };
+}
+
 // Strip a UTF-8 BOM and normalize CRLF/CR line endings before parsing.
 export function cleanCsvText(text) {
   return (text || '').replace(/^﻿/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');

@@ -6,6 +6,7 @@ export default function DomainsSection({
   updateOpenSlug, onToggleUpdate, updating, updateError,
   onSubmitCsv, onSubmitPdfUrl, onSubmitZip,
   onBuild, onBuildBenchmarks, onDelete, onOpenWizard,
+  driveStatus, driveCheckingMap, driveErrorMap, onDriveCheckNow, onDriveTestLink, onDriveSaveFolder,
 }) {
   return (
     <div className="admin-domain-grid">
@@ -31,6 +32,12 @@ export default function DomainsSection({
           onBuild={onBuild}
           onBuildBenchmarks={onBuildBenchmarks}
           onDelete={onDelete}
+          driveEntry={driveStatus?.[d.slug]}
+          driveChecking={!!driveCheckingMap?.[d.slug]}
+          driveCheckError={driveErrorMap?.[d.slug]}
+          onDriveCheckNow={onDriveCheckNow}
+          onDriveTestLink={onDriveTestLink}
+          onDriveSaveFolder={(url) => onDriveSaveFolder(d.slug, url)}
         />
       ))}
       <button type="button" className="admin-new-domain-tile" onClick={onOpenWizard}>

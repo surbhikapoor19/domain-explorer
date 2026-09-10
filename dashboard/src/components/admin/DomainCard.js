@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StatusTag, IconLock } from './icons';
 import { relativeTime, absoluteTime, ZIP_HARD_LIMIT_MB } from './utils';
+import DriveFolderBlock from './DriveFolder';
 
 function domainStatus(domain, latestRun, latestDeploy) {
   if (latestRun && (latestRun.status === 'in_progress' || latestRun.status === 'queued')) {
@@ -89,6 +90,7 @@ export default function DomainCard({
   domain, latestRun, latestDeploy, hasActiveRun, buildingAction, updating, updateError,
   updateOpen, onToggleUpdate, onSubmitCsv, onSubmitPdfUrl, onSubmitZip,
   onBuild, onBuildBenchmarks, onDelete,
+  driveEntry, driveChecking, driveCheckError, onDriveCheckNow, onDriveTestLink, onDriveSaveFolder,
 }) {
   const status = domainStatus(domain, latestRun, latestDeploy);
   const domainPath = `/${domain.slug.replace(/_/g, '-')}`;
@@ -116,6 +118,17 @@ export default function DomainCard({
           <span className="admin-domain-last-build" title={absoluteTime(lastBuildIso)}>last build {relativeTime(lastBuildIso)}</span>
         )}
       </div>
+
+      <DriveFolderBlock
+        domainSlug={domain.slug}
+        entry={driveEntry}
+        checking={driveChecking}
+        checkError={driveCheckError}
+        hasActiveRun={hasActiveRun}
+        onCheckNow={onDriveCheckNow}
+        onTestLink={onDriveTestLink}
+        onSaveFolder={onDriveSaveFolder}
+      />
 
       <div className="admin-domain-actions">
         <button type="button" className="admin-btn admin-btn-primary" onClick={onToggleUpdate} disabled={hasActiveRun} title={hasActiveRun ? waitReason : undefined}>

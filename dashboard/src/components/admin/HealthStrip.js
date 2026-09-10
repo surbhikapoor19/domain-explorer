@@ -44,12 +44,22 @@ function ghTokenChip(ghPat) {
   return { tone: 'muted', text: `expires in ${days} days` };
 }
 
-export default function HealthStrip({ runs, deployments, domains, keyProviders, ghPat, lastRefreshedAt, refreshing, onRefresh }) {
+function driveFoldersChip(driveStatus) {
+  const entries = Object.values(driveStatus || {});
+  const connected = entries.filter(e => e.folderUrl);
+  if (!connected.length) return { tone: 'muted', text: 'none connected' };
+  const needsAttention = connected.filter(e => ['not_public', 'not_found'].includes(e.stored?.folder?.status));
+  if (needsAttention.length) return { tone: 'failed', text: `${needsAttention.length} ${needsAttention.length === 1 ? 'needs' : 'need'} attention` };
+  return { tone: 'success', text: `${connected.length} connected` };
+}
+
+export default function HealthStrip({ runs, deployments, domains, keyProviders, ghPat, driveStatus, lastRefreshedAt, refreshing, onRefresh }) {
   const pipeline = pipelineChip(runs, domains);
   const latestDeploy = [...deployments].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
   const website = websiteStatus(latestDeploy);
   const aiKeys = aiKeysChip(keyProviders);
   const ghToken = ghTokenChip(ghPat);
+  const driveFolders = driveFoldersChip(driveStatus);
 
   return (
     <div className="admin-health-strip">
@@ -68,6 +78,10 @@ export default function HealthStrip({ runs, deployments, domains, keyProviders, 
       <a className="admin-health-chip" href="#settings">
         <span className="admin-health-label">GitHub token</span>
         <StatusTag tone={ghToken.tone}>{ghToken.text}</StatusTag>
+      </a>
+      <a className="admin-health-chip" href="#domains">
+        <span className="admin-health-label">Drive folders</span>
+        <StatusTag tone={driveFolders.tone}>{driveFolders.text}</StatusTag>
       </a>
       <div className="admin-health-refresh">
         <span className="admin-health-updated" title={absoluteTime(lastRefreshedAt)}>

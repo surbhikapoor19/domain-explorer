@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ConfigEditor, generateYamlPreview } from './ConfigEditor';
 import {
   slugifyDomain, isValidSlug, nameColumnStatus, hasCitationColumn,
-  estimatePayloadMB, ZIP_HARD_LIMIT_MB, PAYLOAD_HARD_LIMIT_MB,
+  estimatePayloadMB, ZIP_HARD_LIMIT_MB, PAYLOAD_HARD_LIMIT_MB, formatDriveTestResult,
 } from './utils';
 
 const STEPS = ['Data', 'Papers', 'Configure', 'Review & create'];
@@ -40,8 +40,26 @@ export default function DomainWizard({
   proposing, uploading, createError,
   patch, setEditedConfig, onCsvSelected, onZipSelected,
   onPropose, onUseDefaultMapping, onCreate, onCancel,
+  onTestDriveLink,
 }) {
   const step = wizard.step;
+  const [driveTesting, setDriveTesting] = useState(false);
+  const [driveTestResult, setDriveTestResult] = useState(null);
+
+  const handleTestDriveLink = async () => {
+    const url = wizard.pdfUrl.trim();
+    if (!url) return;
+    setDriveTesting(true);
+    setDriveTestResult(null);
+    try {
+      const data = await onTestDriveLink(url);
+      setDriveTestResult(formatDriveTestResult(data));
+    } catch (err) {
+      setDriveTestResult({ ok: false, text: err.message });
+    }
+    setDriveTesting(false);
+  };
+
   const dashed = (wizard.newDomain || '').replace(/_/g, '-');
   const slugValid = isValidSlug(wizard.newDomain);
   const slugTaken = domains.some(d => d.slug === wizard.newDomain);
@@ -160,10 +178,24 @@ export default function DomainWizard({
             </label>
             <label className={`admin-radio-card ${wizard.papersMode === 'drive' ? 'selected' : ''}`}>
               <input type="radio" name="papers-mode" checked={wizard.papersMode === 'drive'} onChange={() => patch({ papersMode: 'drive' })} />
-              <span className="admin-radio-card-title">Link a Google Drive folder or zip</span>
-              <span className="admin-hint">Must be shared &ldquo;Anyone with the link&rdquo;. Name each PDF after its method, e.g. GraspGen &rarr; graspgen.pdf. Still auto-fetches anything missing.</span>
+              <span className="admin-radio-card-title">Google Drive folder (recommended for ongoing updates)</span>
+              <span className="admin-hint">Put the PDFs (and, if you like, the sheet&rsquo;s CSV exports) in one folder shared &ldquo;Anyone with the link&rdquo;. New PDFs are picked up every night.</span>
               {wizard.papersMode === 'drive' && (
-                <input type="url" value={wizard.pdfUrl} onChange={e => patch({ pdfUrl: e.target.value })} placeholder="https://drive.google.com/..." />
+                <>
+                  <input
+                    type="url" value={wizard.pdfUrl}
+                    onChange={e => { patch({ pdfUrl: e.target.value }); setDriveTestResult(null); }}
+                    placeholder="https://drive.google.com/..."
+                  />
+                  <div className="admin-drive-test-row">
+                    <button type="button" className="admin-btn" disabled={!wizard.pdfUrl.trim() || driveTesting} onClick={handleTestDriveLink}>
+                      {driveTesting ? 'Testing…' : 'Test connection'}
+                    </button>
+                    {driveTestResult && (
+                      <span className={driveTestResult.ok ? 'admin-hint' : 'admin-inline-error'}>{driveTestResult.text}</span>
+                    )}
+                  </div>
+                </>
               )}
             </label>
             <label className={`admin-radio-card ${wizard.papersMode === 'zip' ? 'selected' : ''}`}>

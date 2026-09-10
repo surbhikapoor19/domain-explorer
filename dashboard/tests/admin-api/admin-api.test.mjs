@@ -648,6 +648,26 @@ describe('upload', async () => {
     assert.equal(cap.patches.length, 0, 'nothing committed');
   });
 
+  test('updateOnly + driveFolder connects a Google Drive folder (sets drive_folder; rejects non-folder links)', async () => {
+    let cap = {};
+    installFetch([contentsRoute(YAML), ...gitChain({ captured: cap })]);
+    let res = mockRes();
+    const folder = 'https://drive.google.com/drive/folders/1TOPFOLDERXXXXXXXXXXXXXXX?usp=sharing';
+    await handler(mkReq('POST', { body: { domain: 'test_domain', updateOnly: true, driveFolder: folder } }), res);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    const yaml = committed(cap)['domains/test_domain.yaml'];
+    assert.equal((yaml.match(/^drive_folder:/gm) || []).length, 1);
+    assert.match(yaml, /^drive_folder: "https:\/\/drive\.google\.com\/drive\/folders\/1TOPFOLDERXXXXXXXXXXXXXXX\?usp=sharing"$/m);
+    assert.match(yaml, /^csv_path: datasets\/test-domain\/test\.csv$/m);
+
+    cap = {};
+    installFetch([contentsRoute(YAML), ...gitChain({ captured: cap })]);
+    res = mockRes();
+    await handler(mkReq('POST', { body: { domain: 'test_domain', updateOnly: true, driveFolder: 'https://example.org/papers.zip' } }), res);
+    assert.equal(res.statusCode, 400);
+    assert.equal(cap.patches.length, 0);
+  });
+
   test('upload survives a concurrent push (ref 422 then 200)', async () => {
     const cap = {};
     installFetch([contentsRoute(YAML), ...gitChain({ captured: cap, patchStatuses: [422, 200] })]);

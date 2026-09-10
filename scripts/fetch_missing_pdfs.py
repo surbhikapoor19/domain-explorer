@@ -24,6 +24,7 @@ Only Python stdlib is used (urllib for HTTP). Closed-access papers with no OA
 PDF are expected to stay unresolved; the script still exits 0.
 """
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -420,6 +421,23 @@ def _yaml_pdf_url(domain_slug_us):
     return None
 
 
+def _yaml_drive_folder(domain_slug_us):
+    """Read ``drive_folder:`` from ``domains/<domain>.yaml`` (same minimal
+    stdlib line-parse as ``_yaml_pdf_url``). Returns the stripped URL string,
+    or None when the YAML is absent or declares no drive_folder."""
+    yaml_path = REPO_ROOT / 'domains' / f'{domain_slug_us}.yaml'
+    if not yaml_path.exists():
+        return None
+    with open(yaml_path, encoding='utf-8') as fh:
+        for line in fh:
+            m = re.match(r'^\s*drive_folder:\s*(.+?)\s*$', line)
+            if m:
+                value = re.sub(r'\s+#.*$', '', m.group(1)).strip()
+                value = value.strip('"\'')
+                return value or None
+    return None
+
+
 def resolve_domain_paths(domain_slug):
     slug_dashed = domain_slug.replace('_', '-')
     slug_us = domain_slug.replace('-', '_')
@@ -491,6 +509,74 @@ def parse_drive_folder_listing(html):
         if id_m and name_m:
             seen.setdefault(id_m.group(1), name_m.group(1).strip())
     return list(seen.items())
+
+
+def parse_drive_subfolders(html):
+    """Parse Drive's ``embeddedfolderview`` HTML for subfolder entries: deduped
+    ``(folder_id, name)`` pairs, scoped per-entry the same way as
+    ``parse_drive_folder_listing`` (never a window that could pair one entry's
+    id with a later entry's title)."""
+    html = html or ''
+    starts = [m.start() for m in re.finditer(r'/drive/folders/([A-Za-z0-9_-]{10,})', html)]
+    seen = {}
+    for i, start in enumerate(starts):
+        end = starts[i + 1] if i + 1 < len(starts) else len(html)
+        block = html[start:end]
+        id_m = re.match(r'/drive/folders/([A-Za-z0-9_-]{10,})', block)
+        name_m = re.search(r'flip-entry-title[^>]*>([^<]+)<', block)
+        if id_m and name_m:
+            seen.setdefault(id_m.group(1), name_m.group(1).strip())
+    return list(seen.items())
+
+
+def pdf_fingerprint(pairs):
+    """sha1 hex of sorted ``id:name`` lines over a list of (id, name) pairs —
+    identical to dashboard/lib/admin-drive.js's ``pdfFingerprint`` so the
+    nightly job and the admin agree on "did the PDF set change"."""
+    lines = sorted(f'{fid}:{name}' for fid, name in pairs)
+    return hashlib.sha1('\n'.join(lines).encode()).hexdigest()
+
+
+def _drive_fetch_html(folder_id):
+    """GET the ``embeddedfolderview`` listing for a Drive folder id via
+    urllib. Returns ``(http_status, html)`` for both success and HTTP error
+    responses (e.g. 404) — only a genuine network error (no response at all)
+    raises, so callers can treat non-200 as a status rather than a crash."""
+    url = f'https://drive.google.com/embeddedfolderview?id={folder_id}'
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    try:
+        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
+            return resp.status, resp.read().decode('utf-8', 'replace')
+    except urllib.error.HTTPError as e:
+        try:
+            body = e.read().decode('utf-8', 'replace')
+        except Exception:
+            body = ''
+        return e.code, body
+
+
+def list_drive_pdfs(folder_id, fetch_html=None):
+    """List the PDFs in a Drive folder: top level + one level of subfolders
+    (at most 10), deduped by file id. Non-PDFs (the sheet's CSV exports live
+    in the same folder) are skipped by construction — ``parse_drive_folder_listing``
+    only extracts ``.pdf`` entries. Returns ``(files, subfolder_names)`` where
+    ``files`` is a list of ``(id, name)`` pairs."""
+    fetch = fetch_html or _drive_fetch_html
+    status, html = fetch(folder_id)
+    if status != 200:
+        return [], []
+    files = dict(parse_drive_folder_listing(html))
+    subfolders = parse_drive_subfolders(html)[:10]
+    for sub_id, _name in subfolders:
+        try:
+            sub_status, sub_html = fetch(sub_id)
+        except (urllib.error.URLError, OSError):
+            continue
+        if sub_status != 200:
+            continue
+        for fid, name in parse_drive_folder_listing(sub_html):
+            files.setdefault(fid, name)
+    return list(files.items()), [name for _id, name in subfolders]
 
 
 def extract_pdfs_from_zip(zip_path, papers_dir):
@@ -574,9 +660,11 @@ def import_pdf_source(url, papers_dir, dry_run=False):
 
     try:
         if kind == 'drive_folder':
-            html = _http_get(f'https://drive.google.com/embeddedfolderview?id={ref}').decode('utf-8', 'replace')
+            # Top level + one subfolder level (e.g. a "PDFs" subfolder next to the
+            # sheet's CSV exports); list_drive_pdfs already skips non-PDFs.
+            files, _subfolders = list_drive_pdfs(ref)
             existing = {p.name for p in papers_dir.glob('*.pdf')} if papers_dir.is_dir() else set()
-            for file_id, name in parse_drive_folder_listing(html):
+            for file_id, name in files:
                 stem = name.rsplit('.', 1)[0] if '.' in name else name
                 out_name = f'{stem}.pdf'
                 if out_name in existing:
@@ -733,7 +821,10 @@ def process(domain, dry_run=False):
     # Import the domain's own shared PDF source (Drive folder/file, Dropbox,
     # or a direct zip/PDF link), BEFORE scanning for what's already present,
     # so freshly-imported PDFs are counted and the OA fetch below skips them.
-    pdf_url = _yaml_pdf_url(domain.replace('-', '_'))
+    # pdf_url wins when set; otherwise the domain's drive_folder IS the PDF
+    # source too (the same folder that holds the sheet's CSV exports).
+    domain_us = domain.replace('-', '_')
+    pdf_url = _yaml_pdf_url(domain_us) or _yaml_drive_folder(domain_us)
     if pdf_url:
         print(f"  pdf_url : {pdf_url}")
         import_result = import_pdf_source(pdf_url, papers_dir, dry_run=dry_run)
