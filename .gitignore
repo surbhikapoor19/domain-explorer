@@ -43,6 +43,8 @@ papers/
 
 # PDFs — handled via URL download during build, not stored in repo
 *.pdf
+# ...except the tiny generated test fixtures the benchmark tests render (CI needs them)
+!dashboard/scripts/precompute/benchmarks/tests/fixtures/*.pdf
 
 # Precomputed dashboard data is committed (the JSON output)
 # dashboard/public/data-*/
