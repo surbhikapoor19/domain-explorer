@@ -587,6 +587,9 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
       const cfg = { ...(wizard.editedConfig || {}) };
       const slug = wizard.newDomain.trim().replace(/\s+/g, '_').toLowerCase();
       const dashed = slug.replace(/_/g, '-');
+      // A CSV loaded from Drive keeps a stable name: the nightly sync writes every newer export into this
+      // same file, so the export's timestamped name would soon be wrong.
+      const csvName = wizard.csvSource === 'drive' ? `${slug}.csv` : csvFile.name;
       const bm = cfg.benchmarks || {};
       const includeBenchmarks = wizard.includeBenchmarks && Array.isArray(bm.metrics) && bm.metrics.length > 0;
       const benchmarkConfig = includeBenchmarks ? {
@@ -597,7 +600,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
         datasets: bm.datasets || [],
         method_aliases: bm.method_aliases || {},
         consistency: bm.consistency || { cv_thresholds: { rate: 0.10, time: 0.25, count: 0.20, default: 0.15 }, min_papers_for_validation: 2 },
-        corpus: { tei_dir: `datasets/${dashed}/tei`, pdf_dir: `datasets/${dashed}/papers`, methods_csv: `datasets/${dashed}/${csvFile.name}` },
+        corpus: { tei_dir: `datasets/${dashed}/tei`, pdf_dir: `datasets/${dashed}/papers`, methods_csv: `datasets/${dashed}/${csvName}` },
       } : undefined;
 
       // A Drive FOLDER link is a config field (drive_folder — nightly sync); a link to a
@@ -615,7 +618,7 @@ function AdminPage({ explorerEnabled, onToggleExplorer }) {
         body: JSON.stringify({
           domain: slug,
           csvContent,
-          csvFilename: csvFile.name,
+          csvFilename: csvName,
           pdfUrl,
           displayName: cfg.display_name || wizard.displayName.trim() || undefined,
           methodNoun: cfg.method_noun || wizard.methodNoun.trim() || undefined,
