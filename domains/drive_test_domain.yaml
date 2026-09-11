@@ -1,0 +1,77 @@
+domain: drive_test_domain
+display_name: "Drive Test Domain"
+display_subject: "grasp planning methods"
+display_short: "grasp planning"
+ecosystem: "COMPARE Ecosystem"
+tagline: "AI-in-the-Loop"
+query_hint: 'sampling-based grasp generation using point clouds'
+method_noun: "method"
+explorer_enabled: true
+
+csv_path: datasets/drive-test-domain/Test Domain_2026-09-10_12-00-00.csv
+papers_dir: datasets/drive-test-domain/papers/
+drive_folder: "https://drive.google.com/drive/folders/1f-JtiBHwNfy9ewRrJd2zL7u5WH34YUBB?usp=sharing"
+
+columns:
+  "Name": { role: identity.name, facet: text }
+  "Description": { role: identity.description, facet: text }
+  "Planning Method": { role: method.family, facet: categorical }
+  "Input Data": { role: input.modality, facet: categorical }
+  "End-effector Hardware": { role: hardware.platform, facet: categorical }
+  "Language": { role: meta.language, facet: categorical }
+  "Link(s)": { role: identity.code, facet: url }
+  "License": { role: meta.license, facet: categorical }
+  "Citation": { role: identity.citation, facet: text }
+  "Year (Initial Release)": { role: identity.year, facet: numeric }
+
+llm:
+  domain_subject: "grasp planning methods for robotic manipulation"
+  claim_extraction_focus:
+    - "success rate on standard benchmarks (e.g., YCB, Dex-Net, Jacquard)"
+    - "runtime efficiency and inference latency comparisons"
+    - "limitations related to sensor noise, occlusion, or object geometry"
+    - "transferability from simulation to real-world deployment and sim-to-real gaps"
+  query_rewrite_examples:
+    - "What are the latest sampling-based grasp planning methods that use point clouds?"
+    - "Which grasp planning algorithms achieve the highest success rate on the YCB dataset?"
+    - "How do direct regression methods compare in runtime performance for two-finger grippers?"
+
+default_color_by_roles:
+  - method.family
+  - hardware.platform
+  - input.modality
+  - meta.language
+
+extra_datasets:
+  - "YCB Object and Model Set"
+  - "Dex-Net"
+  - "GraspNet-1B"
+  - "Cornell Grasping Dataset"
+  - "Jacquard"
+  - "Amazon Picking Challenge"
+  - "RoboNet"
+  - "ContactDB"
+  - "BigBIRD"
+  - "Google Scanned Objects"
+
+extra_keywords:
+  - "variational autoencoder"
+  - "grasp sampler"
+  - "grasp evaluator"
+  - "6-DoF pose"
+  - "point cloud segmentation"
+  - "depth image preprocessing"
+  - "sim-to-real transfer"
+  - "self-supervised learning"
+  - "grasp quality convolutional neural network"
+  - "GQ-CNN"
+  - "contact points"
+  - "grasp width"
+  - "two-finger gripper"
+  - "TensorFlow"
+  - "PyTorch"
+  - "ROS integration"
+  - "MoveIt"
+  - "inverse kinematics"
+  - "grasp synthesis"
+  - "collision checking"
