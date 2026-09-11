@@ -1,0 +1,2164 @@
+{
+  "6-dof-graspnet": [
+    {
+      "type": "metric",
+      "value": "88",
+      "unit": "%",
+      "context": "Our approach achieves 88% success rate on various commonly used objects with diverse appearances, scales, and weights",
+      "chunk_id": "6-dof-graspnet_coarse_abstract",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "metric",
+      "value": "88",
+      "unit": "%",
+      "context": "e that our approach outperforms previous approaches and enables a robot to pickup 17 objects with a success rate of 88%",
+      "chunk_id": "6-dof-graspnet_coarse_sec_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "17 object",
+      "context": "that our approach outperforms previous approaches and enables a robot to pickup 17 objects with a success rate of 88%. Generating diverse grasps is quite important becau",
+      "chunk_id": "6-dof-graspnet_coarse_sec_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "were based on hand-crafted feature vectors [27, 1, 7] , recent methods exploit convolutional architectures to operate on raw visual measurements [13, 25, 21, 19, 14] . Most",
+      "chunk_id": "6-dof-graspnet_coarse_sec_2",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "marginal improvements. Qi et al. [23, 24] introduced a new architecture, called PointNet and PointNet++, that is capable of representing the 3D data and extract the rep",
+      "chunk_id": "6-dof-graspnet_coarse_sec_2",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "reconstruction loss",
+      "context": "tified sampling. To combine the orientation and translation loss, we define the reconstruction loss as follows:\n\nwhere T (\u2022; p) is the transformation of a set of predefined points",
+      "chunk_id": "6-dof-graspnet_coarse_sec_6",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "network are point cloud X and grasp g. Similar to the Grasp Sampler, we use the PointNet [23] architecture for the Grasp Evaluator. There are multiple ways for classify",
+      "chunk_id": "6-dof-graspnet_coarse_sec_7",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ples in Fig. 6 . Training Both grasp generator and evaluator networks are using PointNet++ [24] and have similar architectures. Both modules consist of three set-abstra",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "fully connected",
+      "context": "architectures. Both modules consist of three set-abstraction layers followed by fully connected layers. Each batch of the training data for the generator network consists of a",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "KL-Divergence",
+      "context": "sampling to make sure the sampled grasps have enough diversity. The weight for KL-Divergence loss (\u03b1 in Eq. ( 2 )) is set to 0.01. Each batch of training data for the evalu",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "radians in each axis and \u00b13cm to translation. Both models are trained with the Adam optimizer using a learning rate of 0.0001. All the grasps are generated in simu",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 0.0001",
+      "context": "nd \u00b13cm to translation. Both models are trained with the Adam optimizer using a learning rate of 0.0001. All the grasps are generated in simulation and no real data was used to train",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "206 object",
+      "context": "whose closing volume between the fingers intersects the object. In total we use 206 objects from six categories in ShapeNet [3] : boxes and cylinders (randomly generated)",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "64 grasp",
+      "context": "generator network consists of a rendering of the object from a random view and 64 grasps that are sampled using stratified sampling to make sure the sampled grasps hav",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ShapeNet",
+      "context": "object. In total we use 206 objects from six categories in ShapeNet [3] : boxes and cylinders (randomly generated), as well as",
+      "chunk_id": "6-dof-graspnet_coarse_sec_9",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "86 object",
+      "context": "the generation of training data (Sec 4). For the ablation studies, we generate 86 object point cloud observations for 10 different objects that are held out during trai",
+      "chunk_id": "6-dof-graspnet_coarse_sec_10",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "2200 grasp",
+      "context": "oud, 200 latent values are sampled and refined over 10 iterations, resulting in 2200 grasps per view point and 182,600 grasps in total.",
+      "chunk_id": "6-dof-graspnet_coarse_sec_10",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "182,600 grasp",
+      "context": "led and refined over 10 iterations, resulting in 2200 grasps per view point and 182,600 grasps in total.",
+      "chunk_id": "6-dof-graspnet_coarse_sec_10",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "planner [31] (GPD).\n\nAll experiments are done using a 7-DOF Franka Panda manipulator with an Intel RealSense D415 camera mount",
+      "chunk_id": "6-dof-graspnet_coarse_sec_13",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "[31] (GPD).\n\nAll experiments are done using a 7-DOF Franka Panda manipulator with an Intel RealSense D415 camera mounted on",
+      "chunk_id": "6-dof-graspnet_coarse_sec_13",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "17 object",
+      "context": "robot platform and an on-board RGB-D camera. We performed robot experiments on 17 objects with unknown 3D models and achieved state-of-the-art results in 3D grasping. W",
+      "chunk_id": "6-dof-graspnet_coarse_sec_14",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "200 sample",
+      "context": "- Figure 11. Visualization of generated grasps by our method vs GPD [31] using 200 samples. (left) Generated grasps using 6-DOF GraspNet on a mug. (right) Generated gras",
+      "chunk_id": "6-dof-graspnet_coarse_figures",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "Figure 1 . - Figure 1. The Franka Panda manipulator used in our experiments.Our approach is a",
+      "chunk_id": "6-dof-graspnet_coarse_figures",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "Figure 1 . - Figure 1. The Franka Panda manipulator used in our experiments.Our approach is able to",
+      "chunk_id": "6-dof-graspnet_coarse_figures",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "metric",
+      "value": "88",
+      "unit": "%",
+      "context": "e that our approach outperforms previous approaches and enables a robot to pickup 17 objects with a success rate of 88%",
+      "chunk_id": "6-dof-graspnet_mid_1_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "17 object",
+      "context": "that our approach outperforms previous approaches and enables a robot to pickup 17 objects with a success rate of 88%. Generating diverse grasps is quite important becau",
+      "chunk_id": "6-dof-graspnet_mid_1_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "were based on hand-crafted feature vectors [27, 1, 7] , recent methods exploit convolutional architectures to operate on raw visual measurements [13, 25, 21, 19, 14] . Most",
+      "chunk_id": "6-dof-graspnet_mid_2_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "marginal improvements. Qi et al. [23, 24] introduced a new architecture, called PointNet and PointNet++, that is capable of representing the 3D data and extract the rep",
+      "chunk_id": "6-dof-graspnet_mid_2_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "reconstruction loss",
+      "context": "tified sampling. To combine the orientation and translation loss, we define the reconstruction loss as follows:\n\nwhere T (\u2022; p) is the transformation of a set of predefined points",
+      "chunk_id": "6-dof-graspnet_mid_6_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "network are point cloud X and grasp g. Similar to the Grasp Sampler, we use the PointNet [23] architecture for the Grasp Evaluator. There are multiple ways for classify",
+      "chunk_id": "6-dof-graspnet_mid_7_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ples in Fig. 6 . Training Both grasp generator and evaluator networks are using PointNet++ [24] and have similar architectures. Both modules consist of three set-abstra",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "fully connected",
+      "context": "architectures. Both modules consist of three set-abstraction layers followed by fully connected layers. Each batch of the training data for the generator network consists of a",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "KL-Divergence",
+      "context": "sampling to make sure the sampled grasps have enough diversity. The weight for KL-Divergence loss (\u03b1 in Eq. ( 2 )) is set to 0.01. Each batch of training data for the evalu",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "radians in each axis and \u00b13cm to translation. Both models are trained with the Adam optimizer using a learning rate of 0.0001. All the grasps are generated in simu",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 0.0001",
+      "context": "nd \u00b13cm to translation. Both models are trained with the Adam optimizer using a learning rate of 0.0001. All the grasps are generated in simulation and no real data was used to train",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "206 object",
+      "context": "whose closing volume between the fingers intersects the object. In total we use 206 objects from six categories in ShapeNet [3] : boxes and cylinders (randomly generated)",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "64 grasp",
+      "context": "generator network consists of a rendering of the object from a random view and 64 grasps that are sampled using stratified sampling to make sure the sampled grasps hav",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ShapeNet",
+      "context": "object. In total we use 206 objects from six categories in ShapeNet [3] : boxes and cylinders (randomly generated), as well as",
+      "chunk_id": "6-dof-graspnet_mid_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "86 object",
+      "context": "the generation of training data (Sec 4). For the ablation studies, we generate 86 object point cloud observations for 10 different objects that are held out during trai",
+      "chunk_id": "6-dof-graspnet_mid_10_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "2200 grasp",
+      "context": "oud, 200 latent values are sampled and refined over 10 iterations, resulting in 2200 grasps per view point and 182,600 grasps in total.",
+      "chunk_id": "6-dof-graspnet_mid_10_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "182,600 grasp",
+      "context": "led and refined over 10 iterations, resulting in 2200 grasps per view point and 182,600 grasps in total.",
+      "chunk_id": "6-dof-graspnet_mid_10_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "planner [31] (GPD). All experiments are done using a 7-DOF Franka Panda manipulator with an Intel RealSense D415 camera mount",
+      "chunk_id": "6-dof-graspnet_mid_13_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "r [31] (GPD). All experiments are done using a 7-DOF Franka Panda manipulator with an Intel RealSense D415 camera mounted on",
+      "chunk_id": "6-dof-graspnet_mid_13_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "17 object",
+      "context": "robot platform and an on-board RGB-D camera. We performed robot experiments on 17 objects with unknown 3D models and achieved state-of-the-art results in 3D grasping. W",
+      "chunk_id": "6-dof-graspnet_mid_14_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "metric",
+      "value": "88",
+      "unit": "%",
+      "context": "e that our approach outperforms previous approaches and enables a robot to pickup 17 objects with a success rate of 88%",
+      "chunk_id": "6-dof-graspnet_fine_1_2",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "17 object",
+      "context": "that our approach outperforms previous approaches and enables a robot to pickup 17 objects with a success rate of 88%. Generating diverse grasps is quite important becau",
+      "chunk_id": "6-dof-graspnet_fine_1_2",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "were based on hand-crafted feature vectors [27, 1, 7] , recent methods exploit convolutional architectures to operate on raw visual measurements [13, 25, 21, 19, 14] . Most",
+      "chunk_id": "6-dof-graspnet_fine_2_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "convolutional",
+      "context": "features from 2.5 depth images [6] and pro-cess them similar to RGB image using convolutional neural networks which oftentimes lead to marginal improvements. Qi et al. [23,",
+      "chunk_id": "6-dof-graspnet_fine_2_4",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "marginal improvements. Qi et al. [23, 24] introduced a new architecture, called PointNet and PointNet++, that is capable of representing the 3D data and extract the rep",
+      "chunk_id": "6-dof-graspnet_fine_2_4",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "reconstruction loss",
+      "context": "tified sampling. To combine the orientation and translation loss, we define the reconstruction loss as follows:",
+      "chunk_id": "6-dof-graspnet_fine_6_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "network are point cloud X and grasp g. Similar to the Grasp Sampler, we use the PointNet [23] architecture for the Grasp Evaluator. There are multiple ways for classify",
+      "chunk_id": "6-dof-graspnet_fine_7_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ples in Fig. 6 . Training Both grasp generator and evaluator networks are using PointNet++ [24] and have similar architectures. Both modules consist of three set-abstra",
+      "chunk_id": "6-dof-graspnet_fine_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "fully connected",
+      "context": "architectures. Both modules consist of three set-abstraction layers followed by fully connected layers. Each batch of the training data for the generator network consists of a",
+      "chunk_id": "6-dof-graspnet_fine_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "206 object",
+      "context": "whose closing volume between the fingers intersects the object. In total we use 206 objects from six categories in ShapeNet [3] : boxes and cylinders (randomly generated)",
+      "chunk_id": "6-dof-graspnet_fine_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "64 grasp",
+      "context": "generator network consists of a rendering of the object from a random view and 64 grasps that are sampled using stratified sampling to make sure the sampled grasps hav",
+      "chunk_id": "6-dof-graspnet_fine_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ShapeNet",
+      "context": "object. In total we use 206 objects from six categories in ShapeNet [3] : boxes and cylinders (randomly generated), as well as",
+      "chunk_id": "6-dof-graspnet_fine_9_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "KL-Divergence",
+      "context": "The weight for KL-Divergence loss (\u03b1 in Eq. ( 2 )) is set to 0.01. Each batch of training data for the evalu",
+      "chunk_id": "6-dof-graspnet_fine_9_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "radians in each axis and \u00b13cm to translation. Both models are trained with the Adam optimizer using a learning rate of 0.0001. All the grasps are generated in simu",
+      "chunk_id": "6-dof-graspnet_fine_9_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 0.0001",
+      "context": "nd \u00b13cm to translation. Both models are trained with the Adam optimizer using a learning rate of 0.0001. All the grasps are generated in simulation and no real data was used to train",
+      "chunk_id": "6-dof-graspnet_fine_9_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "86 object",
+      "context": "the generation of training data (Sec 4). For the ablation studies, we generate 86 object point cloud observations for 10 different objects that are held out during trai",
+      "chunk_id": "6-dof-graspnet_fine_10_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "2200 grasp",
+      "context": "oud, 200 latent values are sampled and refined over 10 iterations, resulting in 2200 grasps per view point and 182,600 grasps in total.",
+      "chunk_id": "6-dof-graspnet_fine_10_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "182,600 grasp",
+      "context": "led and refined over 10 iterations, resulting in 2200 grasps per view point and 182,600 grasps in total.",
+      "chunk_id": "6-dof-graspnet_fine_10_0",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "All experiments are done using a 7-DOF Franka Panda manipulator with an Intel RealSense D415 camera mount",
+      "chunk_id": "6-dof-graspnet_fine_13_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "All experiments are done using a 7-DOF Franka Panda manipulator with an Intel RealSense D415 camera mounted on",
+      "chunk_id": "6-dof-graspnet_fine_13_1",
+      "paper_id": "6-dof-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "17 object",
+      "context": "robot platform and an on-board RGB-D camera. We performed robot experiments on 17 objects with unknown 3D models and achieved state-of-the-art results in 3D grasping. W",
+      "chunk_id": "6-dof-graspnet_fine_14_1",
+      "paper_id": "6-dof-graspnet"
+    }
+  ],
+  "contact-graspnet": [
+    {
+      "type": "metric",
+      "value": "90",
+      "unit": "%",
+      "context": "In a robotic grasping study of unseen objects in structured clutter we achieve over 90% success rate, cutting the failure rate in half compared to a recent state-of-the-art method",
+      "chunk_id": "contact-graspnet_coarse_abstract",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "metric",
+      "value": "90",
+      "unit": "%",
+      "context": "to-end method for 6-DoF grasping of unknown objects in cluttered real world scenes where we achieve 90% grasp success rate",
+      "chunk_id": "contact-graspnet_coarse_sec_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross entropy",
+      "context": "rent sampling strategies to generate potential candidates. For planar grasping, cross entropy is widely used since it can converge to the final grasp location by iteratively",
+      "chunk_id": "contact-graspnet_coarse_sec_1",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross-entropy",
+      "context": "vely evaluating the quality of grasps in different locations [7] . However, the cross-entropy method does not work well in the higher dimensional 6-DoF grasp space. To overc",
+      "chunk_id": "contact-graspnet_coarse_sec_1",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "e place object meshes with dense grasp annotations from the ACRONYM dataset [32] at random stable poses in scenes. Grasp poses",
+      "chunk_id": "contact-graspnet_coarse_sec_2",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "oduces reasonable grasps due to the radial mapping.\n\nPoint Set Networks such as PointNet++ [34] effectively process point clouds and hierarchically aggregate points and",
+      "chunk_id": "contact-graspnet_coarse_sec_3",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "and dense grasp pose annotations are required. We used the ACRONYM dataset [32] , which consists of 8872 meshes from the Shape",
+      "chunk_id": "contact-graspnet_coarse_sec_4",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Shapenet",
+      "context": "RONYM dataset [32] , which consists of 8872 meshes from the Shapenet dataset [35] and 17.7 million simulated grasps under varyin",
+      "chunk_id": "contact-graspnet_coarse_sec_4",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "We employ the set abstraction and feature propagation layers proposed in PointNet++ [34] to build an asymmetric Ushaped network. The network takes n=20000 random",
+      "chunk_id": "contact-graspnet_coarse_sec_5",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross entropy",
+      "context": "dictions \u015d \u2208 R are evaluated at all output points p i \u2208 R 3 : \u2200i \u2208 [0, m] using binary cross entropy. We only backpropagate the top-k point predictions with the largest errors l bc",
+      "chunk_id": "contact-graspnet_coarse_sec_6",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "bce",
+      "context": "py. We only backpropagate the top-k point predictions with the largest errors l bce,k , with k=512, to counteract data imbalance. The other predictions concerning",
+      "chunk_id": "contact-graspnet_coarse_sec_6",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "We use the Adam optimizer with an initial learning rate of 0.001 and a step-wise decay to 0.000",
+      "chunk_id": "contact-graspnet_coarse_sec_7",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 0.001",
+      "context": "We use the Adam optimizer with an initial learning rate of 0.001 and a step-wise decay to 0.0001. Our set abstraction layers have 3 parallel bra",
+      "chunk_id": "contact-graspnet_coarse_sec_7",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "12 grasp",
+      "context": "amera coordinates. For training we generate 10000 table top scenes by placing 8-12 grasp annotated ShapeNet models [32] at random stable poses. We use rejection samplin",
+      "chunk_id": "contact-graspnet_coarse_sec_7",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ShapeNet",
+      "context": "rate 10000 table top scenes by placing 8-12 grasp annotated ShapeNet models [32] at random stable poses. We use rejection sampli",
+      "chunk_id": "contact-graspnet_coarse_sec_7",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "generalize to arbitrary objects and shows the importance of ACRONYM [32] IV. EXPERIMENTAL EVALUATION We evaluate our method in",
+      "chunk_id": "contact-graspnet_coarse_sec_7",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "VALUATION We evaluate our method in a grasping study with a Franka robot where we pick unknown objects in cluttered scenes. We",
+      "chunk_id": "contact-graspnet_coarse_sec_7",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "Setup: Our physical setup consists of a 7-DoF Franka Panda robot with a parallel-jaw gripper. We closely replica",
+      "chunk_id": "contact-graspnet_coarse_sec_10",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "Setup: Our physical setup consists of a 7-DoF Franka Panda robot with a parallel-jaw gripper. We closely replicate the",
+      "chunk_id": "contact-graspnet_coarse_sec_10",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "110 object",
+      "context": "verse grasp dataset like ACRONYM [32] . Training on a small grasp datasets with 110 objects from 5 categories [11] is not sufficient for out-of-category generalization ir",
+      "chunk_id": "contact-graspnet_coarse_sec_11",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ow the importance of a large and diverse grasp dataset like ACRONYM [32] . Training on a small grasp datasets with 110 objects",
+      "chunk_id": "contact-graspnet_coarse_sec_11",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "metric",
+      "value": "90",
+      "unit": "%",
+      "context": "to-end method for 6-DoF grasping of unknown objects in cluttered real world scenes where we achieve 90% grasp success rate",
+      "chunk_id": "contact-graspnet_mid_0_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross entropy",
+      "context": "rent sampling strategies to generate potential candidates. For planar grasping, cross entropy is widely used since it can converge to the final grasp location by iteratively",
+      "chunk_id": "contact-graspnet_mid_1_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross-entropy",
+      "context": "vely evaluating the quality of grasps in different locations [7] . However, the cross-entropy method does not work well in the higher dimensional 6-DoF grasp space. To overc",
+      "chunk_id": "contact-graspnet_mid_1_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "e place object meshes with dense grasp annotations from the ACRONYM dataset [32] at random stable poses in scenes. Grasp poses",
+      "chunk_id": "contact-graspnet_mid_2_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "roduces reasonable grasps due to the radial mapping. Point Set Networks such as PointNet++ [34] effectively process point clouds and hierarchically aggregate points and",
+      "chunk_id": "contact-graspnet_mid_3_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "and dense grasp pose annotations are required. We used the ACRONYM dataset [32] , which consists of 8872 meshes from the Shape",
+      "chunk_id": "contact-graspnet_mid_4_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Shapenet",
+      "context": "RONYM dataset [32] , which consists of 8872 meshes from the Shapenet dataset [35] and 17.7 million simulated grasps under varyin",
+      "chunk_id": "contact-graspnet_mid_4_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "We employ the set abstraction and feature propagation layers proposed in PointNet++ [34] to build an asymmetric Ushaped network. The network takes n=20000 random",
+      "chunk_id": "contact-graspnet_mid_5_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross entropy",
+      "context": "dictions \u015d \u2208 R are evaluated at all output points p i \u2208 R 3 : \u2200i \u2208 [0, m] using binary cross entropy. We only backpropagate the top-k point predictions with the largest errors l bc",
+      "chunk_id": "contact-graspnet_mid_6_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "bce",
+      "context": "py. We only backpropagate the top-k point predictions with the largest errors l bce,k , with k=512, to counteract data imbalance. The other predictions concerning",
+      "chunk_id": "contact-graspnet_mid_6_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "We use the Adam optimizer with an initial learning rate of 0.001 and a step-wise decay to 0.000",
+      "chunk_id": "contact-graspnet_mid_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 0.001",
+      "context": "We use the Adam optimizer with an initial learning rate of 0.001 and a step-wise decay to 0.0001. Our set abstraction layers have 3 parallel bra",
+      "chunk_id": "contact-graspnet_mid_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "12 grasp",
+      "context": "amera coordinates. For training we generate 10000 table top scenes by placing 8-12 grasp annotated ShapeNet models [32] at random stable poses. We use rejection samplin",
+      "chunk_id": "contact-graspnet_mid_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ShapeNet",
+      "context": "rate 10000 table top scenes by placing 8-12 grasp annotated ShapeNet models [32] at random stable poses. We use rejection sampli",
+      "chunk_id": "contact-graspnet_mid_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "generalize to arbitrary objects and shows the importance of ACRONYM [32] IV. EXPERIMENTAL EVALUATION We evaluate our method in",
+      "chunk_id": "contact-graspnet_mid_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "VALUATION We evaluate our method in a grasping study with a Franka robot where we pick unknown objects in cluttered scenes. We",
+      "chunk_id": "contact-graspnet_mid_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "Setup: Our physical setup consists of a 7-DoF Franka Panda robot with a parallel-jaw gripper. We closely replica",
+      "chunk_id": "contact-graspnet_mid_10_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "Setup: Our physical setup consists of a 7-DoF Franka Panda robot with a parallel-jaw gripper. We closely replicate the",
+      "chunk_id": "contact-graspnet_mid_10_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "110 object",
+      "context": "verse grasp dataset like ACRONYM [32] . Training on a small grasp datasets with 110 objects from 5 categories [11] is not sufficient for out-of-category generalization ir",
+      "chunk_id": "contact-graspnet_mid_11_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ow the importance of a large and diverse grasp dataset like ACRONYM [32] . Training on a small grasp datasets with 110 objects",
+      "chunk_id": "contact-graspnet_mid_11_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross entropy",
+      "context": "rent sampling strategies to generate potential candidates. For planar grasping, cross entropy is widely used since it can converge to the final grasp location by iteratively",
+      "chunk_id": "contact-graspnet_fine_1_1",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross-entropy",
+      "context": "vely evaluating the quality of grasps in different locations [7] . However, the cross-entropy method does not work well in the higher dimensional 6-DoF grasp space. To overc",
+      "chunk_id": "contact-graspnet_fine_1_1",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "e place object meshes with dense grasp annotations from the ACRONYM dataset [32] at random stable poses in scenes. Grasp poses",
+      "chunk_id": "contact-graspnet_fine_2_1",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "and dense grasp pose annotations are required. We used the ACRONYM dataset [32] , which consists of 8872 meshes from the Shape",
+      "chunk_id": "contact-graspnet_fine_4_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Shapenet",
+      "context": "RONYM dataset [32] , which consists of 8872 meshes from the Shapenet dataset [35] and 17.7 million simulated grasps under varyin",
+      "chunk_id": "contact-graspnet_fine_4_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "We employ the set abstraction and feature propagation layers proposed in PointNet++ [34] to build an asymmetric Ushaped network. The network takes n=20000 random",
+      "chunk_id": "contact-graspnet_fine_5_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross entropy",
+      "context": "dictions \u015d \u2208 R are evaluated at all output points p i \u2208 R 3 : \u2200i \u2208 [0, m] using binary cross entropy. We only backpropagate the top-k point predictions with the largest errors l bc",
+      "chunk_id": "contact-graspnet_fine_6_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "bce",
+      "context": "py. We only backpropagate the top-k point predictions with the largest errors l bce,k , with k=512, to counteract data imbalance. The other predictions concerning",
+      "chunk_id": "contact-graspnet_fine_6_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross entropy",
+      "context": "On the grasp width bin predictions, we optimize a weighted, multi-label binary cross entropy loss l width . Since small grasp widths are highly over-represented, we weight",
+      "chunk_id": "contact-graspnet_fine_6_2",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "loss_function",
+      "value": "bce",
+      "context": "e weight the bin losses anti-proportional to bin size. Our total loss is l = \u03b1l bce,k + \u03b2l add-s + \u03b3l width with \u03b1 = 1, \u03b2 = 10, \u03b3 = 1.",
+      "chunk_id": "contact-graspnet_fine_6_2",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "We use the Adam optimizer with an initial learning rate of 0.001 and a step-wise decay to 0.000",
+      "chunk_id": "contact-graspnet_fine_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "optimizer",
+      "value": "learning rate of 0.001",
+      "context": "We use the Adam optimizer with an initial learning rate of 0.001 and a step-wise decay to 0.0001. Our set abstraction layers have 3 parallel bra",
+      "chunk_id": "contact-graspnet_fine_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "12 grasp",
+      "context": "amera coordinates. For training we generate 10000 table top scenes by placing 8-12 grasp annotated ShapeNet models [32] at random stable poses. We use rejection samplin",
+      "chunk_id": "contact-graspnet_fine_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ShapeNet",
+      "context": "rate 10000 table top scenes by placing 8-12 grasp annotated ShapeNet models [32] at random stable poses. We use rejection sampli",
+      "chunk_id": "contact-graspnet_fine_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "generalize to arbitrary objects and shows the importance of ACRONYM [32] IV. EXPERIMENTAL EVALUATION We evaluate our method in",
+      "chunk_id": "contact-graspnet_fine_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "VALUATION We evaluate our method in a grasping study with a Franka robot where we pick unknown objects in cluttered scenes. We",
+      "chunk_id": "contact-graspnet_fine_7_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "Setup: Our physical setup consists of a 7-DoF Franka Panda robot with a parallel-jaw gripper. We closely replica",
+      "chunk_id": "contact-graspnet_fine_10_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "Setup: Our physical setup consists of a 7-DoF Franka Panda robot with a parallel-jaw gripper. We closely replicate the",
+      "chunk_id": "contact-graspnet_fine_10_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "training_size",
+      "value": "110 object",
+      "context": "verse grasp dataset like ACRONYM [32] . Training on a small grasp datasets with 110 objects from 5 categories [11] is not sufficient for out-of-category generalization ir",
+      "chunk_id": "contact-graspnet_fine_11_0",
+      "paper_id": "contact-graspnet"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ow the importance of a large and diverse grasp dataset like ACRONYM [32] . Training on a small grasp datasets with 110 objects",
+      "chunk_id": "contact-graspnet_fine_11_0",
+      "paper_id": "contact-graspnet"
+    }
+  ],
+  "dex-net-2-0-gq-cnn": [
+    {
+      "type": "metric",
+      "value": "93",
+      "unit": "%",
+      "context": "8s with a success rate of 93% on eight known objects with adversarial geometry and is 3\u00d7 faster than registering point clouds to",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_abstract",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "99",
+      "unit": "%",
+      "context": "0 grasp planner also has the highest success rate on a dataset of 10 novel rigid objects and achieves 99% precision (one false positive out of 69 grasps classified as robust) on a dataset of 40 novel ",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_abstract",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "on a table. We use the resulting dataset, Dex-Net 2.0, to train a Grasp Quality Convolutional Neural Network (GQ-CNN) model that rapidly predicts the probability of success",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_abstract",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "int clouds to a precomputed dataset of objects and indexing grasps. The Dex-Net 2.0 grasp planner also has the highest success rate on a dataset of 10 novel rigid object",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_abstract",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "69 grasp",
+      "context": "of 10 novel rigid objects and achieves 99% precision (one false positive out of 69 grasps classified as robust) on a dataset of 40 novel household objects, some of whic",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_abstract",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "e cross-entropy loss function and \u0398 defines the parameters of the Grasp Quality Convolutional Network (GQ-CNN) described in Section IV-B. This objective is motivated by that",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_5",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross-entropy",
+      "context": "that classifies grasps according to the binary success metric:\n\nwhere L is the cross-entropy loss function and \u0398 defines the parameters of the Grasp Quality Convolutional N",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_5",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "earn with linear or kernelized models. Consequently, we develop a Grasp Quality Convolutional Neural Network (GQ-CNN) model that classifies robust grasp poses in depth image",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_6",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "dataset",
+      "value": "KIT",
+      "context": "nthetic models from 3DNet [57] and 129 laser scans from the KIT object database [27] . Each mesh is aligned to a standard f",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_7",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "1) Architecture: The Grasp Quality Convolutional Neural Network (GQ-CNN) architecture, illustrated in Fig. 4 and detailed in the",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_8",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "fully connected",
+      "context": "olutional layers in pairs of two separated by ReLU nonlinearities followed by 3 fully connected layers and a separate input layer for the z, the distance of the gripper from t",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_8",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "collisions between the gripper and object. transformations (similar to spatial transformer networks [24] ) and allows the network to evaluate any grasp orientation in the",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_8",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 training",
+      "context": "riented along \u03d5 (see the left panel of Fig. 4 for an illustration). The Dex-Net 2.0 training dataset contains 6.7 million datapoints and approximately 21.2% positive exampl",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_8",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "The Dex-Net 2.0 grasp planner uses the robust grasping policy \u03c0 \u03b8 (y) = argmax u\u2208C Q \u03b8 (u, y) illustr",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_9",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "85.7",
+      "unit": "%",
+      "context": "The GQ-CNN trained on all of Dex-Net 2.0 had an accuracy of 85.7% on a held out validation set of approximately 1.3 million datapoints. Due to the memory and time re",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_14",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "93",
+      "unit": "%",
+      "context": "We found that GQ planned grasps 3\u00d7 faster than REG and achieved a high 93% success rate and 94% precision",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_15",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "80",
+      "unit": "%",
+      "context": "GQ performed best with an 80% success rate and 100% precision (zero false positives over 29 grasps classified as robust)",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_16",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "29 grasp",
+      "context": "med best with an 80% success rate and 100% precision (zero false positives over 29 grasps classified as robust).",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_16",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "94",
+      "unit": "%",
+      "context": "0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps classified as robust), and it took an aver",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_17",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross entropy",
+      "context": "iculated (e.g. can opener) and deformable (e.g. washcloth) objects. We used the cross entropy method (CEM) [33] , which iteratively samples a set of candidate grasps and re-",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_17",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "100 grasp",
+      "context": "We evaluated the generalization performance of GQ in 100 grasping trials on the 40 object test set illustrated in Fig. 7 , which contains arti",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_17",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "40 object",
+      "context": "We evaluated the generalization performance of GQ in 100 grasping trials on the 40 object test set illustrated in Fig. 7 , which contains articulated (e.g. can opener) a",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_17",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": ". More details can be found in the supplemental file. The CEM-augmented Dex-Net 2.0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps c",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_17",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "69 grasp",
+      "context": "t 2.0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps classified as robust), and it took an average of 2.5s to plan grasps.",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_17",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "To demonstrate the modularity of the Dex-Net 2.0 grasp planner, we used it in an order fulfillment application with the ABB YuMi. The",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_18",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "We developed a Grasp Quality Convolutional Neural Network (GQ-CNN) architecture that predicts grasp robustness from a poin",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_19",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "st grasp metrics. In over 1,000 physical evaluations, we found that the Dex-Net 2.0 grasp planner is as reliable and 3\u00d7 faster a method based on point cloud registration",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_sec_19",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "Fig. 1 : - Fig. 1: Dex-Net 2.0 Architecture. (Center) The Grasp Quality Convolutional Neural Network (GQ-CNN) is trained offline to predict the robustness candidate",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_figures",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "ehold objects used for evaluating the generalization performance of the Dex-Net 2.0 grasp planner. The dataset contains rigid, articulated, and deformable objects. (Righ",
+      "chunk_id": "dex-net-2-0-gq-cnn_coarse_figures",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "e cross-entropy loss function and \u0398 defines the parameters of the Grasp Quality Convolutional Network (GQ-CNN) described in Section IV-B. This objective is motivated by that",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_5_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross-entropy",
+      "context": "that classifies grasps according to the binary success metric:\n\nwhere L is the cross-entropy loss function and \u0398 defines the parameters of the Grasp Quality Convolutional N",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_5_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "earn with linear or kernelized models. Consequently, we develop a Grasp Quality Convolutional Neural Network (GQ-CNN) model that classifies robust grasp poses in depth image",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_6_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "dataset",
+      "value": "KIT",
+      "context": "nthetic models from 3DNet [57] and 129 laser scans from the KIT object database [27] . Each mesh is aligned to a standard f",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_7_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "1) Architecture: The Grasp Quality Convolutional Neural Network (GQ-CNN) architecture, illustrated in Fig. 4 and detailed in the",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_8_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "fully connected",
+      "context": "olutional layers in pairs of two separated by ReLU nonlinearities followed by 3 fully connected layers and a separate input layer for the z, the distance of the gripper from t",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_8_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "collisions between the gripper and object. transformations (similar to spatial transformer networks [24] ) and allows the network to evaluate any grasp orientation in the",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_8_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 training",
+      "context": "riented along \u03d5 (see the left panel of Fig. 4 for an illustration). The Dex-Net 2.0 training dataset contains 6.7 million datapoints and approximately 21.2% positive exampl",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_8_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "The Dex-Net 2.0 grasp planner uses the robust grasping policy \u03c0 \u03b8 (y) = argmax u\u2208C Q \u03b8 (u, y) illustr",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_9_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "93.0",
+      "unit": "%",
+      "context": "de of our datasets, we trained on the Cornell Grasping Dataset [32] (containing 8,019 examples) and achieved a 93.0% recognition rate using grayscale images and an 80-20 imagewise training-validation ",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "8,019 example",
+      "context": "de of our datasets, we trained on the Cornell Grasping Dataset [32] (containing 8,019 examples) and achieved a 93.0% recognition rate using grayscale images and an 80-20 ima",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "dataset",
+      "value": "Cornell",
+      "context": "the architecture outside of our datasets, we trained on the Cornell Grasping Dataset [32] (containing 8,019 examples) and achie",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "85.7",
+      "unit": "%",
+      "context": "The GQ-CNN trained on all of Dex-Net 2.0 had an accuracy of 85.7% on a held out validation set of approximately 1.3 million datapoints. Due to the memory and time re",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_14_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "93",
+      "unit": "%",
+      "context": "We found that GQ planned grasps 3\u00d7 faster than REG and achieved a high 93% success rate and 94% precision",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_15_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "80",
+      "unit": "%",
+      "context": "GQ performed best with an 80% success rate and 100% precision (zero false positives over 29 grasps classified as robust)",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_16_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "29 grasp",
+      "context": "med best with an 80% success rate and 100% precision (zero false positives over 29 grasps classified as robust).",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_16_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "94",
+      "unit": "%",
+      "context": "0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps classified as robust), and it took an aver",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross entropy",
+      "context": "iculated (e.g. can opener) and deformable (e.g. washcloth) objects. We used the cross entropy method (CEM) [33] , which iteratively samples a set of candidate grasps and re-",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "100 grasp",
+      "context": "We evaluated the generalization performance of GQ in 100 grasping trials on the 40 object test set illustrated in Fig. 7 , which contains arti",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "40 object",
+      "context": "We evaluated the generalization performance of GQ in 100 grasping trials on the 40 object test set illustrated in Fig. 7 , which contains articulated (e.g. can opener) a",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": ". More details can be found in the supplemental file. The CEM-augmented Dex-Net 2.0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps c",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "69 grasp",
+      "context": "t 2.0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps classified as robust), and it took an average of 2.5s to plan grasps.",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "To demonstrate the modularity of the Dex-Net 2.0 grasp planner, we used it in an order fulfillment application with the ABB YuMi. The",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_18_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "We developed a Grasp Quality Convolutional Neural Network (GQ-CNN) architecture that predicts grasp robustness from a poin",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_19_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "st grasp metrics. In over 1,000 physical evaluations, we found that the Dex-Net 2.0 grasp planner is as reliable and 3\u00d7 faster a method based on point cloud registration",
+      "chunk_id": "dex-net-2-0-gq-cnn_mid_19_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "consider predicting grasp success directly from depth images by training a deep Convolutional Neural Network (CNN) on a massive dataset of parallel-jaw grasps, grasp metrics",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_0_2",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "Dex-Net 1.0 [35] for the most robust grasp to execute. We find that the Dex-Net 2.0 grasp planner is 3\u00d7 faster than the registration-based method, 93% successful on obje",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_0_3",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "Net 1.0 by associating synthetic point clouds with robust grasps and training a Convolutional Neural Network to map point clouds and candidates grasps to estimated robustnes",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_1_2",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "e cross-entropy loss function and \u0398 defines the parameters of the Grasp Quality Convolutional Network (GQ-CNN) described in Section IV-B. This objective is motivated by that",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_5_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross-entropy",
+      "context": "where L is the cross-entropy loss function and \u0398 defines the parameters of the Grasp Quality Convolutional N",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_5_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "earn with linear or kernelized models. Consequently, we develop a Grasp Quality Convolutional Neural Network (GQ-CNN) model that classifies robust grasp poses in depth image",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_6_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "dataset",
+      "value": "KIT",
+      "context": "nthetic models from 3DNet [57] and 129 laser scans from the KIT object database [27] . Each mesh is aligned to a standard f",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_7_3",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "1) Architecture: The Grasp Quality Convolutional Neural Network (GQ-CNN) architecture, illustrated in Fig. 4 and detailed in the",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_8_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "fully connected",
+      "context": "olutional layers in pairs of two separated by ReLU nonlinearities followed by 3 fully connected layers and a separate input layer for the z, the distance of the gripper from t",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_8_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "collisions between the gripper and object. transformations (similar to spatial transformer networks [24] ) and allows the network to evaluate any grasp orientation in the",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_8_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 training",
+      "context": "riented along \u03d5 (see the left panel of Fig. 4 for an illustration). The Dex-Net 2.0 training dataset contains 6.7 million datapoints and approximately 21.2% positive exampl",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_8_1",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "The Dex-Net 2.0 grasp planner uses the robust grasping policy \u03c0 \u03b8 (y) = argmax u\u2208C Q \u03b8 (u, y) illustr",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_9_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "93.0",
+      "unit": "%",
+      "context": "de of our datasets, we trained on the Cornell Grasping Dataset [32] (containing 8,019 examples) and achieved a 93.0% recognition rate using grayscale images and an 80-20 imagewise training-validation ",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_13_5",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "8,019 example",
+      "context": "de of our datasets, we trained on the Cornell Grasping Dataset [32] (containing 8,019 examples) and achieved a 93.0% recognition rate using grayscale images and an 80-20 ima",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_13_5",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "dataset",
+      "value": "Cornell",
+      "context": "the architecture outside of our datasets, we trained on the Cornell Grasping Dataset [32] (containing 8,019 examples) and achie",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_13_5",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "85.7",
+      "unit": "%",
+      "context": "The GQ-CNN trained on all of Dex-Net 2.0 had an accuracy of 85.7% on a held out validation set of approximately 1.3 million datapoints. Due to the memory and time re",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_14_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "93",
+      "unit": "%",
+      "context": "We found that GQ planned grasps 3\u00d7 faster than REG and achieved a high 93% success rate and 94% precision",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_15_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "80",
+      "unit": "%",
+      "context": "GQ performed best with an 80% success rate and 100% precision (zero false positives over 29 grasps classified as robust)",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_16_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "29 grasp",
+      "context": "med best with an 80% success rate and 100% precision (zero false positives over 29 grasps classified as robust).",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_16_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "metric",
+      "value": "94",
+      "unit": "%",
+      "context": "0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps classified as robust), and it took an aver",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "loss_function",
+      "value": "cross entropy",
+      "context": "iculated (e.g. can opener) and deformable (e.g. washcloth) objects. We used the cross entropy method (CEM) [33] , which iteratively samples a set of candidate grasps and re-",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "100 grasp",
+      "context": "We evaluated the generalization performance of GQ in 100 grasping trials on the 40 object test set illustrated in Fig. 7 , which contains arti",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "40 object",
+      "context": "We evaluated the generalization performance of GQ in 100 grasping trials on the 40 object test set illustrated in Fig. 7 , which contains articulated (e.g. can opener) a",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": ". More details can be found in the supplemental file. The CEM-augmented Dex-Net 2.0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps c",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "69 grasp",
+      "context": "t 2.0 grasp planner achieved 94% success and 99% precision (68 successes out of 69 grasps classified as robust), and it took an average of 2.5s to plan grasps.",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_17_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "To demonstrate the modularity of the Dex-Net 2.0 grasp planner, we used it in an order fulfillment application with the ABB YuMi. The",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_18_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "backbone",
+      "value": "Convolutional",
+      "context": "We developed a Grasp Quality Convolutional Neural Network (GQ-CNN) architecture that predicts grasp robustness from a poin",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_19_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    },
+    {
+      "type": "training_size",
+      "value": "2.0 grasp",
+      "context": "st grasp metrics. In over 1,000 physical evaluations, we found that the Dex-Net 2.0 grasp planner is as reliable and 3\u00d7 faster a method based on point cloud registration",
+      "chunk_id": "dex-net-2-0-gq-cnn_fine_19_0",
+      "paper_id": "dex-net-2-0-gq-cnn"
+    }
+  ],
+  "graspgen": [
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "ve diffusion process. Our proposed framework, GraspGen, consists of a Diffusion-Transformer architecture that enhances grasp generation, paired with an efficient discrimin",
+      "chunk_id": "graspgen_coarse_abstract",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "53 million grasp",
+      "context": "oth objects and grippers, we release a new simulated dataset consisting of over 53 million grasps. We demonstrate that GraspGen outperforms prior methods in simulations with si",
+      "chunk_id": "graspgen_coarse_abstract",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "53 Million grasp",
+      "context": "nference time and memory usage. We additionally provide a dataset consisting of 53 Million grasps, to support future research on these topics within the community.",
+      "chunk_id": "graspgen_coarse_sec_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "contact point grasp representation and (Yuan et al., 2023) extended this with a transformer for grasping as well as placing. Other works have investigated the choice of in",
+      "chunk_id": "graspgen_coarse_sec_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "R 3 of all the positive grasps poses \ud835\udca2 + \ud835\udc56 for object \ud835\udc56.\n\nObject Tokenization. PointNet++ (Qi et al., 2017 ) is a popular choice as an object encoder for several 6-DOF",
+      "chunk_id": "graspgen_coarse_sec_3",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "ian et al., 2019; Murali et al., 2020a; Urain et al., 2023) . While point cloud transformer architectures (Wu et al., 2022) are making steady progress, to the best of our",
+      "chunk_id": "graspgen_coarse_sec_3",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "7K object",
+      "context": "on the training set with the diffusion model. This dataset corresponds to about 7K objects, each with 2K grasp samples per object. We then annotate this dataset by simul",
+      "chunk_id": "graspgen_coarse_sec_4",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "th the diffusion model. This dataset corresponds to about 7K objects, each with 2K grasp samples per object. We then annotate this dataset by simulating the grasps usin",
+      "chunk_id": "graspgen_coarse_sec_4",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ps may never collide with the object (which is the case for ACRONYM (Eppner et al., 2021) ). However, some grasps generated by",
+      "chunk_id": "graspgen_coarse_sec_4",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ransformed with the grasp pose), concatenated with the object and passed into a PointNet with an additional input of a segmented point cloud. Instead, we simply concate",
+      "chunk_id": "graspgen_coarse_sec_5",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross entropy",
+      "context": "fusion-based generator. Only the final MLP layer is trained from scratch with a binary cross entropy loss. The object encoder from the generator is fronzen and re-used for the disc",
+      "chunk_id": "graspgen_coarse_sec_5",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "8,515 object",
+      "context": "To compare with models trained on ACRONYM, we further select a random subset of 8,515 object meshes to match the size to the ACRONYM dataset. For each object, 2K grasp tran",
+      "chunk_id": "graspgen_coarse_sec_6",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "8,515 object meshes to match the size to the ACRONYM dataset. For each object, 2K grasp transformations are uniformly sampled around the mesh. The label of a grasp is",
+      "chunk_id": "graspgen_coarse_sec_6",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "17M grasp",
+      "context": "eled using an analytical model (Mahler et al., 2018) . Each gripper comprises \u2248 17M grasps.",
+      "chunk_id": "graspgen_coarse_sec_6",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": ". The label generation process follows the pipeline used in ACRONYM (Eppner et al., 2021) .\n\nWhile ACRONYM is based on ShapeNet",
+      "chunk_id": "graspgen_coarse_sec_6",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "motion finishes. We construct datasets accordingly for the Franka Panda gripper and Robotiq-2f-140. We generate a similarly s",
+      "chunk_id": "graspgen_coarse_sec_6",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "finishes. We construct datasets accordingly for the Franka Panda gripper and Robotiq-2f-140. We generate a similarly structu",
+      "chunk_id": "graspgen_coarse_sec_6",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "metric",
+      "value": "65",
+      "unit": "%",
+      "context": "Interestingly, the oracle planner achieves only 65 % grasp success and 49",
+      "chunk_id": "graspgen_coarse_sec_7",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": ", 2023) . We reimplemented SE3-Diffusion Fields with two key differences: (1) a PointNet++ backbone to process the point cloud input of unknown objects and (2) model tr",
+      "chunk_id": "graspgen_coarse_sec_7",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "100 scene",
+      "context": "to motion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene for a total of 6k grasp executions. To f",
+      "chunk_id": "graspgen_coarse_sec_7",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "6k grasp",
+      "context": "Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene for a total of 6k grasp executions. To focus solely on grasp pose detection and eliminate confounding f",
+      "chunk_id": "graspgen_coarse_sec_7",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "g, to motion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per s",
+      "chunk_id": "graspgen_coarse_sec_7",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "otion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene f",
+      "chunk_id": "graspgen_coarse_sec_7",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "dix 6.6.3.\n\nPointcloud Encoder. We demonstrate substantial gains using the SOTA transformer backbone PointTrans-formerV3 (PTv3) (Wu et al., 2024) over PointNet++ (Qi et al",
+      "chunk_id": "graspgen_coarse_sec_9",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "the SOTA transformer backbone PointTrans-formerV3 (PTv3) (Wu et al., 2024) over PointNet++ (Qi et al., 2017) . PTv3 reduces translation error by 5.3 mm and increases re",
+      "chunk_id": "graspgen_coarse_sec_9",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ocal minima and provides a reliable alternative. \ud835\udf05=3.27 for Franka gripper.\n\nRotation Representation. All tested representatio",
+      "chunk_id": "graspgen_coarse_sec_9",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "While the main paper presents comparisons for the Franka Panda gripper, results for the Robotiq-2F-140 and suction g",
+      "chunk_id": "graspgen_coarse_sec_10",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "While the main paper presents comparisons for the Franka Panda gripper, results for the Robotiq-2F-140 and suction gripper",
+      "chunk_id": "graspgen_coarse_sec_10",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "100 grasp",
+      "context": "l models return a set of predicted grasps and confidence scores. We use the top-100 grasps as pose targets for the motion planner. The planner filters out grasps that ar",
+      "chunk_id": "graspgen_coarse_sec_11",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "noise prediction network.point clouds to a structured format, before applying a transformer on this serialized output. This sidesteps the process of nearest neighbor ball",
+      "chunk_id": "graspgen_coarse_figures",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ork, as \nFigure 3 : - Figure3: Object-centric evaluation on Franka-ACRONYM (Eppner et al., 2021)\nFigure 5 : - Figure 5: Evalua",
+      "chunk_id": "graspgen_coarse_figures",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "Figure 3 : - Figure3: Object-centric evaluation on Franka-ACRONYM (Eppner et al., 2021)\nFigure 5 : - Figure 5: Evaluating on",
+      "chunk_id": "graspgen_coarse_figures",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "53 Million grasp",
+      "context": "nference time and memory usage. We additionally provide a dataset consisting of 53 Million grasps, to support future research on these topics within the community.",
+      "chunk_id": "graspgen_mid_0_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "contact point grasp representation and (Yuan et al., 2023) extended this with a transformer for grasping as well as placing. Other works have investigated the choice of in",
+      "chunk_id": "graspgen_mid_1_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "n R 3 of all the positive grasps poses \ud835\udca2 + \ud835\udc56 for object \ud835\udc56. Object Tokenization. PointNet++ (Qi et al., 2017 ) is a popular choice as an object encoder for several 6-DOF",
+      "chunk_id": "graspgen_mid_3_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "ian et al., 2019; Murali et al., 2020a; Urain et al., 2023) . While point cloud transformer architectures (Wu et al., 2022) are making steady progress, to the best of our",
+      "chunk_id": "graspgen_mid_3_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "7K object",
+      "context": "on the training set with the diffusion model. This dataset corresponds to about 7K objects, each with 2K grasp samples per object. We then annotate this dataset by simul",
+      "chunk_id": "graspgen_mid_4_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "th the diffusion model. This dataset corresponds to about 7K objects, each with 2K grasp samples per object. We then annotate this dataset by simulating the grasps usin",
+      "chunk_id": "graspgen_mid_4_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ps may never collide with the object (which is the case for ACRONYM (Eppner et al., 2021) ). However, some grasps generated by",
+      "chunk_id": "graspgen_mid_4_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ransformed with the grasp pose), concatenated with the object and passed into a PointNet with an additional input of a segmented point cloud. Instead, we simply concate",
+      "chunk_id": "graspgen_mid_5_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross entropy",
+      "context": "fusion-based generator. Only the final MLP layer is trained from scratch with a binary cross entropy loss. The object encoder from the generator is fronzen and re-used for the disc",
+      "chunk_id": "graspgen_mid_5_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "8,515 object",
+      "context": "To compare with models trained on ACRONYM, we further select a random subset of 8,515 object meshes to match the size to the ACRONYM dataset. For each object, 2K grasp tran",
+      "chunk_id": "graspgen_mid_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "8,515 object meshes to match the size to the ACRONYM dataset. For each object, 2K grasp transformations are uniformly sampled around the mesh. The label of a grasp is",
+      "chunk_id": "graspgen_mid_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "17M grasp",
+      "context": "eled using an analytical model (Mahler et al., 2018) . Each gripper comprises \u2248 17M grasps.",
+      "chunk_id": "graspgen_mid_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": ". The label generation process follows the pipeline used in ACRONYM (Eppner et al., 2021) . While ACRONYM is based on ShapeNetS",
+      "chunk_id": "graspgen_mid_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "motion finishes. We construct datasets accordingly for the Franka Panda gripper and Robotiq-2f-140. We generate a similarly s",
+      "chunk_id": "graspgen_mid_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "finishes. We construct datasets accordingly for the Franka Panda gripper and Robotiq-2f-140. We generate a similarly structu",
+      "chunk_id": "graspgen_mid_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": ", 2023) . We reimplemented SE3-Diffusion Fields with two key differences: (1) a PointNet++ backbone to process the point cloud input of unknown objects and (2) model tr",
+      "chunk_id": "graspgen_mid_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "l models using the same training set and splits. For M2T2, we just use a single transformer token, since there is only one object in the scene. The evaluation pipeline fol",
+      "chunk_id": "graspgen_mid_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "815 object",
+      "context": "mesh, without any self-occlusion. For each method, we evaluate on a test set of 815 objects with 2K grasps/object, resulting in a total of 1.6 million grasp executions. W",
+      "chunk_id": "graspgen_mid_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "self-occlusion. For each method, we evaluate on a test set of 815 objects with 2K grasps/object, resulting in a total of 1.6 million grasp executions. We trained all m",
+      "chunk_id": "graspgen_mid_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "1.6 million grasp",
+      "context": "ate on a test set of 815 objects with 2K grasps/object, resulting in a total of 1.6 million grasp executions. We trained all models using the same training set and splits. For M",
+      "chunk_id": "graspgen_mid_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ree-floating gripper. We present results on the widely used ACRONYM dataset (Eppner et al., 2021) for the Franka gripper. Exten",
+      "chunk_id": "graspgen_mid_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "e widely used ACRONYM dataset (Eppner et al., 2021) for the Franka gripper. Extended results on GraspGen datasets are presente",
+      "chunk_id": "graspgen_mid_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "metric",
+      "value": "65",
+      "unit": "%",
+      "context": "Interestingly, the oracle planner achieves only 65 % grasp success and 49",
+      "chunk_id": "graspgen_mid_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "100 scene",
+      "context": "to motion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene for a total of 6k grasp executions. To f",
+      "chunk_id": "graspgen_mid_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "6k grasp",
+      "context": "Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene for a total of 6k grasp executions. To focus solely on grasp pose detection and eliminate confounding f",
+      "chunk_id": "graspgen_mid_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "g, to motion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per s",
+      "chunk_id": "graspgen_mid_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "otion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene f",
+      "chunk_id": "graspgen_mid_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "ndix 6.6.3. Pointcloud Encoder. We demonstrate substantial gains using the SOTA transformer backbone PointTrans-formerV3 (PTv3) (Wu et al., 2024) over PointNet++ (Qi et al",
+      "chunk_id": "graspgen_mid_9_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "the SOTA transformer backbone PointTrans-formerV3 (PTv3) (Wu et al., 2024) over PointNet++ (Qi et al., 2017) . PTv3 reduces translation error by 5.3 mm and increases re",
+      "chunk_id": "graspgen_mid_9_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ocal minima and provides a reliable alternative. \ud835\udf05=3.27 for Franka gripper. Rotation Representation. All tested representation",
+      "chunk_id": "graspgen_mid_9_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "While the main paper presents comparisons for the Franka Panda gripper, results for the Robotiq-2F-140 and suction g",
+      "chunk_id": "graspgen_mid_10_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "While the main paper presents comparisons for the Franka Panda gripper, results for the Robotiq-2F-140 and suction gripper",
+      "chunk_id": "graspgen_mid_10_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "100 grasp",
+      "context": "l models return a set of predicted grasps and confidence scores. We use the top-100 grasps as pose targets for the motion planner. The planner filters out grasps that ar",
+      "chunk_id": "graspgen_mid_11_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "53 Million grasp",
+      "context": "nference time and memory usage. We additionally provide a dataset consisting of 53 Million grasps, to support future research on these topics within the community.",
+      "chunk_id": "graspgen_fine_0_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "contact point grasp representation and (Yuan et al., 2023) extended this with a transformer for grasping as well as placing. Other works have investigated the choice of in",
+      "chunk_id": "graspgen_fine_1_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "Object Tokenization. PointNet++ (Qi et al., 2017 ) is a popular choice as an object encoder for several 6-DOF",
+      "chunk_id": "graspgen_fine_3_2",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "ian et al., 2019; Murali et al., 2020a; Urain et al., 2023) . While point cloud transformer architectures (Wu et al., 2022) are making steady progress, to the best of our",
+      "chunk_id": "graspgen_fine_3_2",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ps may never collide with the object (which is the case for ACRONYM (Eppner et al., 2021) ). However, some grasps generated by",
+      "chunk_id": "graspgen_fine_4_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "7K object",
+      "context": "on the training set with the diffusion model. This dataset corresponds to about 7K objects, each with 2K grasp samples per object. We then annotate this dataset by simul",
+      "chunk_id": "graspgen_fine_4_2",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "th the diffusion model. This dataset corresponds to about 7K objects, each with 2K grasp samples per object. We then annotate this dataset by simulating the grasps usin",
+      "chunk_id": "graspgen_fine_4_2",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ransformed with the grasp pose), concatenated with the object and passed into a PointNet with an additional input of a segmented point cloud. Instead, we simply concate",
+      "chunk_id": "graspgen_fine_5_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "loss_function",
+      "value": "binary cross entropy",
+      "context": "fusion-based generator. Only the final MLP layer is trained from scratch with a binary cross entropy loss. The object encoder from the generator is fronzen and re-used for the disc",
+      "chunk_id": "graspgen_fine_5_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "8,515 object",
+      "context": "To compare with models trained on ACRONYM, we further select a random subset of 8,515 object meshes to match the size to the ACRONYM dataset. For each object, 2K grasp tran",
+      "chunk_id": "graspgen_fine_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "8,515 object meshes to match the size to the ACRONYM dataset. For each object, 2K grasp transformations are uniformly sampled around the mesh. The label of a grasp is",
+      "chunk_id": "graspgen_fine_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "17M grasp",
+      "context": "eled using an analytical model (Mahler et al., 2018) . Each gripper comprises \u2248 17M grasps.",
+      "chunk_id": "graspgen_fine_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "While ACRONYM is based on ShapeNetSem (Savva et al., 2015) , we use the m",
+      "chunk_id": "graspgen_fine_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "motion finishes. We construct datasets accordingly for the Franka Panda gripper and Robotiq-2f-140. We generate a similarly s",
+      "chunk_id": "graspgen_fine_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "finishes. We construct datasets accordingly for the Franka Panda gripper and Robotiq-2f-140. We generate a similarly structu",
+      "chunk_id": "graspgen_fine_6_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": ", 2023) . We reimplemented SE3-Diffusion Fields with two key differences: (1) a PointNet++ backbone to process the point cloud input of unknown objects and (2) model tr",
+      "chunk_id": "graspgen_fine_7_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "l models using the same training set and splits. For M2T2, we just use a single transformer token, since there is only one object in the scene. The evaluation pipeline fol",
+      "chunk_id": "graspgen_fine_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "815 object",
+      "context": "mesh, without any self-occlusion. For each method, we evaluate on a test set of 815 objects with 2K grasps/object, resulting in a total of 1.6 million grasp executions. W",
+      "chunk_id": "graspgen_fine_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "2K grasp",
+      "context": "self-occlusion. For each method, we evaluate on a test set of 815 objects with 2K grasps/object, resulting in a total of 1.6 million grasp executions. We trained all m",
+      "chunk_id": "graspgen_fine_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "1.6 million grasp",
+      "context": "ate on a test set of 815 objects with 2K grasps/object, resulting in a total of 1.6 million grasp executions. We trained all models using the same training set and splits. For M",
+      "chunk_id": "graspgen_fine_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "ACRONYM",
+      "context": "ree-floating gripper. We present results on the widely used ACRONYM dataset (Eppner et al., 2021) for the Franka gripper. Exten",
+      "chunk_id": "graspgen_fine_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "e widely used ACRONYM dataset (Eppner et al., 2021) for the Franka gripper. Extended results on GraspGen datasets are presente",
+      "chunk_id": "graspgen_fine_7_1",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "metric",
+      "value": "65",
+      "unit": "%",
+      "context": "Interestingly, the oracle planner achieves only 65 % grasp success and 49",
+      "chunk_id": "graspgen_fine_7_3",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "100 scene",
+      "context": "to motion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene for a total of 6k grasp executions. To f",
+      "chunk_id": "graspgen_fine_7_3",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "6k grasp",
+      "context": "Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene for a total of 6k grasp executions. To focus solely on grasp pose detection and eliminate confounding f",
+      "chunk_id": "graspgen_fine_7_3",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "g, to motion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per s",
+      "chunk_id": "graspgen_fine_7_3",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "otion planning. The experiments are conducted with a Franka Panda robot in 100 scenes (see Fig. 4 ) with 60 tasks per scene f",
+      "chunk_id": "graspgen_fine_7_3",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ocal minima and provides a reliable alternative. \ud835\udf05=3.27 for Franka gripper.",
+      "chunk_id": "graspgen_fine_9_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "While the main paper presents comparisons for the Franka Panda gripper, results for the Robotiq-2F-140 and suction g",
+      "chunk_id": "graspgen_fine_10_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "While the main paper presents comparisons for the Franka Panda gripper, results for the Robotiq-2F-140 and suction gripper",
+      "chunk_id": "graspgen_fine_10_0",
+      "paper_id": "graspgen"
+    },
+    {
+      "type": "training_size",
+      "value": "100 grasp",
+      "context": "l models return a set of predicted grasps and confidence scores. We use the top-100 grasps as pose targets for the motion planner. The planner filters out grasps that ar",
+      "chunk_id": "graspgen_fine_11_1",
+      "paper_id": "graspgen"
+    }
+  ]
+}
