@@ -35,6 +35,78 @@
    "kept": 0,
    "rejected_unverifiable_quote": 1,
    "llm_errors": 22
+  },
+  "affordgen": {
+   "chunks_seen": 25,
+   "kept": 26,
+   "rejected_unverifiable_quote": 5,
+   "llm_errors": 0
+  },
+  "catgrasp": {
+   "chunks_seen": 11,
+   "kept": 23,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 0
+  },
+  "contact-graspnet": {
+   "chunks_seen": 14,
+   "kept": 35,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 0
+  },
+  "deep-dexterous-grasping-in-clutter-ddgc": {
+   "chunks_seen": 13,
+   "kept": 50,
+   "rejected_unverifiable_quote": 6,
+   "llm_errors": 0
+  },
+  "deeprlmanip": {
+   "chunks_seen": 12,
+   "kept": 24,
+   "rejected_unverifiable_quote": 3,
+   "llm_errors": 0
+  },
+  "dex-net-1-0-mv-cnns": {
+   "chunks_seen": 18,
+   "kept": 16,
+   "rejected_unverifiable_quote": 1,
+   "llm_errors": 0
+  },
+  "dex-net-2-0-gq-cnn": {
+   "chunks_seen": 19,
+   "kept": 43,
+   "rejected_unverifiable_quote": 2,
+   "llm_errors": 0
+  },
+  "dex-net-2-1": {
+   "chunks_seen": 20,
+   "kept": 37,
+   "rejected_unverifiable_quote": 2,
+   "llm_errors": 0
+  },
+  "dex-net-3-0": {
+   "chunks_seen": 18,
+   "kept": 31,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 0
+  },
+  "dex-net-4-0": {
+   "chunks_seen": 25,
+   "kept": 56,
+   "rejected_unverifiable_quote": 6,
+   "llm_errors": 0
+  },
+  "dex4d": {
+   "chunks_seen": 14,
+   "kept": 35,
+   "rejected_unverifiable_quote": 2,
+   "llm_errors": 0
+  },
+  "dexdiffuser": {
+   "chunks_seen": 16,
+   "kept": 29,
+   "rejected_unverifiable_quote": 0,
+   "llm_errors": 0
   }
  },
  "triples": [
@@ -926,10 +998,2845 @@
    "quote": "The second limitation is that we can only pose isotropic cone constraints but not non-isotropic elliptical cone constraints.",
    "chunk_id": "capgrasp_mid_17_0",
    "paper_id": "capgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "novel objects",
+   "quote": "the prohibitive cost of collecting largescale, high-quality human demonstrations, and the poor generalization of learned policies to novel objects and scenarios not encountered during training",
+   "chunk_id": "affordgen_mid_0_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "lack of true reactivity and flexibility in affordance-based manipulation",
+   "quote": "Although these methods expand the scope of semantic correspondence, most still treat affordances merely as mapping signals, using them to locate contact points and relying on planners for execution, thus lacking true reactivity and flexibility. In contrast, AffordGen transforms affordances from static mappings into generative sources,",
+   "chunk_id": "affordgen_mid_2_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "manipulation task decomposition",
+   "quote": "we decompose a manipulation task into three distinct stages \u2126 = {\u2126 G , \u2126 S , \u2126 T }",
+   "chunk_id": "affordgen_mid_3_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "robotic manipulation",
+   "quote": "We consider a robotic manipulation scenario where the end-effector manipulates an active object to interact with a goal object.",
+   "chunk_id": "affordgen_mid_6_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "collision-free freespace motion",
+   "quote": "it can be regarded as a collision-free freespace motion between the grasping segment and the skill segment.",
+   "chunk_id": "affordgen_mid_8_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "spatial generalization",
+   "quote": "AffordGen maintains its spatial generalization capability on the original mesh when generalizing to unseen shapes.",
+   "chunk_id": "affordgen_mid_11_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "trained_on",
+   "object": "PAM",
+   "quote": "generate 1000 demonstrations using 3D mesh assets, from the PAM [38] dataset or 3D generative model [27]",
+   "chunk_id": "affordgen_mid_11_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "unseen 3D meshes",
+   "quote": "The 3D meshes are randomly split into seen and unseen subsets; the former is used for data generation and the latter for evaluation.",
+   "chunk_id": "affordgen_mid_11_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "DemoGen",
+   "quote": "Af-fordGen, through semantic-corresponding keypoints, significantly expands the shape diversity of the generated data, outperforming both DemoGen and CPGen across all tasks by an average of 24.1% on unseen object tests on the best 100 \u00d7 10 setting.",
+   "chunk_id": "affordgen_mid_12_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "CPGen",
+   "quote": "Af-fordGen, through semantic-corresponding keypoints, significantly expands the shape diversity of the generated data, outperforming both DemoGen and CPGen across all tasks by an average of 24.1% on unseen object tests on the best 100 \u00d7 10 setting.",
+   "chunk_id": "affordgen_mid_12_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "unseen meshes",
+   "quote": "Under each (#meshes, #demos per mesh) combination, the learned policy is evaluated on both source mesh and 5-20 unseen meshes, where each mesh is tested 50 times with randomly placed initial positions and orientations.",
+   "chunk_id": "affordgen_mid_12_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "source mesh",
+   "quote": "Under each (#meshes, #demos per mesh) combination, the learned policy is evaluated on both source mesh and 5-20 unseen meshes, where each mesh is tested 50 times with randomly placed initial positions and orientations.",
+   "chunk_id": "affordgen_mid_12_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "generalization capability",
+   "quote": "To thoroughly examine the efficiency of AffordGen on the generalization capability of the learned policy, we perform ablation studies on each task by fixing the total number of demonstrations while varying the number of meshes used for generation and the number of demonstrations per mesh.",
+   "chunk_id": "affordgen_mid_12_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "performance drop",
+   "quote": "The performance gradually drops as the evaluation mesh becomes more dissimilar from the source, but AffordGen remains high generalization performance across all meshes.",
+   "chunk_id": "affordgen_mid_12_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "trained_on",
+   "object": "generated data",
+   "quote": "After training solely on the generated data, we evaluate the learned policies on a variety of previously unseen real objects.",
+   "chunk_id": "affordgen_mid_13_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "previously unseen real objects",
+   "quote": "After training solely on the generated data, we evaluate the learned policies on a variety of previously unseen real objects.",
+   "chunk_id": "affordgen_mid_13_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "FUNCTO",
+   "quote": "We include FUNCTO to highlight the differences between AffordGen and affordance-based openloop planning algorithms, and demonstrate how AffordGen overcomes the limitations of such approaches.",
+   "chunk_id": "affordgen_mid_13_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "trained_on",
+   "object": "large-scale generated data",
+   "quote": "training on large-scale generated data",
+   "chunk_id": "affordgen_mid_14_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "keypoint occlusion issues",
+   "quote": "effectively resolving the keypoint occlusion issues",
+   "chunk_id": "affordgen_mid_14_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "data scarcity and generalization problem",
+   "quote": "AffordGen addresses the data scarcity and generalization problem in robotic learning.",
+   "chunk_id": "affordgen_mid_16_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "RealSense L515 camera",
+   "quote": "RealSense L515 camera",
+   "chunk_id": "affordgen_mid_18_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "DemoGen",
+   "quote": "In both simulation and real-world experiments, we compare against the DemoGen baseline.",
+   "chunk_id": "affordgen_mid_20_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "varying object yaw rotations",
+   "quote": "the original DemoGen implementation does not generate demonstrations under varying object yaw rotations relative to the camera; the object and robot arm always face the camera from the same side. In contrast, our method extends data generation to novel camera viewpoints,",
+   "chunk_id": "affordgen_mid_20_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "robot arm",
+   "quote": "the object and robot arm always face the camera from the same side. In contrast, our method extends data generation to novel camera viewpoints,",
+   "chunk_id": "affordgen_mid_20_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "trained_on",
+   "object": "AffordGen-generated data",
+   "quote": "the data generated by AffordGen can train policies that perform well both on objects within the same category and across different categories.",
+   "chunk_id": "affordgen_mid_23_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "generalization in robotic manipulation",
+   "quote": "The learned policy is able to execute consecutively on different objects, showcasing the superior generalization ability of AffordGen.",
+   "chunk_id": "affordgen_mid_23_0",
+   "paper_id": "affordgen"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet-like architecture",
+   "quote": "\u03a6(\u2022) is built with a PointNet-like architecture [51] given it is light-weight and efficient.",
+   "chunk_id": "catgrasp_mid_2_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "Softmax cross entropy loss",
+   "quote": "Softmax cross entropy loss is used as we found it more effective than regression by reducing the solution space [16] .",
+   "chunk_id": "catgrasp_mid_2_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "synthetic training data",
+   "quote": "the models M \ud835\udc36 are also used to create a category-level canonical template model, to generate a hand-object contact heatmap (Sec. IV-C) and a stable grasp codebook (Sec. IV-B).",
+   "chunk_id": "catgrasp_mid_2_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "dense correspondence in 3D space",
+   "quote": "Instead, this work establishes dense correspondence in 3D space to transfer knowledge from a trained model database M \ud835\udc36 to a novel instance \ud835\udc40 test \ud835\udc36 .",
+   "chunk_id": "catgrasp_mid_2_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "NOCS",
+   "quote": "Compared to the original NOCS representation [16] , which recovers a 7D pose of novel object instances, the proposed NUNOCS allows to scale independently in each dimension when converting to the canonical space.",
+   "chunk_id": "catgrasp_mid_2_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet",
+   "quote": "which is built based on PointNet [51] .",
+   "chunk_id": "catgrasp_mid_3_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "softmax cross entropy loss",
+   "quote": "to compute softmax cross entropy loss.",
+   "chunk_id": "catgrasp_mid_3_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "dense clutter",
+   "quote": "in each dense clutter generated (as in Sec. IV-E),",
+   "chunk_id": "catgrasp_mid_3_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "discovering grasp affordance via self-interaction",
+   "quote": "In contrast to prior work [7] , which manually annotates parts of segments, or uses predefined sparse keypoints [8] , this work discovers grasp affordance via selfinteraction.",
+   "chunk_id": "catgrasp_mid_4_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "dense 3D point-wise hand-object contact heatmap",
+   "quote": "To achieve this, a dense 3D point-wise hand-object contact heatmap is modeled.",
+   "chunk_id": "catgrasp_mid_4_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "training objects within the category",
+   "quote": "Eventually, for each of the training objects within the category, the hand-object contact heatmap \ud835\udc43(\ud835\udc47 |\ud835\udc3a) is transformed to the canonical model.",
+   "chunk_id": "catgrasp_mid_4_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "human annotated part-segmentation",
+   "quote": "Interestingly, these heatmaps achieve similar performance to human annotated part-segmentation [36] but can be interpreted as a \"soft\" version.",
+   "chunk_id": "catgrasp_mid_4_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Sparse 3D U-Net",
+   "quote": "This work employs the Sparse 3D U-Net [54] , [55] due to its memory efficiency.",
+   "chunk_id": "catgrasp_mid_5_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "L2 loss",
+   "quote": "The training loss is designed as the \ud835\udc3f 2 loss between the predicted and the ground-truth offsets [56] .",
+   "chunk_id": "catgrasp_mid_5_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "synthetic data",
+   "quote": "The entire framework is trained solely on synthetic data.",
+   "chunk_id": "catgrasp_mid_6_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "trained_on",
+   "object": "3D models crawled online",
+   "quote": "This inexpensive source for 3D model training is used to learn category-level priors.",
+   "chunk_id": "catgrasp_mid_7_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Kuka IIWA14",
+   "quote": "The hardware is composed of a Kuka IIWA14 arm, a Robotiq Hand-E gripper, and a Photoneo 3D camera, as in the wrapped figure .",
+   "chunk_id": "catgrasp_mid_7_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Robotiq Hand-E",
+   "quote": "The hardware is composed of a Kuka IIWA14 arm, a Robotiq Hand-E gripper, and a Photoneo 3D camera, as in the wrapped figure .",
+   "chunk_id": "catgrasp_mid_7_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Photoneo 3D camera",
+   "quote": "The hardware is composed of a Kuka IIWA14 arm, a Robotiq Hand-E gripper, and a Photoneo 3D camera, as in the wrapped figure .",
+   "chunk_id": "catgrasp_mid_7_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "PointNetGPD",
+   "quote": "Ours significantly surpasses all baselines measured by the success rate on task-relevant grasping in both simulation and real-world.",
+   "chunk_id": "catgrasp_mid_8_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "task-relevant semantic grasps",
+   "quote": "Thanks to the task-relevant hand-object contact heatmap modeling and knowledge transfer via 3D dense correspondence, most of the grasps generated by Ours and Ours-NOCS are task-relevant semantic grasps.",
+   "chunk_id": "catgrasp_mid_8_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "grasp stability for tiny objects",
+   "quote": "This gap is noticeably larger for Screws, of which the instances are thin and tiny. Therefore, when they rest in a cluttered bin, it is challenging to find collision-free grasps and thus requires high precision grasp pose reasoning.",
+   "chunk_id": "catgrasp_mid_8_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "task-relevant grasping for industrial objects",
+   "quote": "This work proposed CaTGrasp to learn task-relevant grasping for industrial objects in simulation,",
+   "chunk_id": "catgrasp_mid_9_0",
+   "paper_id": "catgrasp"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "6-DoF grasping of unknown objects in cluttered space",
+   "quote": "In this paper, we tackle 6-DoF grasping of unknown objects in cluttered space from a partial point cloud observation of the scene.",
+   "chunk_id": "contact-graspnet_mid_0_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "6-DoF grasping",
+   "quote": "In contrast, our method learns to generate diverse 6-DoF grasps on novel objects and scenes for specifiable target objects while just using simulated training data.",
+   "chunk_id": "contact-graspnet_mid_1_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "novel loss formulation",
+   "quote": "Our novel loss formulation further improves convergence by accounting for the discontinuities, imbalance and multi modality of the grasp distribution.",
+   "chunk_id": "contact-graspnet_mid_1_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulated training data",
+   "quote": "In contrast, our method learns to generate diverse 6-DoF grasps on novel objects and scenes for specifiable target objects while just using simulated training data.",
+   "chunk_id": "contact-graspnet_mid_1_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "no category labels",
+   "quote": "Unlike other methods [31] , our proposed method is independent of category labels and has no assumption of grasp",
+   "chunk_id": "contact-graspnet_mid_1_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "generating 6-DoF grasps from any viewpoint on structured clutter consisting of unknown objects",
+   "quote": "We consider the problem of generating 6-DoF grasps from any viewpoint on structured clutter consisting of unknown objects.",
+   "chunk_id": "contact-graspnet_mid_2_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "ACRONYM dataset",
+   "quote": "We place object meshes with dense grasp annotations from the ACRONYM dataset [32] at random stable poses in scenes.",
+   "chunk_id": "contact-graspnet_mid_2_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "Point Set Networks such as PointNet++ [34] effectively process point clouds and hierarchically aggregate points and their feature representations in local 3D neighborhoods.",
+   "chunk_id": "contact-graspnet_mid_3_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "6-DoF grasp learning problem",
+   "quote": "we can thus reduce the 6-DoF grasp learning problem to estimating the 3-DoF grasp rotation R g \u2208 R 3\u00d73 and grasp width w \u2208 R of a parallel-yaw gripper.",
+   "chunk_id": "contact-graspnet_mid_3_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "ACRONYM",
+   "quote": "We used the ACRONYM dataset [32] , which consists of 8872 meshes from the Shapenet dataset [35] and 17.7 million simulated grasps under varying friction.",
+   "chunk_id": "contact-graspnet_mid_4_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "We employ the set abstraction and feature propagation layers proposed in PointNet++ [34] to build an asymmetric Ushaped network.",
+   "chunk_id": "contact-graspnet_mid_5_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "binary cross entropy",
+   "quote": "The contact grasp success predictions \u015d \u2208 R are evaluated at all output points p i \u2208 R 3 : \u2200i \u2208 [0, m] using binary cross entropy.",
+   "chunk_id": "contact-graspnet_mid_6_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "weighted minimum average distance",
+   "quote": "We formulate the 6-DoF grasp loss l add-s as a weighted minimum average distance between gripper points v gt and v pred where we take the symmetry of the gripper into account.",
+   "chunk_id": "contact-graspnet_mid_6_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "weighted, multi-label binary cross entropy loss",
+   "quote": "On the grasp width bin predictions, we optimize a weighted, multi-label binary cross entropy loss l width .",
+   "chunk_id": "contact-graspnet_mid_6_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "set abstraction layers",
+   "quote": "Our set abstraction layers have 3 parallel branches with query ball radii [0.02,0.04,0.08], [0.04,0.08.0.16] and [0.08,0.16,0.32]",
+   "chunk_id": "contact-graspnet_mid_7_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "Adam optimizer",
+   "quote": "We use the Adam optimizer with an initial learning rate of 0.001 and a step-wise decay to 0.0001",
+   "chunk_id": "contact-graspnet_mid_7_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "ShapeNet",
+   "quote": "For training we generate 10000 table top scenes by placing 8-12 grasp annotated ShapeNet models [32] at random stable poses",
+   "chunk_id": "contact-graspnet_mid_7_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka",
+   "quote": "We evaluate our method in a grasping study with a Franka robot where we pick unknown objects in cluttered scenes",
+   "chunk_id": "contact-graspnet_mid_7_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasping unknown objects in cluttered scenes",
+   "quote": "We evaluate our method in a grasping study with a Franka robot where we pick unknown objects in cluttered scenes",
+   "chunk_id": "contact-graspnet_mid_7_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "training on small grasp dataset",
+   "quote": "Training on the small grasp dataset from [11] with 5 categories is not sufficient to generalize to arbitrary objects and shows the importance of ACRONYM [32]",
+   "chunk_id": "contact-graspnet_mid_7_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "previous methods",
+   "quote": "Convergence is significantly faster than on previous methods [12, 14, 11] which take up to one week on a single GPU for training",
+   "chunk_id": "contact-graspnet_mid_7_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasping in cluttered scenes",
+   "quote": "grasping in only one or two trials is crucial in cluttered scenes (e.g. in households) with large, densely packed objects where collisions should be avoided and stable grasp opportunities can vanish after objects tip over.",
+   "chunk_id": "contact-graspnet_mid_9_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "simulator experiments",
+   "quote": "Our simulator experiments allow us to also evaluate the diversity of grasps and ablate variations of our method.",
+   "chunk_id": "contact-graspnet_mid_9_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Emika Panda",
+   "quote": "Our physical setup consists of a 7-DoF Franka Panda robot with a parallel-jaw gripper.",
+   "chunk_id": "contact-graspnet_mid_10_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Intel Realsense L515",
+   "quote": "we use the Intel Realsense L515 LiDAR camera mounted on a tripod for both RGB and depth data.",
+   "chunk_id": "contact-graspnet_mid_10_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "cluttered scene object picking",
+   "quote": "The task is to pick the objects from the cluttered scene and place them into a bin.",
+   "chunk_id": "contact-graspnet_mid_10_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "weighted loss on grasp width bins",
+   "quote": "The weighted loss on the grasp width bins l width is crucial to deal with the imbalanced widths in our grasp dataset.",
+   "chunk_id": "contact-graspnet_mid_11_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "average distance loss",
+   "quote": "The average distance loss l add-s improves the success rate of high confidence contacts which is important because most grasps that we execute lie in the first decimal of coverage.",
+   "chunk_id": "contact-graspnet_mid_11_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "trained_on",
+   "object": "ACRONYM",
+   "quote": "We also show the importance of a large and diverse grasp dataset like ACRONYM [32] .",
+   "chunk_id": "contact-graspnet_mid_11_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "less confident grasp predictions for thick objects",
+   "quote": "We observe some failure cases for thick objects that only allow grasps almost at maximum grasp width. Here, grasp predictions are less confident presumably because of the discontinuous decision boundary.",
+   "chunk_id": "contact-graspnet_mid_11_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "contact points with low confidence for small objects",
+   "quote": "Finally, small objects sometimes have contact points with low confidence possibly because of their small impact on the total loss.",
+   "chunk_id": "contact-graspnet_mid_11_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasping unknown objects in structured clutter",
+   "quote": "We considered the fundamental problem of grasping unknown objects in structured clutter with a parallel jaw gripper.",
+   "chunk_id": "contact-graspnet_mid_12_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Contact-GraspNet",
+   "quote": "We proposed an efficient, accurate and simplifying 6-DoF grasp generation method called Contact-GraspNet.",
+   "chunk_id": "contact-graspnet_mid_12_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "tailored optimization targets",
+   "quote": "Through tailored optimization targets that take into account the multi-modality, imbalance and sparsity of the 6-DoF grasp distribution,",
+   "chunk_id": "contact-graspnet_mid_12_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel jaw gripper",
+   "quote": "We considered the fundamental problem of grasping unknown objects in structured clutter with a parallel jaw gripper.",
+   "chunk_id": "contact-graspnet_mid_12_0",
+   "paper_id": "contact-graspnet"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "DDGC",
+   "quote": "we present DDGC, a deep network that can generate a set of collision-free multi-finger grasps on unknown objects in cluttered scenes many times faster than state-of-the-art methods.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_0_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "GraspIt!",
+   "quote": "DDGC was experimentally validated in simulation and in the real-world against two baselines: Multi-FinGAN [8] , a recent state-of-the-art single-object multi-finger grasp sampling method, and the simulated-annealing planner in GraspIt! [6] .",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_0_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real-world",
+   "quote": "The realworld experiments, on the other hand, evaluated the clearance rate in cluttered scenes containing 4 objects using a physical Franka Emika Panda equipped with a Barrett hand.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_0_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Emika Panda",
+   "quote": "The realworld experiments, on the other hand, evaluated the clearance rate in cluttered scenes containing 4 objects using a physical Franka Emika Panda equipped with a Barrett hand.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_0_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Multi-FinGAN",
+   "quote": "The results show that DDGC generates higher quality grasps with a higher clearance rate than both baselines.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_0_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GraspIt!",
+   "quote": "The results show that DDGC generates higher quality grasps with a higher clearance rate than both baselines.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_0_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "simulation setup",
+   "quote": "our method does not need any simulation setup which can be brittle to tune.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_0_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasping unknown objects in structured clutter",
+   "quote": "we address the problem of grasping unknown objects in structured clutter with a multi-finger robotic gripper.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_4_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "multi-finger robotic gripper",
+   "quote": "we address the problem of grasping unknown objects in structured clutter with a multi-finger robotic gripper.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_4_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "generating high-quality collision free grasps in cluttered scenes",
+   "quote": "To generate high-quality collision free grasps in cluttered scenes, we introduce the model shown in Fig. 1",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_5_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Convolutional Neural Network (CNN)",
+   "quote": "produces an encoding E(I) of the geometry of the scene from an RGB image I using a Convolutional Neural Network (CNN).",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Deep Neural Network (DNN)",
+   "quote": "we use a pre-trained fully convolutional hour-glass shaped Deep Neural Network (DNN) that operates on voxelized point-clouds as input and outputs a completed voxel grid of the object.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "Wasserstein discriminator with gradient penalty",
+   "quote": "To ensure that the distribution of generated grasps is close to the training distribution we add a Wasserstein discriminator D [32] trained with the gradient penalty [33]",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "trained_on",
+   "object": "known meshes",
+   "quote": "the center of the target object t 0 is known during training because we are operating on known meshes,",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "shape-completed mesh",
+   "quote": "while during the physical experiments we use the center of the shape-completed mesh.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Barrett hand",
+   "quote": "the grasp configuration q c represents the 7-DOF of a Barrett hand shown in Fig. 6 .",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp generation and refinement",
+   "quote": "The Image Encoding module, further detailed together with the Grasp Generation module in the next section, produces an encoding E(I) of the geometry of the scene from an RGB image I using a Convolutional Neural Network (CNN). This encoding, together with an input grasp orientation r 0 , is then passed through the fully-connected Grasp Generation network to generate a coarse gripper joint configuration q c and a 6D coarse object-centric grasp pose p c = (t c , r c )",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "only outputs finger spread",
+   "quote": "However, the Grasp Generation network is only tasked to output the finger spread of the coarse gripper configuration q c and leaves the rest of the DOF in a default zero position.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_6_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Image Encoding and Grasp Generation networks",
+   "quote": "the novel sub-modules in this work are the Image Encoding and Grasp Generation networks.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_7_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "cluttered scenes",
+   "quote": "the architectures we proposed there cannot handle the complexity of cluttered scenes because of the following reasons:",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_7_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "ignoring obstacles",
+   "quote": "information about obstacles is ignored and as such cannot prime the grasp sampler to generate collision-free grasps.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_7_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "target object mask",
+   "quote": "we kept the original input RGB image unmasked and instead added an additional channel with the target object mask.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_7_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "trained_on",
+   "object": "scenes with 1-4 objects",
+   "quote": "The model was trained on scenes containing 1, 2, 3, or 4 objects randomly placed on a table surface;",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_9_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulated data of cluttered scenes",
+   "quote": "Based on these findings, we train DDGC on only simulated data of cluttered scenes.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_10_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "EGAD! validation set",
+   "quote": "We also generated three validation sets: one on the 49 validation objects in the EGAD! validation set,",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_10_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "trained_on",
+   "object": "synthetic data",
+   "quote": "our generative grasp sampler, which is purely trained on synthetic data",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_11_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "simulation",
+   "quote": "we evaluate grasp quality and hand-object interpenetration in simulation",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_11_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real hardware",
+   "quote": "we evaluate the clearance rate in cluttered scenes on real hardware",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_11_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "high quality grasps in clutter",
+   "quote": "Is DDGC able to generate high quality grasps in scenes with clutter?",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_11_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Multi-FinGAN",
+   "quote": "DDGC generates significantly higher quality grasps than both Multi-FinGAN and GraspIt!",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_12_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GraspIt!",
+   "quote": "DDGC generates significantly higher quality grasps than both Multi-FinGAN and GraspIt!",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_12_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "EGAD! val",
+   "quote": "here we present quantitative results of grasps generated by DDGC, Multi-FinGAN, and the simulated-annealing planner in GraspIt! on the three different held out validation sets: EGAD! val, KIT, and EGAD! val + KIT.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_12_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "KIT",
+   "quote": "here we present quantitative results of grasps generated by DDGC, Multi-FinGAN, and the simulated-annealing planner in GraspIt! on the three different held out validation sets: EGAD! val, KIT, and EGAD! val + KIT.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_12_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "EGAD! val + KIT",
+   "quote": "here we present quantitative results of grasps generated by DDGC, Multi-FinGAN, and the simulated-annealing planner in GraspIt! on the three different held out validation sets: EGAD! val, KIT, and EGAD! val + KIT.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_12_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "sampling high-quality collision-free grasps in cluttered scenes",
+   "quote": "the results from the simulation experiments show that DDGC is able to quickly sample high-quality collision-free grasps in cluttered scenes.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_12_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Emika Panda",
+   "quote": "The setup consists of a Franka Emika Panda equipped with a Barrett hand and a Kinect 360 \u2022 camera to capture the input RGB-D images.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_13_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Barrett hand",
+   "quote": "The setup consists of a Franka Emika Panda equipped with a Barrett hand and a Kinect 360 \u2022 camera to capture the input RGB-D images.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_13_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Kinect 360",
+   "quote": "The setup consists of a Franka Emika Panda equipped with a Barrett hand and a Kinect 360 \u2022 camera to capture the input RGB-D images.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_13_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "seven different scenes",
+   "quote": "DDGC, Multi-FinGAN, and GraspIt! were benchmarked once on each of the seven different scenes shown in Fig. 5 .",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_13_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Multi-FinGAN",
+   "quote": "The experimental results (Table II ) indicate that DDGC reaches a higher average clearance rate and grasp success rate than both Multi-FinGAN and GraspIt!.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_13_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GraspIt!",
+   "quote": "The experimental results (Table II ) indicate that DDGC reaches a higher average clearance rate and grasp success rate than both Multi-FinGAN and GraspIt!.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_13_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GraspIt!",
+   "quote": "When comparing it to GraspIt!, DDGC achieves better performance, in a fraction of the time.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_14_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulated data",
+   "quote": "It is especially noteworthy that although DDGC is trained purely on simulated data it generalized seamlessly to real-world scenes without any fine-tuning.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_14_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "catastrophically poor grasps",
+   "quote": "Nevertheless, DDGC also produced some catastrophically poor grasps.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_14_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "expensive collision calculation",
+   "quote": "The main reason for such a long sampling time stems from the expensive collision calculation in Eq. ( 4 ) which accounts for more than 85% of the total computational time.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_14_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "scene-completion, scene-encoding, and a fully differentiable forward kinematics layer",
+   "quote": "DDGC overcomes such difficulties by combining scene-completion, scene-encoding, and a fully differentiable forward kinematics layer to generate dexterous collision-free grasps.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_15_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Multi-FinGAN",
+   "quote": "We compared DDGC to Multi-FinGAN and GraspIt! in both simulation and real-world grasping and the results show that DDGC produces higher quality grasps than both of these and is over 4-5 times faster than GraspIt!",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_15_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GraspIt!",
+   "quote": "We compared DDGC to Multi-FinGAN and GraspIt! in both simulation and real-world grasping and the results show that DDGC produces higher quality grasps than both of these and is over 4-5 times faster than GraspIt!",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_15_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "explicit collision checking",
+   "quote": "In terms of sampling speed, DDGC could be sped up significantly if instead of doing explicit collision checking, it would rather use a separate network for collision detection as in [4] .",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_15_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "high-quality grasps do not always translate to successful real grasps",
+   "quote": "Another limiting factor is that the high-quality grasps produced by DDGC do not always translate to successful real grasps.",
+   "chunk_id": "deep-dexterous-grasping-in-clutter-ddgc_mid_15_0",
+   "paper_id": "deep-dexterous-grasping-in-clutter-ddgc"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "complex action space",
+   "quote": "Building on deep RL, we begin to address the issues of generalization and the complex action space by training a robot to focus on task-relevant parts of the scene.",
+   "chunk_id": "deeprlmanip_mid_0_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "generalization",
+   "quote": "Building on deep RL, we begin to address the issues of generalization and the complex action space by training a robot to focus on task-relevant parts of the scene.",
+   "chunk_id": "deeprlmanip_mid_0_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "sense-move-effect MDP",
+   "quote": "Specifically, contributions include (a) an abstract state-action representation to enable task-relevant focus (sense-move-effect MDP),",
+   "chunk_id": "deeprlmanip_mid_0_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulated environment",
+   "quote": "Third, we train in a simulated environment that can run many times faster than the real world and automatically provides information on task success.",
+   "chunk_id": "deeprlmanip_mid_0_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "UR5 robot",
+   "quote": "The effectiveness of the system is demonstrated both in simulation and on a physical UR5 robot on three challenging pick-place benchmark tasks.",
+   "chunk_id": "deeprlmanip_mid_0_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "DQN",
+   "quote": "our learning agent is similar to that of deep Q-network (DQN) [1] ; however, DQN has a simple, discrete list of actions, whereas our actions are continuous and high dimensional.",
+   "chunk_id": "deeprlmanip_mid_1_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "novel object manipulation",
+   "quote": "Our approach to novel object manipulation leverages advances in deep RL.",
+   "chunk_id": "deeprlmanip_mid_1_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "camera",
+   "quote": "These approaches take raw sensor observations (camera images) and output low-level robot actions (motor torques, velocities, or Cartesian motions).",
+   "chunk_id": "deeprlmanip_mid_1_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "requires task-focused images",
+   "quote": "In contrast, state and action in our approach are more abstract -state includes task-focused images and action includes target end effector pose -in order to speed up learning and introduce robustness to transfer from a simulated domain to a real robot.",
+   "chunk_id": "deeprlmanip_mid_1_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "reducing sensor data processing",
+   "quote": "This makes it possible for the robot to reduce the amount of sensor data it must process, assuming it takes the right actions.",
+   "chunk_id": "deeprlmanip_mid_3_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "deep RL",
+   "quote": "The problem is then amenable to solution via deep RL (Sections 4.3 and 4.4).",
+   "chunk_id": "deeprlmanip_mid_3_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "sample efficiency in 3D volume selection",
+   "quote": "To see how this improves sample efficiency, imagine the problem of selecting position in a 3D volume.",
+   "chunk_id": "deeprlmanip_mid_4_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "sense-mislead",
+   "quote": "One potential issue with this partially observable case is that at the most zoomed-out level, objects may be blurry, and the robot may choose the wrong object without having a way to go back. Precisely, let sense-mislead be when the highest valued sense choice at time t does not lead to the highest valued possible action at time t + i for some positive i.",
+   "chunk_id": "deeprlmanip_mid_4_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "CNN",
+   "quote": "we factor the Q-function into several independent CNNs, one for each time step.",
+   "chunk_id": "deeprlmanip_mid_5_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "gradient Monte Carlo",
+   "quote": "we use gradient Monte Carlo [21] for the update rule.",
+   "chunk_id": "deeprlmanip_mid_6_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GPD",
+   "quote": "For blocks, the HSE3S approach gets perfect grasps about 98% of the time whereas GPD gets perfect grasps only 51% of the time.",
+   "chunk_id": "deeprlmanip_mid_8_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "trained_on",
+   "object": "blocks",
+   "quote": "Both systems were trained on the same set of blocks; however, the evaluation was done in the same environment (e.g. same simulated depth sensor) that the HSE3S system was trained in, so it is not surprising HSE3S does better.",
+   "chunk_id": "deeprlmanip_mid_8_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "blocks",
+   "quote": "Both systems were trained on the same set of blocks; however, the evaluation was done in the same environment (e.g. same simulated depth sensor) that the HSE3S system was trained in, so it is not surprising HSE3S does better.",
+   "chunk_id": "deeprlmanip_mid_8_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "simulated depth sensor",
+   "quote": "Both systems were trained on the same set of blocks; however, the evaluation was done in the same environment (e.g. same simulated depth sensor) that the HSE3S system was trained in, so it is not surprising HSE3S does better.",
+   "chunk_id": "deeprlmanip_mid_8_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "collision criteria in simulation may be overly conservative",
+   "quote": "The collision criteria in simulation may be overly conservative, so we also show success rates with the antipodal condition alone.",
+   "chunk_id": "deeprlmanip_mid_8_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "UR5",
+   "quote": "We tested our approach on a UR5 robot equipped with a Robotiq 85 parallel-jaw gripper and a wristmounted Structure depth sensor.",
+   "chunk_id": "deeprlmanip_mid_9_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Robotiq 85",
+   "quote": "We tested our approach on a UR5 robot equipped with a Robotiq 85 parallel-jaw gripper and a wristmounted Structure depth sensor.",
+   "chunk_id": "deeprlmanip_mid_9_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Structure depth sensor",
+   "quote": "We tested our approach on a UR5 robot equipped with a Robotiq 85 parallel-jaw gripper and a wristmounted Structure depth sensor.",
+   "chunk_id": "deeprlmanip_mid_9_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "incorrect point cloud registration",
+   "quote": "The major failure for block placing was misalignments with the bottom block. We believe this is primarily due to incorrect point cloud registration with the robot's base frame.",
+   "chunk_id": "deeprlmanip_mid_9_0",
+   "paper_id": "deeprlmanip"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 1.0",
+   "quote": "Dex-Net 1.0 contains approximately 2.5 million parallel-jaw grasps, as each object is labelled with up to 250 grasps and an estimate of P F for each under uncertainty in object pose, gripper pose, and friction coefficient.",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_1_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "45 objects",
+   "quote": "Experiments suggest that using 10,000 prior object models from Dex-Net reduces the number of samples needed to plan parallel-jaw grasps by up to 2\u00d7 on average over 45 objects when using P F as a success metric.",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_1_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Thompson sampling without priors",
+   "quote": "We measure quality by the probability of force closure of the best grasp predicted by the algorithm on each iteration and compare with Thompson sampling without priors [26] and uniform allocation [20] , [43] .",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_1_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "uniform allocation",
+   "quote": "We measure quality by the probability of force closure of the best grasp predicted by the algorithm on each iteration and compare with Thompson sampling without priors [26] and uniform allocation [20] , [43] .",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_1_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "efficiently planning a parallel-jaw grasp",
+   "quote": "In this paper we consider the sub-problem of efficiently planning a parallel-jaw grasp that maximizes the expected value of a binary quality metric, such as the probability of force closure (P F ), for a given 3D object model under perturbations in object pose, gripper pose, and friction coefficient.",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_3_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "AlexNet",
+   "quote": "We initialize the weights of the network with the weights learned on ImageNet by Krizhevsky et al. [24] and optimize using Stochastic Gradient Descent (SGD).",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_13_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "trained_on",
+   "object": "SHREC 2014",
+   "quote": "In our implementation, we trained the MV-CNN using the Caffe library [17] on rendered images from a training set of approximately 6,000 3D models sampled from the SHREC 2014 [28] portion of Dex-Net,",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_13_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "SHREC 2014",
+   "quote": "To validate the implementation, we tested on the SHREC 2014 challenge dataset and achieved a 1-NN accuracy of 86.7%,",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_13_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "CCBPs",
+   "quote": "We use Continuous Correlated Beta Processes (CCBPs) [11] , [31] to model a joint posterior belief distribution over the \u03b8 j for all grasps in Dex-Net,",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_15_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 1.0",
+   "quote": "which enables us to predict \u03b8 j from prior grasp and object data in Dex-Net 1.0 using a closed-form posterior update.",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_15_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 1.0",
+   "quote": "based on its kernel similarity to all grasps and objects from the Dex-Net 1.0 dataset D",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_17_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp prediction",
+   "quote": "the Dex-Net 1.0 algorithm predicts \u03b8 j for each candidate grasp g j",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_17_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Dex-Net",
+   "quote": "We evaluate the performance of the Dex-Net 1.0 algorithm on robust grasp planning for varying sizes of prior data used from Dex-Net",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_19_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net",
+   "quote": "We created two training sets of 1,000, and 10,000 objects by uniformly sampling objects from Dex-Net.",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_19_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Thompson sampling without priors (TS)",
+   "quote": "For each experiment we compare the Dex-Net algorithm to Thompson sampling without priors (TS)",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_19_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "uniform allocation (UA)",
+   "quote": "For each experiment we compare the Dex-Net algorithm to Thompson sampling without priors (TS) [26] , a state-of-the-art method for robust grasp planning, and uniform allocation (UA)",
+   "chunk_id": "dex-net-1-0-mv-cnns_mid_19_0",
+   "paper_id": "dex-net-1-0-mv-cnns"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "planning a robust planar parallel-jaw grasp",
+   "quote": "We consider the problem of planning a robust planar parallel-jaw grasp for a singulated rigid object resting on a table based on point clouds from a depth camera.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_2_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel-jaw gripper",
+   "quote": "We assume a parallel-jaw gripper, rigid objects singulated on a planar worksurface, and single-view (2.5D) point clouds taken with a depth camera.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_3_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "depth camera",
+   "quote": "We assume a parallel-jaw gripper, rigid objects singulated on a planar worksurface, and single-view (2.5D) point clouds taken with a depth camera.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_3_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "cross-entropy loss",
+   "quote": "where L is the cross-entropy loss function and \u0398 defines the parameters of the Grasp Quality Convolutional Network (GQ-CNN) described in Section IV-B.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_5_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "\u0398 defines the parameters of the Grasp Quality Convolutional Network (GQ-CNN) described in Section IV-B.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_5_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.0",
+   "quote": "train the model on data from Dex-Net 2.0.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_6_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "we develop a Grasp Quality Convolutional Neural Network (GQ-CNN) model that classifies robust grasp poses in depth images",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_6_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.0",
+   "quote": "The Dex-Net 2.0 training dataset contains 6.7 million datapoints and approximately 21.2% positive examples for the thresholded robust epsilon quality with threshold \u03b4 = 0.002 [26] and a custom YuMi gripper.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_8_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "stochastic gradient descent and momentum",
+   "quote": "We optimize the parameters of the GQ-CNN using backpropagation with stochastic gradient descent and momentum [29] .",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_8_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real and synthetic data",
+   "quote": "We evaluated clasification performance on both real and synthetic data",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_10_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "ABB YuMi",
+   "quote": "performed extensive physical evaluations on an ABB YuMi with custom silicone gripper tips",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_10_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA GeForce 980",
+   "quote": "ran on a Desktop running Ubuntu 14.04 with a 2.7 GHz Intel Core i5-6400 Quad-Core CPU and an NVIDIA GeForce 980",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_10_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA GeForce GTX 1080",
+   "quote": "used an NVIDIA GeForce GTX 1080 for training large models",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_10_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Adv-Synth",
+   "quote": "1) Adv-Synth: Synthetic images and grasps for the adversarial objects in Train (189k datapoints).",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Adv-Phys",
+   "quote": "2) Adv-Phys: Outcomes of executing random antipodal grasps with random gripper height and friction coefficient of \u00b5 = 0.5 in 50 physical trials per object in Train (400 datapoints).",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net-Small",
+   "quote": "3) Dex-Net-Small: A subset of data from 150 models sampled uniformly from Dex-Net 2.0 (670k datapoints).",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net-Large",
+   "quote": "4) Dex-Net-Large: Data from all 1500 models in Dex-Net 2.0 (6.7m datapoints).",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Test",
+   "quote": "2) Test: A set of 10 household objects similar to models in Dex-Net 2.0 with various material, geometric, and specular properties. This is used to evaluate generalization to unknown objects.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "ML-RF",
+   "quote": "We see that the GQ-CNN methods have less than 2.5% test error while ML-RF and ML-SVM are closer to 10% error.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "ML-SVM",
+   "quote": "We see that the GQ-CNN methods have less than 2.5% test error while ML-RF and ML-SVM are closer to 10% error.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "YuMi",
+   "quote": "weight less than 0.25kg, the payload of the YuMi, and (c) height from the table greater than 1.0cm due to a limitation of the silicone gripper fingertips.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_12_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "thresholded robust epsilon metric",
+   "quote": "We trained the GQ-CNN (abbrev. GQ) using the thresholded robust epsilon metric with \u03b4 = 0.002 [26] for 5 epochs on Dex-Net-Large (all of Dex-Net 2.0) using Gaussian process image noise with standard deviation \u03c3 = 0.005.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net-Large",
+   "quote": "We trained the GQ-CNN (abbrev. GQ) using the thresholded robust epsilon metric with \u03b4 = 0.002 [26] for 5 epochs on Dex-Net-Large (all of Dex-Net 2.0) using Gaussian process image noise with standard deviation \u03c3 = 0.005.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA GeForce 1080",
+   "quote": "Training took approximately 48 hours on an NVIDIA GeForce 1080.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "ML-RF",
+   "quote": "We see that REG (point cloud registration) has the highest success rate at 95% but the GQ-L-Adv performs comparably at 93% and is 3\u00d7 faster.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "ML-SVM",
+   "quote": "We see that REG (point cloud registration) has the highest success rate at 95% but the GQ-L-Adv performs comparably at 93% and is 3\u00d7 faster.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_13_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.0",
+   "quote": "The GQ-CNN trained on all of Dex-Net 2.0 had an accuracy of 85.7% on a held out validation set of approximately 1.3 million datapoints.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_14_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "ML-RF",
+   "quote": "The GQ-CNNs outperformed ML-RF and ML-SVM, achieving near-perfect validation accuracy.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_14_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "ML-SVM",
+   "quote": "The GQ-CNNs outperformed ML-RF and ML-SVM, achieving near-perfect validation accuracy.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_14_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Train",
+   "quote": "We evaluated the performance of the grasp planning methods on known objects from Train.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_15_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "REG",
+   "quote": "We found that GQ planned grasps 3\u00d7 faster than REG and achieved a high 93% success rate and 94% precision.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_15_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.0",
+   "quote": "The results also suggest that training on the full Dex-Net 2.0 dataset was necessary to achieve higher than 90% success.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_15_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Test",
+   "quote": "ten novel test objects from Test",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_16_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "40 object test set",
+   "quote": "We evaluated the generalization performance of GQ in 100 grasping trials on the 40 object test set illustrated in Fig. 7 , which contains articulated (e.g. can opener) and deformable (e.g. washcloth) objects.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "CEM",
+   "quote": "We used the cross entropy method (CEM) [33] , which iteratively samples a set of candidate grasps and re-fits the candidate grasp distribution to the grasps with the highest predicted robustness, in order to find better maxima of the robust grasping policy.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_17_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "ABB YuMi",
+   "quote": "we used it in an order fulfillment application with the ABB YuMi.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_18_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasping and transporting objects",
+   "quote": "the goal was to grasp and transport a set of three target objects to a shipping box in the presence of three distractor objects",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_18_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "sensor limitations",
+   "quote": "sensor failed to measure thin parts of the object geometry, making these regions seem accessible.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_18_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "collision detection",
+   "quote": "a second type of failure occured due to collisions with the object. It appears that the network was not able to fully distinguish collision-free grasps in narrow parts of the object geometry.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_18_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "We developed a Grasp Quality Convolutional Neural Network (GQ-CNN) architecture that predicts grasp robustness from a point cloud",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_19_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.0",
+   "quote": "and trained it on Dex-Net 2.0, a dataset containing 6.7 million point clouds, parallel-jaw grasps, and robust grasp metrics.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_19_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "40 novel objects",
+   "quote": "and had 99% precision on a test set of 40 novel objects.",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_19_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "point cloud registration",
+   "quote": "we found that the Dex-Net 2.0 grasp planner is as reliable and 3\u00d7 faster a method based on point cloud registration,",
+   "chunk_id": "dex-net-2-0-gq-cnn_mid_19_0",
+   "paper_id": "dex-net-2-0-gq-cnn"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasping objects from clutter",
+   "quote": "we consider explicitly modeling uncertainty during dataset generation in order to learn a robust policy for rapid bin picking from a single viewpoint.",
+   "chunk_id": "dex-net-2-1_mid_0_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "A study of transfer learning to learn a bin picking policy from pre-trained weights of a GQ-CNN policy for grasping singulated objects.",
+   "chunk_id": "dex-net-2-1_mid_0_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.1",
+   "quote": "Dex-Net 2.1: A dataset of 10,000 rollouts in an implementation of the POMDP collected using noise injection on an algorithmic robust grasping supervisor that plans robust grasps with full state knowledge.",
+   "chunk_id": "dex-net-2-1_mid_0_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "ABB YuMi",
+   "quote": "Experiments evaluating performance of the bin picking policies on heaps of up to 20 novel objects on an ABB YuMi robot.",
+   "chunk_id": "dex-net-2-1_mid_0_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "bin picking",
+   "quote": "We consider the problem of bin picking: clearing a heap of objects on a table by iteratively grasping a single object from the heap with a parallel-jaw gripper and transporting each object to a receptacle.",
+   "chunk_id": "dex-net-2-1_mid_2_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel-jaw gripper",
+   "quote": "We consider the problem of bin picking: clearing a heap of objects on a table by iteratively grasping a single object from the heap with a parallel-jaw gripper and transporting each object to a receptacle.",
+   "chunk_id": "dex-net-2-1_mid_2_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "trained_on",
+   "object": "synthetic point cloud observations",
+   "quote": "We aggregate synthetic point cloud observations yt and collected rewards Rt to form a labeled dataset for training a policy that classifies the supversiors actions on the partial observations using imitation learning.",
+   "chunk_id": "dex-net-2-1_mid_2_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp robustness",
+   "quote": "Our model assumes quasi-static physics, where inertial effects are negligible, to compute grasp robustness.",
+   "chunk_id": "dex-net-2-1_mid_3_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel-jaw gripper",
+   "quote": "Our model also assumes a parallel-jaw gripper, rigid objects, a depth sensor with bounds on the camera intrinsic parameters and pose relative to the robot,",
+   "chunk_id": "dex-net-2-1_mid_3_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "depth sensor",
+   "quote": "Our model also assumes a parallel-jaw gripper, rigid objects, a depth sensor with bounds on the camera intrinsic parameters and pose relative to the robot,",
+   "chunk_id": "dex-net-2-1_mid_3_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "single object grasping",
+   "quote": "We make the additional simplifying assumption that only one object is be grasped at a time.",
+   "chunk_id": "dex-net-2-1_mid_3_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "no object identity",
+   "quote": "Our model also does not consider object identity when grasping.",
+   "chunk_id": "dex-net-2-1_mid_3_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulation",
+   "quote": "we learn a policy in simulation using a model of iteratively grasping objects from a heap on an infinite planar worksurface",
+   "chunk_id": "dex-net-2-1_mid_4_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "bin picking",
+   "quote": "we model the task of bin picking as a Partially Observable Markov Decision Process (POMDP)",
+   "chunk_id": "dex-net-2-1_mid_4_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "POMDP",
+   "quote": "we model the task of bin picking as a Partially Observable Markov Decision Process (POMDP) (see Fig. 1 ) specifed as a tuple (X , U, Y, R, \u03c1 0 , p, q)",
+   "chunk_id": "dex-net-2-1_mid_4_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Dex-Net",
+   "quote": "the supervisor is implemented by precomputing a database of robust grasps (such as Dex-Net) for each 3D object",
+   "chunk_id": "dex-net-2-1_mid_9_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "maximizes reward for the only current timestep and may not be optimal for the full time horizon",
+   "quote": "We note that \u03c0 * maximizes reward for the only current timestep and may not be optimal for the full time horizon.",
+   "chunk_id": "dex-net-2-1_mid_9_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "cross entropy classification loss",
+   "quote": "where R j,t = 1 if the supervisor agrees with the action on timestep t in rollout j and L is the cross entropy classification loss.",
+   "chunk_id": "dex-net-2-1_mid_10_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "use supervised learning to classify actions taken by the supervisor with a Grasp Quality CNN (GQ-CNN).",
+   "chunk_id": "dex-net-2-1_mid_10_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Dex-Net 2.0 GQ-CNN",
+   "quote": "we fine-tune features from the Dex-Net 2.0 GQ-CNN by using the weights as an initialization for optimization with SGD and only updating the fully connected layers, leaving the conv layers fixed.",
+   "chunk_id": "dex-net-2-1_mid_11_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "SGD with momentum",
+   "quote": "We update the network for 10 epochs using SGD with momentum of 0.9, a base learning rate of 0.01, and a staircase exponential learning rate decay with a decrease of 5% on each epoch.",
+   "chunk_id": "dex-net-2-1_mid_11_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.0",
+   "quote": "we fine-tune features from the Dex-Net 2.0 GQ-CNN by using the weights as an initialization for optimization with SGD and only updating the fully connected layers, leaving the conv layers fixed.",
+   "chunk_id": "dex-net-2-1_mid_11_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "synthetic data",
+   "quote": "We evaluated classification performance on synthetic data from the simulator",
+   "chunk_id": "dex-net-2-1_mid_12_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "ABB YuMi",
+   "quote": "performed extensive physical evaluations on an ABB YuMi with a Primesense Carmine 1.08 depth sensor",
+   "chunk_id": "dex-net-2-1_mid_12_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Primesense Carmine 1.08",
+   "quote": "performed extensive physical evaluations on an ABB YuMi with a Primesense Carmine 1.08 depth sensor",
+   "chunk_id": "dex-net-2-1_mid_12_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "custom silicone gripper tips",
+   "quote": "performed extensive physical evaluations on an ABB YuMi with a Primesense Carmine 1.08 depth sensor and custom silicone gripper tips designed by Guo et al. [36]",
+   "chunk_id": "dex-net-2-1_mid_12_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA GeForce 980",
+   "quote": "All experiments ran on a Desktop running Ubuntu 14.04 with a 2.7 GHz Intel Core i5-6400 Quad-Core CPU and an NVIDIA GeForce 980",
+   "chunk_id": "dex-net-2-1_mid_12_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA GeForce GTX 1080",
+   "quote": "and we used an NVIDIA GeForce GTX 1080 for training large models.",
+   "chunk_id": "dex-net-2-1_mid_12_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.1",
+   "quote": "\u2022 Dex-Net 2.1 (Scratch). A GQ-CNN [3] trained only on Dex-Net 2.1 for 25 epochs.",
+   "chunk_id": "dex-net-2-1_mid_13_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "\u2022 Dex-Net 2.1 (Scratch). A GQ-CNN [3] trained only on Dex-Net 2.1 for 25 epochs.",
+   "chunk_id": "dex-net-2-1_mid_13_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Dex-Net 2.1 (Scratch)",
+   "quote": "The Dex-Net 2.0 GQ-CNN model fine-tuned on Dex-Net 2.1 performed best in terms of classification accuracy and average precision (AP).",
+   "chunk_id": "dex-net-2-1_mid_13_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 2.1",
+   "quote": "We used the model to sample the Dex-Net 2.1 dataset of tens of thousands of demonstrations across 1,500 3D object models from an algorithmic supervisor with noise injection",
+   "chunk_id": "dex-net-2-1_mid_19_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "50 test objects",
+   "quote": "We also evaluated the Dex-Net 2.1 = 0.9 policy on larger heaps of size N = {10, 20} with all 50 test objects for 5 independent trials each to evaluate generalization to large piles and different object properties that were not encountered in the simulator.",
+   "chunk_id": "dex-net-2-1_mid_19_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Dex-Net 2.0",
+   "quote": "While performance decreases across all categories, the = 0.9 policy outperforms the Dex-Net 2.0 and antipodal baseline across all metrics.",
+   "chunk_id": "dex-net-2-1_mid_19_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "antipodal baseline",
+   "quote": "While performance decreases across all categories, the = 0.9 policy outperforms the Dex-Net 2.0 and antipodal baseline across all metrics.",
+   "chunk_id": "dex-net-2-1_mid_19_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "collisions with other objects",
+   "quote": "Qualitative failure modes of the Dex-Net 2.1 policy included collisions where the gripper pressed into another object in the heap and an inability to find robust grasps on thin, curved objects such as the measuring spoon and scissors.",
+   "chunk_id": "dex-net-2-1_mid_19_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "inability to grasp thin, curved objects",
+   "quote": "Qualitative failure modes of the Dex-Net 2.1 policy included collisions where the gripper pressed into another object in the heap and an inability to find robust grasps on thin, curved objects such as the measuring spoon and scissors.",
+   "chunk_id": "dex-net-2-1_mid_19_0",
+   "paper_id": "dex-net-2-1"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "planning suction grasps",
+   "quote": "comparatively little research has been published on planning suction grasps.",
+   "chunk_id": "dex-net-3-0_mid_0_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "quasi-static spring system",
+   "quote": "a compliant suction contact model that quantifies seal formation using a quasi-static spring system",
+   "chunk_id": "dex-net-3-0_mid_0_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 3.0",
+   "quote": "a GQ-CNN-based grasping policy trained on Dex-Net 3.0",
+   "chunk_id": "dex-net-3-0_mid_0_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Basic, Typical, and Adversarial datasets",
+   "quote": "We find that the method achieves success rates of 98%, 82%, and 58% on datasets of Basic (prismatic or cylindrical), Typical (more complex geometry), and Adversarial (with few available suction-grasp points), respectively.",
+   "chunk_id": "dex-net-3-0_mid_0_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "ABB YuMi",
+   "quote": "We perform physical experiments using an ABB YuMi robot with a silicone suction cup tip",
+   "chunk_id": "dex-net-3-0_mid_0_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "silicone suction cup tip",
+   "quote": "We perform physical experiments using an ABB YuMi robot with a silicone suction cup tip",
+   "chunk_id": "dex-net-3-0_mid_0_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "suction grasp planning",
+   "quote": "Our method builds on models of deformable materials, analyses of the wrenches that suction cups can exert, and data-driven grasp planning.",
+   "chunk_id": "dex-net-3-0_mid_1_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "finding a robust suction grasp",
+   "quote": "our goal is to find a robust suction grasp (target point and approach direction) for a robot to lift an object in isolation on a planar worksurface and transport it to a receptacle.",
+   "chunk_id": "dex-net-3-0_mid_4_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "vacuum-based end-effector",
+   "quote": "A vacuum-based end-effector with known geometry and a single disc-shaped suction cup made of linearelastic material.",
+   "chunk_id": "dex-net-3-0_mid_5_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "overhead depth sensor",
+   "quote": "A single overhead depth sensor with known intrinsics, position, and orientation relative to the robot.",
+   "chunk_id": "dex-net-3-0_mid_5_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp success prediction under uncertainty",
+   "quote": "The goal is to find the most robust suction grasp u that enables the robot to lift an object and transport it to a receptacle, where grasps are parametrized by a target point p \u2208 R 3 and an approach direction v \u2208 S 2 . Success is measured with a binary grasp reward function R, where R = 1 if the grasp u successfully transports the object, and R = 0 otherwise. The robot may not be able to predict the success of suction grasps exactly from point clouds for several reasons.",
+   "chunk_id": "dex-net-3-0_mid_6_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "deep Grasp Quality Convolutional Neural Network (GQ-CNN)",
+   "chunk_id": "dex-net-3-0_mid_7_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "cross-entropy loss",
+   "quote": "minimize the cross-entropy loss L over D:",
+   "chunk_id": "dex-net-3-0_mid_7_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp robustness",
+   "quote": "To quantify grasp robustness, we develop a quasi-static spring model of the suction cup material and a model of contact wrenches that the suction cup can apply to the object through a ring of contact on the suction cup perimeter.",
+   "chunk_id": "dex-net-3-0_mid_8_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 3.0",
+   "quote": "To learn to predict grasp robustness based on noisy point clouds, we generate the Dex-Net 3.0 training dataset of point clouds, grasps, and grasp reward labels",
+   "chunk_id": "dex-net-3-0_mid_11_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "We use the Dex-Net 3.0 dataset to train a GQ-CNN that takes as input a single-view point cloud of an object resting on the table and a candidate suction grasp defined by a target 3D point and approach direction,",
+   "chunk_id": "dex-net-3-0_mid_12_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "stochastic gradient descent with momentum",
+   "quote": "We train the GQ-CNN with using stochastic gradient descent with momentum using an 80-20 training-to-validation image-wise split of the Dex-Net 3.0 dataset.",
+   "chunk_id": "dex-net-3-0_mid_12_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 3.0",
+   "quote": "We train the GQ-CNN with using stochastic gradient descent with momentum using an 80-20 training-to-validation image-wise split of the Dex-Net 3.0 dataset.",
+   "chunk_id": "dex-net-3-0_mid_12_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "physical robot",
+   "quote": "We use the GQ-CNN in a deep robust grasping policy to plan suction target grasps from point clouds on a physical robot.",
+   "chunk_id": "dex-net-3-0_mid_12_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "three object classes",
+   "quote": "for planning grasps from point clouds for three object classes.",
+   "chunk_id": "dex-net-3-0_mid_13_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "ABB YuMi",
+   "quote": "We ran experiments with an ABB YuMi with a Primesense Carmine 1.09 and a suction system with a 15mm diameter silicone single-bello",
+   "chunk_id": "dex-net-3-0_mid_15_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Primesense Carmine 1.09",
+   "quote": "We ran experiments with an ABB YuMi with a Primesense Carmine 1.09 and a suction system with a 15mm diameter silicone single-bello",
+   "chunk_id": "dex-net-3-0_mid_15_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "VM5-NC VacMotion vacuum generator",
+   "quote": "We ran experiments with an ABB YuMi with a Primesense Carmine 1.09 and a suction system with a 15mm diameter silicone single-bello",
+   "chunk_id": "dex-net-3-0_mid_15_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "3D printed Adversarial objects",
+   "quote": "we evaluated whether or not the metric was predictive of suction grasp success when object shape and pose were known using the 3D printed Adversarial objects",
+   "chunk_id": "dex-net-3-0_mid_16_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "WR",
+   "quote": "The RWR metric performed best with 99% AP compared to 93% AP for WR",
+   "chunk_id": "dex-net-3-0_mid_16_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "SS",
+   "quote": "The RWR metric performed best with 99% AP compared to 93% AP for WR, 89% AP for SS",
+   "chunk_id": "dex-net-3-0_mid_16_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "PC3D",
+   "quote": "The RWR metric performed best with 99% AP compared to 93% AP for WR, 89% AP for SS, and 88% for PC3D",
+   "chunk_id": "dex-net-3-0_mid_16_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 3.0",
+   "quote": "We also evaluated the performance of GQ-CNNs trained on Dex-Net 3.0 for planning suction target points from a single-view point cloud.",
+   "chunk_id": "dex-net-3-0_mid_17_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "GQ-CNN (DN3)",
+   "quote": "On the adversarial objects, GQ-CNN (ADV) significantly outperforms GQ-CNN (DN3) and PC, suggesting that this method can be used to successfully grasp objects with complex surface geometry as long as the training dataset closely matches the objects seen at runtime.",
+   "chunk_id": "dex-net-3-0_mid_17_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "PC",
+   "quote": "On the adversarial objects, GQ-CNN (ADV) significantly outperforms GQ-CNN (DN3) and PC, suggesting that this method can be used to successfully grasp objects with complex surface geometry as long as the training dataset closely matches the objects seen at runtime.",
+   "chunk_id": "dex-net-3-0_mid_17_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "depth sensor",
+   "quote": "limited resolution of the depth sensor, as our seal formation model is able to detect the inability to form a seal on such surfaces",
+   "chunk_id": "dex-net-3-0_mid_18_0",
+   "paper_id": "dex-net-3-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "different grasp modalities needed",
+   "quote": "However, different grasp modalities are needed to reliably handle a wide range of objects in practice.",
+   "chunk_id": "dex-net-4-0_mid_0_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "ambidextrous grasping of a wide range of novel objects from cluttered heaps",
+   "quote": "We consider the problem of ambidextrous grasping of a wide range of novel objects from cluttered heaps using a robot with a depth camera and two or more available grippers, such as a vacuum-based suction-cup gripper and/or a parallel-jaw gripper.",
+   "chunk_id": "dex-net-4-0_mid_1_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GC-CNN",
+   "quote": "we learn a GC-CNN Q q,g (y, u) \u2208 [0, 1] to estimate the probability of success for a grasp with gripper g given a depth image.",
+   "chunk_id": "dex-net-4-0_mid_2_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "cross entropy loss",
+   "quote": "we optimize the weights q g to minimize the cross entropy loss L between the GQ-CNN prediction and the true reward over the dataset D:",
+   "chunk_id": "dex-net-4-0_mid_2_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 4.0 training dataset",
+   "quote": "We learn the Dex-Net 4.0 ambidextrous policy on the Dex-Net 4.0 training dataset, which contains 5 million synthetic point clouds, grasps, and reward labels.",
+   "chunk_id": "dex-net-4-0_mid_2_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Dex-Net 4.0 training dataset",
+   "quote": "We learn the Dex-Net 4.0 ambidextrous policy on the Dex-Net 4.0 training dataset, which contains 5 million synthetic point clouds, grasps, and reward labels.",
+   "chunk_id": "dex-net-4-0_mid_2_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "ambidextrous grasping",
+   "quote": "We propose a hybrid approach to ambidextrous grasping that learns policies on synthetic training datasets generated using analytic models and domain randomization over a diverse range of objects, cameras, and parameters of physics for robust transfer from simulation to reality",
+   "chunk_id": "dex-net-4-0_mid_2_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel-jaw and suction-cup gripper",
+   "quote": "We executed more than 2500 grasp attempts on a physical robot system with a parallel-jaw and suction-cup gripper",
+   "chunk_id": "dex-net-4-0_mid_3_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "50 novel test objects",
+   "quote": "to characterize the reliability of the Dex-Net 4.0 policy on a bin-picking task with 50 novel test objects.",
+   "chunk_id": "dex-net-4-0_mid_3_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Level 1. Prismatic and circular solids",
+   "quote": "1) Level 1. Prismatic and circular solids (e.g., rectangular prisms, spheres, and cylinders).",
+   "chunk_id": "dex-net-4-0_mid_3_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "Level 2. Common household objects",
+   "quote": "2) Level 2. Common household objects including examples with flat cardboard backing and clear plastic covers (\"blisterpack\"), varied geometry, and masses up to 500 g (the payload of the ABB YuMi).",
+   "chunk_id": "dex-net-4-0_mid_3_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Dex-Net 2.0",
+   "quote": "Dex-Net 4.0 achieved 98% reliability versus 52 and 94% reliability for the Dex-Net 2.0 and 3.0 policies, respectively.",
+   "chunk_id": "dex-net-4-0_mid_4_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Dex-Net 3.0",
+   "quote": "Dex-Net 4.0 achieved 98% reliability versus 52 and 94% reliability for the Dex-Net 2.0 and 3.0 policies, respectively.",
+   "chunk_id": "dex-net-4-0_mid_4_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "level 1 objects",
+   "quote": "Dex-Net 4.0 achieves the highest success rate across all object datasets with a reliability of 97 and 95% on the level 1 and level 2 objects, respectively.",
+   "chunk_id": "dex-net-4-0_mid_4_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "level 2 objects",
+   "quote": "Dex-Net 4.0 achieves the highest success rate across all object datasets with a reliability of 97 and 95% on the level 1 and level 2 objects, respectively.",
+   "chunk_id": "dex-net-4-0_mid_4_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "50 test objects",
+   "quote": "we benchmarked the policy on a dataset of 50 test objects combining all objects from the level 1 and level 2 datasets.",
+   "chunk_id": "dex-net-4-0_mid_5_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "heuristics",
+   "quote": "Dex-Net 4.0 has the highest reliability at 90%. In comparison, the performance of the heuristics is relatively unchanged, with success rates near 80%.",
+   "chunk_id": "dex-net-4-0_mid_5_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "attempts to lift objects from underneath others",
+   "quote": "Some failures of Dex-Net 4.0 are due to attempts to lift objects from underneath others.",
+   "chunk_id": "dex-net-4-0_mid_5_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "synthetic training datasets",
+   "quote": "We quantified the importance of dataset diversity by training the GQ-CNNs on three alternative synthetic training datasets:",
+   "chunk_id": "dex-net-4-0_mid_6_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 4.0",
+   "quote": "by training on the Dex-Net 4.0 dataset using the \"Improved GQ-CNN\" architecture (34)",
+   "chunk_id": "dex-net-4-0_mid_7_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "13,000 labeled grasp attempts",
+   "quote": "We used a dataset of more than 13,000 labeled grasp attempts collected over 6 months of experiments and demonstrations of the system.",
+   "chunk_id": "dex-net-4-0_mid_8_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "third object dataset",
+   "quote": "we evaluated its performance on a third object dataset that contained 25 novel objects with few accessible and perceptible grasps due to adversarial geometry, transparency, specularity, and deformability.",
+   "chunk_id": "dex-net-4-0_mid_9_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "sequential failures",
+   "quote": "Failures of the Dex-Net 4.0 policy often occur several times in sequence.",
+   "chunk_id": "dex-net-4-0_mid_9_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "other policies",
+   "quote": "Dex-Net 4.0 was still the highest performing policy, but the reliability was reduced to 63%.",
+   "chunk_id": "dex-net-4-0_mid_9_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 4.0",
+   "quote": "ambidextrous policies trained on Dex-Net 4.0 achieve high reliability on novel objects on a physical robot",
+   "chunk_id": "dex-net-4-0_mid_10_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "hand-coded baselines",
+   "quote": "Dex-Net 4.0 outperforms hand-coded baselines similar to those used in applications such as the Amazon Robotics Challenge",
+   "chunk_id": "dex-net-4-0_mid_10_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "previous versions of Dex-Net",
+   "quote": "also outperforms an ambidextrous policy based on previous versions of Dex-Net that use separate reward functions for each gripper",
+   "chunk_id": "dex-net-4-0_mid_10_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "physical robot",
+   "quote": "ambidextrous policies trained on Dex-Net 4.0 achieve high reliability on novel objects on a physical robot",
+   "chunk_id": "dex-net-4-0_mid_10_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "performance is sensitive to several factors",
+   "quote": "Experiments also suggest that performance is sensitive to several factors. Heaps containing more objects lead to decreased reliability because the policy attempts to lift objects that are occluded by others in the heap. Performance also depends on the diversity of the training dataset, with more diverse datasets leading to higher performance on a physical robot. Last, performance varies based on the test objects, with more complex geometries and material properties leading to reduced reliability.",
+   "chunk_id": "dex-net-4-0_mid_10_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel jaws",
+   "quote": "the ambidextrous grasping policy uses the parallel jaws on 20% of grasp attempts to achieve 95% reliability on the level 2 objects.",
+   "chunk_id": "dex-net-4-0_mid_11_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "single combination of grippers",
+   "quote": "However, this study only considers a single combination of grippers.",
+   "chunk_id": "dex-net-4-0_mid_11_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "analytic quasi-static grasp quality metrics",
+   "quote": "analytic quasi-static grasp quality metrics (35, 36) with domain randomization can be used as a computationally efficient reward function",
+   "chunk_id": "dex-net-4-0_mid_12_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "objects with deformable surfaces, moving parts, and transparencies",
+   "quote": "Experiments suggest that the Dex-Net 4.0 policy generalizes to objects with deformable surfaces, moving parts, and transparencies that do not satisfy the assumptions of the analytic metrics.",
+   "chunk_id": "dex-net-4-0_mid_12_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Dex-Net 4.0",
+   "quote": "This suggests that performance is not particularly sensitive to the sequence of states of the object heap.",
+   "chunk_id": "dex-net-4-0_mid_14_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "50 unique, randomly arranged objects",
+   "quote": "This study only evaluates performance on heaps of 50 unique, randomly arranged objects, which do not represent all possible object geometries.",
+   "chunk_id": "dex-net-4-0_mid_15_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "industrial high-resolution depth camera",
+   "quote": "Furthermore, the hardware benchmark uses only one industrial high-resolution depth camera positioned directly overhead.",
+   "chunk_id": "dex-net-4-0_mid_15_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel-jaw gripper",
+   "quote": "The experiments only test a single parallel-jaw and vacuum-based suction cup gripper.",
+   "chunk_id": "dex-net-4-0_mid_15_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "vacuum-based suction cup gripper",
+   "quote": "The experiments only test a single parallel-jaw and vacuum-based suction cup gripper.",
+   "chunk_id": "dex-net-4-0_mid_15_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "constant time assumption",
+   "quote": "Last, the constant time assumption that relates MPPH maximization to supervised learning may not be applicable to all robot picking systems.",
+   "chunk_id": "dex-net-4-0_mid_15_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "occluded objects",
+   "quote": "The most common failure modes of the policy are (i) attempting to grasp objects that are occluded due to overlap in the heap",
+   "chunk_id": "dex-net-4-0_mid_16_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "transparent or specular surfaces",
+   "quote": "One category includes objects imperceptible to a depth camera, such as those with transparent or specular surfaces.",
+   "chunk_id": "dex-net-4-0_mid_16_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "structured surface variations",
+   "quote": "Another category is characterized by structured surface variations, such as parallel lines or buttons on a remote, which can trigger false positives in the suction network.",
+   "chunk_id": "dex-net-4-0_mid_16_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "porous objects",
+   "quote": "Other classes include porous objects and objects with loose packaging.",
+   "chunk_id": "dex-net-4-0_mid_16_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "synthetic color images",
+   "quote": "Rendering synthetic color images using domain randomization (17) could enable the system to grasp transparent, specular, or highly textured objects.",
+   "chunk_id": "dex-net-4-0_mid_16_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "object overlap",
+   "quote": "The reward model could also be extended to compute the wrench set from all contacts between objects instead of only considering the grippers and gravity, which could reduce failures due to object overlap.",
+   "chunk_id": "dex-net-4-0_mid_16_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "previous version",
+   "quote": "The observed performance increase on the level 3 objects using a first-order memory system suggests that reinforcement learning could be used to reduce repeated failures.",
+   "chunk_id": "dex-net-4-0_mid_16_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "overhead depth sensor",
+   "quote": "the robot has a single overhead depth sensor with known intrinsics,",
+   "chunk_id": "dex-net-4-0_mid_17_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "vacuum-based gripper",
+   "quote": "the robot has two end effectors with known geometry-a vacuum-based gripper consisting of a single discshaped linear-elastic suction-cup",
+   "chunk_id": "dex-net-4-0_mid_17_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "parallel-jaw gripper",
+   "quote": "the robot has two end effectors with known geometry-a vacuum-based gripper consisting of a single discshaped linear-elastic suction-cup and a parallel-jaw gripper",
+   "chunk_id": "dex-net-4-0_mid_17_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Photoneo PhoXi S",
+   "quote": "experiments used a high-resolution Photoneo PhoXi S industrial depth camera",
+   "chunk_id": "dex-net-4-0_mid_20_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Dex-Net 4.0",
+   "quote": "We trained each GQ-CNN using stochastic gradient descent with momentum for 50 epochs using an 80-20 training-to-validation image-wise split of the Dex-Net 4.0 dataset.",
+   "chunk_id": "dex-net-4-0_mid_23_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "stochastic gradient descent with momentum",
+   "quote": "We trained each GQ-CNN using stochastic gradient descent with momentum for 50 epochs using an 80-20 training-to-validation image-wise split of the Dex-Net 4.0 dataset.",
+   "chunk_id": "dex-net-4-0_mid_23_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "NVIDIA TITAN Xp",
+   "quote": "Training took about 24 hours on a single NVIDIA TITAN Xp graphics processing unit (GPU).",
+   "chunk_id": "dex-net-4-0_mid_23_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNN",
+   "quote": "The GQ-CNN architectures are similar to those used in Dex-Net 2.0 (19) and Dex-Net 3.0 (27) with two primary changes.",
+   "chunk_id": "dex-net-4-0_mid_23_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "physical robot",
+   "quote": "We used the trained GQ-CNNs to plan grasps from point clouds on a physical robot with derivative-free optimization to search for the highestquality grasp across both grippers.",
+   "chunk_id": "dex-net-4-0_mid_24_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "GQ-CNNs",
+   "quote": "We used the trained GQ-CNNs to plan grasps from point clouds on a physical robot with derivative-free optimization to search for the highestquality grasp across both grippers.",
+   "chunk_id": "dex-net-4-0_mid_24_0",
+   "paper_id": "dex-net-4-0"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "lack of high-quality, diverse, and scalable data",
+   "quote": "The lack of high-quality, diverse, and scalable data remains a fundamental bottleneck in learning dexterous robot manipulation.",
+   "chunk_id": "dex4d_mid_0_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Paired Point Encoding",
+   "quote": "A key technical contribution lies in our goal representation -instead of separately encoding current and target object points, we propose Paired Point Encoding that leverages the correspondences across them.",
+   "chunk_id": "dex4d_mid_0_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulation",
+   "quote": "We train our Anypose-to-Anypose policy across thousands of objects in simulation.",
+   "chunk_id": "dex4d_mid_0_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real robotic platforms",
+   "quote": "We evaluate Dex4D extensively in simulation and on real robotic platforms, comparing against state-of-the-art baselines.",
+   "chunk_id": "dex4d_mid_0_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "state-of-the-art baselines",
+   "quote": "Our results show substantial improvements in success rate, task progress, and robustness.",
+   "chunk_id": "dex4d_mid_0_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "generalizable dexterous manipulation",
+   "quote": "our method leverages video generation and 4D reconstruction for high-level planning and trains an objectcentric task-agnostic policy that works across tasks using sim-to-real RL with point tracks as an interface, achieving generalizable and autonomous dexterous manipulation.",
+   "chunk_id": "dex4d_mid_1_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "embodiment gaps and lack of closed-loop feedback",
+   "quote": "However, these works suffer from large embodiment gaps and a lack of closed-loop feedback, which are crucial for highly dynamic tasks such as dexterous manipulation.",
+   "chunk_id": "dex4d_mid_2_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Paired Point Encoding",
+   "quote": "In contrast, we train a closed-loop policy via sim-to-real, leveraging our proposed Paired Point Encoding representation along with extensive point masking and domain randomization.",
+   "chunk_id": "dex4d_mid_2_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "trained_on",
+   "object": "simulated data",
+   "quote": "In contrast, we train a closed-loop policy via sim-to-real, leveraging our proposed Paired Point Encoding representation along with extensive point masking and domain randomization.",
+   "chunk_id": "dex4d_mid_2_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "dexterous manipulation",
+   "quote": "task-agnostic sim-toreal learning formulation for dexterous manipulation",
+   "chunk_id": "dex4d_mid_4_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "dexterous manipulation",
+   "quote": "Anypose-to-Anypose (AP2AP) is a task-agnostic sim-toreal learning formulation for dexterous manipulation.",
+   "chunk_id": "dex4d_mid_5_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "trained_on",
+   "object": "UniDexGrasp",
+   "quote": "Our AP2AP policy is trained entirely in simulation using 3,200 objects from UniDexGrasp [62] under diverse pose configurations and extensive domain randomization.",
+   "chunk_id": "dex4d_mid_5_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet-style encoder",
+   "quote": "These paired points {q i t } N i=1 \u2208 R N \u00d76 are then fed into a PointNet-style encoder [41, 42]",
+   "chunk_id": "dex4d_mid_6_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "preserving correspondence between current and target object points",
+   "quote": "To address this limitation, we propose Paired Point Encoding, a representation that explicitly preserves correspondence between the current and target object points.",
+   "chunk_id": "dex4d_mid_6_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet",
+   "quote": "we compose current and target object points into paired points as the goal representation g t and encode them using a lightweight PointNet [41] to preserve both correspondence and permutation invariance.",
+   "chunk_id": "dex4d_mid_7_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "DAgger behavior cloning loss",
+   "quote": "The action world model is trained with a combination of a DAgger behavior cloning loss and a world modeling loss:",
+   "chunk_id": "dex4d_mid_7_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "world modeling loss",
+   "quote": "The action world model is trained with a combination of a DAgger behavior cloning loss and a world modeling loss:",
+   "chunk_id": "dex4d_mid_7_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "trained_on",
+   "object": "3,200 objects",
+   "quote": "In the third stage, we train on all 3,200 objects with more challenging initializations and resets, lower control frequency, and more conservative learning updates.",
+   "chunk_id": "dex4d_mid_7_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "sim-to-real transfer",
+   "quote": "Throughout training, we apply extensive domain randomization, including observation and action noise, PD gains, hand-object friction, and external force disturbances, to enable smooth and robust sim-to-real transfer.",
+   "chunk_id": "dex4d_mid_7_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "AP2AP",
+   "quote": "we lift the videos into object-centric point tracks, which define a target trajectory that can directly condition the AP2AP policy.",
+   "chunk_id": "dex4d_mid_9_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Internet videos",
+   "quote": "Large-scale video generation models provide a rich source of object motion and manipulation information, as they are trained on vast collections of Internet videos",
+   "chunk_id": "dex4d_mid_9_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "six dexterous manipulation tasks",
+   "quote": "We evaluate our method and baselines on six dexterous manipulation tasks, namely Apple2Plate, Pour, Hammer, StackCup, RotateBox, and Sponge2Bowl.",
+   "chunk_id": "dex4d_mid_12_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "NovaFlow",
+   "quote": "As shown in the results, our method outperforms all baselines by a large margin, demonstrating the effectiveness and superiority of our method.",
+   "chunk_id": "dex4d_mid_12_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "NovaFlow-CL",
+   "quote": "Further comparing our method with NovaFlow-CL, we also surpass it, achieving a significant performance gain (+16.3% in SR and +10.4% in TP).",
+   "chunk_id": "dex4d_mid_12_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "MLP Point Encoding",
+   "quote": "our method outperforms both variants, demonstrating that our representation and framework can even boost the performance for visual RL, which is considered harder in prior works",
+   "chunk_id": "dex4d_mid_13_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "Decoupled Point Encoding",
+   "quote": "our method outperforms both variants, demonstrating that our representation and framework can even boost the performance for visual RL, which is considered harder in prior works",
+   "chunk_id": "dex4d_mid_13_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "w/o Self-Attention",
+   "quote": "our method outperforms both ablations, proving the effectiveness of our student policy design",
+   "chunk_id": "dex4d_mid_13_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "w/o World Modeling",
+   "quote": "our method outperforms both ablations, proving the effectiveness of our student policy design",
+   "chunk_id": "dex4d_mid_13_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "NovaFlow-CL",
+   "quote": "As shown in Table III , our method achieves a 22.5% performance gain in SR compared to the baseline, demonstrating our method's superiority against the motion planning-based method.",
+   "chunk_id": "dex4d_mid_14_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "CoTracker3",
+   "quote": "First, in the real world, the real-time CoTracker3 [16] will lose track of the object when there are significant object movements, similar nearby textures, or unintended object rotation that blocks initially tracked points. This is the major cause of failures.",
+   "chunk_id": "dex4d_mid_14_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "policy",
+   "quote": "Sometimes the policy also tends to push the object to form a firm grasp, but this might pose extra forces that in turn knocks over the object.",
+   "chunk_id": "dex4d_mid_14_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "transformer-based action world model",
+   "quote": "We further propose a novel Paired Point Encoding representation and a transformer-based action world model to enhance 3D goal-conditioned policy learning.",
+   "chunk_id": "dex4d_mid_15_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "generalizable dexterous manipulation",
+   "quote": "In this work, we propose Dex4D, a framework for generalizable dexterous manipulation via objectcentric point tracks and task-agnostic sim-to-real learning.",
+   "chunk_id": "dex4d_mid_15_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "lack of human grasp priors",
+   "quote": "First, in our work we didn't incorporate human grasp priors from HOI datasets and Internet videos due to the lack of amount and diversity of clean mocap sequences and the large embodiment gap between human hands and the LEAP hand, which is large in size and only has four thick fingers.",
+   "chunk_id": "dex4d_mid_15_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "limited to single-object manipulation",
+   "quote": "Second, our AP2AP formulation is currently limited to single-object manipulation. Extending it to objects with more complicated geometries, such as articulated objects, would be a promising direction.",
+   "chunk_id": "dex4d_mid_15_0",
+   "paper_id": "dex4d"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "DexSampler",
+   "quote": "DexDiffuser includes DexSampler, a new conditional diffusion-based dexterous grasp sampler",
+   "chunk_id": "dexdiffuser_mid_0_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "DexEvaluator",
+   "quote": "DexDiffuser includes DexSampler, a new conditional diffusion-based dexterous grasp sampler, and DexEvaluator, a new dexterous grasp evaluator",
+   "chunk_id": "dexdiffuser_mid_0_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "trained_on",
+   "object": "DexGraspNet",
+   "quote": "We trained the models on 1.7 million successful and unsuccessful Allegro Hand grasp generated using DexGraspNet [4] across 5378 objects",
+   "chunk_id": "dexdiffuser_mid_0_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "high-dimensional search space",
+   "quote": "One of the main challenges in dexterous grasping is identifying successful grasps within a high-dimensional search space [3] . In this work, we propose the new data-driven dexterous grasping method DexDiffuser to address the dimensionality issue",
+   "chunk_id": "dexdiffuser_mid_0_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "sampling and evaluating dexterous grasps",
+   "quote": "We consider the problem of sampling and evaluating dexterous grasps G on partially observed point clouds O \u2208 R N\u00d73 , where N is the number of points, for the task of successfully picking up objects.",
+   "chunk_id": "dexdiffuser_mid_4_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "Basis Point Set (BPS)",
+   "quote": "In this work, O is encoded into f O using Basis Point Set (BPS) [32] as this encoding has shown to work well in prior dexterous grasping work [2] .",
+   "chunk_id": "dexdiffuser_mid_6_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "L2 loss",
+   "quote": "The parameters \u03b8 \u03b8 \u03b8 are learned by minimizing the loss function where \u03b5t = \u03b5 \u03b8 (g t ,t, f O ) and \u03b5 t is the ground-truth noise.",
+   "chunk_id": "dexdiffuser_mid_7_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "conditional diffusion model",
+   "quote": "DexSampler is a classifier-free, conditional diffusion model that generates G conditioned on f O .",
+   "chunk_id": "dexdiffuser_mid_7_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "frequency encoding",
+   "quote": "we introduce frequency encoding [38] that maps g into a higher dimensional space before passing it to the evaluator.",
+   "chunk_id": "dexdiffuser_mid_8_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "binary cross-entropy loss",
+   "quote": "The parameters \u03c8 \u03c8 \u03c8 of the DexEvaluator is optimized using the binary cross-entropy loss",
+   "chunk_id": "dexdiffuser_mid_8_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "trained_on",
+   "object": "dataset",
+   "quote": "In Section V, we provide details on the dataset used to train DexEvaluator.",
+   "chunk_id": "dexdiffuser_mid_8_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "DexEvaluator",
+   "quote": "where g guide is the gradient signal from DexEvaluator modulated by log(Tt + 1).",
+   "chunk_id": "dexdiffuser_mid_9_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "addresses_problem",
+   "object": "grasp refinement",
+   "quote": "The idea behind grasp refinement is to increase the probability of grasp success.",
+   "chunk_id": "dexdiffuser_mid_9_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_loss",
+   "object": "Metropolis-Hasting (MH) sampling algorithm",
+   "quote": "To find \u2206g, we use the Metropolis-Hasting (MH) sampling algorithm as it has been shown to perform well for refining parallel-jaw grasps [40]",
+   "chunk_id": "dexdiffuser_mid_9_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "trained_on",
+   "object": "DexGraspNet",
+   "quote": "We collected over 0.7M successful and 0.8M unsuccessful Allegro Hand grasps on 5378 objects of various geometries and scales. Only successful grasps were used to train DexSampler",
+   "chunk_id": "dexdiffuser_mid_11_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "trained_on",
+   "object": "Allegro Hand",
+   "quote": "We collected over 0.7M successful and 0.8M unsuccessful Allegro Hand grasps on 5378 objects of various geometries and scales. Only successful grasps were used to train DexSampler",
+   "chunk_id": "dexdiffuser_mid_11_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "EGAD!",
+   "quote": "We further add 49 objects from the EGAD! dataset [41] , 16 objects from the MultiDex dataset [7] , and 12 objects from the KIT dataset [42] to the the test dataset.",
+   "chunk_id": "dexdiffuser_mid_11_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "MultiDex",
+   "quote": "We further add 49 objects from the EGAD! dataset [41] , 16 objects from the MultiDex dataset [7] , and 12 objects from the KIT dataset [42] to the the test dataset.",
+   "chunk_id": "dexdiffuser_mid_11_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "KIT",
+   "quote": "We further add 49 objects from the EGAD! dataset [41] , 16 objects from the MultiDex dataset [7] , and 12 objects from the KIT dataset [42] to the the test dataset.",
+   "chunk_id": "dexdiffuser_mid_11_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_backbone",
+   "object": "PointNet++",
+   "quote": "We also trained a DexSampler with the PointNet++ point cloud encoding [44] to study how different encodings affect grasp performance.",
+   "chunk_id": "dexdiffuser_mid_13_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "FFHNet",
+   "quote": "These results demonstrate that DexSampler, irrespective of the encoding method, consistently outperformed the FFHNet generator across all test datasets.",
+   "chunk_id": "dexdiffuser_mid_14_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "outperforms_claim",
+   "object": "UniDexGrasp",
+   "quote": "The results indicate that DexSampler outperforms both FFHNet and UniDexGrasp, highlighting its ability to generate diverse grasps with relatively low penetration depth.",
+   "chunk_id": "dexdiffuser_mid_14_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Franka Panda",
+   "quote": "The hardware used is shown in Fig. 1 and includes an Allegro Hand attached to the end of a Franka Panda robot and a Kinect V3 placed in a third-person perspective to capture O.",
+   "chunk_id": "dexdiffuser_mid_15_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Allegro Hand",
+   "quote": "The hardware used is shown in Fig. 1 and includes an Allegro Hand attached to the end of a Franka Panda robot and a Kinect V3 placed in a third-person perspective to capture O.",
+   "chunk_id": "dexdiffuser_mid_15_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "uses_hardware",
+   "object": "Kinect V3",
+   "quote": "The hardware used is shown in Fig. 1 and includes an Allegro Hand attached to the end of a Franka Panda robot and a Kinect V3 placed in a third-person perspective to capture O.",
+   "chunk_id": "dexdiffuser_mid_15_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "evaluated_on",
+   "object": "real noisy object point clouds",
+   "quote": "we evaluated how successful DexDiffuser was at picking objects from real noisy object point clouds using real robotic hardware.",
+   "chunk_id": "dexdiffuser_mid_15_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "sim-to-real gap",
+   "quote": "The limitations of DexDiffuser are the sim-to-real gap, not accounting for environmental constraints such as collision objects, and the relatively long grasp sampling time.",
+   "chunk_id": "dexdiffuser_mid_15_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "not accounting for environmental constraints such as collision objects",
+   "quote": "The limitations of DexDiffuser are the sim-to-real gap, not accounting for environmental constraints such as collision objects, and the relatively long grasp sampling time.",
+   "chunk_id": "dexdiffuser_mid_15_0",
+   "paper_id": "dexdiffuser"
+  },
+  {
+   "relation": "has_limitation",
+   "object": "relatively long grasp sampling time",
+   "quote": "The limitations of DexDiffuser are the sim-to-real gap, not accounting for environmental constraints such as collision objects, and the relatively long grasp sampling time.",
+   "chunk_id": "dexdiffuser_mid_15_0",
+   "paper_id": "dexdiffuser"
   }
  ],
  "stats": {
-  "n_triples": 127,
-  "n_papers": 6
+  "n_triples": 532,
+  "n_papers": 18
  }
 }

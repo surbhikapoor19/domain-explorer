@@ -3840,8 +3840,15 @@
     {
       "type": "training_size",
       "value": "10,000 object",
-      "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
+      "context": "e Dex-Net 1.0 algorithm on the test objects with priors computed from 1,000 and 10,000 objects from Dex-Net. Fig. 5 shows the normalized P F (the ratio of the P F for the be",
       "chunk_id": "dex-net-1-0-mv-cnns_coarse_sec_20",
+      "paper_id": "dex-net-1-0-mv-cnns"
+    },
+    {
+      "type": "training_size",
+      "value": "10,000 object",
+      "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
+      "chunk_id": "dex-net-1-0-mv-cnns_coarse_sec_21",
       "paper_id": "dex-net-1-0-mv-cnns"
     },
     {
@@ -3919,8 +3926,15 @@
     {
       "type": "training_size",
       "value": "10,000 object",
-      "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
+      "context": "e Dex-Net 1.0 algorithm on the test objects with priors computed from 1,000 and 10,000 objects from Dex-Net. Fig. 5 shows the normalized P F (the ratio of the P F for the be",
       "chunk_id": "dex-net-1-0-mv-cnns_mid_20_0",
+      "paper_id": "dex-net-1-0-mv-cnns"
+    },
+    {
+      "type": "training_size",
+      "value": "10,000 object",
+      "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
+      "chunk_id": "dex-net-1-0-mv-cnns_mid_21_0",
       "paper_id": "dex-net-1-0-mv-cnns"
     },
     {
@@ -4005,15 +4019,22 @@
     {
       "type": "training_size",
       "value": "10,000 object",
+      "context": "e Dex-Net 1.0 algorithm on the test objects with priors computed from 1,000 and 10,000 objects from Dex-Net. Fig. 5 shows the normalized P F (the ratio of the P F for the be",
+      "chunk_id": "dex-net-1-0-mv-cnns_fine_20_0",
+      "paper_id": "dex-net-1-0-mv-cnns"
+    },
+    {
+      "type": "training_size",
+      "value": "10,000 object",
       "context": "hysics simulations, human labels, or physical grasping trials. Furthermore, the 10,000 object curve does not fall below approximately 90% of the best grasp in the set across",
-      "chunk_id": "dex-net-1-0-mv-cnns_fine_19_1",
+      "chunk_id": "dex-net-1-0-mv-cnns_fine_20_1",
       "paper_id": "dex-net-1-0-mv-cnns"
     },
     {
       "type": "training_size",
       "value": "10,000 object",
       "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
-      "chunk_id": "dex-net-1-0-mv-cnns_fine_20_0",
+      "chunk_id": "dex-net-1-0-mv-cnns_fine_21_0",
       "paper_id": "dex-net-1-0-mv-cnns"
     }
   ],
@@ -6000,6 +6021,242 @@
       "context": "region in a grayscale image. The segmented image patch was featurized using the VGG-16 network and stored in a failure database corresponding to the gripper. On the n",
       "chunk_id": "dex-net-4-0_fine_30_0",
       "paper_id": "dex-net-4-0"
+    }
+  ],
+  "dex4d": [
+    {
+      "type": "training_size",
+      "value": "3,200 object",
+      "context": "ve local exploration.\n\nOur AP2AP policy is trained entirely in simulation using 3,200 objects from UniDexGrasp [62] under diverse pose configurations and extensive domain r",
+      "chunk_id": "dex4d_coarse_sec_5",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ined as below:\n\nThese paired points {q i t } N i=1 \u2208 R N \u00d76 are then fed into a PointNet-style encoder [41, 42] , which consists of shared MLP layers and mean-max mixed",
+      "chunk_id": "dex4d_coarse_sec_6",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "aired points as the goal representation g t and encode them using a lightweight PointNet [41] to preserve both correspondence and permutation invariance. The resulting",
+      "chunk_id": "dex4d_coarse_sec_7",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "a student policy under partial observability using DAgger [46] . We introduce a transformer-based action world model that jointly learns action prediction and robot joint",
+      "chunk_id": "dex4d_coarse_sec_7",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "training_size",
+      "value": "3,200 object",
+      "context": "fety, and the reset threshold is increased. In the third stage, we train on all 3,200 objects with more challenging initializations and resets, lower control frequency, and",
+      "chunk_id": "dex4d_coarse_sec_7",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "ts from our object set from UniDexGrasp [62] and the unseen YCB dataset [6] . For more details on task specifications, plea",
+      "chunk_id": "dex4d_coarse_sec_12",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "nce degradation, making SR reduce to 5.7%. We also find out that using separate PointNet encoders to encode current and target object points individually will also seve",
+      "chunk_id": "dex4d_coarse_sec_13",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "red point features and uses MLP to decode actions, self-attention layers (i.e., transformer encoder) can attend to different tokens from proprioception and paired points,",
+      "chunk_id": "dex4d_coarse_sec_13",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "metric",
+      "value": "22.5",
+      "unit": "%",
+      "context": "ose estimation, which is the same as in simulation experiments.\n\nAs shown in Table III , our method achieves a 22.5% performance gain in SR compared to the baseline, demonstrating our method's superio",
+      "chunk_id": "dex4d_coarse_sec_14",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "control. We further propose a novel Paired Point Encoding representation and a transformer-based action world model to enhance 3D goal-conditioned policy learning. Extens",
+      "chunk_id": "dex4d_coarse_sec_15",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "and target object points using MLPs; (b) Decoupled Point Encoding that use two PointNet tokenizers to encode current and target object points separately, without using",
+      "chunk_id": "dex4d_coarse_figures",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "training_size",
+      "value": "3,200 object",
+      "context": "ive local exploration. Our AP2AP policy is trained entirely in simulation using 3,200 objects from UniDexGrasp [62] under diverse pose configurations and extensive domain r",
+      "chunk_id": "dex4d_mid_5_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ined as below:\n\nThese paired points {q i t } N i=1 \u2208 R N \u00d76 are then fed into a PointNet-style encoder [41, 42] , which consists of shared MLP layers and mean-max mixed",
+      "chunk_id": "dex4d_mid_6_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "aired points as the goal representation g t and encode them using a lightweight PointNet [41] to preserve both correspondence and permutation invariance. The resulting",
+      "chunk_id": "dex4d_mid_7_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "a student policy under partial observability using DAgger [46] . We introduce a transformer-based action world model that jointly learns action prediction and robot joint",
+      "chunk_id": "dex4d_mid_7_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "training_size",
+      "value": "3,200 object",
+      "context": "fety, and the reset threshold is increased. In the third stage, we train on all 3,200 objects with more challenging initializations and resets, lower control frequency, and",
+      "chunk_id": "dex4d_mid_7_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "ts from our object set from UniDexGrasp [62] and the unseen YCB dataset [6] . For more details on task specifications, plea",
+      "chunk_id": "dex4d_mid_12_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "nce degradation, making SR reduce to 5.7%. We also find out that using separate PointNet encoders to encode current and target object points individually will also seve",
+      "chunk_id": "dex4d_mid_13_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "red point features and uses MLP to decode actions, self-attention layers (i.e., transformer encoder) can attend to different tokens from proprioception and paired points,",
+      "chunk_id": "dex4d_mid_13_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "metric",
+      "value": "22.5",
+      "unit": "%",
+      "context": "pose estimation, which is the same as in simulation experiments. As shown in Table III , our method achieves a 22.5% performance gain in SR compared to the baseline, demonstrating our method's superio",
+      "chunk_id": "dex4d_mid_14_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "control. We further propose a novel Paired Point Encoding representation and a transformer-based action world model to enhance 3D goal-conditioned policy learning. Extens",
+      "chunk_id": "dex4d_mid_15_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "training_size",
+      "value": "3,200 object",
+      "context": "Our AP2AP policy is trained entirely in simulation using 3,200 objects from UniDexGrasp [62] under diverse pose configurations and extensive domain r",
+      "chunk_id": "dex4d_fine_5_3",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "These paired points {q i t } N i=1 \u2208 R N \u00d76 are then fed into a PointNet-style encoder [41, 42] , which consists of shared MLP layers and mean-max mixed",
+      "chunk_id": "dex4d_fine_6_2",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "aired points as the goal representation g t and encode them using a lightweight PointNet [41] to preserve both correspondence and permutation invariance. The resulting",
+      "chunk_id": "dex4d_fine_7_1",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "training_size",
+      "value": "3,200 object",
+      "context": "fety, and the reset threshold is increased. In the third stage, we train on all 3,200 objects with more challenging initializations and resets, lower control frequency, and",
+      "chunk_id": "dex4d_fine_7_2",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "a student policy under partial observability using DAgger [46] . We introduce a transformer-based action world model that jointly learns action prediction and robot joint",
+      "chunk_id": "dex4d_fine_7_4",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "on, and masked paired points. These inputs are first tokenized using MLPs and a PointNet-style encoder [41, 42] with mean-max mixed pooling, and then processed by selfa",
+      "chunk_id": "dex4d_fine_7_5",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "We train teacher and student policies using the Isaac Gym simulator [33] . For point numbers, we sample 128 points fo",
+      "chunk_id": "dex4d_fine_11_2",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "ts from our object set from UniDexGrasp [62] and the unseen YCB dataset [6] . For more details on task specifications, plea",
+      "chunk_id": "dex4d_fine_12_0",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "nce degradation, making SR reduce to 5.7%. We also find out that using separate PointNet encoders to encode current and target object points individually will also seve",
+      "chunk_id": "dex4d_fine_13_1",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "red point features and uses MLP to decode actions, self-attention layers (i.e., transformer encoder) can attend to different tokens from proprioception and paired points,",
+      "chunk_id": "dex4d_fine_13_4",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "metric",
+      "value": "22.5",
+      "unit": "%",
+      "context": "As shown in Table III , our method achieves a 22.5% performance gain in SR compared to the baseline, demonstrating our method's superiority against the",
+      "chunk_id": "dex4d_fine_14_1",
+      "paper_id": "dex4d"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "control. We further propose a novel Paired Point Encoding representation and a transformer-based action world model to enhance 3D goal-conditioned policy learning. Extens",
+      "chunk_id": "dex4d_fine_15_0",
+      "paper_id": "dex4d"
     }
   ],
   "dexdiffuser": [
