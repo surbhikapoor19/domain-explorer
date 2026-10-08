@@ -1,0 +1,65 @@
+name: Keep pipeline caches warm
+
+# A domain's parsed PDFs (TEI) and vector store live in the Actions cache, and GitHub deletes a cache
+# after 7 days without a hit. Full builds run every few weeks, so that cache was always gone and every
+# full build re-parsed every PDF with GROBID (~139 min of a 208 min grasp build, measured 2026-09-16).
+# Restoring and re-saving each domain's cache weekly keeps it alive, so full builds stay incremental.
+on:
+  schedule:
+    - cron: '0 4 * * 0'      # Sundays, 04:00 UTC — well inside the 7-day window
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  domains:
+    name: List domains
+    runs-on: ubuntu-latest
+    outputs:
+      slugs: ${{ steps.list.outputs.slugs }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - id: list
+        name: Read domain slugs from domains/*.yaml
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import glob, json, os
+          slugs = sorted(os.path.basename(p)[:-5].replace('_', '-') for p in glob.glob('domains/*.yaml'))
+          print('slugs=' + json.dumps(slugs))
+          PY
+
+  touch:
+    name: Refresh cache
+    needs: domains
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        slug: ${{ fromJSON(needs.domains.outputs.slugs) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Same path + key shape as domain-build.yml's "Cache TEI + Chroma" step: restoring here is the
+      # hit that resets the 7-day clock, and the run_id key makes the action re-save it on the way out.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            datasets/${{ matrix.slug }}/tei
+            datasets/${{ matrix.slug }}/chroma_db
+          key: pipeline-cache-${{ matrix.slug }}-${{ github.run_id }}
+          restore-keys: |
+            pipeline-cache-${{ matrix.slug }}-
+
+      - name: Report what was kept warm
+        run: |
+          for d in tei chroma_db; do
+            p="datasets/${{ matrix.slug }}/$d"
+            if [ -d "$p" ]; then echo "$p: $(find "$p" -type f | wc -l) files, $(du -sh "$p" | cut -f1)";
+            else echo "$p: nothing cached yet (a full build will create it)"; fi
+          done

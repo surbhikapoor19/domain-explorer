@@ -303,6 +303,19 @@ class WorkflowPins(unittest.TestCase):
         body = t[i:t.index('def normalize_export', i)]
         self.assertIn('parse_drive_subfolders', body)   # same one-level rule as the admin and the PDF import
 
+    def test_cache_keepalive_matches_the_build_cache_key(self):
+        """Full builds skip GROBID only while the TEI cache survives; GitHub drops caches unused for
+        7 days, so a weekly workflow refreshes it. Its key must match domain-build.yml's."""
+        root = Path(HERE).parent / '.github' / 'workflows'
+        keep = (root / 'cache-keepalive.yml').read_text()
+        build = (root / 'domain-build.yml').read_text()
+        self.assertIn('pipeline-cache-', build)
+        self.assertIn('restore-keys', keep)
+        self.assertIn('pipeline-cache-${{ matrix.slug }}-', keep)
+        self.assertIn('/tei', keep)
+        self.assertIn('/chroma_db', keep)
+        self.assertIn('cron:', keep)
+
     def test_sheet_poll_compares_csv_bytes_exactly(self):
         # Committed CSVs have CRLF rows; a text-mode read made every night a false 'edit' (+0/-0).
         t = (Path(HERE).parent / '.github' / 'workflows' / 'sheet-poll.yml').read_text()
