@@ -3840,15 +3840,8 @@
     {
       "type": "training_size",
       "value": "10,000 object",
-      "context": "e Dex-Net 1.0 algorithm on the test objects with priors computed from 1,000 and 10,000 objects from Dex-Net. Fig. 5 shows the normalized P F (the ratio of the P F for the be",
-      "chunk_id": "dex-net-1-0-mv-cnns_coarse_sec_20",
-      "paper_id": "dex-net-1-0-mv-cnns"
-    },
-    {
-      "type": "training_size",
-      "value": "10,000 object",
       "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
-      "chunk_id": "dex-net-1-0-mv-cnns_coarse_sec_21",
+      "chunk_id": "dex-net-1-0-mv-cnns_coarse_sec_20",
       "paper_id": "dex-net-1-0-mv-cnns"
     },
     {
@@ -3926,15 +3919,8 @@
     {
       "type": "training_size",
       "value": "10,000 object",
-      "context": "e Dex-Net 1.0 algorithm on the test objects with priors computed from 1,000 and 10,000 objects from Dex-Net. Fig. 5 shows the normalized P F (the ratio of the P F for the be",
-      "chunk_id": "dex-net-1-0-mv-cnns_mid_20_0",
-      "paper_id": "dex-net-1-0-mv-cnns"
-    },
-    {
-      "type": "training_size",
-      "value": "10,000 object",
       "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
-      "chunk_id": "dex-net-1-0-mv-cnns_mid_21_0",
+      "chunk_id": "dex-net-1-0-mv-cnns_mid_20_0",
       "paper_id": "dex-net-1-0-mv-cnns"
     },
     {
@@ -4019,22 +4005,15 @@
     {
       "type": "training_size",
       "value": "10,000 object",
-      "context": "e Dex-Net 1.0 algorithm on the test objects with priors computed from 1,000 and 10,000 objects from Dex-Net. Fig. 5 shows the normalized P F (the ratio of the P F for the be",
-      "chunk_id": "dex-net-1-0-mv-cnns_fine_20_0",
-      "paper_id": "dex-net-1-0-mv-cnns"
-    },
-    {
-      "type": "training_size",
-      "value": "10,000 object",
       "context": "hysics simulations, human labels, or physical grasping trials. Furthermore, the 10,000 object curve does not fall below approximately 90% of the best grasp in the set across",
-      "chunk_id": "dex-net-1-0-mv-cnns_fine_20_1",
+      "chunk_id": "dex-net-1-0-mv-cnns_fine_19_1",
       "paper_id": "dex-net-1-0-mv-cnns"
     },
     {
       "type": "training_size",
       "value": "10,000 object",
       "context": "see that the spray bottle converges very quickly when using a prior dataset of 10,000 objects, finding the optimal grasp in the set in about 1,500 iterations. This converge",
-      "chunk_id": "dex-net-1-0-mv-cnns_fine_21_0",
+      "chunk_id": "dex-net-1-0-mv-cnns_fine_20_0",
       "paper_id": "dex-net-1-0-mv-cnns"
     }
   ],
@@ -16708,6 +16687,609 @@
       "context": "We attribute this to our hardware setup (a panda gripper that has a bigger collision shape and smaller gripp",
       "chunk_id": "icg-net_fine_4_9",
       "paper_id": "icg-net"
+    }
+  ],
+  "machagrasp": [
+    {
+      "type": "metric",
+      "value": "87",
+      "unit": "%",
+      "context": "seen objects in simulation, and real-world experiments on this few-shot-generalized hand achieve an 87% success rate",
+      "chunk_id": "machagrasp_coarse_abstract",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "85.6",
+      "unit": "%",
+      "context": "grasp success rate with <0.4 s inference per grasp. With few-shot adaptation to an unseen hand, it achieves 85.6% success on unseen objects in simulation, and real-world experiments on this few-shot-g",
+      "chunk_id": "machagrasp_coarse_abstract",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "91.9",
+      "unit": "%",
+      "context": "n and real-world settings. In simulation on unseen objects across three dexterous hands, MachaGrasp achieves a 91.9% average grasp success rate with < 0.4 s inference per grasp; with few-shot adaptati",
+      "chunk_id": "machagrasp_coarse_sec_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "87",
+      "unit": "%",
+      "context": "s on unseen objects in simulation, and real-world experiments on the same few-shot-generalized hand achieve 87% success",
+      "chunk_id": "machagrasp_coarse_sec_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "ored cross-embodiment grasp generation, including DRO [5] , DexGraspNet [6] , DFC [7] , UniGrasp [8] , and GenDexGrasp [9] . These",
+      "chunk_id": "machagrasp_coarse_sec_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "l networks directly map sensory inputs to grasp configurations. Dexterous Grasp Transformer [1] leverages large-scale datasets such as DexGraspNet [6] to train a transform",
+      "chunk_id": "machagrasp_coarse_sec_1",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "rasp Transformer [1] leverages large-scale datasets such as DexGraspNet [6] to train a transformerbased model that predicts grasp c",
+      "chunk_id": "machagrasp_coarse_sec_1",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "J = {j k } M k=1",
+      "context": "pecification, from which we extract a set of joint encodings",
+      "chunk_id": "machagrasp_coarse_sec_3",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ich serves as a condition for articulation prediction. We employ a hierarchical PointNet++ backbone [20] to process the point cloud. Specifically, the encoder consists",
+      "chunk_id": "machagrasp_coarse_sec_6",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "Conditioned Eigengrasp Tokens, {\u03c4 i } K i=1 , is normalized, projected into the transformer input space, and processed by a transformer encoder:\n\nwhere Z \u2208 R K\u00d7d h is the",
+      "chunk_id": "machagrasp_coarse_sec_7",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "E = {e i } K i=1",
+      "context": "Given the eigengrasps",
+      "chunk_id": "machagrasp_coarse_sec_7",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "MSE",
+      "context": "ining articulation data. This alignment is enforced using a mean squared error (MSE) loss:\n\nKinematic-Aware Articulation Loss (KAL). A uniform MSE loss on joint va",
+      "chunk_id": "machagrasp_coarse_sec_8",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "E = {e i } K i=1",
+      "context": "The morphology encoder predicts a set of eigengrasps",
+      "chunk_id": "machagrasp_coarse_sec_8",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "h the wrist poses generated by existing baselines (GraspIt, DexGraspNet, DRO) improve their grasp success rates? \u2022 Q3: Can MachaGra",
+      "chunk_id": "machagrasp_coarse_sec_10",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "uffers from severe self-collision artifacts, we instead use DexGraspNet [6] for ShadowHand data.\n\nTo ensure grasp stability, all da",
+      "chunk_id": "machagrasp_coarse_sec_11",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "sp stability, all datasets are filtered in simulation using Isaac Gym [24] (see Sec. IV-B), and only stable grasps are retained.",
+      "chunk_id": "machagrasp_coarse_sec_11",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "Building on the evaluation protocol of DexGraspNet [6] , we use Isaac Gym [24] with PhysX as the underlying ph",
+      "chunk_id": "machagrasp_coarse_sec_12",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "ding on the evaluation protocol of DexGraspNet [6] , we use Isaac Gym [24] with PhysX as the underlying physics engine to verify",
+      "chunk_id": "machagrasp_coarse_sec_12",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "MSE",
+      "context": "also compare MachaGrasp trained with the proposed KAL loss against the standard MSE loss. All methods are evaluated on the same object set with an equal number of",
+      "chunk_id": "machagrasp_coarse_sec_13",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "strong self-collision issues in the dataset (Sec. IV-A).\n\n\u2022 DexGraspNet [6] : Generates grasp poses by sampling candidates in simul",
+      "chunk_id": "machagrasp_coarse_sec_13",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "Specifically, we take the wrist poses proposed by DFC [7] , DexGraspNet [6] , and DRO [5] , and apply MachaGrasp to generate the co",
+      "chunk_id": "machagrasp_coarse_sec_14",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "85.6",
+      "unit": "%",
+      "context": "on, we use our unseen object test set. The simulation results show that MachaGrasp achieves a grasp success rate of 85.6%, demonstrating strong few-shot generalization to previously unseen hands.",
+      "chunk_id": "machagrasp_coarse_sec_15",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "100 object",
+      "context": "the Robotiq3F dataset from MultiGripper-Grasp dataset [23] and randomly sample 100 objects, each with 10 grasp poses, as the training set for this new hand. The model is",
+      "chunk_id": "machagrasp_coarse_sec_15",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 grasp",
+      "context": "from MultiGripper-Grasp dataset [23] and randomly sample 100 objects, each with 10 grasp poses, as the training set for this new hand. The model is then fine-tuned with",
+      "chunk_id": "machagrasp_coarse_sec_15",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "hen fine-tuned with these limited examples and evaluated in Isaac Gym using the predicted wrist poses (following the same mapping",
+      "chunk_id": "machagrasp_coarse_sec_15",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "87",
+      "unit": "%",
+      "context": "The system achieves a grasp success rate of 87%, demonstrating that MachaGrasp transfers effectively from simulation to the real world",
+      "chunk_id": "machagrasp_coarse_sec_16",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 grasp",
+      "context": ".\n\nWe evaluate grasp performance on a set of 10 previously unseen objects, with 10 grasp attempts per object. Candidate poses are filtered based on Robotiq 3-Finger DoF",
+      "chunk_id": "machagrasp_coarse_sec_16",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "orld (Q4), we deploy the Robotiq 3-Finger hand mounted on a Franka Panda arm. Object point clouds are captured using three Int",
+      "chunk_id": "machagrasp_coarse_sec_16",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "4), we deploy the Robotiq 3-Finger hand mounted on a Franka Panda arm. Object point clouds are captured using three Intel Rea",
+      "chunk_id": "machagrasp_coarse_sec_16",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "aspIt! [22] | 92.4(+2.5) | -\u22c6 | 93.5(+1.5) | 91.6(+3.9) |\n| DexGraspNet [6] | 68.8(+4.7) | 90.7(+4.6) | 52.1(+6.7) | 63.7(+2.8) |\n|",
+      "chunk_id": "machagrasp_coarse_sec_19",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "91.9",
+      "unit": "%",
+      "context": "n and real-world settings. In simulation on unseen objects across three dexterous hands, MachaGrasp achieves a 91.9% average grasp success rate with < 0.4 s inference per grasp; with few-shot adaptati",
+      "chunk_id": "machagrasp_mid_0_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "87",
+      "unit": "%",
+      "context": "s on unseen objects in simulation, and real-world experiments on the same few-shot-generalized hand achieve 87% success",
+      "chunk_id": "machagrasp_mid_0_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "ored cross-embodiment grasp generation, including DRO [5] , DexGraspNet [6] , DFC [7] , UniGrasp [8] , and GenDexGrasp [9] . These",
+      "chunk_id": "machagrasp_mid_0_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "l networks directly map sensory inputs to grasp configurations. Dexterous Grasp Transformer [1] leverages large-scale datasets such as DexGraspNet [6] to train a transform",
+      "chunk_id": "machagrasp_mid_1_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "rasp Transformer [1] leverages large-scale datasets such as DexGraspNet [6] to train a transformerbased model that predicts grasp c",
+      "chunk_id": "machagrasp_mid_1_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "J = {j k } M k=1",
+      "context": "pecification, from which we extract a set of joint encodings",
+      "chunk_id": "machagrasp_mid_3_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "PointNet",
+      "context": "ich serves as a condition for articulation prediction. We employ a hierarchical PointNet++ backbone [20] to process the point cloud. Specifically, the encoder consists",
+      "chunk_id": "machagrasp_mid_6_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "Conditioned Eigengrasp Tokens, {\u03c4 i } K i=1 , is normalized, projected into the transformer input space, and processed by a transformer encoder:\n\nwhere Z \u2208 R K\u00d7d h is the",
+      "chunk_id": "machagrasp_mid_7_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "E = {e i } K i=1",
+      "context": "Given the eigengrasps",
+      "chunk_id": "machagrasp_mid_7_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "MSE",
+      "context": "ining articulation data. This alignment is enforced using a mean squared error (MSE) loss:\n\nKinematic-Aware Articulation Loss (KAL). A uniform MSE loss on joint va",
+      "chunk_id": "machagrasp_mid_8_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "E = {e i } K i=1",
+      "context": "The morphology encoder predicts a set of eigengrasps",
+      "chunk_id": "machagrasp_mid_8_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "h the wrist poses generated by existing baselines (GraspIt, DexGraspNet, DRO) improve their grasp success rates? \u2022 Q3: Can MachaGra",
+      "chunk_id": "machagrasp_mid_10_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "uffers from severe self-collision artifacts, we instead use DexGraspNet [6] for ShadowHand data. To ensure grasp stability, all dat",
+      "chunk_id": "machagrasp_mid_11_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "sp stability, all datasets are filtered in simulation using Isaac Gym [24] (see Sec. IV-B), and only stable grasps are retained.",
+      "chunk_id": "machagrasp_mid_11_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "Building on the evaluation protocol of DexGraspNet [6] , we use Isaac Gym [24] with PhysX as the underlying ph",
+      "chunk_id": "machagrasp_mid_12_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "ding on the evaluation protocol of DexGraspNet [6] , we use Isaac Gym [24] with PhysX as the underlying physics engine to verify",
+      "chunk_id": "machagrasp_mid_12_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "MSE",
+      "context": "also compare MachaGrasp trained with the proposed KAL loss against the standard MSE loss. All methods are evaluated on the same object set with an equal number of",
+      "chunk_id": "machagrasp_mid_13_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "strong self-collision issues in the dataset (Sec. IV-A).\n\n\u2022 DexGraspNet [6] : Generates grasp poses by sampling candidates in simul",
+      "chunk_id": "machagrasp_mid_13_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "Specifically, we take the wrist poses proposed by DFC [7] , DexGraspNet [6] , and DRO [5] , and apply MachaGrasp to generate the co",
+      "chunk_id": "machagrasp_mid_14_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "85.6",
+      "unit": "%",
+      "context": "on, we use our unseen object test set. The simulation results show that MachaGrasp achieves a grasp success rate of 85.6%, demonstrating strong few-shot generalization to previously unseen hands.",
+      "chunk_id": "machagrasp_mid_15_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "100 object",
+      "context": "the Robotiq3F dataset from MultiGripper-Grasp dataset [23] and randomly sample 100 objects, each with 10 grasp poses, as the training set for this new hand. The model is",
+      "chunk_id": "machagrasp_mid_15_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 grasp",
+      "context": "from MultiGripper-Grasp dataset [23] and randomly sample 100 objects, each with 10 grasp poses, as the training set for this new hand. The model is then fine-tuned with",
+      "chunk_id": "machagrasp_mid_15_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "hen fine-tuned with these limited examples and evaluated in Isaac Gym using the predicted wrist poses (following the same mapping",
+      "chunk_id": "machagrasp_mid_15_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "87",
+      "unit": "%",
+      "context": "The system achieves a grasp success rate of 87%, demonstrating that MachaGrasp transfers effectively from simulation to the real world",
+      "chunk_id": "machagrasp_mid_16_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 grasp",
+      "context": "y. We evaluate grasp performance on a set of 10 previously unseen objects, with 10 grasp attempts per object. Candidate poses are filtered based on Robotiq 3-Finger DoF",
+      "chunk_id": "machagrasp_mid_16_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "orld (Q4), we deploy the Robotiq 3-Finger hand mounted on a Franka Panda arm. Object point clouds are captured using three Int",
+      "chunk_id": "machagrasp_mid_16_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "4), we deploy the Robotiq 3-Finger hand mounted on a Franka Panda arm. Object point clouds are captured using three Intel Rea",
+      "chunk_id": "machagrasp_mid_16_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "aspIt! [22] | 92.4(+2.5) | -\u22c6 | 93.5(+1.5) | 91.6(+3.9) |\n| DexGraspNet [6] | 68.8(+4.7) | 90.7(+4.6) | 52.1(+6.7) | 63.7(+2.8) |\n|",
+      "chunk_id": "machagrasp_mid_19_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "91.9",
+      "unit": "%",
+      "context": "n and real-world settings. In simulation on unseen objects across three dexterous hands, MachaGrasp achieves a 91.9% average grasp success rate with < 0.4 s inference per grasp; with few-shot adaptati",
+      "chunk_id": "machagrasp_fine_0_3",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "87",
+      "unit": "%",
+      "context": "s on unseen objects in simulation, and real-world experiments on the same few-shot-generalized hand achieve 87% success",
+      "chunk_id": "machagrasp_fine_0_3",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "Transformer",
+      "context": "l networks directly map sensory inputs to grasp configurations. Dexterous Grasp Transformer [1] leverages large-scale datasets such as DexGraspNet [6] to train a transform",
+      "chunk_id": "machagrasp_fine_1_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "rasp Transformer [1] leverages large-scale datasets such as DexGraspNet [6] to train a transformerbased model that predicts grasp c",
+      "chunk_id": "machagrasp_fine_1_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "backbone",
+      "value": "transformer",
+      "context": "ple-intensive. More recently, GET-Zero [13] introduces a graph-based embodiment transformer that conditions policy learning on the structural graph of the hand, achieving",
+      "chunk_id": "machagrasp_fine_2_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "J = {j k } M k=1",
+      "context": "pecification, from which we extract a set of joint encodings",
+      "chunk_id": "machagrasp_fine_3_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "E = {e i } K i=1",
+      "context": "Given the eigengrasps",
+      "chunk_id": "machagrasp_fine_7_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "MSE",
+      "context": "ining articulation data. This alignment is enforced using a mean squared error (MSE) loss:",
+      "chunk_id": "machagrasp_fine_8_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "equation",
+      "value": "E = {e i } K i=1",
+      "context": "The morphology encoder predicts a set of eigengrasps",
+      "chunk_id": "machagrasp_fine_8_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "MSE",
+      "context": "Kinematic-Aware Articulation Loss (KAL). A uniform MSE loss on joint values does not account for the fact that different joints contri",
+      "chunk_id": "machagrasp_fine_8_1",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "h the wrist poses generated by existing baselines (GraspIt, DexGraspNet, DRO) improve their grasp success rates? \u2022 Q3: Can MachaGra",
+      "chunk_id": "machagrasp_fine_10_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "uffers from severe self-collision artifacts, we instead use DexGraspNet [6] for ShadowHand data.",
+      "chunk_id": "machagrasp_fine_11_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "sp stability, all datasets are filtered in simulation using Isaac Gym [24] (see Sec. IV-B), and only stable grasps are retained.",
+      "chunk_id": "machagrasp_fine_11_1",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "Building on the evaluation protocol of DexGraspNet [6] , we use Isaac Gym [24] with PhysX as the underlying ph",
+      "chunk_id": "machagrasp_fine_12_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "ding on the evaluation protocol of DexGraspNet [6] , we use Isaac Gym [24] with PhysX as the underlying physics engine to verify",
+      "chunk_id": "machagrasp_fine_12_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "loss_function",
+      "value": "MSE",
+      "context": "Comparing loss functions, the proposed KAL loss further boosts performance over MSE, improving the average success rate by 1.7%. This confirms the benefit of KAL i",
+      "chunk_id": "machagrasp_fine_13_2",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "More notably, MachaGrasp outperforms DexGraspNet across all hand types and achieves significantly better eff",
+      "chunk_id": "machagrasp_fine_13_2",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "Specifically, we take the wrist poses proposed by DFC [7] , DexGraspNet [6] , and DRO [5] , and apply MachaGrasp to generate the co",
+      "chunk_id": "machagrasp_fine_14_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "100 object",
+      "context": "the Robotiq3F dataset from MultiGripper-Grasp dataset [23] and randomly sample 100 objects, each with 10 grasp poses, as the training set for this new hand. The model is",
+      "chunk_id": "machagrasp_fine_15_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 grasp",
+      "context": "from MultiGripper-Grasp dataset [23] and randomly sample 100 objects, each with 10 grasp poses, as the training set for this new hand. The model is then fine-tuned with",
+      "chunk_id": "machagrasp_fine_15_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Gym",
+      "context": "hen fine-tuned with these limited examples and evaluated in Isaac Gym using the predicted wrist poses (following the same mapping",
+      "chunk_id": "machagrasp_fine_15_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "orld (Q4), we deploy the Robotiq 3-Finger hand mounted on a Franka Panda arm. Object point clouds are captured using three Int",
+      "chunk_id": "machagrasp_fine_16_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "4), we deploy the Robotiq 3-Finger hand mounted on a Franka Panda arm. Object point clouds are captured using three Intel Rea",
+      "chunk_id": "machagrasp_fine_16_0",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "metric",
+      "value": "87",
+      "unit": "%",
+      "context": "The system achieves a grasp success rate of 87%, demonstrating that MachaGrasp transfers effectively from simulation to the real world",
+      "chunk_id": "machagrasp_fine_16_1",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "training_size",
+      "value": "10 grasp",
+      "context": "We evaluate grasp performance on a set of 10 previously unseen objects, with 10 grasp attempts per object. Candidate poses are filtered based on Robotiq 3-Finger DoF",
+      "chunk_id": "machagrasp_fine_16_1",
+      "paper_id": "machagrasp"
+    },
+    {
+      "type": "dataset",
+      "value": "DexGraspNet",
+      "context": "aspIt! [22] | 92.4(+2.5) | -\u22c6 | 93.5(+1.5) | 91.6(+3.9) |\n| DexGraspNet [6] | 68.8(+4.7) | 90.7(+4.6) | 52.1(+6.7) | 63.7(+2.8) |\n|",
+      "chunk_id": "machagrasp_fine_19_0",
+      "paper_id": "machagrasp"
     }
   ],
   "miscgrasp": [
