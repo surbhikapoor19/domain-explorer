@@ -23,7 +23,10 @@ jobs:
     # One-time headroom: the FIRST build after the TEI/Chroma cache was added is a cache
     # miss, so it regenerates everything once to populate the cache. Cached builds
     # afterwards only process NEW papers and finish in minutes, well under this.
-    timeout-minutes: 240
+    # 350, not 240: the full new-paper ingestion runs 208-236 min, and a run cancelled at the cap
+    # never reaches its cache step — so the next full build starts cold and times out again.
+    # GitHub's hosted-runner ceiling is 6 h.
+    timeout-minutes: 350
 
     steps:
       - uses: actions/checkout@v4

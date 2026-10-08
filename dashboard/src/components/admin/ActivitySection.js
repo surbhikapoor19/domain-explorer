@@ -13,6 +13,7 @@ function runTone(run) {
   if (isActiveRun(run)) return 'running';
   if (run.conclusion === 'success') return 'success';
   if (run.conclusion === 'failure') return 'failed';
+  if (run.conclusion === 'cancelled' || run.conclusion === 'timed_out') return 'failed';
   return 'muted';
 }
 
@@ -21,6 +22,10 @@ function runStatusText(run) {
   if (run.status === 'in_progress') return 'Running';
   if (run.conclusion === 'success') return 'Passed';
   if (run.conclusion === 'failure') return 'Failed';
+  // A build stopped at the job time limit comes back as 'cancelled'; "completed" hid that.
+  if (run.conclusion === 'cancelled') return 'Stopped';
+  if (run.conclusion === 'timed_out') return 'Timed out';
+  if (run.conclusion === 'skipped') return 'Skipped';
   return run.status || 'Unknown';
 }
 
