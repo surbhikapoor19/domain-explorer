@@ -7,14 +7,17 @@ Usage:
     python dashboard/scripts/precompute.py
 
 Reads from: datasets/, backend/, chroma_db/, papers/
-Writes to:  dashboard/public/data/, dashboard/public/papers/
+Writes to:  dashboard/public/data/
+
+PDFs are deliberately NOT copied into the web root: they would be published as
+public static assets on the next deploy, and not every paper in a corpus is
+redistributable. papers-index.json records what the corpus holds instead.
 """
 import argparse
 import csv
 import io
 import json
 import os
-import shutil
 import sys
 from collections import Counter
 
@@ -634,18 +637,6 @@ def main():
 
     print("[9/9] Query keywords...")
     export_query_keywords(args.output)
-
-    # Copy PDFs
-    papers_dest = os.path.join(os.path.dirname(args.output), 'papers')
-    os.makedirs(papers_dest, exist_ok=True)
-    if os.path.isdir(args.papers):
-        for f in os.listdir(args.papers):
-            if f.endswith('.pdf'):
-                src = os.path.join(args.papers, f)
-                dst = os.path.join(papers_dest, f)
-                if not os.path.exists(dst):
-                    shutil.copy2(src, dst)
-        print(f"\nCopied PDFs to {papers_dest}")
 
     print("\nDone! All static JSON files generated.")
 

@@ -501,7 +501,7 @@
         <div class="annot-row"><div class="lbl">Attribute differences</div><div class="desc">One row per differing axis — gripper, sensor, backbone — each value shown for both methods. If the sensors differ, that <i>is</i> a reason two numbers diverge.</div></div>
         <div class="annot-row"><div class="lbl">Technique lineage</div><div class="desc">Derived from the graph: shared backbones and <code>builds_on</code> citations (“B builds-on A”). Two methods sharing a backbone vs. using different ones is a real explanatory signal.</div></div>
         <div class="annot-row"><div class="lbl">Citation stance</div><div class="desc">From the <code>cites.sentiment</code> field — e.g. one paper <em>differs-from</em> or <em>builds-on</em> another. It's a <i>relation/claim</i>, labeled as such, not measured truth.</div></div>
-        <div class="annot-row"><div class="lbl">Outperforms (stated only)</div><div class="desc">Only claims the paper actually stated, shown with its own evidence text — <b>no fabricated strength number.</b> Predicted (HGT) links are <b>gated off</b> until those metrics are trusted, so this panel never shows a guessed edge.</div></div>
+        <div class="annot-row"><div class="lbl">Outperforms (stated only)</div><div class="desc">Only claims the paper actually stated, shown with its own evidence text — <b>no fabricated strength number.</b> The panel never shows a guessed edge — only a relationship a paper actually claimed.</div></div>
       </div>
       <div class="callout tip"><span class="lab">The honest line</span>
         “Why they differ” explains a <i>disagreement</i> with grounded, sourced context — it does <b>not</b> pick a
@@ -539,8 +539,8 @@
         <div class="annot-row"><div class="lbl">Deep-links back</div><div class="desc">Answers emit a “View on Benchmarks →” permalink to the matching cell, and you can select a cell/column and “ask about selection.”</div></div>
       </div>
       <div class="callout"><span class="lab">What it will not do</span>
-        It won't crown a global #1, won't average across conditions, and won't use the (currently distrusted)
-        HGT-predicted links. If you ask “who's best overall?”, the honest answer is that the question doesn't have
+        It won't crown a global #1, won't average across conditions, and won't infer a relationship the papers
+        didn't state. If you ask “who's best overall?”, the honest answer is that the question doesn't have
         one — only per-cell comparisons do.</div>
     </section>
 
@@ -557,7 +557,7 @@
           <li style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">An <b>empty cell is a gap</b> (opportunity), never a zero.</li>
           <li style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">Low-quality rows are <b>flagged, not deleted</b> — quarantined records are counted and revealable.</li>
           <li class="no" style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">No <b>global rank.</b> No <b>cross-condition average.</b> No <b>pooled mean diamond.</b></li>
-          <li class="no" style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">No <b>invented facts</b> — unextracted fields read “not reported”; distrusted predicted links stay gated off.</li>
+          <li class="no" style="color:#eaf6f9;border-color:rgba(255,255,255,.15)">No <b>invented facts</b> — unextracted fields read “not reported”; nothing is inferred beyond what a paper states.</li>
         </ul>
       </div>
       <div class="callout tip" style="margin-top:16px"><span class="lab">In one sentence</span>

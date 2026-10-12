@@ -253,9 +253,9 @@
         <div class="card accent"><h4>3 · Trust the numbers</h4><p>Benchmark tables are extracted from the papers'
           own result tables, each number carrying an <b>evidence grade</b> (A/B/C), a consistency score, and a
           crop of the source table you can inspect.</p></div>
-        <div class="card accent"><h4>4 · Discover the non-obvious</h4><p>A graph neural network overlays
-          <b>predicted</b> relationships with confidence scores, surfacing connections the papers never stated
-          explicitly.</p></div>
+        <div class="card accent"><h4>4 · Discover the non-obvious</h4><p>The Research Gaps matrix cross-tabs any two
+          attributes from your CSV — empty cells are <b>coverage gaps</b>, combinations no item in the corpus
+          addresses yet.</p></div>
       </div>
 
       <div class="agnostic">
@@ -307,10 +307,9 @@
       <div class="panel active" id="v1">
         <h3>Graph Reasoning — “how are these connected, and what does the literature say?”</h3>
         <p>The landing view. A live <b>knowledge graph</b> of your corpus (items, papers, techniques, hardware,
-        authors, claims) you can pan, filter, and click into — zoom with <b>Cmd/Ctrl + scroll</b>. Toggle between the
-        documented <b>Knowledge Graph</b> and the model-inferred <b>Predicted Relationships</b> (with a
-        min-confidence slider). Below the graph sit cross-highlighting insight panels: Techniques, Timeline,
-        Benchmarks coverage, Most Referenced, and the Research Gaps matrix.</p>
+        authors, claims) you can pan, filter, and click into — zoom with <b>Cmd/Ctrl + scroll</b>. Below the graph sit
+        cross-highlighting insight panels: Techniques, Timeline, Benchmarks coverage, Most Referenced, and the
+        Research Gaps matrix.</p>
         <p><b>Click a value in any panel</b> — a technique, a timeline year, a most-referenced paper — and the graph
         <b>zooms to the matching cohort</b> while a selection bar names the basis (e.g. “Technique: TSDF — 7 methods
         use it: …”) and lists the co-selected methods, with a <b>Clear</b> button. Esc or a click on empty background
@@ -443,8 +442,8 @@
         <h3>Build actions, at a glance</h3>
         <table>
           <tr><th>Action</th><th>What it runs</th></tr>
-          <tr><td><b>Build</b></td><td>Full main pipeline (GROBID → RAG → knowledge graph → link prediction →
-            precompute). Re-parses PDFs. Use it for a new domain, or after adding/removing papers by hand.</td></tr>
+          <tr><td><b>Build</b></td><td>Full main pipeline (GROBID → RAG → knowledge graph → precompute).
+            Re-parses PDFs. Use it for a new domain, or after adding/removing papers by hand.</td></tr>
           <tr><td><b>Build benchmarks</b></td><td>The Docling + vision-fallback table extraction only. Cache-bounded
             (only new/changed PDFs re-extract) and safe to re-run any time — the superset guard never lets it
             publish a rebuild that drops an existing paper's results.</td></tr>
@@ -483,13 +482,6 @@
         paper) locks the selection: the graph <b>zooms to the highlighted cohort</b> and a selection bar names the
         basis and the co-selected methods, with a <b>Clear</b> button. Click empty space, press <code>Esc</code>,
         or re-click to clear.</div></details>
-
-      <details><summary>Predicted relationships (a graph neural network)</summary>
-        <div class="body">Beyond the relationships literally stated in papers, a heterogeneous graph neural network
-        (GraphSAGE&nbsp;+&nbsp;DistMult — see <a href="#pipeline" class="plain">Pipeline architecture</a>)
-        learns the structure of the corpus and <b>predicts</b> likely-but-undocumented links (e.g. “these two items
-        should probably be compared on the same benchmark”), each with a confidence score and a min-confidence slider. It's a
-        hypothesis generator, clearly separated from documented facts.</div></details>
 
       <details><summary>Provenance &amp; proof</summary>
         <div class="body">Every benchmark number carries its lineage: the source paper, the raw cell text, the table
@@ -655,7 +647,7 @@
         shares too little with the cited claim to plausibly support it — the copilot may have generalized across
         sources rather than restating one. That's surfaced, not hidden: a <b>supporting passage</b> badge means the
         source states the claim; a <b>weak match</b> badge means treat that citation with caution and check the full
-        paper (the Paper Evidence panel and its “View PDF” button are one click away).</div></details>
+        paper (the Paper Evidence panel is one click away).</div></details>
 
       <details><summary>A method I care about has no benchmark rows.</summary>
         <div class="body">Its papers report numbers using metrics or protocols outside the extracted result tables,
@@ -711,8 +703,6 @@
             <text x="417" y="46" text-anchor="middle">RAG: chunks + embeddings</text>
             <rect x="342" y="70" width="150" height="40" rx="8" fill="#fff" stroke="#dce6e9"/>
             <text x="417" y="94" text-anchor="middle">Knowledge graph</text>
-            <rect x="342" y="118" width="150" height="40" rx="8" fill="#fff" stroke="#dce6e9"/>
-            <text x="417" y="142" text-anchor="middle">Graph link prediction</text>
             <rect x="342" y="166" width="150" height="40" rx="8" fill="#fdf3f0" stroke="#d95a3e"/>
             <text x="417" y="184" text-anchor="middle" font-weight="700" fill="#b14b1f">Benchmark extraction</text>
             <text x="417" y="198" text-anchor="middle" fill="#b14b1f" font-size="10">verify → grade → results</text>
@@ -732,12 +722,11 @@
             <line x1="308" y1="182" x2="340" y2="186" stroke="#16657d" marker-end="url(#a2)"/>
             <line x1="492" y1="42" x2="526" y2="112" stroke="#16657d" marker-end="url(#a2)"/>
             <line x1="492" y1="90" x2="526" y2="118" stroke="#16657d" marker-end="url(#a2)"/>
-            <line x1="492" y1="138" x2="526" y2="126" stroke="#16657d" marker-end="url(#a2)"/>
             <line x1="492" y1="186" x2="526" y2="134" stroke="#16657d" marker-end="url(#a2)"/>
             <line x1="658" y1="123" x2="690" y2="123" stroke="#16657d" marker-end="url(#a2)"/>
           </g>
         </svg>
-        <figcaption>One command (<code>ingest_domain.py --domain &lt;name&gt;</code>) or the Admin “Build” button runs the main chain in CI (GROBID → RAG → graph → link prediction → precompute). Benchmark extraction runs <i>after</i> precompute and is a separate “Build benchmarks” action.</figcaption>
+        <figcaption>One command (<code>ingest_domain.py --domain &lt;name&gt;</code>) or the Admin “Build” button runs the main chain in CI (GROBID → RAG → graph → precompute). Benchmark extraction runs <i>after</i> precompute and is a separate “Build benchmarks” action.</figcaption>
       </figure>
       <details><summary>Step by step (with the method behind each stage)</summary><div class="body">
         <b>1 · Extract.</b> <a href="https://github.com/kermitt2/grobid">GROBID</a> parses born-digital text into
@@ -766,25 +755,14 @@
         (acronym- and punctuation-tolerant; the most specific matched alias wins) and become edges only when the
         claim actually asserts superiority (“outperforms”, “better than”, “surpasses”…) — a bare “unlike X” stays a
         comparison, not a win.<br/>
-        <b>4 · Graph link prediction.</b> A heterogeneous <a href="https://arxiv.org/abs/1706.02216">GraphSAGE</a>
-        graph neural network (made type-aware with PyG's <code>to_hetero</code>) plus a
-        <a href="https://arxiv.org/abs/1412.6575">DistMult</a> relation decoder learns the corpus structure and
-        predicts latent links — trained <b>per domain</b> on the schema exported from that domain's knowledge graph.
-        Bibliometric relations (authorship, citations…) stay in the graph for message passing but are <b>excluded
-        from the training loss</b>, and per-relation validation/test metrics (AUC, MRR, Hits@k) are persisted with
-        every trained model. The UI applies a support gate on top: predicted edges for any relation with fewer than
-        30 real training edges are hidden, and the view says how many were gated (“N low-evidence predictions
-        hidden”) — a model cannot learn a relation from a handful of examples, so those predictions are noise, not
-        insight. (The build step is named <code>hgt</code> for historical reasons; the architecture is
-        GraphSAGE&nbsp;+&nbsp;DistMult, not a Heterogeneous Graph Transformer.)<br/>
-        <b>5 · Precompute.</b> Writes all the static JSON the pages read (items, knowledge-graph, landing, etc.) to
+        <b>4 · Precompute.</b> Writes all the static JSON the pages read (items, knowledge-graph, landing, etc.) to
         <code>public/data-&lt;domain&gt;/</code>, served statically. It also computes a
         <a href="https://arxiv.org/abs/1802.03426">UMAP</a> 2-D layout +
         <a href="https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html">HDBSCAN</a> clusters for the
         <b>Explorer</b> similarity map — an optional legacy view, off by default, that a maintainer can toggle on
         only from Admin. <b>Clustering is not used for any inference</b>: not in the knowledge graph, not in the
         copilot.<br/>
-        <b>6 · Benchmarks.</b> Docling's parsed tables are the deterministic ground truth. When a vision key exists
+        <b>5 · Benchmarks.</b> Docling's parsed tables are the deterministic ground truth. When a vision key exists
         (<code>ANTHROPIC_API_KEY</code>, or <code>GROQ_API_KEY</code> via the Groq-vision fallback), a VLM reads each
         table <i>crop</i> for the semantics flat cell text loses (multi-level headers, units) — and <b>every VLM row
         is verified against Docling's extracted cell text</b>: a value not found in the cells is flagged unverified
@@ -810,11 +788,11 @@
       <details><summary>How a build runs (CI)</summary><div class="body">
         Domain builds run in GitHub Actions via <code>repository_dispatch</code> — the Admin panel's Build button
         sends the event. The payload selects the step chain:
-        <code>grobid,rag,kg,hgt,precompute</code> (main build) or <code>benchmark</code>; each step skips when its
+        <code>grobid,rag,kg,precompute</code> (main build) or <code>benchmark</code>; each step skips when its
         output already exists, and <code>client_payload.force</code> re-runs those steps anyway (e.g. after a
         pipeline code change). PDFs ship in the repo as <code>datasets/&lt;slug&gt;/papers.zip</code> via Git LFS;
         the workflow pulls and unzips them, runs <code>scripts/ingest_domain.py</code>, and commits the outputs
-        (TEI, extracted facts/entities, verified triples, the knowledge graph, the link-prediction schema, and all
+        (TEI, extracted facts/entities, verified triples, the knowledge graph, and all
         <code>dashboard/public/data-&lt;slug&gt;/</code> JSON) back to <code>main</code>. LLM-dependent steps —
         entity extraction, verified triples, Groq-vision table reading — require the <code>GROQ_API_KEY</code>
         Actions secret and degrade gracefully without it: they're skipped (or extraction runs born-digital-only),
@@ -901,13 +879,12 @@
         <tr><th>Layer</th><th>Tech</th><th>Used for</th></tr>
         <tr class="stack-row"><td>Frontend</td><td><a href="https://react.dev/">React</a> (<a href="https://create-react-app.dev/">CRA</a>)</td><td>the single-page dashboard; domain config via context.</td></tr>
         <tr class="stack-row"><td>Charts</td><td><a href="https://plotly.com/javascript/">Plotly.js</a></td><td>the similarity-map scatter in the optional legacy Explorer view. The Benchmarks page is plain HTML cards — deliberately no charts.</td></tr>
-        <tr class="stack-row"><td>Graph</td><td><a href="https://js.cytoscape.org/">Cytoscape.js</a></td><td>the interactive knowledge graph + predicted-edge view.</td></tr>
+        <tr class="stack-row"><td>Graph</td><td><a href="https://js.cytoscape.org/">Cytoscape.js</a></td><td>the interactive knowledge graph.</td></tr>
         <tr class="stack-row"><td>Hosting</td><td><a href="https://vercel.com/docs">Vercel</a></td><td>static site + serverless API functions (admin, chat proxy).</td></tr>
         <tr class="stack-row"><td>Builds</td><td><a href="https://docs.github.com/en/actions">GitHub Actions</a></td><td>per-domain ingestion pipeline triggered from Admin via <code>repository_dispatch</code>; PDFs via Git LFS; outputs committed back to main.</td></tr>
         <tr class="stack-row"><td>Text extraction</td><td><a href="https://github.com/kermitt2/grobid">GROBID</a> (<a href="https://tei-c.org/">TEI</a>)</td><td>born-digital text, sections, citations.</td></tr>
         <tr class="stack-row"><td>Table extraction</td><td><a href="https://github.com/docling-project/docling">Docling</a> + VLM (Claude vision, or Groq vision fallback)</td><td>Docling's cell text is the ground truth (with coordinates → croppable numbers); the VLM reads each crop for header/unit semantics, and every VLM row is verified against the cells.</td></tr>
         <tr class="stack-row"><td>Embeddings / RAG</td><td><a href="https://sbert.net/">sentence-transformers</a> (<a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">all-MiniLM-L6-v2</a>) + <a href="https://www.trychroma.com/">Chroma</a>; <a href="https://www.staff.city.ac.uk/~sbrp622/papers/foundations_bm25_review.pdf">BM25</a> at query time</td><td>semantic + lexical chunk retrieval for the copilot.</td></tr>
-        <tr class="stack-row"><td>Graph ML</td><td><a href="https://github.com/pyg-team/pytorch_geometric">PyTorch Geometric</a> (<a href="https://arxiv.org/abs/1706.02216">GraphSAGE</a> + <a href="https://arxiv.org/abs/1412.6575">DistMult</a>)</td><td>predicting latent relationships between items.</td></tr>
         <tr class="stack-row"><td>Copilot LLM</td><td>BYOK (<a href="https://huggingface.co/docs/inference-providers/index">HF</a> / <a href="https://openrouter.ai/">OpenRouter</a> / <a href="https://groq.com/">Groq</a> / custom) or server proxy</td><td>final answer synthesis from assembled evidence.</td></tr>
       </table>
     </section>
@@ -932,7 +909,7 @@
             and datasets to read from result tables). The copilot's ranking vocabulary is then
             <i>auto-derived</i> from those metric aliases — nothing extra to type. Optionally paste the domain's
             <b>Google&nbsp;Drive folder</b> of CSV exports to enable the nightly auto-sync (see <i>Keep it live</i> below).</li>
-        <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → link prediction → precompute) and commits the
+        <li>Hit <b>Build</b>. CI runs the main chain (extraction → RAG → graph → precompute) and commits the
             precomputed JSON back. <b>Benchmarks are a separate <i>Build benchmarks</i> action</b> (the Docling +
             VLM-verified table extractor, run after precompute), so trigger that too once the main build succeeds.</li>
         <li>When both finish, your domain is a first-class, interactive view — the copilot, benchmarks, and graph
@@ -1003,9 +980,6 @@
 
       <h3>Graph &amp; machine learning</h3>
       <ul class="refs">
-        <li><a class="nm" href="https://arxiv.org/abs/1706.02216">GraphSAGE</a><span class="ds">The graph neural network that learns the corpus structure; applied to the typed knowledge graph (via PyG's <code>to_hetero</code>) to predict latent links. (Hamilton, Ying &amp; Leskovec, 2017.)</span></li>
-        <li><a class="nm" href="https://arxiv.org/abs/1412.6575">DistMult</a><span class="ds">The relation decoder that scores how likely a typed edge (e.g. “outperforms”) is between two nodes. (Yang et al., 2015.)</span></li>
-        <li><a class="nm" href="https://github.com/pyg-team/pytorch_geometric">PyTorch Geometric (PyG)</a><span class="ds">The graph-deep-learning framework the link-prediction model is built and trained in, on top of <a href="https://pytorch.org/" class="plain">PyTorch</a>.</span></li>
         <li><a class="nm" href="https://arxiv.org/abs/1802.03426">UMAP</a><span class="ds">Dimensionality reduction that projects items into an optional 2-D similarity map computed during precompute. (McInnes, Healy &amp; Melville)</span></li>
         <li><a class="nm" href="https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html">HDBSCAN</a><span class="ds">Density-based clustering that colours the natural families of items on that map.</span></li>
       </ul>
@@ -1013,7 +987,7 @@
       <h3>App &amp; infrastructure</h3>
       <ul class="refs">
         <li><a class="nm" href="https://react.dev/">React</a> (<a class="nm" href="https://create-react-app.dev/">Create React App</a>)<span class="ds">The single-page dashboard UI.</span></li>
-        <li><a class="nm" href="https://js.cytoscape.org/">Cytoscape.js</a><span class="ds">Renders the interactive knowledge graph and the predicted-edge view.</span></li>
+        <li><a class="nm" href="https://js.cytoscape.org/">Cytoscape.js</a><span class="ds">Renders the interactive knowledge graph.</span></li>
         <li><a class="nm" href="https://plotly.com/javascript/">Plotly.js</a><span class="ds">Draws the similarity-map scatter in the optional legacy Explorer view (off by default; toggleable from Admin).</span></li>
         <li><a class="nm" href="https://vercel.com/docs">Vercel</a><span class="ds">Hosts the static site plus the serverless API functions (admin, chat proxy).</span></li>
         <li><a class="nm" href="https://docs.github.com/en/actions">GitHub Actions</a><span class="ds">Runs the per-domain ingestion pipeline triggered from the Admin page.</span></li>

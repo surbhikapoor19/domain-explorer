@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Tooltip from './Tooltip';
-import PdfViewer from './PdfViewer';
 import { HighlightedText } from '../highlighter';
 import KGGraphViz from './KGGraphViz';
 import KGNodeDetail from './KGNodeDetail';
@@ -93,7 +92,6 @@ function EquationsPanel({ equations }) {
 /* ─── PAPER EVIDENCE ─── */
 function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onFilterContent, openPaperId }) {
   const [expandedKey, setExpandedKey] = useState(null);
-  const [pdfOpen, setPdfOpen] = useState(null);
   const itemRefs = useRef({});
 
   const roles = useMemo(() => {
@@ -189,11 +187,6 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
                 <>
                   <div className="gr-evidence-full">{fullText}</div>
                   <div className="gr-evidence-actions">
-                    {cite.paper_id && (
-                      <button className="gr-evidence-pdf" onClick={() => setPdfOpen({ paperId: cite.paper_id, page: Math.max(1, cite.page || 1) })}>
-                        View PDF
-                      </button>
-                    )}
                     <button className="gr-evidence-toggle" onClick={() => setExpandedKey(null)}>Collapse</button>
                   </div>
                 </>
@@ -204,9 +197,6 @@ function EvidencePanel({ citations, filterRole, filterContent, onFilterRole, onF
           );
         })}
       </div>
-      {pdfOpen && (
-        <PdfViewer paperId={pdfOpen.paperId} page={pdfOpen.page} keywords={[]} onClose={() => setPdfOpen(null)} />
-      )}
     </div>
   );
 }

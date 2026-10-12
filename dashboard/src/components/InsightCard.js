@@ -1,49 +1,9 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import InsightBullets from './InsightBullets';
-import PdfViewer from './PdfViewer';
 import { useDomainConfig } from '../DomainContext';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-import { expandKeywordsWithAcronyms } from '../acronyms';
 import { relativePct, maxScore } from '../lib/relevance';
-
-const STOP_WORDS = new Set([
-  'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-  'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
-  'should', 'may', 'might', 'can', 'shall', 'to', 'of', 'in', 'for',
-  'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during',
-  'before', 'after', 'above', 'below', 'between', 'and', 'but', 'or',
-  'not', 'no', 'nor', 'so', 'yet', 'both', 'each', 'all', 'any', 'few',
-  'more', 'most', 'other', 'some', 'such', 'than', 'too', 'very', 'just',
-  'about', 'up', 'out', 'if', 'then', 'also', 'how', 'what', 'which',
-  'who', 'when', 'where', 'why', 'this', 'that', 'these', 'those',
-  'it', 'its', 'they', 'them', 'their', 'we', 'us', 'our', 'i', 'me',
-  'my', 'you', 'your', 'he', 'she', 'him', 'her', 'his', 'used', 'using',
-  'across', 'methods', 'method', 'approach', 'based', 'use',
-  // Domain stop words
-  'grasp', 'grasping', 'robot', 'robotic', 'robotics',
-  'planning', 'manipulation', 'object', 'objects', 'paper', 'papers',
-  'model', 'network', 'learning', 'data', 'training', 'system',
-  'results', 'performance', 'different', 'proposed',
-  'latest', 'recent', 'best', 'most', 'first', 'last', 'next',
-]);
-
-function extractKeywords(query) {
-  if (!query) return [];
-  const words = query.toLowerCase()
-    .replace(/[?!.,;:'"()]/g, '')
-    .split(/\s+/)
-    .filter(w => w.length > 2 && !STOP_WORDS.has(w));
-  const parts = query.toLowerCase().replace(/[?!.,;:'"()]/g, '').split(/\s+/);
-  const phrases = [];
-  for (let i = 0; i < parts.length - 1; i++) {
-    const bigram = parts[i] + ' ' + parts[i + 1];
-    if (!STOP_WORDS.has(parts[i]) && !STOP_WORDS.has(parts[i + 1])) {
-      phrases.push(bigram);
-    }
-  }
-  return [...phrases, ...words];
-}
 
 function cleanPdfText(text) {
   if (!text) return '';
@@ -134,33 +94,8 @@ function formatPaperId(id) {
   return s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function PaperEvidencePanel({ citations, query, kgContext }) {
+function PaperEvidencePanel({ citations }) {
   const [showAll, setShowAll] = useState(false);
-  const [pdfOpen, setPdfOpen] = useState(null);
-  const baseKeywords = useMemo(() => expandKeywordsWithAcronyms(extractKeywords(query)), [query]);
-
-  // Build KG-powered keywords: extract technique names, claim terms, section names from KG context
-  const keywords = useMemo(() => {
-    const kgTerms = new Set(baseKeywords.map(k => k.toLowerCase()));
-    if (kgContext) {
-      // Extract technique/method names from the KG context text
-      const lines = kgContext.split('\n');
-      lines.forEach(line => {
-        // Pull out capitalized multi-word names (PointNet++, Contact-GraspNet, Binary CE, etc.)
-        const matches = line.match(/\b([A-Z][a-zA-Z]+(?:[-+]?\s*[A-Z][a-zA-Z]*)*(?:\+\+)?)\b/g);
-        if (matches) matches.forEach(m => { if (m.length >= 3 && m.length <= 30) kgTerms.add(m.toLowerCase()); });
-      });
-    }
-    // Also add technique/claim terms from citations for this specific paper
-    if (citations) {
-      citations.forEach(cit => {
-        if (cit.domain_topics) {
-          cit.domain_topics.split(', ').forEach(t => { if (t.trim().length >= 3) kgTerms.add(t.trim().toLowerCase()); });
-        }
-      });
-    }
-    return [...kgTerms].filter(k => k.length >= 3);
-  }, [baseKeywords, kgContext, citations]);
 
   if (!citations || citations.length === 0) return null;
 
@@ -202,28 +137,6 @@ function PaperEvidencePanel({ citations, query, kgContext }) {
             {paper.snippet && (
               <div className="evidence-paper-snippet">{paper.snippet.substring(0, 150)}...</div>
             )}
-            <button
-              className="view-pdf-btn"
-              onClick={() => {
-                // Build per-paper keywords: global KG keywords + this paper's specific topics
-                const paperKeywords = [...keywords];
-                if (paper.section) paperKeywords.push(paper.section.toLowerCase());
-                if (paper.domain_topics) {
-                  paper.domain_topics.split(', ').forEach(t => {
-                    if (t.trim().length >= 3) paperKeywords.push(t.trim().toLowerCase());
-                  });
-                }
-                // Deduplicate
-                const unique = [...new Set(paperKeywords)];
-                setPdfOpen({
-                  paperId: paper.paper_id,
-                  page: Math.max(1, paper.page || 1),
-                  keywords: unique,
-                });
-              }}
-            >
-              View PDF
-            </button>
           </div>
         ))}
         {papers.length > 5 && !showAll && (
@@ -232,15 +145,6 @@ function PaperEvidencePanel({ citations, query, kgContext }) {
           </button>
         )}
       </div>
-
-      {pdfOpen && (
-        <PdfViewer
-          paperId={pdfOpen.paperId}
-          page={pdfOpen.page}
-          keywords={pdfOpen.keywords}
-          onClose={() => setPdfOpen(null)}
-        />
-      )}
     </div>
   );
 }
@@ -295,7 +199,7 @@ export default function InsightCard({ suggestion, weights, query, data, termDict
         />
       </div>
 
-      <PaperEvidencePanel citations={suggestion.ragCitations} query={query} kgContext={suggestion.kgContext} />
+      <PaperEvidencePanel citations={suggestion.ragCitations} />
 
       <div className="insight-actions-summary">
         {suggestion.filterMethods && (
