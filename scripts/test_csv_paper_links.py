@@ -18,6 +18,7 @@ No external network: a local stdlib HTTP server serves every fixture, the OA
 resolvers are disabled, and the polite inter-request delay is zeroed.
 """
 import http.server
+import re
 import json
 import os
 import socketserver
@@ -460,7 +461,43 @@ class RoleSchemaAcceptsPaperUrl(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------- #
-# 7. The two pre-existing sources are untouched                               #
+# 7. The provenance survives the build                                        #
+# --------------------------------------------------------------------------- #
+class ProvenanceIsCommitted(unittest.TestCase):
+    """`pdf-sources.json` is the only record of WHERE each PDF came from.
+
+    `datasets/*/chroma_db/` is gitignored, so the commit step force-adds the handful
+    of chroma files that must persist. pdf-sources.json was missing from that list, so
+    every build wrote it and then threw it away — and
+    `benchmarks/extraction/run_extraction.py` reads it to label a paper 'fetched' vs
+    'committed' in the audit manifest, which silently degraded to unlabelled.
+    """
+
+    WORKFLOW = REPO / '.github' / 'workflows' / 'domain-build.yml'
+
+    def test_commit_step_force_adds_pdf_sources(self):
+        body = self.WORKFLOW.read_text(encoding='utf-8')
+        self.assertRegex(
+            body,
+            r'git add -f "datasets/\$\{SLUG\}/chroma_db/pdf-sources\.json"',
+            'the commit step must force-add chroma_db/pdf-sources.json (the dir is '
+            'gitignored), otherwise the PDF provenance is discarded every build')
+
+    def test_each_chroma_add_is_forced_and_single_pathspec(self):
+        # Same trap as the TEI add: a plain `git add` silently no-ops on an ignored
+        # path, and `git add A B` stages nothing when either pathspec misses.
+        for line in self.WORKFLOW.read_text(encoding='utf-8').splitlines():
+            s = line.strip()
+            if s.startswith('git add') and 'chroma_db/' in s:
+                with self.subTest(line=s):
+                    self.assertRegex(s, r'^git add\s+-f\b')
+                    paths = [t for t in re.sub(r'2>/dev/null.*$', '', s).split()[2:]
+                             if not t.startswith('-')]
+                    self.assertEqual(len(paths), 1, f'one pathspec per add, got {paths}')
+
+
+# --------------------------------------------------------------------------- #
+# 8. The two pre-existing sources are untouched                               #
 # --------------------------------------------------------------------------- #
 class ExistingSourcesStillWork(unittest.TestCase):
     def test_classify_drive_folder(self):
