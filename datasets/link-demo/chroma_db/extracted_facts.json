@@ -1,0 +1,1042 @@
+{
+  "crisp": [
+    {
+      "type": "training_size",
+      "value": "1 object",
+      "context": "we have also introduced slack variables v, w, t to reformulate the nonsmooth \u2113 1 objective as smooth constraints. Evidently, the subproblem ( 10 ) is a standard convex",
+      "chunk_id": "crisp_mid_2_1",
+      "paper_id": "crisp"
+    },
+    {
+      "type": "training_size",
+      "value": "1 object",
+      "context": "we have also introduced slack variables v, w, t to reformulate the nonsmooth \u2113 1 objective as smooth constraints. Evidently, the subproblem ( 10 ) is a standard convex",
+      "chunk_id": "crisp_fine_2_7",
+      "paper_id": "crisp"
+    }
+  ],
+  "curobo": [
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ew instances of using our approach is shown here, where the Franka Panda robot moves a grasped object around obstacles to plac",
+      "chunk_id": "curobo_coarse_abstract",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "ances of using our approach is shown here, where the Franka Panda robot moves a grasped object around obstacles to place in a",
+      "chunk_id": "curobo_coarse_abstract",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "r. We generate bounding spheres for the robots using NVIDIA Isaac Sim's sphere generator (website). On the right, we show the qua",
+      "chunk_id": "curobo_coarse_sec_4",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "motionbenchmaker",
+      "context": "ch to existing methods on two motion planning datasets, the motionbenchmaker dataset [52] containing 800 problems and the mpinets datase",
+      "chunk_id": "curobo_coarse_sec_12",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ems. Both datasets contain motion planning problems for the Franka Emika Panda robot, which has 7 actuated joints. The dataset",
+      "chunk_id": "curobo_coarse_sec_12",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "asets contain motion planning problems for the Franka Emika Panda robot, which has 7 actuated joints. The datasets span 12 un",
+      "chunk_id": "curobo_coarse_sec_12",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "99.8",
+      "unit": "%",
+      "context": "imization methods, cuRobo only failed on 5 problems while Tesseract failed on 38 problems, giving a success rate of 99.8% and 98.53% respectively. cuRobo and cuRobo-GP failed on the same set of five p",
+      "chunk_id": "curobo_coarse_sec_13",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ous collision detector [24] , Open Motion Planning Library (OMPL) [54] for geometric planning, and TrajOpt [9] for trajector",
+      "chunk_id": "curobo_coarse_sec_13",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "motionbenchmaker",
+      "context": "in Fig. 7 , We plot the success of different methods on the motionbenchmaker and mpinets dataset in these plots. On the left we plot the",
+      "chunk_id": "curobo_coarse_sec_13",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ted geometric planner is 101\u00d7 faster on average compared to OMPL's implementation of RRTConnect available in Tesseract. We o",
+      "chunk_id": "curobo_coarse_sec_16",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "planner introduced in Section 5 which we call cuRobo-GP to OMPL's RRTConnect implementation in Tesseract, which we call Tes",
+      "chunk_id": "curobo_coarse_sec_17",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "panda",
+      "context": "ision checking. We chose an instance of the bookshelf-small-panda scene from motion benchmaker [52] for the collision checkin",
+      "chunk_id": "curobo_coarse_sec_19",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "account for collisions, we perform rejection sampling with PyBullet, allowing 10 reattempts. For all cuRobo IK queries, we run",
+      "chunk_id": "curobo_coarse_sec_19",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "un at 15Hz while also sharing the GPU resources with NVIDIA Isaac Sim. On the right we show our solver also reasoning about world",
+      "chunk_id": "curobo_coarse_sec_20",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "e see that our distance queries is upto 16,000x faster than PyBullet as the batch size grows to 100k. Note that the y-axis is in",
+      "chunk_id": "curobo_coarse_sec_20",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "etric planning can lead to a 101\u00d7 speedup compared to using OMPL's RRTConnect algorithm. Our implementation of collision-fre",
+      "chunk_id": "curobo_coarse_sec_21",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "ros",
+      "context": "ORIN AGX which is running a PREEMPT RT kernel and uses the ros driver from universal robots for communication. We run cuRo",
+      "chunk_id": "curobo_coarse_sec_22",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "otion generation for a dual arm UR10e robot setup in NVIDIA Isaac Sim and preliminary results are promising as cuRobo finds colli",
+      "chunk_id": "curobo_coarse_sec_23",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "38",
+      "unit": "%",
+      "context": "that a naive implementation of collision cost with a gradient based optimizer and 1 seed achieves a success rate of 38%",
+      "chunk_id": "curobo_coarse_sec_26",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "panda",
+      "context": "we ran motion generation on the 100 problems from the cage-panda environment with varying number of trajectory optimization",
+      "chunk_id": "curobo_coarse_sec_27",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "75.69",
+      "unit": "%",
+      "context": ", noisy-ls-1, and noisy-ls all have a success rate higher than 70%, with noisyls having the highest success rate of 75.69%. While most of these techniques lead to good success rate, the impact of line",
+      "chunk_id": "curobo_coarse_sec_28",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "isons we use a collision margin of -1.5cm. In addition, the OMPL planning phase failed to find solutions with an offset of -",
+      "chunk_id": "curobo_coarse_sec_44",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "problems. For motion planning problems in Table under Pick Panda, we generate seeds for trajectory optimization from our geo",
+      "chunk_id": "curobo_coarse_sec_45",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "hat led to design changes in cuRobo library. He also wrote parts of the paper.\n\nAdam Fishman implemented the evaluator, metrics, and provided a format for loading d",
+      "chunk_id": "curobo_coarse_sec_59",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "pybullet",
+      "context": "ovided a format for loading datasets. He also evaluated the pybullet-RRTConnect and pybullet-AITStar baselines.\n\nCaelan Garett p",
+      "chunk_id": "curobo_coarse_sec_59",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "s TO seeds Time-steps Force Graph |\n|---|\n| Bookshelf Small Panda |\n| Bookshelf Tall Panda |\n| Bookshelf Thin Panda |\n| Box P",
+      "chunk_id": "curobo_coarse_sec_68",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "Figure 3 : - Figure3: A sphere representation of the Franka Panda is shown in the left. We also visualize the endeffect",
+      "chunk_id": "curobo_coarse_figures",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "Figure 3 : - Figure3: A sphere representation of the Franka Panda is shown in the left. We also visualize the endeffector fra",
+      "chunk_id": "curobo_coarse_figures",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "r. We generate bounding spheres for the robots using NVIDIA Isaac Sim's sphere generator (website).\nFigure 5 : - Figure 5: Motion",
+      "chunk_id": "curobo_coarse_figures",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "motionbenchmaker",
+      "context": "- Figure6: We plot the success of different methods on the motionbenchmaker and mpinets dataset in these plots. On the left we plot the",
+      "chunk_id": "curobo_coarse_figures",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "e see that our distance queries is upto 16,000x faster than PyBullet as the batch size grows to 100k. Note that the y-axis is in",
+      "chunk_id": "curobo_coarse_figures",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "es to fit spheres to a mesh. We show three objects from the YCB dataset [93] in the third column. The last three columns sh",
+      "chunk_id": "curobo_coarse_figures",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "r. We generate bounding spheres for the robots using NVIDIA Isaac Sim's sphere generator (website). On the right, we show the qua",
+      "chunk_id": "curobo_mid_4_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "motionbenchmaker",
+      "context": "ch to existing methods on two motion planning datasets, the motionbenchmaker dataset [52] containing 800 problems and the mpinets datase",
+      "chunk_id": "curobo_mid_12_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ems. Both datasets contain motion planning problems for the Franka Emika Panda robot, which has 7 actuated joints. The dataset",
+      "chunk_id": "curobo_mid_12_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "asets contain motion planning problems for the Franka Emika Panda robot, which has 7 actuated joints. The datasets span 12 un",
+      "chunk_id": "curobo_mid_12_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "99.8",
+      "unit": "%",
+      "context": "imization methods, cuRobo only failed on 5 problems while Tesseract failed on 38 problems, giving a success rate of 99.8% and 98.53% respectively. cuRobo and cuRobo-GP failed on the same set of five p",
+      "chunk_id": "curobo_mid_13_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ous collision detector [24] , Open Motion Planning Library (OMPL) [54] for geometric planning, and TrajOpt [9] for trajector",
+      "chunk_id": "curobo_mid_13_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "motionbenchmaker",
+      "context": "in Fig. 7 , We plot the success of different methods on the motionbenchmaker and mpinets dataset in these plots. On the left we plot the",
+      "chunk_id": "curobo_mid_13_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "at is extensively used in the robotics community, including MoveIt [56] . However, this time parameterization technique does n",
+      "chunk_id": "curobo_mid_14_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "is beyond the 15 rad.s -2 acceleration limit we set for the Franka Panda robot. cuRobo has the smallest maximum acceleration a",
+      "chunk_id": "curobo_mid_14_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "nd the 15 rad.s -2 acceleration limit we set for the Franka Panda robot. cuRobo has the smallest maximum acceleration across",
+      "chunk_id": "curobo_mid_14_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ted geometric planner is 101\u00d7 faster on average compared to OMPL's implementation of RRTConnect available in Tesseract. We o",
+      "chunk_id": "curobo_mid_16_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "planner introduced in Section 5 which we call cuRobo-GP to OMPL's RRTConnect implementation in Tesseract, which we call Tes",
+      "chunk_id": "curobo_mid_17_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "panda",
+      "context": "ision checking. We chose an instance of the bookshelf-small-panda scene from motion benchmaker [52] for the collision checkin",
+      "chunk_id": "curobo_mid_19_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "account for collisions, we perform rejection sampling with PyBullet, allowing 10 reattempts. For all cuRobo IK queries, we run",
+      "chunk_id": "curobo_mid_19_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "un at 15Hz while also sharing the GPU resources with NVIDIA Isaac Sim. On the right we show our solver also reasoning about world",
+      "chunk_id": "curobo_mid_20_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "e see that our distance queries is upto 16,000x faster than PyBullet as the batch size grows to 100k. Note that the y-axis is in",
+      "chunk_id": "curobo_mid_20_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "etric planning can lead to a 101\u00d7 speedup compared to using OMPL's RRTConnect algorithm. Our implementation of collision-fre",
+      "chunk_id": "curobo_mid_21_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "ros",
+      "context": "ORIN AGX which is running a PREEMPT RT kernel and uses the ros driver from universal robots for communication. We run cuRo",
+      "chunk_id": "curobo_mid_22_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "otion generation for a dual arm UR10e robot setup in NVIDIA Isaac Sim and preliminary results are promising as cuRobo finds colli",
+      "chunk_id": "curobo_mid_23_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "38",
+      "unit": "%",
+      "context": "that a naive implementation of collision cost with a gradient based optimizer and 1 seed achieves a success rate of 38%",
+      "chunk_id": "curobo_mid_26_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "panda",
+      "context": "we ran motion generation on the 100 problems from the cage-panda environment with varying number of trajectory optimization",
+      "chunk_id": "curobo_mid_27_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "75.69",
+      "unit": "%",
+      "context": ", noisy-ls-1, and noisy-ls all have a success rate higher than 70%, with noisyls having the highest success rate of 75.69%. While most of these techniques lead to good success rate, the impact of line",
+      "chunk_id": "curobo_mid_28_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "isons we use a collision margin of -1.5cm. In addition, the OMPL planning phase failed to find solutions with an offset of -",
+      "chunk_id": "curobo_mid_44_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "problems. For motion planning problems in Table under Pick Panda, we generate seeds for trajectory optimization from our geo",
+      "chunk_id": "curobo_mid_45_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac sim",
+      "context": "our stack to work inside simulation engines such as NVIDIA Isaac sim without requiring extensive API integration as we can direc",
+      "chunk_id": "curobo_mid_49_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac sim",
+      "context": "n cost terms, we leverage an existing utility from NVIDIA's Isaac sim (sphere-generator). The sphere-generator gives a UI for man",
+      "chunk_id": "curobo_mid_49_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "es to fit spheres to a mesh. We show three objects from the YCB dataset [93] in the third column. The last three columns sh",
+      "chunk_id": "curobo_mid_49_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "optimizer",
+      "value": "Adam",
+      "context": "that led to design changes in cuRobo library. He also wrote parts of the paper. Adam Fishman implemented the evaluator, metrics, and provided a format for loading d",
+      "chunk_id": "curobo_mid_59_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "pybullet",
+      "context": "ovided a format for loading datasets. He also evaluated the pybullet-RRTConnect and pybullet-AITStar baselines. Caelan Garett pr",
+      "chunk_id": "curobo_mid_59_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "s TO seeds Time-steps Force Graph |\n|---|\n| Bookshelf Small Panda |\n| Bookshelf Tall Panda |\n| Bookshelf Thin Panda |\n| Box P",
+      "chunk_id": "curobo_mid_68_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "r. We generate bounding spheres for the robots using NVIDIA Isaac Sim's sphere generator (website). On the right, we show the qua",
+      "chunk_id": "curobo_fine_4_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "motionbenchmaker",
+      "context": "ch to existing methods on two motion planning datasets, the motionbenchmaker dataset [52] containing 800 problems and the mpinets datase",
+      "chunk_id": "curobo_fine_12_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "ems. Both datasets contain motion planning problems for the Franka Emika Panda robot, which has 7 actuated joints. The dataset",
+      "chunk_id": "curobo_fine_12_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "asets contain motion planning problems for the Franka Emika Panda robot, which has 7 actuated joints. The datasets span 12 un",
+      "chunk_id": "curobo_fine_12_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "99.8",
+      "unit": "%",
+      "context": "imization methods, cuRobo only failed on 5 problems while Tesseract failed on 38 problems, giving a success rate of 99.8% and 98.53% respectively. cuRobo and cuRobo-GP failed on the same set of five p",
+      "chunk_id": "curobo_fine_13_2",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "motionbenchmaker",
+      "context": "in Fig. 7 , We plot the success of different methods on the motionbenchmaker and mpinets dataset in these plots. On the left we plot the",
+      "chunk_id": "curobo_fine_13_2",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "at is extensively used in the robotics community, including MoveIt [56] . However, this time parameterization technique does n",
+      "chunk_id": "curobo_fine_14_2",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "is beyond the 15 rad.s -2 acceleration limit we set for the Franka Panda robot. cuRobo has the smallest maximum acceleration a",
+      "chunk_id": "curobo_fine_14_5",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "nd the 15 rad.s -2 acceleration limit we set for the Franka Panda robot. cuRobo has the smallest maximum acceleration across",
+      "chunk_id": "curobo_fine_14_5",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ted geometric planner is 101\u00d7 faster on average compared to OMPL's implementation of RRTConnect available in Tesseract. We o",
+      "chunk_id": "curobo_fine_16_2",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "planner introduced in Section 5 which we call cuRobo-GP to OMPL's RRTConnect implementation in Tesseract, which we call Tes",
+      "chunk_id": "curobo_fine_17_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "panda",
+      "context": "ision checking. We chose an instance of the bookshelf-small-panda scene from motion benchmaker [52] for the collision checkin",
+      "chunk_id": "curobo_fine_19_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "account for collisions, we perform rejection sampling with PyBullet, allowing 10 reattempts. For all cuRobo IK queries, we run",
+      "chunk_id": "curobo_fine_19_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "un at 15Hz while also sharing the GPU resources with NVIDIA Isaac Sim. On the right we show our solver also reasoning about world",
+      "chunk_id": "curobo_fine_20_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "e see that our distance queries is upto 16,000x faster than PyBullet as the batch size grows to 100k. Note that the y-axis is in",
+      "chunk_id": "curobo_fine_20_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "etric planning can lead to a 101\u00d7 speedup compared to using OMPL's RRTConnect algorithm. Our implementation of collision-fre",
+      "chunk_id": "curobo_fine_21_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "ros",
+      "context": "ORIN AGX which is running a PREEMPT RT kernel and uses the ros driver from universal robots for communication. We run cuRo",
+      "chunk_id": "curobo_fine_22_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "ROS",
+      "context": "f 58ms and 68ms between when a trajectory is sent to the UR ROS driver and when the robot starts moving on the UR5e and UR1",
+      "chunk_id": "curobo_fine_22_4",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac Sim",
+      "context": "otion generation for a dual arm UR10e robot setup in NVIDIA Isaac Sim and preliminary results are promising as cuRobo finds colli",
+      "chunk_id": "curobo_fine_23_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "38",
+      "unit": "%",
+      "context": "that a naive implementation of collision cost with a gradient based optimizer and 1 seed achieves a success rate of 38%",
+      "chunk_id": "curobo_fine_26_3",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "panda",
+      "context": "we ran motion generation on the 100 problems from the cage-panda environment with varying number of trajectory optimization",
+      "chunk_id": "curobo_fine_27_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "metric",
+      "value": "75.69",
+      "unit": "%",
+      "context": ", noisy-ls-1, and noisy-ls all have a success rate higher than 70%, with noisyls having the highest success rate of 75.69%. While most of these techniques lead to good success rate, the impact of line",
+      "chunk_id": "curobo_fine_28_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "isons we use a collision margin of -1.5cm. In addition, the OMPL planning phase failed to find solutions with an offset of -",
+      "chunk_id": "curobo_fine_44_1",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "problems. For motion planning problems in Table under Pick Panda, we generate seeds for trajectory optimization from our geo",
+      "chunk_id": "curobo_fine_45_0",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac sim",
+      "context": "our stack to work inside simulation engines such as NVIDIA Isaac sim without requiring extensive API integration as we can direc",
+      "chunk_id": "curobo_fine_49_3",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Isaac sim",
+      "context": "n cost terms, we leverage an existing utility from NVIDIA's Isaac sim (sphere-generator). The sphere-generator gives a UI for man",
+      "chunk_id": "curobo_fine_49_4",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "YCB",
+      "context": "es to fit spheres to a mesh. We show three objects from the YCB dataset [93] in the third column. The last three columns sh",
+      "chunk_id": "curobo_fine_49_4",
+      "paper_id": "curobo"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "s TO seeds Time-steps Force Graph |\n|---|\n| Bookshelf Small Panda |\n| Bookshelf Tall Panda |\n| Bookshelf Thin Panda |\n| Box P",
+      "chunk_id": "curobo_fine_68_0",
+      "paper_id": "curobo"
+    }
+  ],
+  "vamp": [
+    {
+      "type": "metric",
+      "value": "40",
+      "unit": "",
+      "context": "Note that even the slowest number in Table I , 25 ms for the Fetch's 95% quantile, achieves a 40 Hz planning rate",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "t two baselines which use the Open Motion Planning Library (OMPL) [17] : MoveIt [73] through Robowflex [74] (MoveIt/OMPL) an",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "es which use the Open Motion Planning Library (OMPL) [17] : MoveIt [73] through Robowflex [74] (MoveIt/OMPL) and OMPL's Python",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "obowflex [74] (MoveIt/OMPL) and OMPL's Python bindings with PyBullet [25] (PyBullet/OMPL). These represent two common interfaces",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "ROS",
+      "context": "otion planning in practice: the standard motion planner for ROS [75] , and a Python implementation using a popular simulati",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MotionBenchMaker",
+      "context": "ver4). We evaluate on seven different environments from the MotionBenchMaker [16] dataset, a collection of realistic, difficult motion p",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "onments. We evaluate on the following systems: 1) the 7 DOF Franka Emika Panda 10 , 2) the 8 DOF Fetch Robotics Fetch, includi",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "valuate on the following systems: 1) the 7 DOF Franka Emika Panda 10 , 2) the 8 DOF Fetch Robotics Fetch, including the prism",
+      "chunk_id": "vamp_coarse_sec_10",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "tem | Mean | Q1 | Median | Q3 | 95% | Simpl. | Succ. |\n|  | PyBullet/OMPL | 58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99",
+      "chunk_id": "vamp_coarse_sec_12",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "n | Q1 | Median | Q3 | 95% | Simpl. | Succ. |\n|  | PyBullet/OMPL | 58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |",
+      "chunk_id": "vamp_coarse_sec_12",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |\n| Panda | MoveIt/OMPL VAMP (ARM) | 23.51 0.70 | 14.28 0.18 | 16.58",
+      "chunk_id": "vamp_coarse_sec_12",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |\n| Panda | MoveIt/OMPL VAMP (ARM) | 23.51 0.70 | 14.28 0.18 | 16.58 0.29 | 22",
+      "chunk_id": "vamp_coarse_sec_12",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "an | Q3 | 95% | Succ. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 1",
+      "chunk_id": "vamp_coarse_sec_13",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "| 95% | Succ. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.1",
+      "chunk_id": "vamp_coarse_sec_13",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ucc. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.14 0.1",
+      "chunk_id": "vamp_coarse_sec_13",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "|\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.14 0.16 | 328",
+      "chunk_id": "vamp_coarse_sec_13",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "exploit with SIMD.\nFig. 3 . - Fig. 3. Results for the 7 DOF Panda. a) Planning times for each problem class. b) Planning time",
+      "chunk_id": "vamp_coarse_figures",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "metric",
+      "value": "40",
+      "unit": "",
+      "context": "Note that even the slowest number in Table I , 25 ms for the Fetch's 95% quantile, achieves a 40 Hz planning rate",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "t two baselines which use the Open Motion Planning Library (OMPL) [17] : MoveIt [73] through Robowflex [74] (MoveIt/OMPL) an",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "es which use the Open Motion Planning Library (OMPL) [17] : MoveIt [73] through Robowflex [74] (MoveIt/OMPL) and OMPL's Python",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "obowflex [74] (MoveIt/OMPL) and OMPL's Python bindings with PyBullet [25] (PyBullet/OMPL). These represent two common interfaces",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "ROS",
+      "context": "otion planning in practice: the standard motion planner for ROS [75] , and a Python implementation using a popular simulati",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MotionBenchMaker",
+      "context": "ver4). We evaluate on seven different environments from the MotionBenchMaker [16] dataset, a collection of realistic, difficult motion p",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "onments. We evaluate on the following systems: 1) the 7 DOF Franka Emika Panda 10 , 2) the 8 DOF Fetch Robotics Fetch, includi",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "valuate on the following systems: 1) the 7 DOF Franka Emika Panda 10 , 2) the 8 DOF Fetch Robotics Fetch, including the prism",
+      "chunk_id": "vamp_mid_10_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "tem | Mean | Q1 | Median | Q3 | 95% | Simpl. | Succ. |\n|  | PyBullet/OMPL | 58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99",
+      "chunk_id": "vamp_mid_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "n | Q1 | Median | Q3 | 95% | Simpl. | Succ. |\n|  | PyBullet/OMPL | 58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |",
+      "chunk_id": "vamp_mid_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |\n| Panda | MoveIt/OMPL VAMP (ARM) | 23.51 0.70 | 14.28 0.18 | 16.58",
+      "chunk_id": "vamp_mid_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |\n| Panda | MoveIt/OMPL VAMP (ARM) | 23.51 0.70 | 14.28 0.18 | 16.58 0.29 | 22",
+      "chunk_id": "vamp_mid_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "an | Q3 | 95% | Succ. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 1",
+      "chunk_id": "vamp_mid_13_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "| 95% | Succ. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.1",
+      "chunk_id": "vamp_mid_13_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ucc. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.14 0.1",
+      "chunk_id": "vamp_mid_13_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "|\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.14 0.16 | 328",
+      "chunk_id": "vamp_mid_13_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "reactive speeds (e.g., a median time of 40 \u00b5s for the 7 DOF Panda over the MotionBenchMaker [16] dataset, i.e., 25 kHz-see Ta",
+      "chunk_id": "vamp_fine_0_2",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MotionBenchMaker",
+      "context": "(e.g., a median time of 40 \u00b5s for the 7 DOF Panda over the MotionBenchMaker [16] dataset, i.e., 25 kHz-see Table I ) on a single CPU co",
+      "chunk_id": "vamp_fine_0_2",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MotionBenchMaker",
+      "context": "We evaluate on seven different environments from the MotionBenchMaker [16] dataset, a collection of realistic, difficult motion p",
+      "chunk_id": "vamp_fine_10_1",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Franka",
+      "context": "onments. We evaluate on the following systems: 1) the 7 DOF Franka Emika Panda 10 , 2) the 8 DOF Fetch Robotics Fetch, includi",
+      "chunk_id": "vamp_fine_10_1",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "valuate on the following systems: 1) the 7 DOF Franka Emika Panda 10 , 2) the 8 DOF Fetch Robotics Fetch, including the prism",
+      "chunk_id": "vamp_fine_10_1",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "uned. We evaluate each planner on each problem 5 times. For MoveIt/OMPL and PyBullet/OMPL, we give a timeout of 5 minutes. For",
+      "chunk_id": "vamp_fine_10_1",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "e evaluate each planner on each problem 5 times. For MoveIt/OMPL and PyBullet/OMPL, we give a timeout of 5 minutes. For VAMP",
+      "chunk_id": "vamp_fine_10_1",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "e each planner on each problem 5 times. For MoveIt/OMPL and PyBullet/OMPL, we give a timeout of 5 minutes. For VAMP and VAMP (AR",
+      "chunk_id": "vamp_fine_10_1",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "metric",
+      "value": "40",
+      "unit": "",
+      "context": "Note that even the slowest number in Table I , 25 ms for the Fetch's 95% quantile, achieves a 40 Hz planning rate",
+      "chunk_id": "vamp_fine_10_2",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "Results for RRT-Connect on the Panda, Fetch, and Baxter are respectively shown in Figs. 3 to 5 a",
+      "chunk_id": "vamp_fine_10_2",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "ning time for VAMP is almost completely separated from both PyBullet/OMPL and MoveIt/OMPL, and 3) the distribution shapes of pla",
+      "chunk_id": "vamp_fine_10_2",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "for VAMP is almost completely separated from both PyBullet/OMPL and MoveIt/OMPL, and 3) the distribution shapes of planning",
+      "chunk_id": "vamp_fine_10_2",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "is almost completely separated from both PyBullet/OMPL and MoveIt/OMPL, and 3) the distribution shapes of planning time versu",
+      "chunk_id": "vamp_fine_10_2",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "tem | Mean | Q1 | Median | Q3 | 95% | Simpl. | Succ. |\n|  | PyBullet/OMPL | 58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99",
+      "chunk_id": "vamp_fine_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "n | Q1 | Median | Q3 | 95% | Simpl. | Succ. |\n|  | PyBullet/OMPL | 58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |",
+      "chunk_id": "vamp_fine_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "58.47 | 12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |\n| Panda | MoveIt/OMPL VAMP (ARM) | 23.51 0.70 | 14.28 0.18 | 16.58",
+      "chunk_id": "vamp_fine_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "12.76 | 21.21 | 43.35 | 224.41 | 121.38 | 99.6% |\n| Panda | MoveIt/OMPL VAMP (ARM) | 23.51 0.70 | 14.28 0.18 | 16.58 0.29 | 22",
+      "chunk_id": "vamp_fine_12_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "Panda",
+      "context": "an | Q3 | 95% | Succ. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 1",
+      "chunk_id": "vamp_fine_13_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "PyBullet",
+      "context": "| 95% | Succ. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.1",
+      "chunk_id": "vamp_fine_13_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "OMPL",
+      "context": "ucc. |\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.14 0.1",
+      "chunk_id": "vamp_fine_13_0",
+      "paper_id": "vamp"
+    },
+    {
+      "type": "dataset",
+      "value": "MoveIt",
+      "context": "|\n|---|---|---|---|---|---|---|---|\n| Panda | PyBullet/OMPL MoveIt/OMPL VAMP | 4481.66 615.58 11.12 | 127.63 415.14 0.16 | 328",
+      "chunk_id": "vamp_fine_13_0",
+      "paper_id": "vamp"
+    }
+  ]
+}

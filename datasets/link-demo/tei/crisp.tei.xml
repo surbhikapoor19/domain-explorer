@@ -1,0 +1,1637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">On the Surprising Robustness of Sequential Convex Optimization for Contact-Implicit Motion Planning</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-04-26">26 Apr 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Yulin</forename><surname>Li</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">The Hong Kong University of Science and Technology</orgName>
+								<orgName type="institution" key="instit2">Harvard University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Haoyu</forename><surname>Han</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">The Hong Kong University of Science and Technology</orgName>
+								<orgName type="institution" key="instit2">Harvard University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shucheng</forename><surname>Kang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">The Hong Kong University of Science and Technology</orgName>
+								<orgName type="institution" key="instit2">Harvard University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jun</forename><surname>Ma</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">The Hong Kong University of Science and Technology</orgName>
+								<orgName type="institution" key="instit2">Harvard University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Heng</forename><surname>Yang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">The Hong Kong University of Science and Technology</orgName>
+								<orgName type="institution" key="instit2">Harvard University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">On the Surprising Robustness of Sequential Convex Optimization for Contact-Implicit Motion Planning</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-04-26">26 Apr 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">5F7F5C7E202269B4AEE1102C8B101F1D</idno>
+					<idno type="arXiv">arXiv:2502.01055v3[math.OC]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T15:48+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract/>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>For (e) the hopper problem, the initial guess is a free-fall motion released from the origin. The color gradient represents the progression of time (from blue to yellow). For (f), we implement the policy derived from CRISP in a Model Predictive Control (MPC) framework for real-world push tasks. Detailed descriptions of these tasks are provided in §IV.</p><p>Abstract-Contact-implicit motion planning-embedding contact sequencing as implicit complementarity constraints-holds the promise of leveraging continuous optimization to discover new contact patterns online. Nevertheless, the resulting optimization, being an instance of Mathematical Programming with Complementary Constraints, fails the classical constraint qualifications that are crucial for the convergence of popular numerical solvers. We present robust contact-implicit motion planning with sequential convex programming (CRISP), a solver that departs from the usual primal-dual algorithmic framework but instead focuses only on the primal problem. CRISP solves a convex quadratic program with an adaptive trust region radius at each iteration, and its convergence is evaluated by a merit function using weighted ℓ1 penalty. We (i) prove sufficient conditions on CRISP's convergence to first-order stationary points of the merit function; (ii) release a high-performance C++ implementation of CRISP with a generic nonlinear programming interface; and (iii) demonstrate CRISP's surprising robustness in solving contactimplicit planning with naive initializations. In fact, CRISP solves several contact-implicit problems with an all-zero initialization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Robots must intelligently establish and disengage contacts to successfully perform complex tasks in the physical world, such as manipulation of daily objects and locomotion in rough terrains. However, the hybrid nature of combining continuous dynamics with discrete contact events, the discontinuities in force profiles, and the potential for stick-slip transitions, make it notoriously difficult to "plan through contact".</p><p>Contact-implicit motion planning. Among the many efforts for motion planning through contact (see §V for a review), the so-called contact-implicit formulation stood out as a particularly popular and promising approach <ref type="bibr" target="#b46">[47,</ref><ref type="bibr" target="#b61">62]</ref>. This formulation distinguishes itself by integrating contact dynamics into the motion planning framework through the introduction of complementarity constraints, which allow simultaneous optimization of the state-control trajectories and the contact forces without explicit (and discrete) mode switching (cf. <ref type="bibr" target="#b5">(6)</ref>). However, the contact-implicit formulation circum- vents explicit mode switching at the price of arriving at an optimization problem known as Mathematical Programming with Complementarity Constraints (MPCC). Although they "look like" smooth and continuous optimization problems, MPCC problems are known to fail the classical constraint qualifications (CQs) at all feasible points (e.g., Linear Independence Constraint Qualification and Mangasarian-Fromovitz Constraint Qualification) <ref type="bibr" target="#b47">[48,</ref><ref type="bibr" target="#b48">49,</ref><ref type="bibr" target="#b60">61]</ref>. To make this concrete, we provide the geometric intuition through a simple MPCC problem.</p><p>Example 1 (Geometric Intuition of MPCC). Consider the following two-dimensional MPCC problem:</p><formula xml:id="formula_0">min (x1,x2)∈R 2 f (x) := x 2 1 + x 2 2<label>(1a)</label></formula><p>subject to g 1 (x) := x 1 ≥ 0, (1b) g 2 (x) := x 2 ≥ 0, (1c)</p><formula xml:id="formula_1">g 3 (x) := x 1 • x 2 = 0. (<label>1d</label></formula><formula xml:id="formula_2">)</formula><p>where (1d) is a complementarity constraint. As depicted in Fig. <ref type="figure" target="#fig_1">2</ref>, the objective level sets are circles in R 2 , and the feasible set consists of the union of the two coordinate axes in the first quadrant</p><formula xml:id="formula_3">{x ∈ R 2 | x 1 ≥ 0, x 2 = 0} ∪ {x ∈ R 2 | x 1 = 0, x 2 ≥ 0}.<label>(2)</label></formula><p>The optimal solution of problem (1) lies at the origin (0, 0). To understand the local geometry at the origin, we need to characterize two types of "cones" around the origin.</p><p>(a) The tangent cone (TC) at a point is defined as the set of tangent vectors of all curves approaching the point from the feasible region <ref type="bibr" target="#b45">[46]</ref>. Thus, the tangent cone at (0, 0) is:</p><formula xml:id="formula_4">T C = {d ∈ R 2 | d 1 ≥ 0, d 2 = 0} ∪ {d ∈ R 2 | d 1 = 0, d 2 ≥ 0}. (<label>3</label></formula><formula xml:id="formula_5">)</formula><p>This consists of two directions: one along the positive x 1 -axis and one along the positive x 2 -axis, see Fig. <ref type="figure" target="#fig_1">2</ref>. (b) The linearized feasible cone (LFC) is formed by all active constraints at that point <ref type="bibr" target="#b45">[46]</ref>:</p><formula xml:id="formula_6">LF C = d ∈ R 2 ∇g ⊤ i d ≥ 0, i = 1, 2 ∇g ⊤ j d = 0, j = 3 .<label>(4)</label></formula><p>Thus, the linearized feasible cone at (0, 0) is:</p><formula xml:id="formula_7">LF C = {d ∈ R 2 | d 1 ≥ 0, d 2 ≥ 0},<label>(5)</label></formula><p>i.e., the entire first quadrant. Therefore, we conclude that T C ⊊ LF C-the TC is a strict subset of the LFC at (0, 0). We remark that the TC is "geometric", while the LFC is "algebraic". While the definition of LFC involves the algebraic constraints and their linearizations, the definition of TC characterizes the local geometry regardless of how the feasible set is algebraically parameterized.</p><p>After noticing the gap between the TC and the LFC, the reader might wonder why this is a problem. The reason lies in that, the equivalence of TC and LFC-typically ensured by CQs-is a prerequisite to establish the Karush-Kuhn-Tucker (KKT) conditions for local optimality <ref type="bibr" target="#b45">[46]</ref>. Moreover, almost all primal-dual nonlinear programming (NLP) solvers (e.g., SNOPT <ref type="bibr" target="#b23">[24]</ref>, IPOPT <ref type="bibr" target="#b56">[57]</ref>) rely on the KKT optimality conditions-they search for a pair of primal and dual variables satisfying the KKT conditions. Therefore, the inherent absence of CQs and the gap between TC and LFC of the MPCC problems break the theoretical foundations for primal-dual algorithms. The numerical consequence of this, as we will show in §IV, is that primal-dual solvers can exhibit poor convergence, stuck in infeasible solutions, and/or numerical instabilities when solving contact-implicit MPCC problems.</p><p>Relaxation? An extensively studied strategy to mitigate the failure of CQs is to "relax" the complementarity constraint. In <ref type="bibr" target="#b14">[15]</ref>, using Example 1 as illustration, the authors relaxed the complementarity constraint (1d) as</p><formula xml:id="formula_8">x 1 • x 2 = α for α &gt; 0.</formula><p>In <ref type="bibr" target="#b48">[49,</ref><ref type="bibr" target="#b49">50]</ref>, a different relaxation scheme where x 1 •x 2 ≤ α for α &gt; 0 is proposed. In both relaxations, CQs are restored (i.e., no gap between the TC and the LFC) and KKT optimality conditions are reassured. However, since α = 0 is the original non-relaxed problem we want to solve, a homotopy scheme is needed to start with α very large and gradually push α to zero. There are two issues with the relaxation approach. First, one needs to solve a sequence of nonconvex problems instead of just one, making this approach computationally expensive. Second, while the problem with α very large is generally well conditioned, as α ↓ 0, numerical issues appear again. For these reasons, to the best of our knowledge, there does not exist a well-accepted implementation of the relaxation approach. Recently in robotics, <ref type="bibr" target="#b32">[33]</ref> targeted at linear complementarity constraints-which are indeed KKT optimality conditions of a lower-level convex quadratic program (QP)-and designed a bilevel optimization algorithm where the lower-level QP is solved in a differentiable way to provide gradient for the upper-level trajectory optimization problem. Crucially, to ensure the QP is differentiable with respect to contact, relaxation (or smoothing) is applied again, but this time to the interior point algorithm used for solving the QP. However, (a) it is unclear whether the approach extends to nonlinear complementarity constraints studied in our paper; and (b) the implementation provided by <ref type="bibr" target="#b32">[33]</ref> does not follow a generic nonlinear programming interface. Therefore, we did not benchmark against <ref type="bibr" target="#b32">[33]</ref> in §IV.</p><p>Can we solve contact-implicit motion planning in a numerically robust way, without relaxation?</p><p>Contributions. The answer is rather discouraging if considering a generic nonconvex MPCC problem, as highlighted by the mathematical optimization literature <ref type="bibr" target="#b19">[20,</ref><ref type="bibr" target="#b21">22,</ref><ref type="bibr" target="#b20">21]</ref>. Nevertheless, contact-implicit planning problems in robotics possess a unique property: the objective function is often convex (and quadratic), as the goal typically involves tracking a trajectory or reaching a target. Formally, we consider the problem:</p><formula xml:id="formula_9">min v,λ J(v, λ) (6a) subject to f (v, λ) = 0, (6b) c i (v, λ) ≥ 0, i ∈ I (6c) c i (v, λ) = 0, i ∈ E (6d) 0 ≤ ϕ(v, λ) ⊥ λ ≥ 0,<label>(6e)</label></formula><p>where v includes the trajectory of both robot state and control inputs, λ denotes the complementarity variables typically associated with contact forces. We assume the objective function J(v, λ) is convex-usually a quadratic loss function of tracking errors and control efforts. Constraint (6b) represents the nonlinear system dynamics. Constraints (6c) and (6d) are general inequality and equality constraints. The nonlinear complementarity constraint (6e) enforces the relationship between λ and the nonlinear function ϕ(v, λ). The expression "ϕ(x, λ) ⊥ λ" should be interpreted as ϕ i (x, λ) • λ i = 0, or its equivalent form ϕ i (x, λ) • λ i ≤ 0 as suggested by <ref type="bibr" target="#b21">[22]</ref>, for every entry of ϕ(•) and λ. It should be emphasized that problem <ref type="bibr" target="#b5">(6)</ref> is nonlinear and nonconvex, as we impose no restrictions on the convexity of the constraints. This formulation is classified as a nonlinear complementarity problem (NCP) due to constraints (6e). A key distinction between NCP and linear complementarity problem (LCP) lies in the nonlinearity present in both the complementarity constraints and other constraints. While one can use s = ϕ(v, λ) to recast complementarity constraints as λ ⊥ s, this transformation merely shifts the nonlinearity to the additional constraint s = ϕ(v, λ).</p><p>In the linear complementarity problem (LCP) literature, both ϕ and other constraints are typically required to be linear (as in <ref type="bibr" target="#b4">[5]</ref> and LCQpow <ref type="bibr" target="#b27">[28]</ref>). In contrast, CRISP is capable of handling generic nonlinear dynamics, as demonstrated in our examples. We will give concrete examples of (6) in §IV. For now, let us work with the generic template <ref type="bibr" target="#b5">(6)</ref>. Our major contribution is to depart from the usual primaldual algorithmic framework-due to the failure of CQs in MPCC-and propose a primal-only algorithm named CRISP (Robust Contact-Implicit motion planning with Sequential convex Programming). CRISP features a merit function with weighted ℓ 1 penalty to measure primal feasibility and objective reduction. It solves a series of trust-region convex quadratic programs (QPs) formulated using local second-order information of the objective and first-order information of the constraints. In stark contrast with the well-known sequential quadratic programming (SQP) framework, CRISP (a) does not require second-order information of the constraints, and (b) does not maintain and update dual variables. Since the objective function is convex, the inner-loop QP subproblem inherits convexity by construction. These make CRISP both simple to implement and computationally efficient.</p><p>One then wonders whether a simple algorithm like CRISP can offer any convergence guarantees. We show that the convexity of the objective function allows us to prove sufficient conditions under which CRISP can guarantee convergence to the stationary points of the merit function. Importantly, the sufficient conditions are numerically verifiable, and hence the convergence can be "certified" from the numerical iterations of CRISP. Moreover, we show that the local minima of the merit function are indeed the local minimizers of the original problem if feasible for the original problem to close the loop.</p><p>Finally, we open-source a high-performance C++ implementation of CRISP. Our C++ implementation follows a generic nonlinear programming interface where the user defines objective function and constraints. We leverage automatic differentiation to obtain gradient and Hessian information. We then apply CRISP to solve six contact-implicit motion planning problems and benchmark its performance against both generic and robotics-specific solvers. We believe the way we model some of the contact-implicit planning problems is also new. Our numerical results demonstrate that CRISP consistently generates non-trivial and entirely new contact sequences from naive and even all-zero initializations, while existing solvers can struggle to find even feasible solutions.</p><p>To summarize, our contributions are:</p><p>• Theory and Algorithm. We propose a primal-only algorithm for contact-implicit motion planning called CRISP and provide theoretical guarantees. • Implementation. We release an open-source highperformance C++ implementation of CRISP. • Benchmark. We model six contact-rich planning problems using the contact-implicit formulation and benchmark CRISP against existing solvers. Paper organization. We present the theory and algorithm for CRISP in §II, its implementation details in §III, and benchmark results in §IV. We postpone the related work review to §V and conclude in §VI. Appendix and project website provide proofs and the detailed contact-implicit formulation for the five planning problems, as well as the animations of numerically computed motion trajectories.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. CRISP: THEORY AND ALGORITHM</head><p>Clearly, the contact-implicit planning problem (6) can be transformed into a generic NLP problem, which also aligns with our implemented C++ solver. Let x = [v, λ], we denote the NLP formulation of (6) as: Here, we absorb all other constraints into the general template c for simplicity. Primal-only merit function. From a primalonly perspective, the core optimization challenge is to balance descent of the objective function with satisfaction of the constraints <ref type="bibr" target="#b45">[46]</ref>. In CRISP, we adopt the following merit function with weighted ℓ 1 penalty to evaluate the quality of a point x:</p><formula xml:id="formula_10">min x J(x) (7a) subject to c i (x) = 0, i ∈ E (7b) c i (x) ≥ 0. i ∈ I (7c)</formula><formula xml:id="formula_11">ϕ 1 (x; µ) ≜ J(x) + i∈E µ i |c i (x)|+ i∈I µ i [c i (x)] -,<label>(8)</label></formula><p>where µ i &gt; 0 is the penalty parameter for each constraint i.</p><p>The notation [c i ] -≜ max{0, -c i } is used to properly penalize inequality constraint violations.</p><p>Example 2 (Merit Function for the Toy Problem). Continuing Example 1, we plot the merit function for the toy MPCC problem (1) with different penalty parameters in Fig. <ref type="figure" target="#fig_2">3</ref>. Evidently, the stationary points of the merit function align with the global minimum of Example 1 at the origin.</p><p>Remark 3 (Merit Function). The ℓ 1 penalty function is a class of nonsmooth penalty functions that has demonstrated remarkable success in practical applications. It is exact in the sense that, given an appropriate penalty parameter and under mild constraint qualifications, local optimizers of the original problem are also minimizers of the merit function <ref type="bibr" target="#b18">[19]</ref>. We need to emphasize that, due to the lack of CQs in the MPCC problem, it is not fully clear whether minimization of the merit function <ref type="bibr" target="#b7">(8)</ref> has the same type of guarantees as in the case where CQs hold. However, the intuition that the merit function balances objective reduction and constraint satisfaction still holds, and according to Example 2, the minimization of the merit function leads to the optimal solution, at least for the toy problem. We give a sufficient condition of local optimality in Proposition 9 and leave a precise investigation of the relationship between the merit function and the original problem in the case of MPCC for future work.</p><p>A difference of our merit function from the usual ℓ 1 penalty is that we maintain a separate penalty parameter µ i for each constraint. This individualized penalization strategy often leads to superior convergence in practice.</p><p>Convex subproblem. To minimize the merit function ( <ref type="formula" target="#formula_11">8</ref>), we adopt a sequential optimization strategy that solves a series of subproblems by approximating a local model of the merit function in the vicinity of the current iteration. Formally, our subproblem seeks to minimize the following quadratic model:</p><formula xml:id="formula_12">min p k q µ,k (p k ) := J k + ∇J ⊤ k p k + 1 2 p ⊤ k ∇ 2 xx J k p k + i∈E µ i |c i (x k ) + ∇c i (x k ) ⊤ p k | + i∈I µ i [c i (x k ) + ∇c i (x k ) ⊤ p k ] -,<label>(9)</label></formula><p>where J k , ∇J k , and ∇ 2 xx J k represent the objective function's value, gradient, and Hessian at the current iterate x k , respectively. The constraints c i are linearized around x k . In the subproblem (9), "p k " is known as the trial step.</p><p>From ( <ref type="formula" target="#formula_12">9</ref>), the readers see that our method diverges from the subproblem formulation in the classical SQP methods <ref type="bibr" target="#b22">[23,</ref><ref type="bibr" target="#b19">20,</ref><ref type="bibr" target="#b29">30]</ref>, in the sense that ( <ref type="formula" target="#formula_12">9</ref>) refrains from computing second-order derivatives of the constraints and the Lagrangian. Instead, we linearize the constraints while maintaining a quadratic model of the objective function only. Our approach aligns with the concept of sequential convex programming discussed in <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b12">13,</ref><ref type="bibr" target="#b42">43,</ref><ref type="bibr" target="#b38">39,</ref><ref type="bibr" target="#b37">38]</ref>, including the well-known robotics package TRAJOPT <ref type="bibr" target="#b50">[51]</ref>. TRAJOPT implements sequential convex programming for trajectory optimization and convex collision detection. However, it lacks user-friendly APIs to include contact constraints and does not support weighted ℓ 1 merit functions or second-order corrections, nor does it provide convergence analysis. Beyond the SCP foundation, we aim for a high-performance implementation featuring carefully engineered modules and a generalized interface designed for broad contact-rich motion planning applications, while providing convergence guarantees in the contact-implicit context where CQs assumptions do not hold.</p><p>Leveraging the convexity of the objective function J and introducing the penalty term, the subproblem ( <ref type="formula" target="#formula_12">9</ref>) is always convex and feasible. This offers several advantages. First, it reduces the computational burden associated with calculating second-order derivatives of constraints, which is particularly beneficial for problems with complex constraints (e.g., in robotics). Second, the convexity and guaranteed feasibility of the subproblem not only facilitate efficient solution of (9) using well-established convex optimization techniques but also enhance the robustness of the overall algorithm.</p><p>Remark 4 (Elastic Mode). In conventional sequential optimization methods, such as SQP, constraints are typically linearized directly from the original problem. However, when applied to MPCC, this approach inevitably leads to infeasible subproblems <ref type="bibr" target="#b21">[22,</ref><ref type="bibr" target="#b3">4]</ref>. To address this issue, some numerical solvers, like SNOPT, implement an "Elastic Mode" where they add penalty variables to move constraints into the objective function upon detecting subproblem infeasibility. Our approach aligns with the motivation of the elastic mode in the sense that the merit function (8) is "elastic" from the very beginning because the constraints are penalized in the objective function. This strategy ensures our subproblems are always feasible by design.</p><p>Globalization. The only issue with the subproblem ( <ref type="formula" target="#formula_12">9</ref>) is that it may be unbounded from below (i.e., the optimal value is -∞). To avoid this issue, we introduce the trust-region approach following <ref type="bibr" target="#b45">[46]</ref>. Specifically, we constrain the ℓ ∞ norm of the trial step p k . Formally, the trust-region subproblem with ℓ ∞ norm constraint becomes:</p><formula xml:id="formula_13">min p k ,v,w,t J k + ∇J T k p k + 1 2 p T k ∇ 2 xx J k p k + µ i∈E (v i + w i ) + µ i∈I t i (10a) subject to ∇c i (x k ) T p k + c i (x k ) = v i -w i , i ∈ E (10b) ∇c i (x k ) T p k + c i (x k ) ≥ -t i , i ∈ I (10c) v, w, t ≥ 0 (10d) ∥p k ∥ ∞ ≤ ∆ k ,<label>(10e)</label></formula><p>where (10e) represents the ℓ ∞ norm constraint with trustregion radius ∆ k . From ( <ref type="formula" target="#formula_12">9</ref>) to <ref type="bibr" target="#b9">(10)</ref>, we have also introduced slack variables v, w, t to reformulate the nonsmooth ℓ 1 objective as smooth constraints. Evidently, the subproblem ( <ref type="formula" target="#formula_13">10</ref>) is a standard convex QP. Essentially, the trust region constraint (10e) acts as a filter on how much we trust the local model (quadratic objective and linearized constraints) to approximate the merit function. The ℓ ∞ norm only limits the maximum step length in the trial step, avoiding the issues related to ill-conditioning that can occur in line search methods.</p><p>To determine whether a trial step should be accepted and whether the trust-region radius should be adjusted, we monitor the ratio of actual decrease to predicted decrease:</p><formula xml:id="formula_14">ρ k ≜ ared k pred k = ϕ 1 (x k ; µ) -ϕ 1 (x k + p k ; µ) q µ,k (0) -q µ,k (p k ) .<label>(11)</label></formula><p>This ratio ρ k serves as a key indicator of the quality of the trial step. As ρ k approaches 1, it signifies that the trial step is increasingly satisfactory, indicating the local quadratic model at this step accurately describes the local behavior of the true merit function within the trust region radius. When the actual reduction is negative or the reduction ratio is very low, it indicates that the local model is highly inaccurate. In such cases, we typically shrink the trust region radius. To avoid continuous shrinking of the trust region and the Maratos effect, we introduce a second order correction step. The essence of this correction is to replace the linear approximation of c(x k + p) in subproblem <ref type="bibr" target="#b9">(10)</ref> with a second-order model:</p><formula xml:id="formula_15">c(x k + p) ≈ c(x k ) + ∇c(x k ) T p + 1 2 p T ∇ 2 xx c(x k )p. (<label>12</label></formula><formula xml:id="formula_16">)</formula><p>Suppose we have calculated an unsatisfactory trial step p k , and the correction step to be determined is not far from p k . We approximate the second-order term p T ∇ 2 xx c(x k )p utilizing the value c(x k + p k ) computed at the trial step:</p><formula xml:id="formula_17">p T ∇ 2 xx c(x k )p ≈ p T k ∇ 2 xx c(x k )p k ≈ c(x k + p k ) -c(x k ) -∇c(x k ) ⊤ p k . (13)</formula><p>From ( <ref type="formula">13</ref>), we use c(</p><formula xml:id="formula_18">x k + p) = ∇c(x k ) ⊤ p + (c(x k + p k ) - ∇c(x k ) ⊤ p k )</formula><p>to replace the first-order approximation in (10b) and (10c) to calculate a correction step pk . This approach does not require explicit second-order information of the constraints, thereby maintaining computational efficiency. Furthermore, it preserves the convex QP structure of the subproblem. In practice, this second-order correction has proven highly effective in correcting inaccuracies of the linearized model, leading to more efficient reductions in the merit function.</p><p>Convergence analysis. We now provide convergence guarantees of CRISP to stationary points of the merit function <ref type="bibr" target="#b7">(8)</ref>. We first recall the definition of the directional derivative.</p><p>Definition 5 (Directional Derivative). The directional derivative of a function f : R n → R in the direction p is:</p><formula xml:id="formula_19">D(f ; p) = lim t→0 f (x + tp) -f (x) t .<label>(14)</label></formula><p>The stationary point of the nonsmooth merit function is:</p><formula xml:id="formula_20">Definition 6 (Stationary Point). A point x is a stationary point of the merit function ϕ 1 (x, µ) in (8)</formula><p>if its directional derivatives are nonnegative along all directions p, i.e.,</p><formula xml:id="formula_21">D(ϕ 1 (x; µ); p) ≥ 0. (<label>15</label></formula><formula xml:id="formula_22">)</formula><p>We then make mild assumptions about the motion planning problems under consideration.</p><p>Assumption 7 (Convexity). In problem <ref type="bibr" target="#b6">(7)</ref>, the objective function J(x) is convex and continuous differentiable; c i is differentiable and ∇c i is Lipschitz continuous for all i ∈ E and i ∈ I.</p><p>We are ready to present the main result.</p><p>Theorem 8 (Convergence). Under Assumption 7, suppose:</p><p>1) The sequence of convex subproblems (10) converges, i.e.,</p><p>x k → x ⋆ for some point x ⋆ 2) The trust region radius remains bounded above zero, i.e., there exists ∆ min &gt; 0 such that ∆ k ≥ ∆ min for all k.</p><p>Then, x ⋆ is a stationary point of the merit function <ref type="bibr" target="#b7">(8)</ref>.</p><p>Proof: See Appendix A. While the nonsmoothness of the merit function makes it challenging to verify whether its stationary points are local minima, a correspondence between the local minima of the merit function and the original problem can be established.</p><p>Proposition 9 (Local Optimality). Let x ⋆ be a local minimizer of the merit function ϕ 1 (x; µ) in <ref type="bibr" target="#b7">(8)</ref>. If x ⋆ is feasible for the original problem <ref type="bibr" target="#b6">(7)</ref>, that is,</p><formula xml:id="formula_23">c i (x ⋆ ) = 0, i ∈ E (16) c i (x ⋆ ) ≥ 0. i ∈ I (17)</formula><p>Then x ⋆ is also a local minimizer of the original problem <ref type="bibr" target="#b6">(7)</ref>.</p><p>Proof: Since x ⋆ is a local minimizer of ϕ 1 (x; µ), by definition, there exist r &gt; 0 s.t. ϕ 1 (x ⋆ ; µ) ≤ ϕ 1 (x; µ), ∀||xx ⋆ ||&lt; r. Define the set ||x -x ⋆ ||&lt; r as B r (x ⋆ ) and let the feasible set of the original problem <ref type="bibr" target="#b6">(7)</ref> be Ω. Then, we have</p><formula xml:id="formula_24">ϕ 1 (x ⋆ ; µ) ≤ ϕ 1 (x; µ). ∀x ∈ B r (x ⋆ ) ∩ Ω</formula><p>On the other hand, we have ϕ 1 (x; µ) = J(x) ∀x ∈ Ω. Thus, evaluating the objective function of the original problem, we have:</p><formula xml:id="formula_25">J(x ⋆ ) ≤ J(x), ∀x ∈ B r (x ⋆ ) ∩ Ω, x ⋆ ∈ Ω</formula><p>which is the definition of a local minimizer.</p><p>Combining Theorem 8 and Proposition 9, we conclude that if (a) CRISP converges to a stationary point x ⋆ of the merit function, (b) x ⋆ is a local minimizer of the merit function, and (c) x ⋆ is feasible for the original problem <ref type="bibr" target="#b6">(7)</ref>, then x ⋆ is also a local minimizer of <ref type="bibr" target="#b6">(7)</ref>. In other words, when CRISP computes a stationary point x ⋆ of the merit function (which often occurs and can be certified) that is also locally optimal, the only way that x ⋆ might fail to be a local minimizer of the original problem <ref type="bibr" target="#b6">(7)</ref> is that x ⋆ is infeasible for <ref type="bibr" target="#b6">(7)</ref>. We note that while this statement is theoretically useful, due to the nonsmoothness of the merit function, certifying local optimality of x ⋆ for the merit function is challenging. We leave this for future work.</p><p>Final algorithm. Having introduced the key algorithmic components and the convergence analysis, we formally present CRISP in Algorithm 1. The algorithm initiates with a common penalty variable µ 0 for all constraints. Guided by the checkable convergence conditions outlined in Theorem 8, we solve a series of trust-region subproblems (convex QPs) in the inner iterations. This process continues until the conditions in Theorem 8 are satisfied, indicating convergence to a stationary point of the current merit function. In the outer iterations, we examine the constraint violation against a threshold ϵ c . For constraint violations exceeding this threshold, we increase their corresponding penalty parameters. The default values of all hyperparameters in Algorithm 1 are summarized in Table <ref type="table" target="#tab_2">I</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. CRISP: IMPLEMENTATION</head><p>User interface. CRISP follows the general nonlinear programming problem formulation in <ref type="bibr" target="#b6">(7)</ref> where the user defines the objective function and constraints. Our implementation builds upon the fundamental data types in Eigen3 (vectors and matrices), wrapped with CPPAD <ref type="bibr" target="#b6">[7]</ref> and CPPAD Code Generation (CG) <ref type="bibr" target="#b34">[35]</ref>. This architecture allows users to define problems in an Eigen-style syntax, specifying objectives and constraints (both equality and inequality) while leveraging CP-PAD for automatic derivative computation. The solver utilizes CPPAD to automatically obtain derivative information, while CG is employed to generate and store an auto-diff library. This library can be dynamically loaded for efficient evaluation of gradients and Hessians at specified points, significantly reducing computational overhead in subsequent solves. Besides, our implementation supports both parameterized and nonparameterized function definitions, allowing real-time modification of problem parameters (e.g., reference, terminal, or initial states) without the need to regenerate the library. It is noteworthy to point that QP solver. The key subroutine in CRISP is to solve the convex trust-region QPs. After careful comparison and experimentation with several QP solvers in CRISP, including OSQP <ref type="bibr" target="#b53">[54]</ref>, PROXQP <ref type="bibr" target="#b5">[6]</ref>, qpOASE <ref type="bibr" target="#b17">[18]</ref>, and PIQP <ref type="bibr" target="#b51">[52]</ref>, we integrate PIQP, an interior-point method-based QP solver with embedded sparse matrix operations, which strikes an excellent balance of accuracy and real-time performance. To optimize the construction of the QP subproblems <ref type="bibr" target="#b9">(10)</ref>, we perform memory-level operations for extracting, copying, and concatenating large-scale sparse matrices, bypassing the Eigen3 higher-level interfaces. This approach enhances the efficiency of sparse matrix operations that are crucial for complex robot motion planning problems.</p><p>To enhance usability, we also implement a Python interface using Pybind11. This interface allows users to adjust problem parameters and solver hyperparameters, solve and re-solve problems, and extract results within a Python environment, providing flexibility for downstream applications.</p><p>Remark 10 (First-order QP Solver). There are growing interests in robotics to leverage first-order QP solvers (e.g., building upon ADMM <ref type="bibr" target="#b54">[55]</ref> and PDHG <ref type="bibr" target="#b36">[37]</ref>) for large-scale motion planning. While first-order QP solvers are typically more scalable due to cheap per-iteration cost, recent work <ref type="bibr" target="#b31">[32]</ref> has shown that insufficient solution quality caused by firstorder QP solvers may hurt motion planning. For this reason, CRISP chose the interior-point solver PIQP to make sure the inner QPs are solved to sufficient accuracy. However, we do note that CRISP is built in a modular way such that users can switch between different QP solvers.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. CRISP: BENCHMARK</head><p>In this section, we present a comprehensive benchmark study to evaluate the performance of our proposed solver, CRISP, against several state-of-the-art optimization algorithms. As illustrated in Fig. <ref type="figure" target="#fig_3">4</ref>, we have selected six representative contact-rich planning problems, each involving intricate interactions of normal (support) forces and friction forces. These problems showcase the diverse challenges encountered in practical applications where contact dynamics play a crucial role. All optimization problems are derived using the contactimplicit formulation and the detailed derivations are presented in Appendix B. The optimization horizon for push T is 50 with time discretization dt = 0.05 seconds, and all other examples are optimized over 200 steps with dt = 0.02 seconds. All experiments were conducted on a laptop equipped with a 13th Gen Intel(R) Core(TM) i9-13950HX processor. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Benchmark Solvers</head><p>In the first part ( §IV-C), we compare CRISP against three state-of-the-art algorithms. The first is SNOPT <ref type="bibr" target="#b23">[24]</ref>, a sparse nonlinear optimizer based on the SQP method. The second is IPOPT <ref type="bibr" target="#b56">[57]</ref>, an interior point optimizer designed for largescale nonlinear programming. Finally, we include PROXNLP <ref type="bibr" target="#b28">[29]</ref>, a primal-dual augmented Lagrangian algorithm designed by roboticists. in subsection §IV-D, we present additional experiments to further demonstrate CRISP's robustness and superior performance across a broader range of contact-rich motion planning scenarios. Specifically, (i) For the push T task, we reformulate the problem as a mixed-integer quadratically constrained problem (MIQCP), which we solve using Gurobi <ref type="bibr" target="#b26">[27]</ref>. (ii) We evaluate the LCP solver LCQpow <ref type="bibr" target="#b27">[28]</ref> on two examples with linear dynamics and linear complementarity constraints. (iii) We validate CRISP in real-world Push T with a Franka Panda robot arm.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Benchmark Problems</head><p>For each problem depicted in Fig. <ref type="figure" target="#fig_3">4</ref>, we provide a brief description of the task along with the initial conditions and initial guesses supplied to the solvers. The detailed formulations for each example, including objective functions, dynamics, contact constraints, and other general constraints, are provided in Appendix B. Furthermore, we have open-sourced all these problems as examples in CRISP.</p><p>1) Cartpole with soft walls: As shown in Fig. <ref type="figure" target="#fig_3">4</ref>(a), this problem involves trajectory optimization of a cartpole system constrained between two walls, with the objective of swinging up the pole to an upright stance. The walls are considered "soft", providing unidirectional forces analogous to springs. Depending on the initial conditions, the optimal trajectory may require the pole to make or break contact with the walls, thereby leveraging contact forces to accomplish the task. x 1 and θ represent the cartpole states; u is the horizontal active force applied on the cart, while λ 1 and λ 2 are the passive contact forces generated when the pole's end makes contact with a wall. These contact forces are proportional to the wall displacement, effectively simulating the soft contact forces. Detailed contact-implicit formulation can be found Appendix B-A. We consider two distinct scenarios in the comparison based on the cart's initial position: centered between the walls and in proximity to one wall. For each scenario, we select five different initial conditions, with varying initial pole angles and velocities. For each initial condition, we provide two types of initial guesses: passive trajectories rolled out under zero control input, and these trajectories   We provide an all-zero initial guess to the solvers, and the objective is to push the box to 18 different configurations. Each configuration is located 3 meters from the origin, with the angles distributed evenly in a clockwise direction, completing a full 360-degree circle. We refer to Appendix B-B for the contact-implicit formulation of different contact modes. 3) Transport: As shown in Fig. <ref type="figure" target="#fig_3">4</ref>(c), the goal is to determine the active force u applied to the cart, under various initial poses and velocities, to transport the payload m 1 to a specified position without it falling off the cart m 2 . This requires precise indirect manipulation of m 1 by controlling the friction force between m 1 and m 2 through u. We use an all-zero initial guess for different initial states. The cart is commanded to move from 3 meters to the origin, with different start and goal relative positions (leftmost, middle, rightmost) to the payload (e.g., precisely moving the payload from the leftmost to the rightmost part of the cart while reaching the absolute end position). The task becomes more challenging with different initial and final velocities, requiring alternating dragging motions of the cart to achieve the objective. Its MPCC formulation is provided in Appendix B-C. 4) Push T: The modeling techniques for the push T problem are similar to those used in the push box problem. However, it presents its own challenges due to the nonconvex shapes of the "T" and the increase in contact modes (λ 1 -λ 8 as shown in Fig. <ref type="figure" target="#fig_3">4(d)</ref>). This means we cannot simply construct complementarity constraints related to contact using four hyperplanes as we do with the push box problem. We now need to establish complementarity conditions that involve contact points lying on certain line segments and exerting corresponding contact forces, which requires special modeling techniques. Details of the problem formulation is demonstrated in Appendix B-D. Together with the slack variables, the total state dimension is 29. The experiment setting is the same with Push Box. 5) Hopper: We model the system as a point mass m atop a massless leg with original length l 0 , capable of radial contraction and thrust application. As shown in Fig. <ref type="figure" target="#fig_3">4</ref>(e), the hopper exhibits two distinct phases: the "Flight Phase", where the leg length remains constant and motion approximates free fall, and the "Stance Phase", which initiates upon ground contact. During flight, we directly control the leg angular speed ( θ = u 1 ). The stance phase, triggered by p y -l 0 cos θ ≤ 0, involves fixed-point rotation around the contact point. As the leg contracts (r increases within r 0 ), it can exert a unidirectional thrust u = u 2 along its radial axis. The transition back to flight occurs when r = 0. The task objective is to navigate the hopper's hybrid dynamics without pre-specified contact sequences. The hopper is released from a certain height at the origin, and must optimize its own contact sequence, stance phase contact forces, and flight phase angular velocities to jump and stop at x = 2 m. This involves simultaneously managing multiple goals: exploring optimal contact sequences, controlling leg angle during flight, and managing thrust after landing to achieve the specified final position. The initial guess is a passive free-fall motion. As derived in Appendix B-E, we employ a contact-implicit formulation to unify the dynamics of both phases within a single framework, with carefully crafted complementarity constraints to govern the transitions between phases. 6) Waiter: The waiter problem, see Fig. <ref type="figure" target="#fig_3">4</ref>(f), is also studied in <ref type="bibr" target="#b59">[60]</ref> where it was modeled with linear complementarity constraints and optimized in a model-predictive control pipeline. Initially, the plate on the table has only a small overhang. The objective is to indirectly control the friction force with the plate by applying a normal force λ and a pulling force u to the plate m 1 via the pusher m 2 .</p><formula xml:id="formula_26">Algorithm 1: CRISP Input: Initial guess x 0 Data: k max , ∆ 0 , ∆ max , µ 0 , µ max , η low , η high , γ shrink , γ expand , ϵ c , ϵ p , ϵ r 1 Initialize k ← 0, µ ← µ 0 , ∆ k ← ∆ 0 ; 2 while k &lt; k max do 3 Evaluate f k , ∇f k , ∇ 2 xx f k , c k ,</formula><formula xml:id="formula_27">if ρ k &lt; η low then ∆ k+1 ← γ shrink ∆ k ; x k+1 ← x k + p k ; else if ρ k &gt; η high and ∥p k ∥ ∞ = ∆ k then ∆ k+1 ← min{γ expand ∆ k , ∆ max }; x k+1 ← x k + p k ; else ∆ k+1 ← ∆ k ; x k+1 ← x k + p k ; end // Check</formula><p>The goal is to gradually extract the plate until its center of mass x 1 aligns with the pusher's center x 2 , stopping at the table's edge with matching velocities. This task requires consideration of the friction between the table and the plate, as well as preventing the plate from tipping over its leftmost contact point with the table (see Appendix B-F).</p><p>We provide an all-zero initial guess to test the solvers' ability to optimize an informed contact trajectory.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Comparisons with Numerical Solvers</head><p>While achieving feasible trajectories is a primary goal for local solvers, this alone is insufficient in robotics applications. Dynamically feasible trajectories can often be trivially obtained (e.g., remaining stationary at the origin) but may lack practical value. Therefore, we argue that beyond mere feasibility, the ability to efficiently and robustly optimize informed control sequences for tracking objectives is crucial.</p><p>Performance metrics. We evaluate the solvers' performance based on three key metrics. First, we examine the solution success rate, which reflects the overall ability of each solver to converge to a feasible and informed solution from various settings (different initial/terminal conditions, different initial guesses). Second, we assess the quality of the solution through the objective values achieved and the tracking error. Finally, we measure the solving efficiency by considering the number of iterations required and the total solving time. These metrics serve to answer a fundamental scientific question:</p><p>Can these solvers robustly discover informed contact sequences and contact force profiles from scratch?</p><p>This inquiry is particularly relevant, as precise contact patterns are often unknown a priori in real-world applications.</p><p>Quantitative results. For the first four examples, we recorded and summarized the numerical performance of the benchmark solvers under different initial states and initial guesses, as presented in the Table II and Fig. <ref type="figure" target="#fig_4">5</ref>. Solutions with constraints violation below 10 -5 , translation error norm below 0.1, translation velocity error norm below 0.5, angular error below π/6, and angular velocity error below 0.1π rad/s as deemed successful. The objective function, as previously highlighted, primarily balances tracking error and control efforts. We analyze the performance of four solvers across the first four examples, focusing on median tracking error, average iteration count, and computation time. To better illustrate the performance and robustness of each solver under different initial guesses, we boxplot the distribution of constraint violations, objective values, and tracking errors in Fig. <ref type="figure" target="#fig_4">5</ref>. These plots provide a comprehensive overview of solver behavior across all experiments, including both feasible and infeasible solutions, offering a complete picture of their performance characteristics.</p><p>Our results demonstrate that CRISP consistently produces feasible trajectories with the lowest tracking error and overall objective values across all tasks.</p><p>The box plot underscores CRISP's remarkable robustness, showing consistently superior performance across varied initial states and guesses, with minimal outliers. While IPOPT generally performs well among the benchmark solvers, it occasionally produces feasible but impractical solutions. We've visualized these outlier cases, contrasting CRISP and IPOPT trajectories in Fig. <ref type="figure">6</ref>. SNOPT, despite outperforming IPOPT in the transport example, struggles with efficiency due to high iteration requirements and exhibits unstable optimization results, notably failing to optimize the informed contact sequence in the push box scenario. These findings underscore the critical importance of solver stability. More visualization of the trajectories can be found in Appendix C.</p><p>Qualitative results. For the hopper and waiter examples, which involve more challenging contact reasoning, we focus our comparison on CRISP and IPOPT. The results are visualized in Fig. <ref type="figure" target="#fig_5">7</ref>. In the hopper task, the objective is to jump and   PROXNLP was unable to solve the Push T problem within a tractable amount of time due to its larger problem size, so its data is not applicable in the figure . 
+
+stop at a 2 m horizontal distance with zero height, while minimizing control effort. The waiter task requires maneuvering the plate's center of mass to the edge of the table without tipping, ensuring that both the plate and pusher have a final rightward velocity of 2 m/s. Both IPOPT and CRISP successfully optimized feasible trajectories, but CRISP significantly outperformed IPOPT in terms of solution quality for finding informed contact sequences. CRISP achieved remarkably low objective values of 5.45 and 8.68 for the hopper and waiter examples, respectively, with precise tracking performance. In contrast, IPOPT's solutions resulted in much higher objective values of 137.5 and 1855, failing to reach the desired terminal states and incurring substantially larger control efforts, which is evidently shown in Fig. <ref type="figure" target="#fig_5">7</ref>.</p><p>Videos. On the project website, we provide animations of optimized trajectories computed by CRISP.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Additional Experiments</head><p>Additional Baselines on Push T. As an alternative formulation, we reformulated Push T as an MIQCP by associating each facet with a binary variable indicating the contact mode. Using Gurobi to solve this formulation, it failed to find solutions for planning horizons beyond 4 steps (within 10 minutes), making it incomparable with CRISP. The code to reproduce these experiments is open-sourced alongside CRISP.</p><p>LCP Solvers. The Transport and Waiter problems, characterized by linear dynamics and linear complementarity con-straints, are naturally suited for a QP + LCP solver. We evaluated LCQpow <ref type="bibr" target="#b27">[28]</ref> on these tasks. For the Transport problem, LCQpow achieves an average solve time of 251 s with an average tracking error of 0.4267, and 92.5% optimized trajectories are feasible. In comparison, as shown in Table <ref type="table" target="#tab_4">II</ref>, CRISP significantly outperforms LCQpow with an average solve time of 0.77 s, an average tracking error of 1.1 × 10 -4 . For the more challenging Waiter problem, LCQPow fails to generate any feasible solutions. The code for reproducing these results is available in our open-source repository.</p><p>Real-World Push T. To further validate the effectiveness of CRISP in delivering high-quality trajectories, we applied CRISP to a real robotic arm system for the push T task. In our validation experiments, we estimated the position of the T block during each perception cycle, using this as the new initial state for CRISP to solve them online. The solution from CRISP was then applied in an MPC feedback loop. In the physical experiments, we discretized the problem into 10 time steps with intervals of 0.05 s. Under this setup, the average solution time for CRISP was 80 ms, demonstrating robust and efficient performance in pushing the T block to the target position. A visualization of the process for different initial conditions is provided in Fig. <ref type="figure">8</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. RELATED WORKS</head><p>Motion planning through contact presents unique challenges due to the inherently discontinuous nature of contact inter-Fig. <ref type="figure">6</ref>: Visualization of some outlier cases in IPOPT. IPOPT results (left column) versus our approach (right column). The color gradient represents the progression of time (from blue to yellow). We note that in the transport example (the third row), the initial state has the cargo at the rightmost end of the cart, with both moving left at 4 m/s. The terminal state requires the cart at the origin and the cargo at the leftmost end, both with a leftward velocity of 2 m/s. This scenario necessitates initial braking, followed by back-and-forth motion near the origin. Actually, this challenging case causes all other solvers to fail. While IPOPT produces a feasible but impractical solution (remaining stationary at the origin), our approach successfully optimizes the complex contact sequences. actions <ref type="bibr" target="#b57">[58,</ref><ref type="bibr" target="#b33">34]</ref>. The literature on modeling contact can be broadly divided into smooth and rigid methods.</p><p>Smooth contact model. The principle of modeling contact in a "smooth" manner involves approximating nonsmooth contact events into smooth and continuous functions relating contact forces to states. This approach often simulates effects similar to springs <ref type="bibr" target="#b8">[9]</ref>, dampers <ref type="bibr" target="#b40">[41]</ref>, or a combination of both <ref type="bibr" target="#b43">[44,</ref><ref type="bibr" target="#b44">45]</ref>. By doing so, it allows contact forces to be expressed as functions of the robot's states and seamlessly integrated into the overall dynamic functions, providing welldefined gradient information.</p><p>Rigid contact model: hybrid dynamics. Hybrid systems offer a robust framework for modeling systems that exhibit both continuous and discrete behaviors <ref type="bibr" target="#b24">[25]</ref>. These systems are characterized by their ability to switch between different dynamic regimes, or modes, depending on the contact conditions. In the locomotion community, the control of switched systems often allows for instantaneous changes in velocity during contact events <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b15">16,</ref><ref type="bibr" target="#b0">1]</ref>, while continuous dynamics govern the system at other times. This approach requires a predefined gait, which specifies a sequence of potential contact points <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b35">36]</ref>.</p><p>Rigid contact model: implicit formulations. There are two mathematically equivalent approaches to implicitly encode the discrete nature of hybrid systems for switching between different continuous subsystems. One approach is through Mixed Integer Programming (MIP) <ref type="bibr" target="#b55">[56]</ref>, which introduces binary integer variables to act as switches for encoding Fig. <ref type="figure">8</ref>: Key frames visualization of the real-world Push T experiments from various initial configurations (each row). Videos of the results can be found on the project website. contact events <ref type="bibr" target="#b11">[12,</ref><ref type="bibr" target="#b1">2,</ref><ref type="bibr" target="#b2">3]</ref>. This method is straightforward in its implementation, yet optimizing these discrete variables is challenging for gradient-based NLP solvers and often requires specialized solvers, such as Gurobi <ref type="bibr" target="#b26">[27]</ref>. Furthermore, the number of integer variables can significantly increase with the number of contact modes and the planning horizon, leading to computational intractability <ref type="bibr" target="#b52">[53,</ref><ref type="bibr" target="#b39">40]</ref>. On the other hand, the contact force and condition can be encoded through the introduction of complementarity constraints.</p><p>On the other hand, contact forces and conditions can be encoded through the introduction of complementarity constraints. Since <ref type="bibr" target="#b46">[47]</ref>, this approach has recently gained attention because it transforms the problem into a continuous NLP problem without compromising the discrete characteristics of contact. This transformation allows for the use of modern numerical optimization tools to solve the problem effectively <ref type="bibr" target="#b32">[33,</ref><ref type="bibr" target="#b59">60,</ref><ref type="bibr" target="#b4">5]</ref>. However, the failure of CQs in this context can lead to significant difficulties in solving these problems <ref type="bibr" target="#b19">[20,</ref><ref type="bibr" target="#b21">22,</ref><ref type="bibr" target="#b20">21]</ref>. CRISP aims to provide an efficient and robust solution by addressing the challenges associated with solving nonlinear contact problems that include general nonlinear complementarity constraints.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSION</head><p>We presented CRISP, a primal-only numerical solver for contact-implicit motion planning that is based on sequential convex optimization. We started by uncovering the geometric insights underpinning the difficulty of solving MPCCs arising from contact-implicit planning. That motivated us to design a primal-only algorithm where each trust-region subproblem is convex and feasible by construction. For the first time, we proved sufficient conditions on the algorithm's convergence to stationary points of the merit function. With a careful C++ implementation, we benchmarked CRISP against stateof-the-art solvers on six contact-implicit planning problems, demonstrating superior robustness and capability to generate entirely new contact sequences from scratch. We believe CRISP sets a new standard and our open-source benchmarks offer significant value to contact-rich motion planning-one of the most active and challenging areas in robotics research.</p><p>Limitations and future work. First, while CRISP accepts general nonlinear programming problem definitions applicable to various optimal control and motion planning problems, it requires further development to evolve into a comprehensive robotics optimization toolbox comparable to OCS2 <ref type="bibr" target="#b16">[17]</ref> and CROCODDYL <ref type="bibr" target="#b41">[42]</ref>. This development primarily involves integration with advanced dynamics libraries such as Pinocchio <ref type="bibr" target="#b9">[10]</ref>, which would enable CRISP to handle more complex dynamics and obtain their derivative information efficiently. Second, although our C++ implementation is highly efficient, its adaptivity for real-time tasks could be further increased. The acquisition of gradients and Hessian matrices could be parallelized, and matrix operations could achieve significant speedups if implemented on GPUs <ref type="bibr" target="#b30">[31]</ref>. Additionally, while our subproblems are already cheap as convex QPs, the overall framework's efficiency is still constrained by the speed of the underlying QP solver. As mentioned in Remark 10, we plan to test CRISP with scalable first-order QP solvers. On the theoretical side, a complete picture of the relationship between local solutions of the original problem and stationary points of the merit function, as well as how to check if a stationary point of the nonsmooth merit function (that CRISP finds) is locally optimal, warrants further investigation. This establishes the relationship between relative velocity and friction force while encoding the transition between static and kinetic friction in a clean way.</p><p>Initial constraints. We add equality constraints to enforce the initial pose and velocity of the cart and the payload.</p><p>Cost. We adopt a quadratic objective function to penalize the active force u and the terminal pos and velocity tracking error.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Push T</head><p>Contact-Implicit Formulation: Denote the contact point in body frame (located at the COM of T block) as (c x , c y ), we have 8 different contact mode that exhibit their specific complementarity constraints.</p><formula xml:id="formula_28">-2l ≤c x ≤ 2l, -d c l ≤ c y ≤ (4 -d c )l, (76) λ 1 ̸ = 0 ⇒ c y -(4 -d c )l = 0, (77) λ 2 ̸ = 0 ⇒ |c x -2l|+|c y -(4 -d c )l|+|c y -(3 -d c )l|-l = 0, (<label>78</label></formula><formula xml:id="formula_29">) λ 3 ̸ = 0 ⇒ |c x -2l|+|c x -0.5l|+|c y -(3 -d c )l|-1.5l = 0, (<label>79</label></formula><formula xml:id="formula_30">) λ 4 ̸ = 0 ⇒ |c x -0.5l|+|c y -(3 -d c )l|+|c y + d c l|-3l = 0, (<label>80</label></formula><formula xml:id="formula_31">) λ 5 ̸ = 0 ⇒ |c y + d c l|+|c x + 0.5l|+|c x -0.5l|-l = 0, (81) λ 6 ̸ = 0 ⇒ |c x + 0.5l|+|c y -(3 -d c )l|+|c y + d c l|-3l = 0, (82) λ 7 ̸ = 0 ⇒ |c x + 2l|+|c x + 0.5l|+|c y -(3 -d c )l|-1.5l = 0, (<label>83</label></formula><formula xml:id="formula_32">) λ 8 ̸ = 0 ⇒ |c x + 2l|+|c y -(4 -d c )l|+|c y -(3 -d c )l|-l = 0.<label>(84)</label></formula><p>Designate the positive direction of contact forces as rightward for the x axis and upward for the y axis. And introduce the following slack variables v and w complementing each other to smooth the absolute operation |•| as we did in the transport example:</p><formula xml:id="formula_33">v 1 -w 1 = c x -2l,<label>(85)</label></formula><formula xml:id="formula_34">v 2 -w 2 = c y -(4 -d c )l,<label>(86)</label></formula><formula xml:id="formula_35">v 3 -w 3 = c y -(3 -d c )l,<label>(87)</label></formula><formula xml:id="formula_36">v 4 -w 4 = c x -0.5l, (88) v 5 -w 5 = c y + d c l, (89) v 6 -w 6 = c x + 0.5l, (90) v 7 -w 7 = c x + 2l, (91) 0 ≤ v 1 ⊥ w 1 ≥ 0, (92) 0 ≤ v 2 ⊥ w 2 ≥ 0, (93) 0 ≤ v 3 ⊥ w 3 ≥ 0, (94) 0 ≤ v 4 ⊥ w 4 ≥ 0, (95) 0 ≤ v 5 ⊥ w 5 ≥ 0, (96) 0 ≤ v 6 ⊥ w 6 ≥ 0, (97) 0 ≤ v 7 ⊥ w 7 ≥ 0, (98) 0 ≤ v 8 ⊥ w 8 ≥ 0,<label>(99)</label></formula><p>which can be equivalently written as:</p><formula xml:id="formula_37">v 1 + w 1 = |c x -2l|, (100) v 2 + w 2 = |c y -(4 -d c )l|, (101) v 3 + w 3 = |c y -(3 -d c )l|, (102) v 4 + w 4 = |c x -0.5l|, (103) v 5 + w 5 = |c y + d c l|, (104) v 6 + w 6 = |c x + 0.5l|, (105) v 7 + w 7 = |c x + 2l|,<label>(106) (107)</label></formula><p>Then we have the complementarity constraints:</p><formula xml:id="formula_38">0 ≤ -λ 1 ⊥ (4 -d c )l -c y ≥ 0, (108) 0 ≤ -λ 2 ⊥ v 1 + w 1 + v 2 + w 2 + v 3 + w 3 -l ≥ 0, (109) 0 ≤ λ 3 ⊥ v 1 + w 1 + v 3 + w 3 + v 4 + w 4 -1.5l ≥ 0, (110) 0 ≤ -λ 4 ⊥ v 3 + w 3 + v 4 + w 4 + v 5 + w 5 -3l ≥ 0, (111) 0 ≤ λ 5 ⊥ v 4 + w 4 + v 5 + w 5 + v 6 + w 6 -l ≥ 0, (112) 0 ≤ λ 6 ⊥ v 3 + w 3 + v 5 + w 5 + v 6 + w 6 -3l ≥ 0, (113) 0 ≤ λ 7 ⊥ v 3 + w 3 + v 6 + w 6 + v 7 + w 7 -1.5l ≥ 0, (114) 0 ≤ λ 8 ⊥ v 2 + w 2 + v 3 + w 3 + v 7 + w 7 -l ≥ 0.<label>(115)</label></formula><p>Furthermore, if we want to avoid simultaneous application of forces on adjacent edges at corners, we introduce additional complementarity constraints. These constraints ensure that at any given time, only one force can be active:</p><formula xml:id="formula_39">λ i ⊥ λ j , ∀i, j = 1 . . . 8, and i ̸ = j.<label>(116)</label></formula><p>With the complementarity constraints derived above, we can write the unified dynamics regardless of the contact point.</p><formula xml:id="formula_40">ṗx = 1 µmg . [(λ 2 + λ 4 + λ 6 + λ 8 ) cos θ -(λ 1 + λ 3 + λ 5 + λ 7 ) sin θ] ,<label>(117) ṗy</label></formula><formula xml:id="formula_41">= 1 µmg . [(λ 2 + λ 4 + λ 6 + λ 8 ) sin θ + (λ 1 + λ 3 + λ 5 + λ 7 ) cos θ] ,<label>(118) θ</label></formula><formula xml:id="formula_42">= 1 crµmg . [-c y (λ 2 + λ 4 + λ 6 + λ 8 ) + c x (λ 1 + λ 3 + λ 5 + λ 7 )] ,<label>(119)</label></formula><p>where c ∈ [0, 1] is the integration constant of the box, and r is the characteristic distance, typically chosen as the max contact distance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Hopper</head><p>The hopper exhibits two-phase dynamics, which we will unify through the complementarity constraints to decide whether it is in the fly or stance.</p><p>Dynamics constraints. We define the full states of the hopping robot as: v = [p x , p y , q x , q y , θ, r, ṗx , ṗy , (p x , p y ) and (q x , q y ) are the positions of the head and tail of the hopper respectively. r is the leg compression distance. u 1 and u 2 are the controls for leg angular velocity and thrust, each active only in one phase. Then, the hopper's dynamics can be written as:</p><p>• Flight Phase: px = 0, (120a) py = -g, (120b) q x = p x + l 0 sin θ, (120c) q y = p y -l 0 cos θ, (120d) θ = u 1 .</p><p>(120e)</p><p>• Stance Phase:</p><p>In the stance phase, (q x , q y ) is fixed at the contact point, and we can get the following dynamics equations: mp x + u 2 sin θ = 0, (121a) mp y -u 2 cos θ + mg = 0, (121b) (l 0 -r) cos θ -p y + q y = 0, (121c) (l 0 -r) sin θ -q x + p x = 0.</p><p>(121d) (l 0 -r) 2 -(p x -q x ) 2 -(p y -q y ) 2 = 0, (121e) Also, q x and q y are fixed by: qx = 0, (122a) qy = 0.</p><p>(122b)</p><p>Since during the flight phase, r remains 0, while u 2 can only be greater than 0 during the stance phase. We can observe that (120a)-(120d) are actually the same as (121a)-(121d), except that they involve these phase-specific variables. To unify the dynamics into a single optimization problem, we construct the following complementarity constraints: 0 ≤ r ⊥ q y ≥ 0, (123a) 0 ≤ u 2 ⊥ q y ≥ 0, (123b)</p><formula xml:id="formula_43">0 ≤ u 2 1 ⊥ r ≥ 0. (<label>123c</label></formula><formula xml:id="formula_44">)</formula><p>These constraints ensure that the leg maintains its original length during the flight phase while allowing contraction (r ≥ 0) when in contact with the ground. These conditions are complementary, enabling us to control the switching of dynamics between phases. Specifically, we transform the dynamics of different phases to:</p><formula xml:id="formula_45">mp x + u 2 sin θ = 0,<label>(124</label></formula><p>) mp y -u 2 cos θ + mg = 0, (125) (l 0 -r) cos θ -p y + q y = 0, (126) (l 0 -r) sin θ -q x + p x = 0, (127) r. qx = 0, (128) r. qy = 0, (129) q y .(θ -u 1 ) = 0, (130) r. (l 0 -r) 2 -(p x -q x ) 2 -(p y -q y ) 2 = 0. </p><p>(l 0 -r k ) cos θ k -p y,k + q y,k = 0, (134) (l 0 -r k ) sin θ k -q x,k + p x,k = 0, (135) r k . q x,k+1 -q x,k dt = 0, (136) r k . q y,k+1 -q y,k dt = 0, (137)</p><formula xml:id="formula_47">r k . (l 0 -r k ) 2 -(p x,k -q x,k ) 2 -(p y,k -q y,k ) 2 = 0. (<label>138</label></formula><formula xml:id="formula_48">)</formula><p>Contact constraints. We introduce additional constraints to ensure physical consistency and feasibility:</p><formula xml:id="formula_49">0 ≤ r ≤ r 0 .<label>(139)</label></formula><p>The leg contraction r within a feasible range. The constant r 0 represents the maximum allowable contraction and is chosen such that r 0 &lt; l 0 , where l 0 is the original leg length. These additional constraints, in conjunction with the complementarity constraint, provide a comprehensive formulation that captures the essential physical characteristics of the hopping robot while maintaining the unified representation of both flight and stance phases.</p><p>Initial constraints. The hopper is released from 1.5 m height with zero initial speed and the leg vertical.</p><p>Cost. The cost is a quadratic loss to force the robot to jump to and stop at 2 m with zero height while penalizing the control effort of the angular velocity u 1 and thrust u 2 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Waiter</head><p>Dynamics constraints. Denote the full states in the waiter problem:</p><p>v = [x 1 , x 2 , ẋ1 , ẋ2 , v, w, p, q, states λ N , u, f p , f t , N control ].</p><p>In this scenario, (x 1 , x 2 ) and ( ẋ1 , ẋ2 ) represent the position and velocity of the plate and pusher, respectively. The variables z, w, p, and q are slack variables used to model the friction between the plate and table, as well as between the pusher and plate, similar to the transport example. For control, we have direct control over the normal force applied by the pusher, denoted as λ N , and the horizontal thrust, u. Additionally, there is indirect control over the frictional forces between the plate and table, f t , and between the pusher and plate, f p . The support force exerted by the table is N . The system dynamics are described by the following equations:</p><formula xml:id="formula_50">m 2 ẍ2 = u -f p , (140a) m 1 ẍ1 = f p -f t , (140b) N + λ N = m 1 g, (140c) λ N (x 2 -x 1 + l 0 ) ≤ m 1 gl 0 , (140d) N ≥ 0, λ N ≥ 0, (140e) x 2 ≥ 0, x 2 -x 1 ≤ l 0 .<label>(140f)</label></formula><p>Here, (140c) ensures vertical force balance. (140d) prevents tilting around the leftmost contact point between the table and plate. Finally, (140f) restricts the pusher's position to remain clear of the table while staying on the overhanging part of the plate.</p><p>Contact constraints. The following complementarity constraints control the magnitude and direction of the friction f t and f p ẋ1 = z -w, (141) ẋ2 -ẋ1 = p -q, (142) 0 ≤ z ⊥ w ≥ 0, (143) 0 ≤ p ⊥ q ≥ 0, (144) 0 ≤ z ⊥ (N µ 1 -f t ) ≥ 0, (145) 0 ≤ w ⊥ (N µ 1 + f t ) ≥ 0, (146) 0 ≤ p ⊥ (µ 2 λ N -f p ) ≥ 0, (147) 0 ≤ q ⊥ (µ 2 λ N + f p ) ≥ 0.</p><p>(148)</p><p>These equations ensure the friction cone constraints, which automatically manage the magnitude, nature (static or kinetic), and direction of the frictions. Initial constraints. In the waiter problem, the initial state is defined with the pusher positioned next to the table, and the 14-meter-long plate has a 1-meter overhang.</p><p>Cost. The objective is to achieve a terminal position and velocity of the plate and pusher, such that the plate is pulled out until its COM aligns with the pusher next to the table, while also minimizing control efforts.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 :</head><label>1</label><figDesc>Fig. 1: CRISP computes entirely new contact sequences from naive and even all-zero initializations. For (a), (b), (c), and (d), the left side shows the initial trajectories and the right side displays the optimized trajectory from CRISP.For (e) the hopper problem, the initial guess is a free-fall motion released from the origin. The color gradient represents the progression of time (from blue to yellow). For (f), we implement the policy derived from CRISP in a Model Predictive Control (MPC) framework for real-world push tasks. Detailed descriptions of these tasks are provided in §IV.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: Geometric intuition of MPCC through Example 1.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Depiction of the ℓ 1 penalty merit function for Example 1 with different penalty parameters µ.</figDesc><graphic coords="4,48.96,54.00,514.06,91.78" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: Schematic overview of the contact-implicit motion planning tasks considered in the experiments. Each task poses unique challenges in contact sequencing, force distribution, and modeling of the multi-modal dynamics.</figDesc><graphic coords="7,48.96,54.00,514.07,337.09" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Box plots of benchmark metrics on three tasks: cartpole with soft walls, push box, transport, and push T. The plots complement TableIIto show the distribution of (a) objective value, (b) tracking error, and (c) constraint violation across multiple initial states and initial guesses. PROXNLP was unable to solve the Push T problem within a tractable amount of time due to its larger problem size, so its data is not applicable in the figure.</figDesc><graphic coords="10,232.06,151.66,162.64,162.64" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Comparison of optimized trajectories for the hopper and waiter problems. The left and right columns show the results from IPOPT and CRISP respectively. In the hopper problem, we present four key frames (from top to bottom at 1 s, 2 s, 3 s, and 4 s) illustrating the hopper's trajectories and contact force. The yellow color indicates the current position of the hopper, while blue represents the past trail.</figDesc><graphic coords="11,306.96,54.00,256.06,221.98" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>( 131 )</head><label>131</label><figDesc>These unified dynamics, together with the complementary constraints (123a)-(123c), provide a way to write the hopper problem into one optimization problem in the contact-implicit format. Discretize the dynamics, we get:m ṗx,k+1 -ṗx,k dt + u 2,k sin θ k = 0,(132)m ṗy,k+1 -ṗy,k dt -u 2,k cos θ k + mg = 0,</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="12,48.96,54.00,514.08,289.17" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head></head><label></label><figDesc>and ∇c k at x k ;</figDesc><table><row><cell>4</cell><cell>Construct and solve subproblem (10) to obtain p k ;</cell></row><row><cell>5</cell><cell>Compute reduction ratio ρ k ;</cell></row><row><cell>6</cell><cell>// Second Order Correction;</cell></row><row><cell>7</cell><cell>if ared k &lt; 0 then</cell></row><row><cell>8</cell><cell>From (13), calculate Second Order Correction</cell></row><row><cell></cell><cell>Step pk ;</cell></row><row><cell>9</cell><cell>p k ← pk ;</cell></row><row><cell></cell><cell>Re-compute reduction ratio ρ k ;</cell></row><row><cell></cell><cell>if ared k &lt; 0 then</cell></row><row><cell></cell><cell>Abandon the Step;</cell></row><row><cell></cell><cell>∆ k+1 ← γ shrink ∆ k ;</cell></row><row><cell></cell><cell>Go to Line 28;</cell></row><row><cell></cell><cell>end</cell></row><row><cell></cell><cell>end</cell></row><row><cell></cell><cell>// Trust Region Update;</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE I :</head><label>I</label><figDesc>Definition of Hyperparameters in CRISP</figDesc><table><row><cell>Paramaters</cell><cell>Descriptions</cell></row><row><cell>kmax</cell><cell>max iteration numbers: 1000</cell></row><row><cell>∆ 0</cell><cell>initial trust region radius: 1</cell></row><row><cell>∆max</cell><cell>max trust region radius: 10</cell></row><row><cell>µ 0</cell><cell>initial penalty: 10</cell></row><row><cell>µmax</cell><cell>max penalty: 1e 6</cell></row><row><cell>η low</cell><cell>reduction ratio lower bound: 0.25</cell></row><row><cell>η high</cell><cell>reduction ratio upper bound: 0.75</cell></row><row><cell>γ shrink</cell><cell>trust region shrink factor: 0.25</cell></row><row><cell>γ expand ϵc</cell><cell>trust region expand factor: 2 tolerance of constraint violation: 1e 6</cell></row><row><cell>ϵp</cell><cell>tolerance of trial step norm: 1e -3</cell></row><row><cell>ϵr</cell><cell>tolerance of trust region radius: 1e -3</cell></row><row><cell cols="2">contaminated with random noise.</cell></row><row><cell cols="2">2) Push Box: The next benchmark problem is the classic</cell></row><row><cell cols="2">push box problem, as illustrated in Fig. 4(b). In this task,</cell></row><row><cell cols="2">our objective is to manipulate a planar box with dimen-</cell></row></table><note><p>sions 2a × 2b to a series of specified target configurations on a table with friction. It involves multiple contact modes-four in this case, corresponding to different faces of the box. The solver must reason about both the sequence of contact positions and the appropriate contact forces to achieve the desired motion. The initial state of the system places the box at the origin, aligned with the positive x-axis.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>TABLE II :</head><label>II</label><figDesc>Comparison of CRISP with benchmark solvers across different tasks.</figDesc><table /></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENT</head><p>We thank <rs type="person">Michael Posa</rs> and <rs type="person">Zac Manchester</rs> for insightful discussions about contact-rich motion planning.</p></div>
+			</div>			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>APPENDIX A PROOF OF <ref type="bibr">THEOREM 8</ref> Proof: As x k converges to x ⋆ , we have ∥p k ∥= ∥x k+1 -x k ∥→ 0. By definition, there exists a constant K, such that ∥p k ∥ &lt; ∆ min for all k &gt; K, indicating that the trust-region constraint becomes inactive in the subproblem. In this proof, we consider only equality constraints, and the proof technique for inequality constraints is similar and will be addressed at the end. In this case, the merit function <ref type="bibr" target="#b7">(8)</ref> becomes:</p><p>where x ∈ R n , E denotes the equality constraints set and |E|= m E . First, we rewrite the trust-region subproblem <ref type="bibr" target="#b8">(9)</ref> to directly optimize over x k+1 instead of p k :</p><p>For the ith constraint c i ∈ E, we define w k,i ∈ R as:</p><p>Since the l 1 norm |•| is piecewise smooth, we separate the scalar w k,i into three smooth sets:</p><p>Extending to the vector of all equality constraints</p><p>Since the number of such sets is finite, there must exist a subsequence {w n k } ∞ k=1 that belongs to one of these sets, denoting as S. Without loss of generality, we assume that in this set, the first m 1 components of w n k are positive, the m 1 + 1 to m 1 + m 2 components are negative, and the remaining components are zero.</p><p>For any p ∈ R n , we define the directional derivatives 1 :</p><p>Since x n k +1 is the global minimizer of the convex function q µ,n k (x), we have D(q µ,n k (x n k +1 ); p) ≥ 0. On the other hand,</p><p>Using the fact that:</p><p>Thus,</p><p>1 We use ↓ for simplicity, but this is equivalent to → because one can easily choose p as -p if t &lt; 0.</p><p>The last inequality comes from the fact that if all the elements in a scaler sequence are nonnegative, then the limitation of the sequence is nonnegative. Now we turn to calculate D(ϕ 1 (x ⋆ ; µ); p). One should be careful: since S is not closed, even the first m 1 components of w n k are always positive, the corresponding components in the converged point w ⋆ = c 1 (x ⋆ ) . . . c m E (x ⋆ ) will possibly converge to 0. Similar things happen to the negative part. However, the m 1 + m 2 + 1 ∼ m E components of w ⋆ will always be 0. To fix this, we assume that, for the</p><p>≥ 0</p><p>For inequality constraints we define w k,i as the same. We still separate R into</p><p>and similarly, we have</p><p>Other parts of the proof are the same. Consequently D(ϕ 1 (x ⋆ ; µ); p) ≥ 0 ∀p, we conclude the proof.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX B CONTACT-IMPLICIT FORMULATIONS</head><p>In this section, we provide detailed contact-implicit optimization problem formulations for the five tasks, including tracking objectives, dynamics, contact constraints, and other constraints. We believe this presentation is not only valuable for understanding the principles of contact-implicit modeling, but also represents a necessary step for the model-based community. Interested readers are encouraged to refer to these formulations to test these same problems using their own algorithms. All problem formulations are open-sourced alongside CRISP.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Cartpole with Softwalls</head><p>Dynamics constraints. Denote the full states of the system as:</p><p>and we use subscript i to denote the corresponding variable at time stamp i. The dynamics can be written as:</p><p>Here, x denotes the cart position, while m c and m p represent the mass of the cart and the pole end, respectively. It is important to note that the contact forces λ 1 and λ 2 are incorporated into the dynamics equations despite their discrete nature. These forces are automatically triggered and controlled by the complementarity constraints introduced below, which exemplifies the principle and power of contact-implicit formulation. We utilize the Semi-Implicit Euler method <ref type="bibr" target="#b58">[59]</ref> to discretize the dynamics with dt. At time stamp i:</p><p>In the above dynamics constraints, ẍ and θ can be simply derived from ( <ref type="formula">39</ref>)-( <ref type="formula">40</ref>). Contact constraints. The complementary constraints from the contact are:</p><p>This complementarity constraint is constructed using the relationship between the pole's position and the wall, along with the contact force. Its underlying meaning is that the wall can only provide unidirectional force. When there is no contact, λ is zero. Upon contact, the force becomes proportional to the compression distance with coefficients k. Initial Constraints. The optimization problem is also subject to equality constraints that specify the initial state.</p><p>Cost. For the objective function, we opt to minimize both the control effort and the terminal tracking error, each expressed in quadratic form. It is worth noting that intermediate tracking loss is not incorporated into our formulation. This decision stems from the general absence of trivial reference trajectories in contact-involved trajectory optimization tasks. Our goal is to generate a feasible trajectory from scratch that drives the robot as close as possible to the desired terminal state.</p><p>where Q ∈ R 4×4 and R ∈ R 3×3 are weighting matrices for the state and control variables. All the default values of the parameters are provided in the example problems of CRISP.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Push Box</head><p>We use p x , p y , and θ to represent the position and orientation of the box in world frame {w}, while the contact position (c x , c y ) and contact force λ at each facet is defined in the body frame {b}. We assume that at any given moment, there is only one point of contact between the pusher and the box with only the corresponding normal force applied, and the entire process is quasi-static. The positive direction of the applied forces is defined with respect to the body frame {b} of the robot.</p><p>Dynamics constraints. In this work, following <ref type="bibr" target="#b25">[26]</ref>, we adapt the commonly used ellipsoidal approximation of the limit surface to model the interaction between the contact force applied by the pusher and the resulting spatial slider velocity. The model captures the principle of the motion of the box while keeping its simplicity. Denote the full states of the system as:</p><p>Then, the push box dynamics can be writen as:</p><p>where c ∈ [0, 1] is the integration constant of the box, and r is the characteristic distance, typically chosen as the max distance between a contact point and origin of frame {b}. Discretize the continuous dynamics with the explicit Euler method, we get:</p><p>Contact constraints. First, we ensure that the contact force can only be applied through the contact point (c x , c y ), and only pointed inward the box, utilizing the contact-implicit formulation:</p><p>Moreover, to prevent the simultaneous application of forces on adjacent edges at corners, we introduce additional complementarity constraints. These constraints ensure that at any given time, only one force can be active. This is formulated as follows:</p><p>Initial Constraints. We add equality constraints to enforce the initial state of the box with (p x,0 , py,0 , θ0 ). Note that the initial condition is set to zero in this task.</p><p>Cost. Similar to the setting of cartpole with walls, we adopt a quadratic objective function to penalize the total four contact forces λ and the distance to the desired terminal condition vN .</p><p>C. Transport Dynamics constraints: Denote all states as</p><p>f is the friction between the two blocks with friction coefficients µ 1 ; p and q are two slack variables for modeling the direction of the f , which is decided by the relative movements between the two blocks. The positive directions of f and x are both horizontally to the right. The dynamics for this problem are straghtforward:</p><p>To avoid cargo m 1 from falling off the truck m 2 , we need:</p><p>Contact constraints. The control of the magnitude and direction of friction requires careful handling. f is not an active force; it needs to be indirectly controlled through the manipulation of u. This indirect control determines the friction's direction, magnitude, and whether it manifests as static or kinetic friction.</p><p>ẋ2 -ẋ1 = p -q, (72) 0 ≤ p ⊥ q ≥ 0, (73) 0 ≤ p ⊥ (µ 1 m 1 g -f ) ≥ 0, (74) 0 ≤ q ⊥ (f + µ 1 m 1 g) ≥ 0.</p><p>(75) </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Sequential linear quadratic optimal control for nonlinear switched systems</title>
+	</analytic>
+	<monogr>
+		<title level="j">IFAC-PapersOnLine</title>
+		<idno type="ISSN">2405-8963. 20th IFAC World Congress. 11</idno>
+		<imprint>
+			<biblScope unit="volume">50</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1463" to="1469" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">A mixed-integer convex optimization framework for robust multilegged robot locomotion planning over challenging terrain</title>
+		<author>
+			<persName><forename type="first">Bernardo</forename><surname>Aceituno-Cabezas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongkai</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">José</forename><surname>Cappelletto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Juan</forename><forename type="middle">C</forename><surname>Grieco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gerardo</forename><surname>Fernández-López</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Simultaneous contact, gait, and motion planning for robust multilegged locomotion via mixed-integer convex optimization</title>
+		<author>
+			<persName><forename type="first">Bernardo</forename><surname>Aceituno-Cabezas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carlos</forename><surname>Mastalli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongkai</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michele</forename><surname>Focchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andreea</forename><surname>Radulescu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Darwin</forename><forename type="middle">G</forename><surname>Caldwell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">José</forename><surname>Cappelletto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Juan</forename><forename type="middle">C</forename><surname>Grieco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gerardo</forename><surname>Fernández-López</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Claudio</forename><surname>Semini</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page">12</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">On using the elastic mode in nonlinear programming approaches to mathematical programs with complementarity constraints</title>
+		<author>
+			<persName><forename type="first">Mihai</forename><surname>Anitescu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Journal on Optimization</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="1203" to="1236" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Real-time multicontact model predictive control via admm</title>
+		<author>
+			<persName><forename type="first">Alp</forename><surname>Aydinoglu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Posa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">PROX-QP: Yet another quadratic programming solver for robotics and beyond</title>
+		<author>
+			<persName><forename type="first">Antoine</forename><surname>Bambade</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sarah</forename><surname>Elkazdadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adrien</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">CppAD: A package for C++ algorithmic differentiation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bradley</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Bell</surname></persName>
+		</author>
+		<ptr target="https://github.com/coin-or/CppAD.6" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Mit cheetah 3: Design and control of a robust, dynamic quadruped robot</title>
+		<author>
+			<persName><forename type="first">Gerardo</forename><surname>Bledt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><forename type="middle">J</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Katz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jared</forename><surname>Di Carlo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Patrick</forename><forename type="middle">M</forename><surname>Wensing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sangbae</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="2245" to="2252" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">The spring-mass model for running and hopping</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Blickhan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Biomechanics</title>
+		<idno type="ISSN">0021-9290. 11</idno>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="1217" to="1227" />
+			<date type="published" when="1989">1989</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">The Pinocchio C++ library -a fast and flexible implementation of rigid body dynamics algorithms and their analytical derivatives</title>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guilhem</forename><surname>Saurel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gabriele</forename><surname>Buondonno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Mirabel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florent</forename><surname>Lamiraux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Olivier</forename><surname>Stasse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Mansard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Symposium on System Integrations (SII)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Contact mode guided motion planning for quasidynamic dexterous manipulation in 3d</title>
+		<author>
+			<persName><forename type="first">Xianyi</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yifan</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><forename type="middle">T</forename><surname>Mason</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="2730" to="2736" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Footstep planning on uneven terrain with mixed-integer convex optimization</title>
+		<author>
+			<persName><forename type="first">Robin</forename><surname>Deits</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2014 IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Local convergence of generalized gauss-newton and sequential convex programming</title>
+		<author>
+			<persName><forename type="first">Moritz</forename><surname>Diehl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florian</forename><surname>Messerer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE 58th Conference on Decision and Control (CDC)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="3942" to="3947" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Local convergence of sequential convex programming for nonconvex optimization</title>
+		<author>
+			<persName><forename type="first">Quoc</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dinh</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Moritz</forename><surname>Diehl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Recent Advances in Optimization and its Applications in Engineering</title>
+		<meeting><address><addrLine>Berlin, Germany</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2010">2010</date>
+			<biblScope unit="page">4</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">A smoothing method for mathematical programs with equilibrium constraints</title>
+		<author>
+			<persName><forename type="first">Francisco</forename><surname>Facchinei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Houyuan</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liqun</forename><surname>Qi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematical programming</title>
+		<imprint>
+			<biblScope unit="volume">85</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">107</biblScope>
+			<date type="published" when="1999">1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Real-time motion planning of legged robots: A model predictive control approach</title>
+		<author>
+			<persName><forename type="first">Farbod</forename><surname>Farshidian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Edo</forename><surname>Jelavic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Asutosh</forename><surname>Satapathy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Giftthaler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonas</forename><surname>Buchli</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE-RAS 17th International Conference on Humanoid Robotics (Humanoids)</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="577" to="584" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">OCS2: An open source library for optimal control of switched systems</title>
+		<author>
+			<persName><forename type="first">Farbod</forename><surname>Farshidian</surname></persName>
+		</author>
+		<ptr target="https://github.com/leggedrobotics/ocs2.11" />
+		<imprint>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">qpOASES: A parametric active-set algorithm for quadratic programming</title>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">J</forename><surname>Ferreau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Kirches</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Potschka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">G</forename><surname>Bock</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Diehl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematical Programming Computation</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="327" to="363" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Penalty Functions</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Fletcher</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1983">1983</date>
+			<publisher>Springer</publisher>
+			<biblScope unit="page" from="87" to="114" />
+			<pubPlace>Berlin, Germany</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Practical methods of optimization. Hoboken</title>
+		<author>
+			<persName><forename type="first">Roger</forename><surname>Fletcher</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<publisher>Wiley</publisher>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page">12</biblScope>
+			<pubPlace>NJ, USA</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Solving mathematical programs with complementarity constraints as nonlinear programs</title>
+		<author>
+			<persName><forename type="first">Roger</forename><surname>Fletcher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sven</forename><surname>Leyffer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Optimization Methods and Software</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">12</biblScope>
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Local convergence of sqp methods for mathematical programs with equilibrium constraints</title>
+		<author>
+			<persName><forename type="first">Roger</forename><surname>Fletcher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sven</forename><surname>Leyffer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danny</forename><surname>Ralph</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Scholtes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Journal on Optimization</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">12</biblScope>
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Sequential quadratic programming methods</title>
+		<author>
+			<persName><forename type="first">Philip</forename><forename type="middle">E</forename><surname>Gill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elizabeth</forename><surname>Wong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Mixed Integer Nonlinear Programming</title>
+		<meeting><address><addrLine>New York, NY, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="147" to="224" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">SNOPT: An sqp algorithm for large-scale constrained optimization</title>
+		<author>
+			<persName><forename type="first">Philip</forename><forename type="middle">E</forename><surname>Gill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Walter</forename><surname>Murray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><forename type="middle">A</forename><surname>Saunders</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Journal on Optimization</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">7</biblScope>
+			<date type="published" when="2002">2002</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Hybrid dynamical systems</title>
+		<author>
+			<persName><forename type="first">Rafal</forename><surname>Goebel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ricardo</forename><forename type="middle">G</forename><surname>Sanfelice</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><forename type="middle">R</forename><surname>Teel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Control Systems Magazine</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="28" to="93" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Towards tight convex relaxations for contact-rich manipulation</title>
+		<author>
+			<persName><forename type="first">Bernhard</forename><surname>Paus</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Graesdal</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shao</forename><surname>Yuan Chew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tobia</forename><surname>Chia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Savva</forename><surname>Marcucci</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexandre</forename><surname>Morozov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pablo</forename><forename type="middle">A</forename><surname>Amice</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Parrilo</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Tedrake</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2402.10312.18" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Gurobi Optimizer Reference Manual</title>
+		<ptr target="https://www.gurobi.com" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<publisher>Gurobi Optimization</publisher>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+	<note>LLC</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">LCQPow: a solver for linear complementarity quadratic programs</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nurkanović</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Messerer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Diehl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Math. Prog. Comput</title>
+		<imprint>
+			<biblScope unit="page">10</biblScope>
+			<date type="published" when="2007">2024. 3, 7</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Constrained differential dynamic programming: A primal-dual augmented lagrangian approach</title>
+		<author>
+			<persName><forename type="first">Wilson</forename><surname>Jallet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antoine</forename><surname>Bambade</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Mansard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="13371" to="13378" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Stagewise implementations of sequential quadratic programming for model-predictive control</title>
+		<author>
+			<persName><forename type="first">Armand</forename><surname>Jordana</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sébastien</forename><surname>Kleff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Avadesh</forename><surname>Meduri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Mansard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ludovic</forename><surname>Righetti</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<author>
+			<persName><forename type="first">Shucheng</forename><surname>Kang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoyang</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jay</forename><surname>Sarva</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ling</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Heng</forename><surname>Yang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2406.05846</idno>
+		<title level="m">Fast and certifiable trajectory optimization</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Tailoring solution accuracy for fast whole-body model predictive control of legged robots</title>
+		<author>
+			<persName><forename type="first">Charles</forename><surname>Khazoom</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seungwoo</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><surname>Chignoli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elijah</forename><surname>Stanger-Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sangbae</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="issue">6</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Fast contact-implicit model predictive control</title>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Le Cleac'h</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Taylor</forename><forename type="middle">A</forename><surname>Howell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuo</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chi-Yen</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arun</forename><surname>Bishop</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mac</forename><surname>Schwager</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zachary</forename><surname>Manchester</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page">12</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Contact models in robotics: A comparative analysis</title>
+		<author>
+			<persName><forename type="first">Quentin</forename><surname>Le Lidec</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wilson</forename><surname>Jallet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Louis</forename><surname>Montaut</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ivan</forename><surname>Laptev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cordelia</forename><surname>Schmid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TRO.2024.3434208.11</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="3716" to="3733" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<title level="m" type="main">CppADCodeGen: About source code generation for automatic differentiation using operator overloading</title>
+		<author>
+			<persName><forename type="first">Joao</forename><surname>Rui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Leal</forename></persName>
+		</author>
+		<ptr target="https://github.com/joaoleal/CppADCodeGen.6" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Modeling and control of legged locomotion via switching max-plus models</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">D</forename><surname>Gabriel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bart</forename><surname>Lopes</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kersbergen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Ton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bart</forename><forename type="middle">De</forename><surname>Van Den Boom</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Schutter</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Babuška</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="652" to="665" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">A practical and optimal first-order method for large-scale convex quadratic programming</title>
+		<author>
+			<persName><forename type="first">Haihao</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jinwen</forename><surname>Yang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.07710</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Successive convexification of non-convex optimal control problems and its convergence properties</title>
+		<author>
+			<persName><forename type="first">Yuanqi</forename><surname>Mao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Szmuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Behçet</forename><surname>Açıkmeşe</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/CDC.2016.7798816.4</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2016 IEEE 55th Conference on Decision and Control (CDC)</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="3636" to="3641" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<title level="m" type="main">Successive convexification: A superlinearly convergent algorithm for non-convex optimal control problems</title>
+		<author>
+			<persName><forename type="first">Yuanqi</forename><surname>Mao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Szmuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangru</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Behçet</forename><surname>Açikmese</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1804.06539</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Warm start of mixedinteger programs for model predictive control of hybrid systems</title>
+		<author>
+			<persName><forename type="first">Tobia</forename><surname>Marcucci</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Automatic Control</title>
+		<imprint>
+			<biblScope unit="volume">66</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page">12</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">A compliant contact model with nonlinear damping for simulation of robotic systems</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">W</forename><surname>Marhefka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">E</forename><surname>Orin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Systems, Man, and Cybernetics -Part A: Systems and Humans</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="566" to="572" />
+			<date type="published" when="1999">1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Crocoddyl: An Efficient and Versatile Framework for Multi-Contact Optimal Control</title>
+		<author>
+			<persName><forename type="first">Carlos</forename><surname>Mastalli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Budhiraja</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wolfgang</forename><surname>Merkt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guilhem</forename><surname>Saurel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bilal</forename><surname>Hammoud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maximilien</forename><surname>Naveau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ludovic</forename><surname>Righetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sethu</forename><surname>Vijayakumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Mansard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Determining the exact local convergence rate of sequential convex programming</title>
+		<author>
+			<persName><forename type="first">Florian</forename><surname>Messerer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Moritz</forename><surname>Diehl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 European Control Conference (ECC)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="1280" to="1285" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Trajectory optimization through contacts and automatic gait discovery for quadrupeds</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Neunert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Farbod</forename><surname>Farshidian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><forename type="middle">W</forename><surname>Winkler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonas</forename><surname>Buchli</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1502" to="1509" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Whole-body nonlinear model predictive control through contacts for quadrupeds</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Neunert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Stäuble</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Giftthaler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carmine</forename><forename type="middle">D</forename><surname>Bellicoso</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan</forename><surname>Carius</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christian</forename><surname>Gehring</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Hutter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonas</forename><surname>Buchli</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1458" to="1465" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<title level="m" type="main">Numerical optimization</title>
+		<author>
+			<persName><forename type="first">Jorge</forename><surname>Nocedal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stephen</forename><forename type="middle">J</forename><surname>Wright</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005">2006. 2, 4, 5</date>
+			<publisher>Springer</publisher>
+			<pubPlace>New York, NY, USA</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">A direct method for trajectory optimization of rigid bodies through contact</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Posa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cecilia</forename><surname>Cantu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">12</biblScope>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Mathematical programs with complementarity constraints: Stationarity, optimality, and sensitivity</title>
+		<author>
+			<persName><forename type="first">Holger</forename><surname>Scheel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Scholtes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematics of Operations Research</title>
+		<imprint>
+			<biblScope unit="volume">25</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1" to="22" />
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Convergence properties of a regularization scheme for mathematical programs with complementarity constraints</title>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Scholtes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Journal on Optimization</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="918" to="936" />
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">How stringent is the linear independence assumption for mathematical programs with complementarity constraints?</title>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Scholtes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Stöhr</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematics of Operations Research</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="851" to="863" />
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Finding locally optimal, collision-free trajectories with sequential convex optimization</title>
+		<author>
+			<persName><forename type="first">John</forename><surname>Schulman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><forename type="middle">X</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ibrahim</forename><surname>Awwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Henry</forename><surname>Bradlow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: science and systems</title>
+		<meeting><address><addrLine>Berlin, Germany</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page" from="1" to="10" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">PIQP: A proximal interior-point quadratic programming solver</title>
+		<author>
+			<persName><forename type="first">Roland</forename><surname>Schwan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuning</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Kuhn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Colin</forename><forename type="middle">N</forename><surname>Jones</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 62nd IEEE Conference on Decision and Control (CDC)</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1088" to="1093" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Chance-constrained optimization for contact-rich systems using mixed integer programming</title>
+		<author>
+			<persName><forename type="first">Yuki</forename><surname>Shirai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Devesh</forename><forename type="middle">K</forename><surname>Jha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arvind</forename><forename type="middle">U</forename><surname>Raghunathan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Diego</forename><surname>Romeres</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nonlinear Analysis: Hybrid Systems</title>
+		<idno type="ISSN">1751-570X. 12</idno>
+		<imprint>
+			<biblScope unit="volume">52</biblScope>
+			<biblScope unit="page">101466</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">OSQP: an operator splitting solver for quadratic programs</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Stellato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Banjac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Goulart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bemporad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Boyd</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematical Programming Computation</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="637" to="672" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">OSQP: An operator splitting solver for quadratic programs</title>
+		<author>
+			<persName><forename type="first">Bartolomeo</forename><surname>Stellato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Goran</forename><surname>Banjac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Paul</forename><surname>Goulart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alberto</forename><surname>Bemporad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>Boyd</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematical Programming Computation</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="637" to="672" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<analytic>
+		<title level="a" type="main">Mixed integer linear programming formulation techniques</title>
+		<author>
+			<persName><forename type="first">Juan</forename><surname>Pablo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vielma</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Review</title>
+		<imprint>
+			<biblScope unit="volume">57</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="3" to="57" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<title level="m" type="main">On the implementation of an interior-point filter line-search algorithm for large-scale nonlinear programming</title>
+		<author>
+			<persName><forename type="first">Andreas</forename><surname>Wächter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Lorenz</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Biegler</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006">2006</date>
+			<biblScope unit="volume">106</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">Mathematical programming</note>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<analytic>
+		<title level="a" type="main">Optimization-based control for dynamic legged robots</title>
+		<author>
+			<persName><forename type="first">Patrick</forename><forename type="middle">M</forename><surname>Wensing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Posa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yue</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adrien</forename><surname>Escande</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Mansard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrea</forename><surname>Del Prete</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="43" to="63" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<monogr>
+		<ptr target="https://en.wikipedia.org/wiki/Semi-implicit_Euler_method" />
+		<title level="m">Semi-implicit euler method -Wikipedia, the free encyclopedia</title>
+		<imprint>
+			<date type="published" when="2023-05">2023. May-2023</date>
+			<biblScope unit="volume">24</biblScope>
+		</imprint>
+	</monogr>
+	<note>Wikipedia contributors</note>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<title level="m" type="main">Dynamic on-palm manipulation via controlled sliding</title>
+		<author>
+			<persName><forename type="first">William</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Posa</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2405.08731</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main">First-order optimality conditions for mathematical programs with second-order cone complementarity constraints</title>
+		<author>
+			<persName><forename type="first">Jane</forename><forename type="middle">J</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jinchuan</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Journal on Optimization</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="2820" to="2846" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<monogr>
+		<title level="m" type="main">Trajectory optimization of mechanical hybrid systems using sumt</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Yunt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Glocker</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006">2006. 2006</date>
+			<biblScope unit="page" from="665" to="671" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

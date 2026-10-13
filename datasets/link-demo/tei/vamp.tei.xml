@@ -1,0 +1,2026 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Motions in Microseconds via Vectorized Sampling-Based Planning</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Wil</forename><surname>Thomason</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Zachary</forename><surname>Kingston</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Lydia</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+						</author>
+						<title level="a" type="main">Motions in Microseconds via Vectorized Sampling-Based Planning</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">0D3CD92FB2883B2C447302E9A5FE472C</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T15:48+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Modern sampling-based motion planning algorithms typically take between hundreds of milliseconds to dozens of seconds to find collision-free motions for high degree-offreedom problems. This paper presents performance improvements of more than 500x over the state-of-the-art, bringing planning times into the range of microseconds and solution rates into the range of kilohertz, without specialized hardware.</p><p>Our key insight is how to exploit fine-grained parallelism within sampling-based planners, providing generality-preserving algorithmic improvements to any such planner and significantly accelerating critical subroutines, such as forward kinematics and collision checking. We demonstrate our approach over a diverse set of challenging, realistic problems for complex robots ranging from 7 to 14 degrees-of-freedom. Moreover, we show that our approach does not require high-power hardware by also evaluating on a low-power single-board computer. The planning speeds demonstrated are fast enough to reside in the range of control frequencies and open up new avenues of motion planning research.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>High degree-of-freedom (DOF) robots rely on motion planning to move in complex workspaces, either using samplingbased approximations <ref type="bibr" target="#b0">[1]</ref><ref type="bibr" target="#b1">[2]</ref><ref type="bibr" target="#b2">[3]</ref><ref type="bibr" target="#b3">[4]</ref><ref type="bibr" target="#b4">[5]</ref> or numerical optimization <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b6">7]</ref>. These planners are general and can solve realistic, challenging problems in hundreds of milliseconds to dozens of seconds on consumer CPUs. However, this level of performance falls short-it is too slow for reactive operation in evolving environments and hampers algorithms for higher-level autonomy such as integrated task and motion planning.</p><p>A large literature accelerates motion planning with coarsegrained (e.g., thread or process-level) parallelism <ref type="bibr" target="#b7">[8]</ref><ref type="bibr" target="#b8">[9]</ref><ref type="bibr" target="#b9">[10]</ref><ref type="bibr" target="#b10">[11]</ref><ref type="bibr" target="#b11">[12]</ref>, but these methods have seen relatively little uptake in practice, as their performance gains do not justify the added complexity. More recent work <ref type="bibr" target="#b12">[13]</ref><ref type="bibr" target="#b13">[14]</ref><ref type="bibr" target="#b14">[15]</ref> uses GPU-based parallelism to improve performance, but at the cost of communication overhead, algorithmic limitations, and the additional expense and power consumption of GPU hardware. In general, the field has come to believe that sampling-based motion planner (SBMP) primitives (e.g., checking if motion between two states is valid) are either inherently serial, cannot be accelerated without specialized hardware, or cannot be parallelized without paying a greater cost than the parallelism saves.</p><p>We refute this belief and show several orders of magnitude performance improvement over the state-of-the-art (more than 500x faster) by contributing insights into fine-grained parallelism and work-ordering in SBMPs. Our core insight is † Equal contribution. All authors are affiliated with the Department of Computer Science, Rice University, Houston TX, USA {wbthomason, zak, kavraki}@rice.edu. This work was supported in part by NSF RI 2008720, NSF ITR 2127309 for the Computing Research Association CIFellows Project, and Rice University Funds. the use of vector-oriented state representations and planning primitives (e.g., forward kinematics and collision checking), which enable fine interleaving of parallel and serial operation. Crucially, we use "Single Instruction/Multiple Data" (SIMD) instructions to execute these primitives with high throughput and low latency on ubiquitous consumer CPUs, accelerating almost any SBMP for "free". These insights let us plan high-quality paths at reactive speeds (e.g., a median time of 40 µs for the 7 DOF Panda over the MotionBenchMaker <ref type="bibr" target="#b15">[16]</ref> dataset, i.e., 25 kHz-see Table <ref type="table" target="#tab_0">I</ref>) on a single CPU core.</p><p>Our method significantly outperforms standard implementations <ref type="bibr" target="#b16">[17]</ref> of state-of-the-art SBMPs on both desktop and low-power single board computers. Moreover, this work will enhance any work that uses motion planning, and our perspective on vector-oriented planning primitives extends beyond CPU SIMD instructions to other, similar parallelism models, e.g., GPUs. The planning speeds demonstrated blur the line between planning and control, and give cause to re-evaluate assumptions about robot motion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>Motion planning is PSPACE-complete <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b18">19]</ref> in general, but sampling-based motion planners (SBMPs) empirically can efficiently solve challenging problems. SBMP requires computationally expensive subroutines, e.g., forward kinematics (FK), collision checking (CC), and nearest neighbor (NN) search <ref type="bibr" target="#b2">[3]</ref>. CC dominates computational cost in SBMP (noted by many, e.g., <ref type="bibr" target="#b9">[10]</ref>); however, NN search may dominate in high-dimensions or with large numbers of states <ref type="bibr" target="#b19">[20]</ref>. FK is used by CC and contributes to its cost. For efficiency, SBMPs must use fast CC and avoid as much FK/CC as possible-as such, in this work, we target FK and CC performance.</p><p>Most CC algorithms use a broadphase to approximate the set of possible collisions, and a narrowphase to find exact collisions from the approximate set <ref type="bibr" target="#b20">[21]</ref>. The broadphase is vital for performant CC and can be accelerated with GPU <ref type="bibr" target="#b21">[22]</ref> or SIMD <ref type="bibr" target="#b22">[23]</ref> parallelism. Efficient, general CC libraries (e.g., <ref type="bibr" target="#b23">[24,</ref><ref type="bibr" target="#b24">25]</ref>) offer many options for these phases. Given its impact on SBMP performance, many works have reduced CC effort via e.g., heuristic ordering <ref type="bibr" target="#b25">[26]</ref>, lazy checking <ref type="bibr" target="#b26">[27,</ref><ref type="bibr" target="#b27">28]</ref>, checking only likely-valid edges <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b29">30]</ref>, etc. Recent work has learned a combined FK/CC "primitive" <ref type="bibr" target="#b30">[31]</ref><ref type="bibr" target="#b31">[32]</ref><ref type="bibr" target="#b32">[33]</ref>; other work has learned distance-to-collision functions <ref type="bibr" target="#b33">[34,</ref><ref type="bibr" target="#b34">35]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Parallelism in Motion Planning</head><p>Parallelized planners have been sought since the advent of motion planning (e.g., <ref type="bibr">Barraquand</ref> and Latombe <ref type="bibr" target="#b35">[36]</ref> and Henrich <ref type="bibr" target="#b36">[37]</ref>). We broadly categorize parallelism in motion planning as either coarse-grained or fine-grained. In our use, arXiv:2309.14545v2 [cs.RO] 28 Sep 2023 coarse-grained refers to parallelism at the level of subroutines or planner components, such as running many planners in parallel, or running CC in a separate thread. Fine-grained refers to parallelism at the level of primitive operations, such as checking several states for collisions simultaneously in the same thread, without architectural changes.</p><p>Parallelism in SBMP is typically coarse-grained, e.g., simply running independent planners in parallel. This improves average-case performance <ref type="bibr" target="#b37">[38]</ref>; the set of solutions can also be hybridized together to improve plan quality <ref type="bibr" target="#b38">[39]</ref>. Early work (e.g., Amato and Dale <ref type="bibr" target="#b8">[9]</ref>) observed that roadmap-based planners (e.g., PRM <ref type="bibr" target="#b4">[5]</ref>) are amenable to coarse-grained parallelism. Parallel SBMP has also been achieved by constructing a forest of planning trees <ref type="bibr" target="#b39">[40]</ref>, potentially in distinct regions of the search space <ref type="bibr" target="#b10">[11]</ref>, and by parallelizing components of the RRT * ASAO planner <ref type="bibr" target="#b40">[41,</ref><ref type="bibr" target="#b41">42]</ref>. These methods typically offer sub-linear (in the degree of parallelism) performance improvement (with some exceptions <ref type="bibr" target="#b41">[42]</ref>) due to the synchronization overhead and architectural complexity required. Still other work uses coarse-grained parallelism in graph search used in roadmap-or search-based planning, both on CPUs <ref type="bibr" target="#b42">[43,</ref><ref type="bibr" target="#b43">44]</ref> and GPUs <ref type="bibr" target="#b44">[45]</ref><ref type="bibr" target="#b45">[46]</ref><ref type="bibr" target="#b46">[47]</ref>. In contrast to the work discussed above, this work investigates a novel approach to fine-grained parallelism in SBMPs, which is understudied in the field.</p><p>Recently, there has been significant interest in applying GPUs more broadly to motion planning. The most successful approaches include parallelized sampling-based MPC <ref type="bibr" target="#b12">[13]</ref>, parallel particle-based optimization seeded by a partially parallelized RRT-like planner <ref type="bibr" target="#b13">[14]</ref>, and end-to-end learning of a neural local control policy from a dataset of motion plans <ref type="bibr" target="#b14">[15]</ref>. Earlier work also investigated GPU-parallelized CC <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b47">48]</ref>. Although these methods show promising performance, they require powerful GPUs for efficiency and impose the overhead of moving data between the GPU and CPU.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Hardware-Accelerated Motion Planning</head><p>Hardware acceleration is crucial for our proposed vectorbased approach to SBMP. We use SIMD instructions, a feature ubiquitous on consumer CPUs<ref type="foot" target="#foot_0">foot_0</ref> . Hardware acceleration has long been used for motion planning, with particular focus on accelerating CC <ref type="bibr" target="#b49">[50]</ref>. Some work (e.g., Ichnowski and Alterovitz <ref type="bibr" target="#b50">[51]</ref>'s compile-time specialized SBMP, or Carpentier et al. <ref type="bibr" target="#b51">[52]</ref>'s statically dispatched, precompiled dynamics algorithms) implicitly exploits hardware acceleration by creating "machine sympathetic" implementations-code that enables compilers, etc. to better exploit hardware capabilities.</p><p>Many modern robotics algorithms are accelerated by GPUs, e.g., using CUDA. GPU acceleration has been applied to SBMPs <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b52">53,</ref><ref type="bibr" target="#b53">54]</ref>, MPC <ref type="bibr" target="#b12">[13,</ref><ref type="bibr" target="#b54">55]</ref> and trajectory optimization <ref type="bibr" target="#b11">[12,</ref><ref type="bibr" target="#b13">14]</ref>. Recently, ASIC-or FPGA-based accelerators <ref type="bibr" target="#b55">[56]</ref> have been proposed, e.g., to validate an entire roadmap at once with an FPGA <ref type="bibr" target="#b56">[57]</ref><ref type="bibr" target="#b57">[58]</ref><ref type="bibr" target="#b58">[59]</ref> or as an external CC accelerator <ref type="bibr" target="#b59">[60]</ref>. Neuman et al. <ref type="bibr" target="#b60">[61]</ref> investigated "robomorphic" computing with specialized accelerators for common robotics algorithms.</p><p>However, GPUs and other accelerators come at a cost: there is latency in communicating with the device, there are restrictions on the types of algorithms that can be applied on specialized hardware, and often there is a relatively high cost to send data back and forth <ref type="bibr" target="#b59">[60,</ref><ref type="bibr" target="#b61">62]</ref>. Our approach uses native SIMD instructions on the CPU, inflicting at worst a slight overhead penalty<ref type="foot" target="#foot_2">foot_2</ref> to achieve large performance gains.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. METHOD</head><p>Most SBMPs can be decomposed into a handful of "primitive" operations (see Ch. 7 in Choset et al. <ref type="bibr" target="#b1">[2]</ref>). Algorithms typically use (approximate) nearest-neighbors (NN) to find nearby states, a state validity function (e.g., checking for collisions), a local planner or steering function to grow edges between states, and an edge validity function to check these edges. Validity functions usually require forward kinematics (FK) to compute the poses of the robot's links in its workspace from a configuration.</p><p>We lift a selection of these primitives-FK and state/edge validity checking-to operate over vectors of states in parallel. This lifting immediately accelerates the primitive operations by multiplying their throughput. More importantly, shifting perspective to vector primitives (1) admits low-overhead parallelism that cooperates with sequential code, and (2) reveals beneficial algorithmic changes to the primitives based on insights about their specific uses in SBMP. This perspective allows us to exploit ubiquitous hardware parallelism via SIMD instructions, resulting in highly efficient implementations of our vector primitives. Finally, by focusing on primitives common across SBMPs, we improve the performance of almost any SBMP without requiring significant algorithmic changes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Vectorized Motion Planning</head><p>"Vectorized" is an overloaded term; we use it in the SIMD sense, where a "vector" is a fixed-length set of values with the same scalar datatype (e.g., floating-point numbers) and a "vectorized operation" is an operation that transforms all values in a vector independently, in parallel.</p><p>This parallelism model is similar to GPU computing (and our lifted vector operations may benefit GPU-based planners), but with a few key differences. We focus on CPU-based SIMD parallelism-our algorithms run on any modern computer, even those without a GPU. This increases applicability and decreases both the barrier to entry and the power consumption of our technique. CPU-based SIMD parallelism is also bettersuited to the opportunities for parallelism in SBMP: it has significantly lower overhead than GPU-, thread-, or processbased parallelism <ref type="foot" target="#foot_3">3</ref> and is amenable both to fine-grained interleaving of parallel and sequential code and to efficient computation for relatively small workloads.</p><p>Exploiting SIMD instructions requires careful consideration of data structure and algorithm design, often involving Here, there are three configurations a, b, and c, each with four dimensions. AOS is the more "natural" layout of memory, but hard to exploit with SIMD.</p><p>unconventional memory layouts to ensure adequate data parallelism. Our approach addresses this challenge through a novel Struct-of-Arrays (SOA) memory layout for FK and CC. This choice enables seamless exploitation of data parallelism, allowing us to pose and check multiple configurations for collision in parallel. The SOA layout stands in contrast to the more common Array-of-Structs (AOS) layout (illustrated in Fig. <ref type="figure" target="#fig_0">1</ref>), which is less favorable for SIMD approaches as it causes memory access patterns that slow access to values.</p><p>Many SBMP algorithms and subroutines make heavy use of conditional branching, inimical to parallel code. However, as CPU-based SIMD parallelism allows easy interleaving of parallel and sequential code, and as our subroutines have reduced branching, we are able to sidestep this problem more easily compared to other forms of parallelism <ref type="foot" target="#foot_4">4</ref> . These properties mean that our algorithm implementations, despite being parallelized, are close to "standard" algorithms-there is no explicit synchronization or communication code, etc.</p><p>The overhead of conventional mechanisms (e.g., threads) limits naive parallelization of SBMP-reducing this overhead is especially challenging as most SBMP algorithms rapidly alternate between expensive, parallelization-friendly subroutines (e.g., CC) and code that relies on these subroutines but is not itself easily parallelized (e.g., graph search). Fortunately, the relatively low overhead of CPU SIMD-based parallelism-and the specific nature of this overhead, which modern compilers excel at reducing-means that our vector-oriented primitives (the expensive subroutines) can be efficiently interleaved within a SBMP. This property may suffice to accelerate SBMP by, e.g., reducing the cost of a single collision check. However, by using SOA memory layouts for our vectororiented operations, we can not only perform the computation required for SBMP in parallel, but also exploit motionplanning-specific independence patterns in this computation to intelligently order the requisite operations to improve overall performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Vectorized Forward Kinematics</head><p>Vectorized FK is necessary to pose batches of states in parallel for subsequent parallel CC; sequentially posing each element in a batch introduces a bottleneck that reduces overall throughput. Naive vectorization of FK attempts to compute the poses for a single configuration faster-we instead choose a less conventional use of vectorization: carrying out each operation in sequence, but on multiple configurations simultaneously.</p><p>FK implementations commonly use dynamic branching and joint-type polymorphism to compute transforms between links (e.g.,, KDL <ref type="bibr" target="#b62">[63]</ref>). This structure is difficult for compilers to optimize and has spurious data dependencies between link transforms, which decreases throughput and causes slower operations across the entire vector of configurations. These dependencies arise as the compiler cannot determine if poses later in the kinematic tree depend on earlier poses (or, better still, on components of these poses). Even naively vectorizing FK for multiple configurations requires vector configuration and pose data structures, and use of vector operations, which are tedious to manually implement.</p><p>We overcome these challenges with a novel tracing compiler for robot kinematics. This compiler takes in standard Universal Robot Description Format (URDF) files and traces the operations of arbitrary functions of the robot's kinematics (e.g., FK). It uses this trace to automatically generate (1) a vector configuration structure representing a batch of configurations and (2) the minimal set of operations required to compute the traced function. This latter output constitutes an "unrolled" FK loop that avoids branching and spurious data dependencies, allowing an optimizing compiler to generate faster machine code. Further, our tracing compiler applies optimizations to reduce the operations required, e.g., constant folding, algebraic simplification, removing redundant negations, etc. This use of automatic code generation creates hyper-specialized vector-lifted FK without loss of generality, as the tracing compiler itself is general. We note other techniques for efficient FK by, e.g., Carpentier et al. <ref type="bibr" target="#b51">[52]</ref>, which uses static polymorphism and the Curiously Recurring Template Pattern (CRTP) for compile-time optimized FK routines. In contrast, our tracing compiler, by merit of tracking the precise operations (e.g., the multiplies, sines, etc. from input configuration to output pose), outputs "straightline" code that removes operations that are not necessarily detectable at compile-time with CRTP.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Vectorized Collision Checking</head><p>Existing approaches to CC (e.g., broadphases, narrowphase triangle mesh collision algorithms <ref type="bibr" target="#b63">[64]</ref>) are optimized for checking a single configuration. Fully vectorizing these approaches is challenging. We instead draw inspiration from classical work on simplified representations of robots and obstacles <ref type="bibr" target="#b64">[65,</ref><ref type="bibr" target="#b65">66]</ref> to automatically generate collision geometry from meshes using primitives (i.e., spheres, cylinders, and cuboids). Sphere-based representations are common in the trajectory optimization literature <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b14">15]</ref>.</p><p>By representing the robot and environment as geometric primitives we can vectorize intersection tests between pairs of such primitives. We check batches of robot poses for selfcollision and environment collision in parallel and reject the whole batch if any collide. Surprisingly, we see that this narrowphase-only approach (due to its reduced branching) a b c d Fig. <ref type="figure">2</ref>. Illustration of the "raked" motion validator for a two-link mechanism. a) The rake consists of evenly spaced configurations (here, n = 4), which are "raked" backwards to achieve sufficient resolution. b) These configurations are computed in SOA form from an initial AOS layout, then checked in parallel. c) Spherical approximations of collision geometry are checked in parallel. A hierarchy of spheres is used to avoid unnecessary checks. d) When any collision is discovered at the lowest refinement level (in red), the entire check terminates (the last sphere in grey is skipped). can be highly efficient even in complex environments. Further, using spheres to represent the robot's geometry synergizes with our tracing compiler for FK-as we only compute the position of each sphere (rather than a full SE(3) pose), the compiler skips a large number of irrelevant operations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Vectorized Motion Validation</head><p>SBMPs validate not only individual states, but also the motions between them. Typically, motion validation requires discretizing a continuous motion and validating each state in the discretization. Thus, this is where SBMPs spend most of their time, and a significant body of work <ref type="bibr" target="#b26">[27,</ref><ref type="bibr" target="#b66">67,</ref><ref type="bibr" target="#b67">68]</ref> has gone into reducing the number of edges validated during planning. However, here is where our perspective on vector-lifted primitives shines: by combining our previously developed insights into vectorized FK and individual state CC, we unearth further algorithmic insights to improve the performance of motion validation via vectorization.</p><p>For efficient motion validation, we want to stop checking invalid motions as quickly as possible. Assuming uniform probability of collision along a motion <ref type="foot" target="#foot_5">5</ref> , n 2 CC attempts are wasted (in expectation) for an invalid motion discretized into n states. Due to our perspective on vector-lifted FK and CC, we can reduce the amount of wasted computation by testing a spatially distributed set of states in parallel. Without loss of generality, consider a vector of eight states, and a motion discretized into n states. We can simultaneously check states [0, n 8 , . . . , 7n  8 ] for the cost of a single check <ref type="foot" target="#foot_6">6</ref> , and-if no collisions are found-comb through the remaining states by incrementing each index, for at most n 8 iterations. We refer to this spatially distributed collision check as the "rake" (Fig. <ref type="figure">2</ref>). Beyond improving CC throughput by decreasing the total number of checks required by a factor of the width of the vector, by spatially distributing the states checked, we increase the probability of exiting CC early for invalid motions-the validity of close states is correlated, so we have a higher chance of finding an invalid state by testing along the entire motion at once, compared to, e.g., the first eight states at once. Other work has investigated spatially distributed collision check scheduling in both hardware <ref type="bibr" target="#b59">[60]</ref> and non-parallel software <ref type="bibr" target="#b26">[27]</ref>.</p><p>Although the pure narrowphase approach is highly effective, we augment it with a "mid-phase" check. Specifically: we employ a hierarchy of increasingly refined sphere collision models of the robot, and use coarse levels of this hierarchy to avoid expensive checks at the finer levels. We generate a sphere model for the robot with a single sphere per link, conservatively over-approximating the actual collision geometries. If this sphere does not collide with a given obstacle, we know that the actual collision geometry cannot collide with that obstacle, and can skip checking the spheres of the higher-fidelity model. Notably, this does not require the typical branching-heavy approaches to broadphase collision detection, e.g., bounding volume hierarchies-our approach does not require or use the typical recursive tree structure or any update operations beyond FK.</p><p>For efficiency, it is preferable to not compute poses for any of a robot's links that come after a link in collision. We exploit a property of our tracing compiler, which can re-order instructions topologically, to interleave each sphere's collision check (environment and self-collision) within the generated FK code, placing checks immediately after the position of the sphere has been computed, wasting almost no effort on irrelevant FK computation and achieving a significant performance gain. This interleaving is compatible with the previously-described hierarchical sphere tree.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Bringing it Together: Design of the Planner</head><p>We also leverage SIMD instructions elsewhere to improve planner performance. Although not required in general, we assume the configuration space of the robot is Euclidean and thus linear interpolation between two AOS configurations becomes simply adding and multiplying their vectors together. Similarly, the ℓ 2 -norm is computed efficiently as a horizontal summation. We use these improvements to quickly compute the intermediate configurations used in the rake as well as distances in our NN data-structure <ref type="bibr" target="#b50">[51,</ref><ref type="bibr" target="#b68">69]</ref>.</p><p>We have implemented two SBMPs: RRT-Connect <ref type="bibr" target="#b0">[1]</ref> and PRM <ref type="bibr" target="#b4">[5]</ref>, without algorithmic changes or additional complexity due to our focus on planner primitives.We have also implemented simplification algorithms: randomized shortcutting <ref type="bibr" target="#b69">[70,</ref><ref type="bibr" target="#b70">71]</ref> and B-spline smoothing <ref type="bibr" target="#b71">[72]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS</head><p>We evaluate our approach against two baselines which use the Open Motion Planning Library (OMPL) <ref type="bibr" target="#b16">[17]</ref>: MoveIt <ref type="bibr" target="#b72">[73]</ref>   through Robowflex <ref type="bibr" target="#b73">[74]</ref> (MoveIt/OMPL) and OMPL's Python bindings with PyBullet <ref type="bibr" target="#b24">[25]</ref> (PyBullet/OMPL). These represent two common interfaces of motion planning in practice: the standard motion planner for ROS <ref type="bibr" target="#b74">[75]</ref>, and a Python implementation using a popular simulation framework. We evaluate our implementation, "Vector Accelerated Motion Planning" on an x86-based desktop computer (VAMP) as well as a small ARM-based single-board computer (VAMP (ARM)) 7 . All hyperparameters are shared between each implementation: all planners use equivalent implementations 7 For VAMP, AVX2 was used. The authors attempted using AVX-512, but found lower throughput than AVX2, possibly due to downclocking, lack of 512-bit registers, or other issues that will be investigated in future work. For VAMP (ARM), ARM's Neon SIMD instructions were used.  of algorithms with identical validity checking resolution. Moreover, we determinize all planners by sampling from a multi-dimensional Halton sequence <ref type="bibr" target="#b75">[76]</ref><ref type="bibr" target="#b76">[77]</ref><ref type="bibr" target="#b77">[78]</ref>. The same sequence is used between all systems. Thus, performance differences can be attributed to vector-acceleration <ref type="foot" target="#foot_7">8</ref> . All benchmarks for MoveIt/OMPL, PyBullet/OMPL, and VAMP were performed with a AMD Ryzen™ 9 7950X CPU clocked at 4.5GHz. For VAMP (ARM), benchmarks were run on an Orange Pi 5B with an ARM Cortex-A76 CPU clocked at 2.4GHz. Our approach is implemented in C++17 with Python bindings through nanobind <ref type="bibr" target="#b78">[79]</ref>. All code (including OMPL and MoveIt) was compiled using clang 15.0.7 with the -Ofast optimization level <ref type="foot" target="#foot_8">9</ref> and with all architecture optimizations (-march=native, i.e., znver4). We evaluate on seven different environments from the MotionBenchMaker <ref type="bibr" target="#b15">[16]</ref> dataset, a collection of realistic, difficult motion planning problems: 1) table pick and table under pick environments to evaluate tabletop manipulation, 2) bookshelf small, tall, and thin to demonstrate reaching, and 3) box and cage to demonstrate highly constrained reaching. We use the publicly available pre-generated 100 problems for each of the environments. We evaluate on the following systems: 1) the 7 DOF Franka Emika Panda 10 , 2) the 8 DOF Fetch Robotics Fetch, including the prismatic torso joint, and 3) the 14 DOF bimanual Rethink Robotics Baxter. For the Baxter, we use the bookshelf tall {easy, medium, hard} datasets for bimanual manipulation. For Fetch and Baxter, we use the algorithm of Bradshaw and O'Sullivan <ref type="bibr" target="#b64">[65]</ref> to automatically generate a spherized model (after ensuring manifold meshes <ref type="bibr" target="#b79">[80,</ref><ref type="bibr" target="#b80">81]</ref>)-these approximations were also manually tuned. We evaluate each planner on each problem 5 times. For MoveIt/OMPL and PyBullet/OMPL, we give a timeout of 5 minutes. For VAMP and VAMP (ARM), we give a limit of 1 million planner iterations.</p><p>Results for RRT-Connect on the Panda, Fetch, and Baxter are respectively shown in Figs. 3 to 5 and summarized in Table <ref type="table" target="#tab_0">I</ref>. We note the following general features of these plots: 1) times are all reported on a logarithmic scale, 2) the distribution of planning time for VAMP is almost completely separated from both PyBullet/OMPL and MoveIt/OMPL, and 3) the distribution shapes of planning time versus path length are qualitatively similar and simplified path length distributions are equivalent for each planner, indicating planner similarity at the algorithmic level. Over all robots, VAMP is 500x faster than PyBullet/OMPL and 100 to 200x faster than MoveIt/OMPL, while achieving similar path quality. VAMP provides high-quality plans at control frequencies, e.g., 10 kHz mean, 25 kHz median, and 2.3 kHz 95% planning rates for the Panda arm for the entire dataset, 10 We use the approximation of the Panda from Fishman et al. <ref type="bibr" target="#b14">[15]</ref> which includes trivial problems such as tabletop manipulation and complex problems such as reaching into shelves. Note that even the slowest number in Table <ref type="table" target="#tab_0">I</ref>, 25 ms for the Fetch's 95% quantile, achieves a 40 Hz planning rate. Morever, VAMP (ARM) also achieves similar speed-ups on a lowpower single-board computer (the Orange Pi 5B uses up to 7 W), still 20-50x faster than baselines on a desktop CPU. We also report times for PRM for the Panda and Fetch over the table pick, table under pick, and box environments (Table <ref type="table" target="#tab_1">II</ref>), and show the same caliber of performance improvements, indicating our approach generalizes across SBMPs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. DISCUSSION</head><p>Efficient motion planning is critical for many applications of robotics. In this paper, we demonstrate a novel approach to accelerating motion planning, based on a new perspective on vector-oriented operations for simple, high-frequency interleaving of high-performance parallelized and serial sections of code present in most sampling-based motion planning algorithms. By applying this perspective to the most expensive and ubiquitous motion planning subroutines (i.e., collision checking, forward kinematics, and distance computation), we achieve algorithmic improvements and create proof-ofconcept planners that achieve more than 500x speedup over the state of the art on realistic, challenging planning problems for three different robots. Our approach solves planning problems at kilohertz rates on ordinary consumer CPUs and low-power single-board computers.</p><p>We also believe that our ideas will extend naturally to harder motion planning problems, such as kinodynamic and manifold-constrained planning. Further, because we can produce so many motion plans so fast, we may be able to efficiently provide empirical proofs of solution nonexistence, a feat that has long been challenging for SBMP. There may also be potential for using our vector-oriented planners as local planners inside higher-level motion planning algorithms.</p><p>The planning performance demonstrated in this work pushes SBMP for high-DoF manipulators to frequencies required for control-providing a complete, global, highquality plan at each update. We believe that this is cause to re-examine old assumptions in robotics about the roles of planning and control, as well as about the "best" way to solve problems such as planning under uncertainty or integrated task and motion planning. In particular, we are excited to explore extensions of this work around, e.g., rapid replanning, integrated task and motion planning, etc. In general, there is a rich discussion to be had about implications for algorithms that use motion planning as a subroutine, and that have traditionally needed to be designed around motion planning as an expensive subroutine, now that we can consistently provide high-quality motion plans at high frequencies.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. Struct-of-Arrays (SOA) and Array-of-Structs (AOS) memory layout.Here, there are three configurations a, b, and c, each with four dimensions. AOS is the more "natural" layout of memory, but hard to exploit with SIMD.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. Results for the 7 DOF Panda. a) Planning times for each problem class. b) Planning time vs. initial path length and c) planning and simplification time vs. simplified path length for entire dataset. d) Cumulative distribution of planning time and e) cumulative distribution of simplified path length for entire dataset. All times are on a logarithmic scale.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4. Results for the 8 DOF Fetch. a) Planning times for each problem class. b) Planning time vs. initial path length and c) planning and simplification time vs. simplified path length for entire dataset. d) Cumulative distribution of planning time and e) cumulative distribution of simplified path length for entire dataset. All times are on a logarithmic scale.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 5 .</head><label>5</label><figDesc>Fig. 5. Results for the 14 DOF Baxter over entire dataset. a) Planning time vs. initial path length. b) Planning time plus simplification time vs. simplified path length. d) Cumulative distribution of planning time and e) cumulative distribution of simplified path length. All times are on a logarithmic scale.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table I .</head><label>I</label><figDesc>Planning time for RRT-Connect from Figs. 3 to 5. The mean, first quantile, median, third quantile, and 95% quantile are shown, along with mean simplification time and success rate. All times are in milliseconds.</figDesc><table><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>Mean</cell><cell></cell></row><row><cell></cell><cell>System</cell><cell>Mean</cell><cell>Q1</cell><cell>Median</cell><cell>Q3</cell><cell>95%</cell><cell>Simpl.</cell><cell>Succ.</cell></row><row><cell></cell><cell>PyBullet/OMPL</cell><cell>58.47</cell><cell>12.76</cell><cell>21.21</cell><cell>43.35</cell><cell>224.41</cell><cell>121.38</cell><cell>99.6%</cell></row><row><cell>Panda</cell><cell>MoveIt/OMPL VAMP (ARM)</cell><cell>23.51 0.70</cell><cell>14.28 0.18</cell><cell>16.58 0.29</cell><cell>22.54 0.62</cell><cell>63.08 2.73</cell><cell>46.95 1.03</cell><cell>100% 100%</cell></row><row><cell></cell><cell>VAMP</cell><cell>0.10</cell><cell>0.02</cell><cell>0.04</cell><cell>0.08</cell><cell>0.43</cell><cell>0.12</cell><cell>100%</cell></row><row><cell></cell><cell>PyBullet/OMPL</cell><cell>3035.83</cell><cell>135.88</cell><cell>461.48</cell><cell>1544.34</cell><cell>10358.44</cell><cell>225.17</cell><cell>99.8%</cell></row><row><cell>Fetch</cell><cell>MoveIt/OMPL VAMP (ARM)</cell><cell>788.68 28.24</cell><cell>94.11 1.72</cell><cell>243.80 5.76</cell><cell>666.56 23.25</cell><cell>3107.80 116.74</cell><cell>137.14 3.93</cell><cell>100% 99.5%</cell></row><row><cell></cell><cell>VAMP</cell><cell>6.25</cell><cell>0.25</cell><cell>1.12</cell><cell>4.92</cell><cell>25.16</cell><cell>0.52</cell><cell>99.5%</cell></row><row><cell></cell><cell>PyBullet/OMPL</cell><cell>4309.19</cell><cell>881.31</cell><cell>1500.44</cell><cell>2711.61</cell><cell>13100.54</cell><cell>938.62</cell><cell>99.3%</cell></row><row><cell>Baxter</cell><cell>MoveIt/OMPL VAMP (ARM)</cell><cell>668.80 32.54</cell><cell>192.23 8.02</cell><cell>362.34 13.93</cell><cell>757.69 25.89</cell><cell>2267.35 104.57</cell><cell>96.81 9.77</cell><cell>100% 100%</cell></row><row><cell></cell><cell>VAMP</cell><cell>6.68</cell><cell>1.22</cell><cell>2.32</cell><cell>4.68</cell><cell>22.97</cell><cell>1.22</cell><cell>100%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table II .</head><label>II</label><figDesc>Planning times for PRM over problem classes table pick, table under pick, and box. The mean, first quantile, median, third quantile, 95% quantile, and success rate are shown. All times are in milliseconds.</figDesc><table><row><cell></cell><cell>System</cell><cell>Mean</cell><cell>Q1</cell><cell>Median</cell><cell>Q3</cell><cell>95%</cell><cell>Succ.</cell></row><row><cell>Panda</cell><cell>PyBullet/OMPL MoveIt/OMPL VAMP</cell><cell>4481.66 615.58 11.12</cell><cell>127.63 415.14 0.16</cell><cell>328.73 416.73 0.37</cell><cell>1328.37 418.23 1.69</cell><cell>14183.90 1116.90 39.39</cell><cell>99.1% 96.2% 99.7%</cell></row><row><cell>Fetch</cell><cell>PyBullet/OMPL MoveIt/OMPL VAMP</cell><cell>36422.87 4514.73 337.23</cell><cell>2417.08 468.71 7.69</cell><cell>13060.40 1037.15 30.09</cell><cell>38550.10 3000.64 181.73</cell><cell>174517.60 23895.72 2014.40</cell><cell>71.3% 85.7% 94.7%</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>Our primary implementation uses AVX2, which has been broadly available on Intel and AMD CPUs since</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2013" xml:id="foot_1"><p>Lower-width SIMD instruction sets such as SSE have been available since 1999<ref type="bibr" target="#b48">[49]</ref>.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_2"><p>CPUs may downclock when using SIMD instructions-there is also a cost to move data in and out of vector registers.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_3"><p>While modern hardware is quite parallelism-performant, there is still non-negligible overhead (e.g., GPU-CPU communication latency) in the tens of microseconds, which can easily add up into the milliseconds.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_4"><p>We also benefit from advances in modern hardware, which have produced branch predictors and fused "test-and-branch" instructions that are highly performant on the limited set of branches we retain.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_5"><p>In reality, for, e.g., motion toward objects, this distribution is not uniform.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_6"><p>This is a slight simplification; vector operations have low but nonzero overhead, and using them as we do may prevent auto-vectorization.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="8" xml:id="foot_7"><p>MoveIt/OMPL uses the ℓ 1 metric for nearest neighbors rather than ℓ 2 .</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="9" xml:id="foot_8"><p>Note that some of the issues with -ffast-math, e.g., handling nonfinite values, subnormals, etc., are not particularly relevant for the motion planning case, where configurations are from a compact, closed, and bounded space with relatively similar range in each dimension. However, we warn practitioners to still be wary of issues arising from reciprocal approximation.</p></note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGEMENTS</head><p>The authors would like to thank <rs type="person">Mark Moll</rs> for help evaluating MoveIt, <rs type="person">Sofia Paola Medina-Chica</rs> for ARM development, and <rs type="person">Stefan Bukorovic</rs> for collision primitive development.</p></div>
+			</div>			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">RRT-connect: An efficient approach to single-query path planning</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Kuffner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Lavalle</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2000">2000</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="995" to="1001" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Principles of robot motion: theory, algorithms, and implementations</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choset</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">M</forename><surname>Lynch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hutchinson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">A</forename><surname>Kantor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Burgard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Thurn</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005">2005</date>
+			<publisher>MIT press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Planning algorithms</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Lavalle</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006">2006</date>
+			<publisher>Cambridge university press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Motion planning</title>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Lavalle</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<publisher>Springer</publisher>
+			<biblScope unit="page" from="139" to="162" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Probabilistic roadmaps for path planning in high-dimensional configuration spaces</title>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Svestka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-C</forename><surname>Latombe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Overmars</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transations on Robotics and Automation</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="566" to="580" />
+			<date type="published" when="1996">1996</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">CHOMP: Covariant Hamiltonian optimization for motion planning</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zucker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">D</forename><surname>Dragan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Pivtoraiko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Klingensmith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">M</forename><surname>Dellin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Bagnell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">S</forename><surname>Srinivasa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="1164" to="1193" />
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Motion planning with sequential convex optimization and convex collision checking</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schulman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Awwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Bradlow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Patil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="1251" to="1270" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Real-Time Online Re-Planning for Grasping Under Clutter and Uncertainty</title>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">C</forename><surname>Agboh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Dogar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Probabilistic Roadmap Methods Are Embarrassingly Parallel</title>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M</forename><surname>Amato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">K</forename><surname>Dale</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="1999-05">May 1999</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="688" to="694" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Massively Parallelizing the RRT and the RRT</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bialkowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Karaman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Frazzoli</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2011-09">Sept. 2011</date>
+			<biblScope unit="page" from="3513" to="3518" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">A Scalable Method for Parallelizing Sampling-Based Motion Planning Algorithms</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">A</forename><surname>Jacobs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Manavi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Burgos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Denny</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Thomas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M</forename><surname>Amato</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="2529" to="2536" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Real-Time Optimization-Based Planning in Dynamic Environments Using GPUs</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Manocha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="4090" to="4097" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">STORM: An Integrated Framework for Fast Joint-Space Model-Predictive Control for Reactive Manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bhardwaj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Sundaralingam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mousavian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">D</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ramos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Boots</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">CuRobo: Parallelized Collision-Free Robot Motion Generation</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Sundaralingam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">K S</forename><surname>Hari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Fishman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Garrett</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Blukis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Millane</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Oleynikova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ramos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fox</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="8112" to="8119" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Motion Policy Networks</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Fishman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Murali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Eppner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Peele</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Boots</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of The 6th Conference on Robot Learning</title>
+		<editor>
+			<persName><forename type="first">K</forename><surname>Liu</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">D</forename><surname>Kulic</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">J</forename><surname>Ichnowski</surname></persName>
+		</editor>
+		<meeting>The 6th Conference on Robot Learning</meeting>
+		<imprint>
+			<date type="published" when="2023-12">Dec. 2023</date>
+			<biblScope unit="volume">205</biblScope>
+			<biblScope unit="page" from="967" to="977" />
+		</imprint>
+	</monogr>
+	<note>Proceedings of Machine Learning Research</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">MotionBenchMaker: A tool to generate and benchmark motion planning datasets</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chamzas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Quintero-Pena</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Kingston</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Orthey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rakita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gleicher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Toussaint</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="882" to="889" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">The open motion planning library</title>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">A</forename><surname>Sucan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Moll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="page" from="72" to="82" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Complexity of the mover&apos;s problem and generalizations</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">H</forename><surname>Reif</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Annual Symposium on Foundations of Computer Science. IEEE Computer Society</title>
+		<imprint>
+			<biblScope unit="page" from="421" to="427" />
+			<date type="published" when="1979">1979</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">The complexity of robot motion planning</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Canny</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1988">1988</date>
+			<publisher>MIT press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Collision Detection or Nearest-Neighbor Search? On the Computational Bottleneck in Sampling-based Motion Planning</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kleinbort</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Salzman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Halperin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Bekris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Miller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Algorithmic Foundations of Robotics</title>
+		<meeting><address><addrLine>Cham</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer International Publishing</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="624" to="639" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Real-time collision detection</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Ericson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004">2004</date>
+			<publisher>CRC Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Fast BVH construction on GPUs</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lauterbach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Garland</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sengupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Luebke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Manocha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computer Graphics Forum</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="375" to="384" />
+			<date type="published" when="2009">2009</date>
+			<publisher>Wiley Online Library</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">SIMDop: SIMD Optimized Bounding Volume Hierarchies for Collision Detection</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Weller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zachmann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="7256" to="7263" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">FCL: A general purpose library for collision and proximity queries</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chitta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Manocha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="3859" to="3866" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">PyBullet, a Python module for physics simulation for games, robotics and machine learning</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Coumans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bai</surname></persName>
+		</author>
+		<ptr target="http://pybullet.org" />
+		<imprint>
+			<date type="published" when="2016">2016-2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">A single-query bi-directional probabilistic roadmap planner with lazy collision checking</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Sánchez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-C</forename><surname>Latombe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Symposium on Robotics Research</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2003">2003</date>
+			<biblScope unit="page" from="403" to="417" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Path planning using lazy PRM</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bohlin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2000">2000</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="521" to="528" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">The provable virtue of laziness in motion planning</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Haghtalab</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mackenzie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Procaccia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Salzman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Srinivasa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Automated Planning and Scheduling</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="page" from="106" to="113" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">A two level fuzzy PRM for manipulation planning</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">L</forename><surname>Nielsen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2000">2000</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="1716" to="1721" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Bayesian active edge evaluation on expensive graphs</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Choudhury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Srinivasa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Scherer</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1711.07329</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Learning-based proxy collision detection for robot motion planning applications</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Das</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yip</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="1096" to="1114" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Object rearrangement using learned implicit collision functions</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Danielczuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mousavian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Eppner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="6010" to="6017" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">CabiNet: Scaling Neural Collision Detection for Object Rearrangement with Procedural Scene Generation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Murali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mousavian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Eppner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Fishman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1866" to="1874" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">RelaxedIK: Real-time Synthesis of Accurate and Feasible Robot Arm Motion</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rakita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mutlu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gleicher</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="page" from="26" to="30" />
+			<date type="published" when="2018">2018</date>
+			<pubPlace>Pittsburgh, PA</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Neural Joint Space Implicit Signed Distance Functions for Reactive Robot Manipulator Control</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Koptev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Figueroa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Billard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="480" to="487" />
+			<date type="published" when="2023-02">Feb. 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">A Monte-Carlo algorithm for path planning with many degrees of freedom</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Barraquand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-C</forename><surname>Latombe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="1990">1990</date>
+			<biblScope unit="page" from="1712" to="1717" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Fast motion planning by parallel processing-a review</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Henrich</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Intelligent and Robotic Systems</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="page" from="45" to="69" />
+			<date type="published" when="1997">1997</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">On heavy-tailed runtimes and restarts in rapidly-exploring random trees</title>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">A</forename><surname>Wedge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S</forename><surname>Branicky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">AAAI Conference on Artificial Intelligence</title>
+		<imprint>
+			<publisher>Citeseer</publisher>
+			<date type="published" when="2008">2008</date>
+			<biblScope unit="page" from="127" to="133" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">A little more, a lot better: Improving path quality by a path-merging algorithm</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Raveh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Enosh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Halperin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">27</biblScope>
+			<biblScope unit="page" from="365" to="371" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Sampling-Based Roadmap of Trees for Parallel Motion Planning</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Plaku</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">E</forename><surname>Bekris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Ladd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="page" from="597" to="608" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Parallel RRT* architecture design for motion planning</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Bergmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Postula</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Field Programmable Logic and Applications</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="1" to="4" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Parallel sampling-based motion planning with superlinear speedup</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Alterovitz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="1206" to="1212" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">ePA*SE: Edge-based Parallel A* for Slow Evaluations</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mukherjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Aine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Likhachev</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Symposium on Combinatorial Search</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="page" from="136" to="144" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">MPLP: Massively Parallelized Lazy Planning</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mukherjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Aine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Likhachev</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="6067" to="6074" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main">Massively Parallel A* Search on a GPU</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zeng</surname></persName>
+		</author>
+		<imprint>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+	<note>In: 29.1 (</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<title level="m" type="main">A Survey of Parallel A*</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Fukunaga</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Botea</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Jinnai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kishimoto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1708.05296</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note>cs.AI</note>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Parallel A* for State-Space Search</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Fukunaga</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Botea</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Jinnai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kishimoto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hamadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Sais</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Handbook of Parallel Constraint Reasoning</title>
+		<imprint>
+			<publisher>Springer International Publishing</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="419" to="455" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">GPU-based parallel collision detection for fast motion planning</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Manocha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="187" to="200" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Intel® 64 and IA-32 architectures software developer&apos;s manual</title>
+		<author>
+			<persName><surname>Intel®</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Tech. rep. Intel®</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Highly parallel collision detection processor for intelligent robots</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kameyama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Amada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Higuchi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Journal of Solid-State Circuits</title>
+		<imprint>
+			<biblScope unit="volume">27</biblScope>
+			<biblScope unit="page" from="500" to="506" />
+			<date type="published" when="1992">1992</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Motion planning templates: A motion planning framework for robots with low-power CPUs</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Alterovitz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="612" to="618" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">The Pinocchio C++ library: A fast and flexible implementation of rigid body dynamics algorithms and their analytical derivatives</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Carpentier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Saurel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Buondonno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mirabel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Lamiraux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Stasse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Mansard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/SICE International Symposium on System Integration</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="614" to="619" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Group Marching Tree: Sampling-Based Approximately Optimal Motion Planning on GPUs</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Schmerling</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Pavone</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotic Computing</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="219" to="226" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<monogr>
+		<title level="m" type="main">GPU Parallelization of Policy Iteration RRT#</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">C</forename><surname>Lawson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wills</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Tsiotras</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2003.04920</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hyatt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">S</forename><surname>Williams</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Killpack</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2001.04931</idno>
+		<title level="m">Parameterized and GPU-Parallelized Real-Time Model Predictive Control for High Degree-of-Freedom Robots</title>
+		<imprint/>
+	</monogr>
+	<note>eess.SY</note>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<analytic>
+		<title level="a" type="main">A survey of FPGA-based robotic computing</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Raychowdhury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Circuits and Systems Magazine</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="page" from="48" to="74" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<analytic>
+		<title level="a" type="main">Robot Motion Planning on a Chip</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Murray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Floyd-Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sorin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Konidaris</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems. AnnArbor</title>
+		<imprint>
+			<date type="published" when="2016-06">June 2016</date>
+			<pubPlace>Michigan</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<analytic>
+		<title level="a" type="main">The microarchitecture of a real-time robot motion planning accelerator</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Murray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Floyd-Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Konidaris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">J</forename><surname>Sorin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/ACM International Symposium on Microarchitecture</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="1" to="12" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<monogr>
+		<title level="m" type="main">Accelerated Motion Planning Through Hardware/Software Co-Design</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Murray</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+		<respStmt>
+			<orgName>Duke University</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">PhD thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<analytic>
+		<title level="a" type="main">Energy-Efficient Realtime Motion Planning</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">M</forename><surname>Aamodt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Symposium on Computer Architecture</title>
+		<meeting><address><addrLine>New York, NY, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACM</publisher>
+			<date type="published" when="2023-06-17">June 17, 2023</date>
+			<biblScope unit="page" from="1" to="17" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main">Robomorphic Computing: A Design Methodology for Domain-Specific Accelerators Parameterized by Robot Morphology</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Neuman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Plancher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Bourgeat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tambe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Devadas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">J</forename><surname>Reddi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACM International Conference on Architectural Support for Programming Languages and Operating Systems</title>
+		<imprint>
+			<publisher>ACM</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="674" to="686" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<analytic>
+		<title level="a" type="main">Performance Models for CPU-GPU Data Transfers</title>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">V</forename><surname>Werkhoven</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Maassen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Seinstra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Bal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2014 14th IEEE/ACM International Symposium on Cluster, Cloud and Grid Computing</title>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+			<biblScope unit="page" from="11" to="20" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<analytic>
+		<title level="a" type="main">Open robot control software: the OROCOS project</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Bruyninckx</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2001">2001</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="2523" to="2528" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b63">
+	<analytic>
+		<title level="a" type="main">A Fast Procedure for Computing the Distance between Complex Objects in Three Space</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Gilbert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Keerthi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="1987-03">Mar. 1987</date>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page" from="1883" to="1889" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b64">
+	<analytic>
+		<title level="a" type="main">Adaptive medial-axis approximation for sphere-tree construction</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Bradshaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>O'sullivan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Graphics (TOG)</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1" to="26" />
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b65">
+	<analytic>
+		<title level="a" type="main">Real-Time Collision Detection and Response Using Sphere-Trees</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>O'sullivan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dingliana</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Spring Conference on Computer Graphics</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<date type="published" when="1999-04">Apr. 1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b66">
+	<analytic>
+		<title level="a" type="main">Generalized lazy search for robot motion planning: Interleaving search and edge evaluation via event-based toggles</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandalika</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Choudhury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Salzman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Srinivasa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Automated Planning and Scheduling</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="page" from="745" to="753" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b67">
+	<analytic>
+		<title level="a" type="main">Adaptively informed trees (AIT*) and effort informed trees (EIT*): Asymmetric bidirectional samplingbased path planning</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">P</forename><surname>Strub</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">D</forename><surname>Gammell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">41</biblScope>
+			<biblScope unit="page" from="390" to="417" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b68">
+	<analytic>
+		<title level="a" type="main">Concurrent nearest-neighbor searching for parallel sampling-based motion planning in SO(3), SE(3), and Euclidean spaces</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Alterovitz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Algorithmic Foundations of Robotics</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="69" to="85" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b69">
+	<analytic>
+		<title level="a" type="main">Creating high-quality paths for motion planning</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Geraerts</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Overmars</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="page" from="845" to="863" />
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b70">
+	<analytic>
+		<title level="a" type="main">Fast smoothing of manipulator trajectories using optimal bounded-acceleration shortcuts</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hauser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Ng-Thow-Hing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2010">2010</date>
+			<biblScope unit="page" from="2493" to="2498" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b71">
+	<analytic>
+		<title level="a" type="main">Collision-free and smooth trajectory computation in cluttered environments</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Manocha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="1155" to="1175" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b72">
+	<analytic>
+		<title level="a" type="main">Moveit!</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chitta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Sucan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Cousins</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="18" to="19" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b73">
+	<analytic>
+		<title level="a" type="main">Robowflex: Robot motion planning with MoveIt made easy</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Kingston</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Kavraki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems. IEEE. 2022</title>
+		<imprint>
+			<biblScope unit="page" from="3108" to="3114" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b74">
+	<analytic>
+		<title level="a" type="main">ROS: an open-source Robot Operating System</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Quigley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Conley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Gerkey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Faust</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Foote</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Leibs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Wheeler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">Y</forename><surname>Ng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICRA Workshop on Open Source Software</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page">5</biblScope>
+			<date type="published" when="2009">2009</date>
+			<pubPlace>Kobe, Japan</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b75">
+	<analytic>
+		<title level="a" type="main">On the efficiency of certain quasi-random sequences of points in evaluating multi-dimensional integrals</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">H</forename><surname>Halton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Numerische Mathematik</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="84" to="90" />
+			<date type="published" when="1960">1960</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b76">
+	<analytic>
+		<title level="a" type="main">On the relationship between classical grid search and probabilistic roadmaps</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Lavalle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S</forename><surname>Branicky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">R</forename><surname>Lindemann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">7-8</biblScope>
+			<biblScope unit="page" from="673" to="692" />
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b77">
+	<analytic>
+		<title level="a" type="main">On the probabilistic foundations of probabilistic roadmap planning</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-C</forename><surname>Latombe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Kurniawati</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Symposium on Robotics Research</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2007">2007</date>
+			<biblScope unit="page" from="83" to="97" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b78">
+	<monogr>
+		<author>
+			<persName><forename type="first">W</forename><surname>Jakob</surname></persName>
+		</author>
+		<ptr target="https://github.com/wjakob/nanobind.2022" />
+		<title level="m">nanobind: tiny and efficient C++/Python bindings</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b79">
+	<monogr>
+		<title level="m" type="main">Robust watertight manifold surface generation method for shapenet models</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Guibas</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1802.01698[cs.CG</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b80">
+	<monogr>
+		<title level="m" type="main">ManifoldPlus: A Robust and Scalable Watertight Manifold Surface Generation Method for Triangle Soups</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Guibas</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2005.11621[cs.GR</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

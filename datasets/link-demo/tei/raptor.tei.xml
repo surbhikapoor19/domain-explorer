@@ -1,0 +1,898 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Rapid and Robust Trajectory Optimization for Humanoids</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2024-12-16">16 Dec 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Bohao</forename><surname>Zhang</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Ram</forename><surname>Vasudevan</surname></persName>
+						</author>
+						<title level="a" type="main">Rapid and Robust Trajectory Optimization for Humanoids</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-12-16">16 Dec 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">41CA76DE0CD0FC6AE7BC21D97FC1859D</idno>
+					<idno type="arXiv">arXiv:2409.00303v3[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T15:48+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Performing trajectory design for humanoid robots with high degrees of freedom is computationally challenging. The trajectory design process also often involves carefully selecting various hyperparameters and requires a good initial guess which can further complicate the development process. This work introduces a generalized gait optimization framework that directly generates smooth and physically feasible trajectories. The proposed method demonstrates faster and more robust convergence than existing techniques and explicitly incorporates closed-loop kinematic constraints that appear in many modern humanoids. The method is implemented as an open-source C++ codebase which can be found at <ref type="url" target="https://roahmlab.github.io/RAPTOR/">https://roahmlab.github.io/RAPTOR/</ref>.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Numerically constructing energy efficient trajectories that accomplish a user-specified task for high degree of freedom robots is an important challenge. A classic approach to perform this type of synthesis for bipeds has relied on representing the problem as a nonlinear optimization program. These methods usually take several minutes to compute an optimal trajectory for bipeds (e.g., Cassie or Digit) <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b1">[2]</ref>. Notably many modern bipeds have closed-loop kinematic constraints that require incorporating nonlinear constraints during optimization, which can make it even more computationally taxing to construct a trajectory via optimization. Solving this nonlinear program often requires managing numerous hyperparameters that can significantly affect the performance of the optimization process. Notably solving these nonlinear optimization problems often requires a good initial guess.</p><p>To improve the speed at which trajectory synthesis occurs, many researchers have simplified model complexity by utilizing reduced-order dynamic models <ref type="bibr" target="#b2">[3]</ref>- <ref type="bibr" target="#b6">[7]</ref>. Of particular note is the centroidal dynamics representation of a legged robot when performing trajectory optimization <ref type="bibr" target="#b7">[8]</ref>. It is able to more tractably deal with kinematic obstacle avoidance constraints, but because it utilizes a reduced-order dynamic model during trajectory optimization the solution that it finds may not be directly realizable on a real legged system due to torque limits [9, Section IV.A].</p><p>Rather than utilize a reduced order model, others have tried to improve the speed of computation of these nonlinear programs by reformulating the trajectory optimization problem. For example, researchers have utilized Differential Dynamic Programming (DDP) to perform energy efficient trajectory design for high degree of freedom robotic systemsin seconds <ref type="bibr" target="#b9">[10]</ref>, <ref type="bibr" target="#b10">[11]</ref>. However, the contact constraints or other kinematics constraints are treated as soft constraints that are directly added to the cost function to minimize. This means that these kinematic constraints may not be perfectly satisfied at an optimal solution. To address this limitation, researchers have recently illustrated how to perform DDP with rigid constraints <ref type="bibr" target="#b11">[12]</ref>. This approach is able to generate a solution that respects the system dynamics while satisfying other state or input constraints, but is slower than <ref type="bibr" target="#b9">[10]</ref>.</p><p>The emphasis of this work is on performing trajectory optimization when a user pre-specifies the contact sequence. However, there are methods that try to optimize over the contact sequence as well <ref type="bibr" target="#b12">[13]</ref>, <ref type="bibr" target="#b13">[14]</ref>, but because this dramatically increases the number of optimization variables it can be difficult to apply these approaches while performing gait optimization for humanoids.</p><p>More recent work has applied deep learning to perform trajectory design for bipeds <ref type="bibr" target="#b14">[15]</ref>, <ref type="bibr" target="#b15">[16]</ref>. Using iterative reinforcement learning, researchers have learned a policy that can enable a robot to successfully traverse a variety of terrains, including slopes, stairs, or even blocks <ref type="bibr" target="#b16">[17]</ref>. These methods usually begin from or rely on an existing library of reference trajectories for the deep neural network to imitate <ref type="bibr" target="#b17">[18]</ref>. This can be nontrivial to automatically generate on a high-dimensional robot.</p><p>This paper proposes a new gait optimization framework, RAPTOR, that optimizes over only the actuated joints of a robot and then uses inverse dynamics to reconstruct rest of the states. This results in fewer decision variables and constraints during optimization-based trajectory design. As a result, RAPTOR can perform trajectory design faster for modern bipeds which usually incorporate closed-loop kinematic constraints. The contributions of this work are threefold: First, in Section III, a new formulation of a generalized gait optimization framework for dynamic bipedal locomotion that directly generates a smooth trajectory that is physically feasible and can incorporate closed-loop constraints. Second, in Section IV, we demonstrate that our method can be effectively scaled to a high-dimensional full-size humanoid and achieve faster and more robust convergence compared with other methods. Finally, we release the code-base, which is written entirely in C++, as an open source package <ref type="url" target="https://github.com/roahmlab/RAPTOR">https://github.com/roahmlab/RAPTOR</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. PRELIMINARY</head><p>This section formulates the bipedal robot dynamics as well as certain assumptions that are used to formulate a trajectory optimization problem to generate safe trajectories. To represent the reference trajectories of the robot, this paper uses Bezier curves, b : [0, 1] → R, which are defined as:</p><formula xml:id="formula_0">b(t) = V v=0 b v P v (t),<label>(1)</label></formula><p>where b v ∈ R are called the Bezier Coefficients and</p><formula xml:id="formula_1">P v : [0, 1] → R is the Bernstein Basis Polynomial [19,<label>(1)</label></formula><p>] for each v ∈ {0, . . . , V }.</p><p>The robot has n joints in total, with n a actuated joints (motors) and n u unactuated (passive) joints, where n a +n u = n. We denote the set of indices for all actuated joints as A ⊂ N and the set of indices for all unactuated joints as U ⊂ N. Thus, A ∩ U = ∅ and A ∪ U = {1, . . . , n}.</p><p>We focus on robots with flat feet in this paper:</p><p>Assumption 1. The lower surface of the feet of the biped are flat rectangles.</p><p>Motivated by [20, Section 1.2], the bipedal robot in this paper is modeled as a hybrid system that alternates between single-support and double-support phases depending on the number of legs in contact with the ground. In the singlesupport phase, the leg in contact with the ground is called the stance leg, and the other leg is called the swing leg.</p><p>1) Single-Support Dynamics: Suppose the duration of a single-support phase is T . We define the trajectory of the robot as q : [0, T ] → Q where Q ⊂ R n is the configuration space of all joints of the robot. We define q u (t) ∈ R nu as the collection of all unactuated entries of q(t) and q a (t) ∈ R na as the collection of all actuated entries of q(t). The constraint function is denoted by c : Q → R nc where n c ≥ 0 is the number of constraints. The constraints describe the closedloop kinematic chain constraints and the requirement that the stance foot is fixed at a specific position and orientation. The constraints are satisfied when c(q(t)) = 0 nc . The Jacobian of c at q(t) is denoted by J(q(t)) ∈ R nc×n . The robot's dynamics during the single-support phase for all t ∈ [0, T ] can be described as [21, Section 8.1]: H(q(t))q(t) + C(q(t), q(t)) q(t) + g(q(t)) = = τ (t) + J T (q(t))λ(t), (2) c(q(t)) = 0 nc (3) ċ(q(t)) = J(q(t)) q(t) = 0 nc (4) c(q(t)) = J(q(t))q(t) + J(q(t)) q(t) = 0 nc ,</p><p>where H(q(t)) ∈ R n×n is the positive definite inertia matrix, C(q(t), q(t)) ∈ R n×n is the Coriolis matrix, g(q(t)) ∈ R n is the gravitational force vector, and λ(t) ∈ R nc is the reaction forces/wrenches to maintain the constraints at time t. The torque applied on each joint at time t, τ (t) ∈ R n , is given by</p><formula xml:id="formula_3">τ (t) = Bu(t),<label>(6)</label></formula><p>where u(t) ∈ R na is the control input and B ∈ R n×na is the transmission matrix, which follows the property that</p><formula xml:id="formula_4">B u = 0 nu×na , B a = 1 na×na ,<label>(7)</label></formula><p>where B a and B u is the collection of all actuated rows and all unactuated rows of B, respectively. The conditions for maintaining surface contact between the stance foot and the ground are given in [22, ( <ref type="formula" target="#formula_3">6</ref>)-( <ref type="formula" target="#formula_5">8</ref>)]. In particular, the reaction force/wrench to maintain all constraints at time t, λ(t) ∈ R nc , includes force/wrench on unactuated joints to maintain closed-loop constraints, or force/wrench from the ground to maintain contacts between the stance foot and the ground. Let λ st (t) be the 6-dimensional vector that is a collection of all entries that correspond to the contact constraints in λ(t) (i.e., the contact wrench). The corresponding contact wrenches consist of three constraint forces, (λ f x st (t), λ f y st (t), λ f z st (t)), and three constraint moments, (λ mx st (t), λ my st (t), λ mz st (t)), respectively. To ensure that contact is maintained, the following conditions on contact wrenches must be satisfied:</p><formula xml:id="formula_5">0 ≤ λ f z st (t)<label>(8a)</label></formula><formula xml:id="formula_6">(λ f x st (t)) 2 + (λ f y st (t)) 2 ≤ µλ f z st (t)<label>(8b)</label></formula><formula xml:id="formula_7">λ mz st (t) ≤ γλ f z st (t) (8c) - 1 2 l a λ f z st (t) ≤ λ mx st (t) ≤ 1 2 l a λ f z st (t) (8d) - 1 2 l b λ f z st (t) ≤ λ my st (t) ≤ 1 2 l b λ f z st (t), (<label>8e</label></formula><formula xml:id="formula_8">)</formula><p>where µ is the translational friction coefficient of the ground, γ is the torsional friction coefficient of the ground, l a and l b are the length and width of the lower surface of the stance foot. Note these conditions correspond to the following condition: the ground reaction force should be non-negative (8a), the stance foot should not slide on the ground in translation direction (8b), or in rotation direction (8c), and the robot should not roll over the edge of the stance foot (8d), (8e).</p><p>2) Double Support Dynamics: To simplify the exposition and formulation of the real-time optimization problem, we follow the assumption made in [20, Section 3.2, HGW3]: Assumption 2. The double support phase is instantaneous, and the associated impact due to ground contact is modeled as a rigid contact.</p><p>We describe the instantaneous change in the robot model caused by the impact using the notion of a guard and reset map as in the definition of hybrid systems <ref type="bibr" target="#b22">[23,</ref><ref type="bibr">Definition 7]</ref>. The force of ground contact imposes a holonomic constraint on the position of the stance foot that enables one to construct a reset map [20, Section 3.4.2]:</p><formula xml:id="formula_9">(q + , q+ , λ r ) = ∆(q -, q-),<label>(9)</label></formula><p>where ∆ describes the relationship between the pre-impact joint angles, q -, and velocities, q-, and post-impact joint angles, q + , velocities, q+ , and reaction force/wrench λ r . For brevity, we do not include an explicit formula for ∆ in this paper, but it can be found in <ref type="bibr">[20, (3.20)</ref>]. Note that this instantaneous change only affects the velocities of the robot joints (i.e., q + = q -).</p><p>3) Fully-Actuated Representation: When the number of constraints n c is equal to the number of unactuated dimensions n u , the system is fully actuated. This case usually holds for bipedal robots with actuated ankles and flat feet in the single-support phase [20, <ref type="bibr">Section 10]</ref>. More details on the discussion on Digit and other similar robots can be found in Section IV. The fully-actuated representation facilitates the control and optimization of such robots because it enables us to describe the unactuated joints trajectory as a function of the actuated joints trajectory.</p><p>Before formally describing this theorem, we make the following assumption: Assumption 3. During the single-support phase, for ∀q a (t) ∈ Q a , there exists one and only one q u (t) ∈ Q u such that c(q(t)) = 0 nc .</p><p>This assumption ensures that the constraint Jacobian J u (q(t)) ∈ R nc×nu , which is the collection of unactuated columns of the constraint Jacobian J(q(t)) and a square matrix when n u = n c , is always invertible according to the inverse function theorem [24, Theorem 5.2.1]. Note in the experimental section, we numerically evaluate whether this assumption is satisfied. We denote the q u that satisfies the constraints as a function of q a : q u = Γ(q a ). <ref type="bibr" target="#b9">(10)</ref> Under this assumption, one can prove that the control input can be uniquely computed as a function of the actuated joint position, velocity, and acceleration. The proof can be found in our online supplementary material [25, Appendix I].</p><p>Theorem 4. Given actuated joint position q a (t), velocity qa (t), and acceleration qa (t), the velocity and acceleration of all joints are given as</p><formula xml:id="formula_10">q(t) = G(q(t)) qa (t)<label>(11)</label></formula><p>q(t) = G(q(t))q a (t) + Ġ(q(t)) qa (t).</p><p>The reaction force λ(t) and the control input u(t) are then uniquely given as</p><formula xml:id="formula_12">λ(t) = (J -1 u (q(t))) T τu (t)<label>(13)</label></formula><formula xml:id="formula_13">u(t) = τa (t) -J a (q(t)) T λ(t) = G T (q(t))τ (t),<label>(14)</label></formula><p>where τ (t) is the full inverse dynamics vector: τ (t) = H(q(t))q(t) + C(q(t), q(t)) q(t) + g(q(t)). ( <ref type="formula">15</ref>) τu (t) and τa (t) are the collection of unactuated and actuated entries of τ (t), respectively, J u (q(t)) and J a (q(t)) are the collection of unactuated and actuated columns of the constraint Jacobian J(q(t)), respectively, G(q(t)) ∈ R n×na is the projection matrix from actuated space to joint space with its unactuated rows defined as</p><formula xml:id="formula_14">G u (q(t)) = -J -1 u (q(t))J a (q(t)),<label>(16)</label></formula><p>and its actuated rows defined as</p><formula xml:id="formula_15">G a (q(t)) = 1 na×na . (<label>17</label></formula><formula xml:id="formula_16">)</formula><p>As we show in the next section, this theorem allows us to formulate the trajectory optimization problem with decision variables only corresponding to the actuated joints. In particular, we can apply this theorem to recover the remaining joints, reaction force, and the control input as a function of just the actuated joints.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. MULTIPLE-STEP PERIODIC GAIT GENERATION</head><p>This section describes the optimization formulation for offline generating a library of desired gaits.</p><p>The duration of all walking steps to be a fixed number T ∈ R + . The trajectory of the actuated joint j ∈ A for one walking step is a V -degree Bezier curve: r ∈ R nu } l∈{1,...,L} , where q(l) r denotes the joint velocity after the reset map at the end of each step l, and λ (l) r denotes the reaction force during the reset map at the end of each step l that is required to maintain the corresponding constraints. The variable y describes the concatenation of all of the variables above.</p><formula xml:id="formula_17">q j (t) = V v=0 b v,j P v t T ,<label>(18)</label></formula><p>To ensure that the computed trajectory is dynamically feasible, the optimization problem checks that certain constraints are satisfied by the trajectory on a finite number of time nodes. Motivated by <ref type="bibr" target="#b25">[26]</ref>, we choose the Chebyshev Nodes, t i ∈ [0, T ] for i ∈ {1, . . . , N } as the set of time nodes along which constraints must be satisfied where N ≥ 3 is the total number of the nodes. This is then used to formulate the optimization problem to design desired gaits:  <ref type="formula" target="#formula_3">6</ref>)], the cost function aims to minimize the 2-norm of the control input consumed, the initial velocity, and the initial acceleration:</p><formula xml:id="formula_18">min y J (y)<label>(19a)</label></formula><formula xml:id="formula_19">J (y) = L l=1 ( w 1 N N i=1 u (l) i 2 + + w 2 q(l) a (0) 2 + w 3 q(l) a (0) 2 ),<label>(20)</label></formula><p>where w 1 , w 2 and w 3 are user-defined positive constant scalars.</p><p>2) Joints Limits (19b) &amp; Actuator Limits (19c): All joints q (l) (t i ) belong to the configuration space Q for all i ∈ {1, . . . , N } and l ∈ {1, . . . , L}. The control input u (l) (t i ) must be within the robot torque limits for all i ∈ {1, . . . , N } and l ∈ {1, . . . , L}.</p><p>3) Maintaining Contact (19d): The contact constraints are formulated for λ (l) (t i ) and λ (l) r for all i ∈ {1, . . . , N } and l ∈ {1, . . . , L} using (8) and can be computed using the decision variables by applying <ref type="bibr" target="#b12">(13)</ref>.</p><p>4) Torso Constraints (19e): Inspired by <ref type="bibr">[22, (50)</ref>], the torso constraints require that the absolute value of the roll and pitch angle of the torso are less than or equal to 3 • and the height of the torso larger than a specific value to avoid falling.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>5) Swing Foot Constraints (19f):</head><p>The swing foot constraints require that: the swing foot stays on the ground at the beginning and end of each step, the swing foot yaw angle is equal to a user specified desired angle at the beginning and end of each trajectory, the swing foot height is greater than or equal to some user specified height during the middle of the step, and that the swing foot position is equal to some user specified desired position at the beginning and at the end of every step. More information on the user-defined values can be found in Section IV.</p><p>6) Reset Map Constraints (19g): Reset map constraints require that the previous walking step and the next walking step are "aligned" according to <ref type="bibr" target="#b8">(9)</ref>:</p><formula xml:id="formula_20">(q (l) (x N ), q(l) r , λ (l) r ) = ∆(q (l) (x N ), q(l) (x N )) (21a) q (l+1) a (x 1 ) = q (l) a (x N ) (21b) q(l+1) a (x 1 ) = q(l) ra (21c)</formula><p>for all l ∈ {1, . . . , L -1}. (21b) ensures that the actuated joint positions are continuous between steps. (21a) and (21c) ensure that the actuated joint velocities satisfy the reset map equation ( <ref type="formula" target="#formula_9">9</ref>) between steps.</p><p>For periodic gaits, we generally assume that the number of walking steps is even, so that the stance legs at the first step and the last step are different. The corresponding reset map constraints can be formulated as below:</p><formula xml:id="formula_21">(q (L) (x N ), q(L) r , λ (L) r ) = ∆(q (L) (x N ), q(L) (x N )) (22a) q (1) a (x 1 ) = q (L) a (x N ) (22b) q(1) a (x 1 ) = q(L) ra (22c)</formula><p>If the number of walking steps is odd, in other words, the stance legs at the first step and the last step are the same, the constraints need to be rewritten so that joint positions and velocities at the beginning of the first step and the end of the last step are symmetric. As a result, this only holds for symmetric walking behaviors, such as walking straight forward.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. SIMULATION EXPERIMENTS</head><p>This section summarizes the experimental evaluation of our method on Digit and its comparison to Aligator <ref type="bibr" target="#b11">[12]</ref>. Note we have only compared to Aligator rather than other optimization-based trajectory design algorithms because Aligator ( <ref type="formula" target="#formula_0">1</ref>) is able to natively use Pinocchio <ref type="bibr" target="#b27">[28]</ref> which efficiently evaluate derivatives of a robot's dynamics, (2) has made its code publicly available, and (3) it is able to enforce closed-loop kinematic constraints. Note, we also performed the same comparison on another humanoid Talos <ref type="bibr" target="#b28">[29]</ref> that was originally included in the official examples of aligator and does not contain any closed-loop kinematics chains. The results can be found in our online supplementary material <ref type="bibr" target="#b24">[25]</ref>. We have also shown that our method works for other fully-actuated systems, such as robotic manipulators. More results can be found on our project website <ref type="url" target="https://roahmlab.github.io/RAPTOR/">https://roahmlab.github.io/RAPTOR/</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Digit Overview</head><p>Digit is a humanoid robot with 42 degrees of freedom, developed by Agility Robotics (including floating-base). Digit includes 4 actuated revolute joints per arm and 14 revolute joints per leg, of which 6 are actuated and 8 are passive. Each leg has 3 closed kinematic chains. The upper leg chain consists of 1 actuated joint (knee) and 4 passive joints (shin, heel-spring, achilles-rod, tarsus). The lower leg chains include 2 actuated joints (toe-A, toe-B) and 4 passive joints (toe-pitch, toe-roll, toe-B-rod, toe-B-rod). The kinematic structure is summarized in Figure <ref type="figure" target="#fig_2">2</ref>.</p><p>We make the following simplifications for Digit. We focus on the leg motion of Digit in this work. In addition, note the springs on Digit's legs exhibit little movement during actual hardware experiments. In fact, the most recent bipedal robot models ([30]- <ref type="bibr" target="#b32">[33]</ref>), including the latest version of Digit <ref type="bibr" target="#b33">[34]</ref>, do not incorporate such springs. As a result, we make the following assumption: The blue arrows show the rotation axes of all unactuated joints. The purple arrows show the rotation axes of all springs (shin and heel-spring), which are assumed to be fixed in this paper. The green lines show how these joints are connected to be closed-loops.</p><p>Assumption 5. All arms on Digit are assumed to be fixed. All four springs (shin and heel-spring on both legs) on Digit are assumed to be fixed.</p><p>By fixing all the springs, each chain in the legs becomes a four-bar linkage mechanism with 3 kinematics constraints. This results in a total of 15 joints per leg with 9 passive joints and 9 constraints. To numerically verify Assumption 3, we provide 100 different actuated joint positions within the corresponding joint limits and solve inverse kinematics for unactuated joints. The solutions are always unique. The other unactuated joints, which are the floating-base coordinates, are also unique once the unactuated joints in the closed-loop are settled. As a result, Digit can be treated as a fully actuated system during the single-support phase.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Implementation Details</head><p>1) Platform Details: Our gait optimization code is implemented in C++. The experiments are run on a desktop with an AMD Ryzen 9 5950 16-core 32-thread processor and 128 GB RAM. In our method, we use Pinocchio <ref type="bibr" target="#b27">[28]</ref> to compute the unconstrained inverse dynamics and its gradient. We use Ipopt <ref type="bibr" target="#b34">[35]</ref> as our nonlinear solver. The first-order gradient is provided analytically while the second-order Hessian is approximated using Ipopt's "limited-memory" option. We use linear solvers from HSL <ref type="bibr" target="#b35">[36]</ref>.</p><p>2) Handling Closed-loop Constraints: To apply Theorem 4, we must first solve for the inverse kinematics Γ. This enables the computation of the other terms in the theorem. We use the multidimensional root finding function in the GSL library <ref type="bibr" target="#b36">[37]</ref> to find q u (t). This method is sensitive to its initial guess. To be more specific, in the offline operation, we uniformly sample 100 points within the actuated joint limits and solve the inverse kinematics problem over each of these 100 points, as how we have numerically verified Assumption 3 described at the end of Section IV-A. We fit a trigonometric series to approximate the solutions. In that way, we can compute an approximate solution rapidly by relying upon interpolation. During each iteration of the optimization, we treat this approximation as the initial guess of the GSL multidimensional root-finding function, which then converges into a more accurate solution, usually in less than 10 iterations. More details on implementation can be found in the README<ref type="foot" target="#foot_2">foot_2</ref> of our code.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Gait Optimization Comparison</head><p>We perform a comparison between RAPTOR and aligator <ref type="bibr" target="#b11">[12]</ref> on Digit. Our implementation on aligator has also been open-sourced<ref type="foot" target="#foot_3">foot_3</ref> . We perform 3 different experiments which make Digit walk forward for 0m, 0.4m, and 0.8m forward in one walking step. We assign a fixed initial configuration of the robot to aligator and enforce the same constraint for RAPTOR, so that both methods start from the same configuration at the beginning of the trajectory. We set the maximum number of iterations to 200 and the constraint violation tolerance to 1e-4 for both methods. For aligator, we adhere to the same settings as provided in the official example except the time discretization. We consider 3 different time discretizations (dt = 0.01s, 0.005s, 0.001s) for further discussion on aligator. For RAPTOR, we performed an ablation study to choose the best parameters for Ipopt. The results can be found in our online supplementary material <ref type="bibr" target="#b24">[25,</ref><ref type="bibr">Appendix II]</ref>. We choose the degree of the Bezier curve V to 5 and the number of time nodes N to 14. We choose HSL ma57 as the linear solver and the update strategy for barrier parameter to adaptive. To initialize the optimization, we adhere to the same initial guess strategy as provided in the official example for aligator. For RAPTOR, we simply assign all decision variables to 0. More details on warm up strategy of RAPTOR can be found in README 1 of our code.</p><p>To validate whether solution is physically realizable, we simulate the dynamics of the robot using the integration method solve_ivp from <ref type="bibr" target="#b37">[38]</ref> in Python. Since the development of the tracking controller is out of the scope of this work, we simply apply a naive control policy here: u(t) = u open (t)+K P (q d (t)-q(t))+K D ( qd (t)-q(t)), <ref type="bibr" target="#b22">(23)</ref> where u open (t) is the open loop control input generated from the optimization, K P and K D are the PD gains. We abuse the notation here and denote q(t) as the robot states in the simulation and q d (t) as the desired states of the optimized gait trajectory. aligator generates optimized control inputs on its corresponding time discretization, hence we compute u open (t) using zero-order hold (ZOH) over the control input sequence. The motivation of choosing different time discretization here is that, intuitively speaking, finer discretization should lead to better tracking performance when using ZOH. For RAPTOR, since the outputs are continuous trajectories, we can directly compute u open (t) at any time t using Theorem 4. We tuned the PD gains to minimize the tracking error while staying within the torque limitations and eventually choose K P = 80 and K D = 5.  Figure <ref type="figure" target="#fig_3">3</ref> shows how the constraint violation converges with respect to time during optimization. Although aligator converges faster than RAPTOR in general, it struggles to converge to an acceptable solution for more challenging tasks (desired step length ≥ 0.4m) or for finer time discretization, while RAPTOR is always able to converge to a feasible solution below the constraint violation tolerance, usually within 1 second.</p><p>Figure <ref type="figure" target="#fig_4">4</ref> provides more details on the impacts of converging below the constraint violation tolerance or not. Here we consider the difference between the desired step lengths and the resultant step lengths of both the optimized trajectories and the simulation trajectories when tracking the optimized trajectories using the controller in <ref type="bibr" target="#b22">(23)</ref>. As we have discussed previously, aligator struggles to generate a feasible solution that reaches the desired step length in the optimization stage, while the solution of RAPTOR can always reach desired step lengths. For simulation trajectories, finer discretization brings better tracking performance for aligator when compared between 0.01s and 0.005s. However, aligator struggles to converge when time discretization is 0.001s, returning unoptimized control inputs that lead to larger tracking error, and as a result performs the worst in both optimization and simulation. For RAPTOR, <ref type="bibr" target="#b22">(23)</ref> results in a larger tracking error compared to aligator. The performance is still better than that of aligator for the most challenging task when the desired step length is 0.8m. We can infer that RAPTOR could perform better in simulation if equipped with a more sophisticated controller, which we consider to be one of our future work.</p><p>We also consider the control energy consumed in the simulation, which is calculated using</p><formula xml:id="formula_22">1 N N i=1 u T i u i ,</formula><p>where N is the number of samples recorded in the simulation and u i is the control input at ith time sample. As shown in Figure <ref type="figure" target="#fig_5">5</ref>, RAPTOR is always able to find the solution with the minimum control energy consumption, which is critical for humanoids with embedded mobile batteries.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION</head><p>This paper presents a novel trajectory optimization algorithm for full-size humanoids that can generate feasible gaits in seconds. The method outperforms existing state-of-theart planners in terms of energy efficiency and achieving the desired behavior. Future work will involve transferring the optimized trajectory onto real-world hardware.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 :</head><label>1</label><figDesc>Fig. 1: This figure illustrates a physically feasible six-step periodic gait with different step lengths for humanoid robot Digit that is found by RAPTOR, the trajectory optimization algorithm developed in this paper. The duration of each step is fixed to be 0.4 seconds, which yields a total duration of 2.4 seconds of the whole gait. It only takes RAPTOR 16 seconds to converge to a feasible solution.</figDesc><graphic coords="1,343.80,145.72,183.61,139.64" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head></head><label></label><figDesc>where t ∈ [0, T ]. For an L-step gait optimization, the variables at a walking step l ∈ {1, . . . , L} are denoted by b (l) v,j . The following variables are decision variables in the optimization problem: {b (l)∈R v,j } v∈{0,...,m},j∈A,l∈{1,...,L} , { q(l) r ∈ R n } l∈{1,...,L} , and {λ (l)</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: This figure illustrates the closed-loop structure on the legs of Digit. The orange arrows show the rotation axes of all actuated joints (motors). The blue arrows show the rotation axes of all unactuated joints. The purple arrows show the rotation axes of all springs (shin and heel-spring), which are assumed to be fixed in this paper. The green lines show how these joints are connected to be closed-loops.</figDesc><graphic coords="5,78.48,50.09,195.82,157.31" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Pareto curve of the constraint violation with respect to the computation time. Note that all curves do not start from 0 in time, since we need to evaluate the problem for at least one iteration to get the constraint violation. In other words, the beginning of the curves indicates the computation time of the first iteration.</figDesc><graphic coords="6,61.20,50.08,489.58,128.08" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: The absolute value of the difference between the desired step length and the actual step length. The crosses indicate the difference on the optimized trajectory. They may be away from 0 due to optimization not converging to a feasible solution. The circles indicate the difference on the trajectory in simulation when tracking the optimized trajectory using a controller. The circles may not be aligned with the crosses due to imperfect tracking of the controller.</figDesc><graphic coords="6,84.60,231.36,183.60,151.10" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Control energy consumption of 3 variants of aligator and RAPTOR in the simulation for 3 different desired step lengths</figDesc><graphic coords="6,343.80,231.37,183.59,166.87" type="bitmap" /></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>Robotics Institute, University of Michigan, Ann Arbor, MI jimzhang@umich.edu.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1"><p>Mechanical Engineering, University of Michigan, Ann Arbor, MI ramv@umich.edu.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_2"><p>https://github.com/roahmlab/RAPTOR/tree/main/Examples/Digit</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_3"><p>https://github.com/roahmlab/aligator-roahmlab</p></note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Corrigendum: A direct method for trajectory optimization of rigid bodies through contact</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Posa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<idno type="DOI">10.1177/0278364914533878</idno>
+		<ptr target="https://doi.org/10.1177/0278364914533878" />
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="1044" to="1044" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Frost: Fast robot optimization and simulation toolkit</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Hereid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">D</forename><surname>Ames</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE/RSJ</title>
+		<imprint>
+			<date type="published" when="2017-09">Sep. 2017</date>
+			<pubPlace>Vancouver, BC, Canada</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Biped walking stabilization based on linear inverted pendulum tracking</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kajita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Morisawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Miura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2010 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2010">2010</date>
+			<biblScope unit="page" from="4489" to="4496" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">A sequential mpc approach to reactive planning for bipedal robots using safe corridors in highly cluttered environments</title>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">S</forename><surname>Narkhede</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Kulkarni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">A</forename><surname>Thanki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Poulakakis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="11" to="831" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Integrated task and motion planning for safe legged navigation in partially observable environments</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Shamsah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Warnke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hutchinson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="4913" to="4934" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Autonomous navigation of underactuated bipedal robots in height-constrained environments</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sreenath</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">42</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="565" to="585" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Leveraging the template and anchor framework for safe, online robotic gait design</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Gan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Johnson-Roberson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Vasudevan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page">875</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Whole-body motion planning with centroidal dynamics and full kinematics</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Valenzuela</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2014 IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+			<biblScope unit="page" from="295" to="302" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Optimization-based control for dynamic legged robots</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">M</forename><surname>Wensing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Posa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Escande</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Mansard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">D</forename><surname>Prete</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="43" to="63" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Crocoddyl: An efficient and versatile framework for multi-contact optimal control</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Mastalli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Budhiraja</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Merkt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="2536" to="2542" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Inverse-dynamics mpc via nullspace resolution</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Mastalli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">P</forename><surname>Chhatoi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Corbéres</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tonneau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Vijayakumar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">W</forename><surname>Jallet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bambade</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Arlaud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>El-Kazdadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Mansard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Carpentier</surname></persName>
+		</author>
+		<ptr target="https://inria.hal.science/hal-04332348v1" />
+	</analytic>
+	<monogr>
+		<title level="j">PROXDDP: Proximal Constrained Trajectory Optimization</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Inverse dynamics trajectory optimization for contact-implicit model predictive control</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kurtz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Castro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">Ö</forename><surname>Önol</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Lin</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.01813</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Optimal control of polynomial hybrid systems via convex relaxations</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Vasudevan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Automatic Control</title>
+		<imprint>
+			<biblScope unit="volume">65</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="2062" to="2077" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Feedback control for cassie with deep reinforcement learning</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berseth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Clary</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hurst</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Van De Panne</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="1241" to="1246" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Reinforcement learning for versatile, dynamic, and robust bipedal locomotion control</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><forename type="middle">B</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berseth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sreenath</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.16889</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Learning vision-based bipedal locomotion for challenging terrain</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Pandit</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S</forename><surname>Gadde</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Real-world humanoid locomotion with reinforcement learning</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Darrell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sreenath</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">89</biblScope>
+			<biblScope unit="page">9579</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">G</forename><surname>Lorentz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bernstein</forename><surname>Polynomials</surname></persName>
+		</author>
+		<ptr target="https://books.google.com/books?id=ISjvAAAAMAAJ" />
+		<imprint>
+			<date type="published" when="1953">1953</date>
+			<publisher>University of Toronto Press</publisher>
+		</imprint>
+	</monogr>
+	<note>Mathematical expositions</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Feedback control of dynamic bipedal robot locomotion</title>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">R</forename><surname>Westervelt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Grizzle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chevallereau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Morris</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<publisher>CRC press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<author>
+			<persName><forename type="first">R</forename><surname>Featherstone</surname></persName>
+		</author>
+		<title level="m">Rigid body dynamics algorithms</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Dynamic humanoid locomotion: A scalable formulation for hzd gait optimization</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Hereid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">M</forename><surname>Hubicki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">A</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">D</forename><surname>Ames</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="370" to="387" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Metrization and simulation of controlled hybrid systems</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">A</forename><surname>Burden</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Gonzalez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Vasudevan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bajcsy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">S</forename><surname>Sastry</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Automatic Control</title>
+		<imprint>
+			<biblScope unit="volume">60</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="2307" to="2320" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Shurman</surname></persName>
+		</author>
+		<title level="m">Multivariable Calculus. Reed College</title>
+		<imprint>
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Online supplementary material for rapid and robust trajectory optimization for humanoids</title>
+		<ptr target="https://github.com/roahmlab/RAPTOR/blob/main/Assets/RAPTOR_Supplementary_Materials.pdf" />
+		<imprint>
+			<biblScope unit="page" from="2024" to="2028" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Efficient trajectory optimization for robot motion planning</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-C</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tomizuka</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 15th International Conference on Control, Automation, Robotics and Vision (ICARCV)</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="260" to="265" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">System identification for constrained robots</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Haugk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Vasudevan</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2408.08830</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">The pinocchio c++ library -a fast and flexible implementation of rigid body dynamics algorithms and their analytical derivatives</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Carpentier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Saurel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Buondonno</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Symposium on System Integrations (SII)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">Talos</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://pal-robotics.com/robot/talos/" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Atlas and beyond: The world&apos;s most dynamic robots</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Dynamics</surname></persName>
+		</author>
+		<ptr target="https://bostondynamics.com/atlas/" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">Tesla bot</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">A</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.tesla.com/AI" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">Unitree&apos;s first universal humanoid robot</title>
+		<author>
+			<persName><forename type="first">U</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.unitree.com/cn/h1/" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">Fourier gr1</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Intelligence</surname></persName>
+		</author>
+		<ptr target="https://fourierintelligence.com/gr1/" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">The next generation of digit -enabling humans to be more human</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.youtube.com/watch?v=rnFZAB9ogEE" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">On the implementation of an interiorpoint filter line-search algorithm for large-scale nonlinear programming</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wächter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">T</forename><surname>Biegler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Mathematical programming</title>
+		<imprint>
+			<date type="published" when="2006">2006</date>
+			<biblScope unit="volume">106</biblScope>
+			<biblScope unit="page" from="25" to="57" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Hsl@ 60: A brief history of the hsl mathematical software library</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Scott</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">STFC, Tech. Rep</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">GNU scientific library reference manual. Network Theory Ltd</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Gough</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Scipy 1.0: Fundamental algorithms for scientific computing in python</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Virtanen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Gommers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">E</forename><surname>Oliphant</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature methods</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="261" to="272" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
