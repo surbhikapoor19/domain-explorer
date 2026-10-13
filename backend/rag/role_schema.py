@@ -30,9 +30,15 @@ ROLE_VOCABULARY: Set[str] = {
     'identity.year',
     'identity.code',
     'identity.citation',
+    'identity.paper_url',
     # method
     'method.family',
     'method.backbone',
+    # Offered by the admin wizard (propose-yaml.js), listed in the admin role
+    # dropdown (ConfigEditor.js) and consumed by precompute — but missing here,
+    # so motion_planning.yaml (which uses both) could not be built at all.
+    'method.middleware',
+    'method.ik_controller',
     # input / output
     'input.modality',
     'input.sensor',
@@ -202,8 +208,12 @@ def _validate(raw: Dict[str, Any], source: str) -> None:
         if not isinstance(llm, dict):
             raise ConfigError(f"{source}: `llm` must be a mapping if present")
         ds = llm.get('domain_subject')
-        if ds is not None and (not isinstance(ds, str) or not ds.strip()):
-            raise ConfigError(f"{source}: `llm.domain_subject` must be a non-empty string if present")
+        # A blank value means "not set", not "invalid": the admin wizard writes
+        # `domain_subject: ""` whenever the model had nothing to put there, and
+        # rejecting that failed the precompute step of the build an hour in, long
+        # after GROBID/RAG/KG had run. A non-string is still a real mistake.
+        if ds is not None and not isinstance(ds, str):
+            raise ConfigError(f"{source}: `llm.domain_subject` must be a string if present")
         focus = llm.get('claim_extraction_focus')
         if focus is not None:
             if not isinstance(focus, list) or not all(isinstance(x, str) and x.strip() for x in focus):

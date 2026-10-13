@@ -20,11 +20,17 @@ Resolution order (first verified hit wins):
     3. Semantic Scholar    (api.semanticscholar.org/graph/v1/paper/search)
     4. Scrape the row's Link(s) project pages for an arxiv.org/abs|pdf link
 
+A per-row paper link held in a column of the methods CSV (role
+``identity.paper_url``, else an ``archive`` / ``arXiv`` / ``DOI``-style header) is
+tried BEFORE all of the above and, unlike them, is trusted without title
+verification: the maintainer asserted that link for that very row.
+
 Only Python stdlib is used (urllib for HTTP). Closed-access papers with no OA
 PDF are expected to stay unresolved; the script still exits 0.
 """
 import argparse
 import hashlib
+import http.client
 import json
 import re
 import sys
@@ -37,6 +43,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from csv import DictReader
 from difflib import SequenceMatcher
+from html import unescape
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -438,6 +445,32 @@ def _yaml_drive_folder(domain_slug_us):
     return None
 
 
+def _yaml_paper_url_column(domain_slug_us):
+    """Read the CSV column mapped to role ``identity.paper_url`` from
+    ``domains/<domain>.yaml`` (same minimal stdlib line-parse as ``_yaml_pdf_url``,
+    no PyYAML). Returns the column name without its quotes, or None when the YAML
+    is absent or maps no such column.
+
+    Only the one-line flow form that every domain YAML and the admin wizard write
+    is recognised::
+
+        "archive": { role: identity.paper_url, facet: url }
+
+    A hand-written block-style entry is not; ``paper_url_column`` then falls back
+    to header auto-detection instead of failing."""
+    yaml_path = REPO_ROOT / 'domains' / f'{domain_slug_us}.yaml'
+    if not yaml_path.exists():
+        return None
+    with open(yaml_path, encoding='utf-8') as fh:
+        for line in fh:
+            m = re.match(
+                r'''^\s+(?:"([^"]+)"|'([^']+)'|([^\s"'#{][^:{]*?))\s*:\s*\{'''
+                r'''[^}]*\brole:\s*["']?identity\.paper_url\b''', line)
+            if m:
+                return m.group(1) or m.group(2) or m.group(3)
+    return None
+
+
 def resolve_domain_paths(domain_slug):
     slug_dashed = domain_slug.replace('_', '-')
     slug_us = domain_slug.replace('-', '_')
@@ -721,10 +754,15 @@ def import_pdf_source(url, papers_dir, dry_run=False):
 # --------------------------------------------------------------------------- #
 # PDF-source provenance manifest (feeds the Docling audit manifest downstream)  #
 # --------------------------------------------------------------------------- #
+_ARXIV_ID_RE = re.compile(r'arxiv\.org/(?:abs|pdf)/([0-9]{4}\.[0-9]{4,5})',
+                          re.IGNORECASE)
+
+
 def _arxiv_id_from_url(url):
-    """Extract a bare arXiv id (e.g. 2507.18847) from a pdf/abs URL, else None."""
-    m = re.search(r'arxiv\.org/(?:abs|pdf)/([0-9]{4}\.[0-9]{4,5})',
-                  url or '', re.IGNORECASE)
+    """Extract a bare arXiv id (e.g. 2507.18847) from a pdf/abs URL, else None.
+    A version suffix (``2507.18847v2``) is tolerated and dropped, so the id always
+    names the latest version."""
+    m = _ARXIV_ID_RE.search(url or '')
     return m.group(1) if m else None
 
 
@@ -775,7 +813,7 @@ def _col(row_keys):
     return {(k or '').strip().lower(): k for k in row_keys}
 
 
-def read_rows(csv_path):
+def read_rows(csv_path, link_column=None):
     with open(csv_path, encoding='utf-8') as f:
         reader = DictReader(f)
         rows = list(reader)
@@ -787,8 +825,181 @@ def read_rows(csv_path):
             continue
         citation = r.get(keymap.get('citation', 'Citation'), '') or ''
         links = r.get(keymap.get('link(s)', 'Link(s)'), '') or ''
-        out.append({'name': name, 'citation': citation, 'links': links})
+        # The row's own paper link (see paper_url_column); '' when the domain has none.
+        paper_url = str(r.get(link_column) or '').strip() if link_column else ''
+        out.append({'name': name, 'citation': citation, 'links': links,
+                    'paper_url': paper_url})
     return out
+
+
+# --------------------------------------------------------------------------- #
+# Per-row paper links — a CSV column holding each paper's own URL             #
+# --------------------------------------------------------------------------- #
+# Header names that mark the per-row link column, best first. 'archive' is a
+# maintainer's deliberate "the PDF lives here" column; arXiv / DOI columns are
+# citation identifiers that usually, but not always, lead to a PDF, so they rank last.
+_PAPER_URL_HEADERS = ('archive', 'pdf url', 'pdf', 'paper url', 'paper pdf',
+                      'paper link', 'preprint', 'arxiv', 'doi')
+
+# Everything one dead or malformed row link can throw. http.client.InvalidURL (a
+# stray space or newline inside the cell) is neither an OSError nor a ValueError,
+# so it must be named here or a single bad cell would abort the whole run.
+_LINK_ERRORS = (urllib.error.URLError, OSError, ValueError,
+                http.client.HTTPException)
+
+
+def _header_key(name):
+    """CSV header -> comparison key: lower-cased, with ``_`` / ``-`` / runs of
+    whitespace all read as one space and the ends trimmed."""
+    return re.sub(r'[\s_-]+', ' ', str(name or '').lower()).strip()
+
+
+def paper_url_column(fieldnames, declared=None, rows=None):
+    """Pick the CSV column that holds each row's paper link; None if there is none.
+
+    ``declared`` (the column the domain YAML maps to ``identity.paper_url``) wins,
+    but only while the CSV still has it: a YAML naming a column that was since
+    renamed must fall through to the header heuristics, not silently switch the
+    feature off. Otherwise the first ``_PAPER_URL_HEADERS`` entry that matches a
+    header wins, and the ACTUAL fieldname (original spelling) is returned.
+
+    With ``rows`` given, a candidate column that is empty in every row is skipped:
+    a maintainer who has just added an empty ``archive`` column must not lose the
+    ``arXiv`` links that already work. One filled cell is enough to win."""
+    fieldnames = [n for n in (fieldnames or []) if n]
+
+    def _populated(name):
+        return rows is None or any(str(r.get(name) or '').strip() for r in rows)
+
+    # The empty-column skip applies to a DECLARED column too: the wizard now maps an
+    # `archive` column automatically, so a domain can carry that mapping while the
+    # column is still blank — and then it would shadow the populated `arXiv` column
+    # the heuristics would have found.
+    if declared and declared in fieldnames and _populated(declared):
+        return declared
+    for wanted in _PAPER_URL_HEADERS:
+        for name in fieldnames:
+            if _header_key(name) != wanted:
+                continue
+            if not _populated(name):
+                continue
+            return name
+    return None
+
+
+def pdf_candidates_from_url(url):
+    """Ordered direct-PDF candidates for ONE row link (pure — no network).
+
+    An arXiv abs/pdf URL (any ``vN`` suffix included) maps to
+    ``arxiv.org/pdf/<id>.pdf`` FIRST; the id is the bare number, so a stale or
+    mistyped version can't 404. A Drive file or Dropbox link goes through
+    ``classify_pdf_source`` for its direct-download form. Anything else — a
+    ``.pdf`` path, a ``doi.org`` redirect, a project landing page — is kept as-is
+    so ``fetch_pdf_from_link`` can try it directly and then scrape it. A
+    non-string, empty or non-http(s) cell (``TBD``) yields ``[]``."""
+    if not isinstance(url, str):
+        return []
+    url = url.strip()  # stray whitespace in a cell must not defeat the http(s) check
+    if not re.match(r'^https?://', url, re.IGNORECASE):
+        return []
+    candidates = []
+    arxiv_id = _arxiv_id_from_url(url)
+    if arxiv_id:
+        candidates.append(f'https://arxiv.org/pdf/{arxiv_id}.pdf')
+    kind, direct = classify_pdf_source(url)
+    candidates.append(direct if kind == 'direct' else url)
+    return list(dict.fromkeys(candidates))
+
+
+def _html_attr(tag, attr):
+    """Value of attribute ``attr`` in one HTML start-tag string (double-quoted,
+    single-quoted or bare), else None."""
+    m = re.search(r'''\s%s\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))''' % attr,
+                  tag, re.IGNORECASE)
+    return next(g for g in m.groups() if g is not None) if m else None
+
+
+def scrape_pdf_links(html, base_url):
+    """PDF URLs a landing page points at, best first (pure — no network; never
+    raises, whatever the input).
+
+    Order: the publisher's own ``<meta name="citation_pdf_url">`` declaration,
+    then ``<a href="….pdf">`` anchors (a query string is allowed), then any
+    arxiv.org/abs|pdf id anywhere on the page, normalised to its ``pdf`` form.
+    Relative and root-relative hrefs are resolved against ``base_url``. Deduped,
+    order preserved."""
+    if isinstance(html, bytes):
+        html = html.decode('utf-8', 'replace')
+    if not isinstance(html, str):
+        return []
+    found = []
+
+    def add(href):
+        try:
+            link = urllib.parse.urljoin(base_url or '', unescape(href or '').strip())
+        except ValueError:  # e.g. an unbalanced '[' in the host part
+            return
+        if re.match(r'^https?://', link, re.IGNORECASE) and link not in found:
+            found.append(link)
+
+    for tag in re.findall(r'<meta\b[^>]*>', html, re.IGNORECASE):
+        if (_html_attr(tag, 'name') or '').lower() == 'citation_pdf_url':
+            add(_html_attr(tag, 'content'))
+    for tag in re.findall(r'<a\b[^>]*>', html, re.IGNORECASE):
+        href = _html_attr(tag, 'href') or ''
+        if re.search(r'\.pdf(?:[?#]|$)', href.strip(), re.IGNORECASE):
+            add(href)
+    for m in _ARXIV_ID_RE.finditer(html):
+        add(f'https://arxiv.org/pdf/{m.group(1)}.pdf')
+    return found
+
+
+def _http_get_page(url):
+    """GET an HTML page -> ``(final_url, text)``. Relative links on the page must
+    resolve against where the request ENDED UP, not the link we followed: a
+    ``doi.org`` link lands on the publisher's site, and ``/project/x`` redirects
+    to ``/project/x/``."""
+    req = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
+    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
+        return resp.geturl(), resp.read().decode('utf-8', 'replace')
+
+
+def fetch_pdf_from_link(url, dest):
+    """Download the paper one CSV row links to; True once a real PDF is at ``dest``.
+
+    Tries each ``pdf_candidates_from_url`` candidate; when one turns out to be a
+    page rather than a PDF, scrapes that page ONE level for the PDF it points at
+    (nothing is followed past the first page). ``_download_pdf`` only writes after
+    the ``%PDF-`` sniff, so a login wall or error page served under a ``.pdf``
+    name never lands in ``dest``. Never raises: a dead or malformed link is just
+    False, and the caller falls through to the open-access resolvers."""
+    dest = Path(dest)
+    tried = set()
+
+    def download(candidate):
+        tried.add(candidate)
+        try:
+            ok = _download_pdf(candidate, dest)
+        except _LINK_ERRORS:
+            ok = False
+        if not ok:
+            _sleep()
+        return ok
+
+    for candidate in pdf_candidates_from_url(url):
+        if candidate in tried:
+            continue
+        if download(candidate):
+            return True
+        try:
+            base, page = _http_get_page(candidate)
+        except _LINK_ERRORS:
+            base, page = candidate, ''
+        _sleep()
+        for link in scrape_pdf_links(page, base):
+            if link not in tried and download(link):
+                return True
+    return False
 
 
 # --------------------------------------------------------------------------- #
@@ -839,7 +1050,26 @@ def process(domain, dry_run=False):
             print(f"  WARNING: pdf_url import failed: {import_result['error']}")
         print()
 
-    rows = read_rows(csv_path)
+    # Third PDF source: a per-row paper link held in a column of the methods CSV.
+    # The column is chosen ONCE, from the raw header and rows (an empty 'archive'
+    # column must not shadow a populated 'arXiv' one), and printed because the
+    # build log is the maintainer's only window into why a PDF appeared.
+    with open(csv_path, encoding='utf-8') as fh:
+        reader = DictReader(fh)
+        raw_rows = list(reader)
+        fieldnames = reader.fieldnames or []
+    declared = _yaml_paper_url_column(domain_us)
+    link_column = paper_url_column(fieldnames, declared, raw_rows)
+    if link_column:
+        how = ('identity.paper_url in the domain YAML' if link_column == declared
+               else 'auto-detected from the CSV header')
+        print(f"  link column : {link_column!r} ({how})")
+    else:
+        print("  link column : none (no identity.paper_url mapping, and no "
+              "archive/PDF/arXiv/DOI header holds a link)")
+    print()
+
+    rows = read_rows(csv_path, link_column)
     existing = {p.name for p in papers_dir.glob('*.pdf')}
 
     downloaded, present, unresolved = [], [], []
@@ -863,6 +1093,31 @@ def process(domain, dry_run=False):
         print(f"    name    : {name}")
         print(f"    title   : {title!r}")
         print(f"    author1 : {surname!r}")
+
+        # A row link is the maintainer's own statement of where this paper lives,
+        # stronger evidence than a fuzzy title match, so it is tried first and
+        # trusted without title verification. A dead link falls through to the
+        # open-access chain below unchanged.
+        link = row['paper_url']
+        if link:
+            print(f"    link    : {link}")
+            if dry_run:
+                candidates = pdf_candidates_from_url(link)  # resolve only: no network
+                fetched = bool(candidates)
+                if fetched:
+                    print(f"    -> would download: {candidates[0]}")
+            else:
+                fetched = fetch_pdf_from_link(link, papers_dir / fname)
+                if fetched:
+                    print(f"    -> saved {fname} <- {link}")
+                    existing.add(fname)
+                    provenance[slug] = {'source': f'csv:{link_column}', 'url': link,
+                                        'resolved_via': 'csv_column'}
+            if fetched:
+                print()
+                downloaded.append((name, f'csv:{link_column}', link))
+                continue
+            print("    -> link did not yield a PDF; trying open-access sources")
 
         candidate = None
         for resolver in RESOLVERS:

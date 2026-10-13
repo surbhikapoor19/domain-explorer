@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 
 const ROLE_OPTIONS = [
   'identity.name', 'identity.description', 'identity.citation', 'identity.year', 'identity.code',
+  'identity.paper_url',
   'method.family', 'method.backbone', 'method.middleware', 'method.ik_controller',
   'train.regime', 'train.simulator',
   'input.modality', 'input.sensor',

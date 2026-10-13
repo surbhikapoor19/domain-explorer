@@ -100,6 +100,7 @@ Available roles (dot-separated hierarchy):
   identity.citation    - BibTeX or citation string
   identity.year        - Year of publication or initial release
   identity.code        - URL to code repository or project page
+  identity.paper_url   - URL to the paper PDF, or a landing/archive page for it
   method.family        - Category of approach (e.g., "sampling-based", "optimization")
   method.backbone      - Neural architecture or core algorithm component
   method.middleware     - Middleware or framework used (e.g., MoveIt, ROS)
