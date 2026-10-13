@@ -2,15 +2,22 @@
 Implementers must NOT modify.  Run:  python -m unittest scripts/test_domain_config_validates.py
 
 Found while adding the per-row paper-link source: `domains/hardware_designs.yaml`
-(created by the admin wizard, mid-build at the time) and `domains/motion_planning.yaml`
-BOTH crashed `dashboard/scripts/precompute/shared/domain.py` on import, because that
-module does
+(written by the admin wizard) and `domains/motion_planning.yaml` BOTH failed
+`backend/rag/role_schema.load_domain_config`, whose own error text instructs you to
+add the role to ROLE_VOCABULARY.
 
-    active_domain: DomainConfig = _load()
+Scope, measured rather than assumed: that validator is NOT on the build path today.
+Its only consumer is `dashboard/scripts/precompute/shared/domain.py`, which calls it at
+module scope with no try/except — and nothing imports that module. The build actually
+loads domains through `shared/config.py:DomainConfig.from_yaml`, which `yaml.safe_load`s
+and reads keys directly, validating nothing. So these two YAMLs built fine, and an
+unknown role or a typo'd role is silently ignored at build time instead of reported.
 
-at module scope with no try/except. A ConfigError there kills the precompute step of
-the build, after GROBID/RAG/KG have already run for an hour or more. Nothing tested it,
-so the breakage was invisible until a build reached precompute.
+That makes the failures below latent rather than fatal: harmless while the validator is
+unused, and a build-stopper the moment anyone wires it in — `shared/domain.py` would
+raise at import, i.e. after GROBID/RAG/KG have already run. Wiring the validator into
+`from_yaml` is the real fix and is deliberately NOT attempted here; these tests keep the
+schema honest in the meantime, so the two lists can't drift further apart.
 
 Two distinct root causes, both guarded below:
 
@@ -56,15 +63,20 @@ def _role_strings(text):
 
 
 class EveryDomainYamlLoads(unittest.TestCase):
-    """The real gate: what the build does, not what the schema says in isolation."""
+    """Every shipped domain must satisfy the declared validator.
+
+    Not currently what the build runs — see the module docstring. This is the contract
+    the schema advertises, and the one that bites if it is ever enforced.
+    """
 
     def test_domains_dir_exists(self):
         self.assertTrue(DOMAINS.is_dir(), f'{DOMAINS} must exist')
         self.assertTrue(list(DOMAINS.glob('*.yaml')), 'no domain YAMLs found')
 
-    def test_each_domain_imports_through_precompute(self):
+    def test_each_domain_passes_the_declared_validator(self):
         # shared.domain caches active_domain at import time, so each domain needs its
-        # own interpreter. This is exactly the import the precompute step performs.
+        # own interpreter. This is the import that would run if the validator were
+        # wired into the build; today it is the cheapest way to exercise it per domain.
         broken = {}
         for yml in sorted(DOMAINS.glob('*.yaml')):
             rel = f'domains/{yml.name}'
@@ -78,8 +90,9 @@ class EveryDomainYamlLoads(unittest.TestCase):
                 broken[yml.name] = last[-1][:200] if last else 'unknown error'
         self.assertFalse(
             broken,
-            'these domain YAMLs crash the precompute import, which fails the build '
-            'AFTER GROBID/RAG/KG have run:\n' +
+            'these domain YAMLs fail the declared role_schema validator — harmless '
+            'only while nothing enforces it, and an import-time crash for anyone who '
+            'wires it in:\n' +
             '\n'.join(f'  {k}: {v}' for k, v in broken.items()))
 
 
