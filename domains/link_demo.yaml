@@ -1,0 +1,43 @@
+# Link Demo — a throwaway domain that exercises the third PDF source: a
+# per-row paper link held in a column of the methods CSV (here `archive`).
+# No drive_folder and no pdf_url are set, so every PDF in this domain can only
+# have arrived by following the `archive` link. `chroma_db/pdf-sources.json`
+# records `csv:archive` for each one, which is the proof.
+
+domain: link_demo
+display_name: "Link Demo"
+explorer_enabled: true
+display_subject: "planners"
+display_short: "Link Demo"
+ecosystem: "COMPARE Ecosystem"
+tagline: "AI-in-the-Loop"
+query_hint: 'Ask about these planners, e.g., "which ones run on the GPU?"'
+method_noun: "planner"
+
+csv_path: datasets/link-demo/link_demo.csv
+papers_dir: datasets/link-demo/papers/
+
+# `archive` is mapped explicitly to identity.paper_url. The same column is also
+# found by header auto-detection when a maintainer adds it without touching this
+# file, which is what happens to a sheet-driven domain.
+columns:
+  Name:          { role: identity.name,        facet: identifier }
+  Description:   { role: identity.description, facet: text }
+  Type:          { role: method.family,        facet: categorical }
+  Year:          { role: identity.year,        facet: numeric }
+  archive:       { role: identity.paper_url,   facet: url }
+  Citation:      { role: identity.citation,    facet: text }
+  "Link(s)":     { role: identity.code,        facet: url }
+
+llm:
+  domain_subject: "robotic motion planning"
+  claim_extraction_focus:
+    - "planning time and success-rate benchmarks against other planners"
+    - "completeness or optimality guarantees"
+  query_rewrite_examples:
+    - "which planners use GPU acceleration"
+    - "what is reported about planning time"
+
+default_color_by_roles:
+  - method.family
+  - identity.year
