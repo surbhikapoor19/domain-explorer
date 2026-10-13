@@ -1,0 +1,27 @@
+domain: hardware_designs
+display_name: "Hardware Explorer"
+display_subject: "designs"
+display_short: "Hardware Explorer"
+ecosystem: "COMPARE Ecosystem"
+tagline: "AI-in-the-Loop"
+query_hint: 'Open-source hardware designs for robot manipulation including arms, end-effectors, sensors, and data collection hardware'
+method_noun: "design"
+explorer_enabled: true
+
+csv_path: datasets/hardware-designs/hardware_designs.csv
+papers_dir: datasets/hardware-designs/papers/
+
+columns:
+  "Name": { role: identity.name, facet: identifier }
+  "Description": { role: identity.description, facet: text }
+  "Type": { role: method.family, facet: categorical }
+  "Link(s)": { role: identity.code, facet: url }
+  "License": { role: meta.license, facet: categorical }
+  "Maintainer(s)": { role: meta.maintainer, facet: text }
+  "Citation": { role: identity.citation, facet: text }
+  "arXiv": { role: identity.citation, facet: url }
+  "Year (Initial Release)": { role: identity.year, facet: numeric }
+
+llm:
+  domain_subject: ""
+
