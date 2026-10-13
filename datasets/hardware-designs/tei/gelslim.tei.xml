@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">GelSlim 3.0: High-Resolution Measurement of Shape, Force and Slip in a Compact Tactile-Sensing Finger</title>
+				<funder>
+					<orgName type="full">NEC Corporation Fund for Research in Computers and Communications</orgName>
+				</funder>
+				<funder ref="#_vRnrtSJ">
+					<orgName type="full">HKSAR Innovation and Technology Fund</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Ian</forename><forename type="middle">H</forename><surname>Taylor</surname></persName>
+							<email>&lt;ihtaylor@mit.edu</email>
+						</author>
+						<author>
+							<persName><forename type="first">Siyuan</forename><surname>Dong</surname></persName>
+							<email>sydong@mit.edu</email>
+						</author>
+						<author>
+							<persName><forename type="first">Alberto</forename><surname>Rodriguez</surname></persName>
+							<email>albertor&gt;@mit.edu</email>
+						</author>
+						<title level="a" type="main">GelSlim 3.0: High-Resolution Measurement of Shape, Force and Slip in a Compact Tactile-Sensing Finger</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">BF2A0A9A887CA27B5192A8F252A6FA5F</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>This work presents a new version of the tactilesensing finger GelSlim 3.0, which integrates the ability to sense high-resolution shape, force, and slip in a compact form factor for use with small parallel jaw grippers in cluttered bin-picking scenarios. The novel design incorporates the capability to use real-time analytic methods to measure shape, estimate the contact 3D force distribution, and detect incipient slip. To achieve a compact integration, we optimize the optical path from illumination source to camera and other geometric variables in a optical simulation environment. In particular, we optimize the illumination sources and a light shaping lens around the constraints imposed by the photometric stereo algorithm used for depth reconstruction. The optimized optical configuration is integrated into a finger design composed of robust and easily replaceable snap-to-fit fingetip module that allow for ease of manufacture, assembly, use, and repair. To stimulate future research in tactile-sensing and provide the robotics community access to reliable and easily-reproducible tactile finger with a diversity of sensing modalities, we open-source the design and software at <ref type="url" target="https://github.com/mcubelab/gelslim">https://github.com/mcubelab/gelslim</ref>.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Touch is an essential sensing modality for interfacing with the world. It provides a direct and powerful mechanism for reacting to the environment, present in almost the entirety of the animal kingdom but missing from most of the robotic one. We are particularly motivated by the potential of tactile feedback to sense and control the complex contact interactions that occur while grasping, using, and placing objects within an environment. This paper presents GelSlim 3.0, a new version of the tactile-sensing finger GelSlim <ref type="bibr" target="#b0">[1]</ref>, designed for grasping in cluttered environments, and integrating the real-time measurement with high spatial resolution of shape, force, and slip, in a compact form factor that is easy to fabricate, utilize and maintain. We present four main contributions.</p><p>• Design: GelSlim 3.0 is product of an optimization of the optical path, from illumination source to camera, around the constraints imposed by the photometric stereo algorithm used for depth reconstruction in visionbased tactile sensors <ref type="bibr" target="#b1">[2]</ref>. In particular, we optimize the illumination sources and the geometry of a light shaping lens to enable a compact form factor integration while  retaining the ability to reconstruct depth. We evaluate the novel tactile-sensing finger compared to current tactile sensor designs and discuss our implementation's trade-offs and limitations. • Manufacturing: We employ accessible manufacturing methods to fabricate the new tactile-sensing finger, which is assembled out of a small number of components with a simple and modular snap-to-fit design. • Functionality: The tactile sensor integrates the capability to use real-time analytical methods to measure 3D geometry reconstruction, to detect incipient slip, and to estimate the spatial distribution of 3D contact forces. • Open-Source: We open-source the design to help address some of the many bottlenecks in tactile-sensing in robotics, which include manufacturing, distribution, and use <ref type="bibr" target="#b2">[3]</ref>, and to encourage the proliferation of tactilesensing technology within the robotics community. This paper is structured as follows: We review related works in tactile-sensing in Section II and discuss the design goals in Section III. We describe the optimization and integration of the optical, electrical, and mechanical design components in Section IV and demonstrate the sensing capabilities of resultant tactile-sensing finger in Section V. We compare the novel design to other current tactile-sensing designs and discuss its limitations in Section VI. Finally, we briefly discuss the open-source design repository in Section VII and summarize the contributions of the paper in Section VIII.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>We review relevant work regarding the design of visionbased tactile sensors that utilize analytical and learning-based methods of tactile data interpretation. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Vision-Based tactile-sensing</head><p>Vision-based retrographic tactile sensors have become popular within the robotics literature due to their ability to capture contact state feedback with high spatial resolution while maintaining a compact instrumentation <ref type="bibr" target="#b0">[1]</ref>. These approaches are also synergistic with deep learning techniques, which have been demonstrated to provide robust and descriptive interpretations of high-dimensional data. The continued development and improvement of these sensors have yielded several designs that offer compactly-integrated and rugged form factors <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b2">[3]</ref>, where previously they had been more bulky and/or fragile <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>, <ref type="bibr" target="#b1">[2]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. GelSight Sensors</head><p>GelSight is a vision-based tactile sensor that makes measurements by using a camera to capture high-resolution images of the surface deformation of an elastomer with opaque skin. The elastomer is illuminated from different directions by color LEDs; the resultant colored shading is used to make direct measurements of the position, shape, and 3D geometry of objects contacting the surface. A detailed review of different versions of GelSight sensors can be found in <ref type="bibr" target="#b1">[2]</ref>. Donlon et al. <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b3">[4]</ref> improved upon Dong et al.'s <ref type="bibr" target="#b1">[2]</ref> fingertip version of GelSight by altering the optical path to use a waveguide to route light through the fingertip and a mirror to view the sensor surface from a distance, allowing for a more compact wedge-shaped fingertip design, suitable for cluttered picking scenarios. <ref type="bibr">Wilson et al. [8]</ref> demonstrated a fully actuated two finger-gripper with multiple GelSight tactile sensors, which were used to gather the surface topology of an object across multiple views simultaneously and track the shear and and tensile stresses. Sensors similar to GelSight and GelSlim that utilize rich 2D and 3D data have been successfully applied in robotic manipulation. Li et al. <ref type="bibr" target="#b8">[9]</ref> utilized GelSight fingertip in tandem with a feature-based matching technique to localize and perform an insertion task with small parts held in a robot hand. Tian et al. <ref type="bibr" target="#b9">[10]</ref> Proposed and demonstrated an unsupervised learning framework, deep tactile MPC, to learn a predictive model from raw, tactile sensor inputs for performing servoing tasks with a GelSight-style tactile sensor. Hogan et al. <ref type="bibr" target="#b4">[5]</ref> explored the use of tactile feedback measured by a palm-shaped GelSlim sensor to develop robust primitives with the ability to handle external perturbations and account for object pose uncertainty. Bauza et al. <ref type="bibr" target="#b10">[11]</ref> utilized GelSlim sensors to reconstruct the shape of objects from tactile imprints and accurately localize previously reconstructed objects. She et al. <ref type="bibr" target="#b11">[12]</ref> demonstrated the ability to manipulate flexible cables by pairing grip and pose controllers that utilized depth and shape feedback from a GelSight sensor to regulate cable sliding dynamics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Other Vision-Based Tactile Sensors</head><p>There is a diversity of vision-based tactile-sensing designs that rely more heavily on machine learning-based data interpretation methods. For example, She et al. <ref type="bibr" target="#b12">[13]</ref> demonstrated an exoskeleton covered soft continuum finger that utilized a convolutional neural network to predict the finger's position. Padmanabha et al. <ref type="bibr" target="#b13">[14]</ref> used a thumb-shaped tactile sensor, OmniTact, paired with a ResNet-based neural network to perform tactile state estimation for a representative insertion task. While the number of vision-based tactile-sensing designs continues to increase, Lambeta et al. <ref type="bibr" target="#b2">[3]</ref> notes the dearth of sensors that simultaneously fulfill the requirements of being 1) high resolution, 2) highly sensitive, 3) reliable, 4) easy to use, 5) compact and 6) inexpensive. To resolve this bottleneck impeding the widespread adoption of touch sensing in robotic manipulation, they released an open-source tactile sensor Digit that fulfills these criteria.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. DESIGN GOALS</head><p>In previous versions of GelSight and GelSlim, a clear gel with an opaque outer membrane is illuminated by a light source and captured by a camera. The position of each of these elements depends on the specific requirements of the sensor <ref type="bibr" target="#b0">[1]</ref>. A primary influence on the configuration is whether the tactile sensor incorporates model-based photometric stereo techniques to measure 3D geometry. The decision to incorporate these techniques constrains the design space as it requires that at least three colors of light be directed across the gel from different directions <ref type="bibr" target="#b14">[15]</ref>. These requirements also enforce geometric constraints that affect feasible camera placement and illumination paths. For example, the need for multiple evenly distributed illumination channels necessitates designs that position luminaries in a radially symmetric configuration. Limitations to the focal length of available cameras constrain the maximum field of view possible, and thus, sensing area for a given sensor thickness. A comprehensive review of the tactile design space constraints can be found in <ref type="bibr" target="#b0">[1]</ref>. These constraints often prove challenging and counterproductive to slim robotic finger integrations <ref type="bibr" target="#b0">[1]</ref>. While previous implementations of GelSlim have eschewed these techniques in favor of relaxing the aforementioned design space constraints <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b3">[4]</ref>, these techniques have and continue to prove useful for complex dexterous manipulation scenarios <ref type="bibr" target="#b11">[12]</ref>.</p><p>Previous designs of GelSight and GelSlim, while costeffective, have been difficult to manufacture and assemble en-masse or by inexperienced users due to their reliance on complex by-hand fabrication techniques that are incompatible with retail fabrication services (e.g., acrylic waveguide bending, custom hand-soldered luminaries) <ref type="bibr" target="#b2">[3]</ref>, <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b15">[16]</ref>, <ref type="bibr" target="#b1">[2]</ref>.</p><p>To address these issues while maintaining the strengths of previous GelSight and GelSlim designs, we present the following design goals for the proposed tactile finger:</p><p>• Compactness of the finger allows access to and precise placement of objects in clutter by squeezing between objects or separating them from the environment. • Analytic Measurement Methods utilized in previous high-resolution camera-based tactile sensors provide multiple types of rich contact state feedback (raw highresolution image, shape, force, slip) at real-time speeds without requiring data-expensive calibration or learning procedures. These provide a strong basis for novel methods of dexterous manipulation and control. • Design for Assembly (DFA) enforces robust and modular design practices that make the fabrication and utilization of the proposed tactile finger accessible to a broader range of the robotics research community. The following sections give a detailed description of the process to use these design goals to select and optimize the optical (Section IV-A), electrical (Section IV-B), and mechanical (Section IV-C) design parameters. Finally, we describe the fabrication and assembly of the tactile finger (Section IV-D).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. DESIGN OF GELSLIM 3.0 A. Optical Design</head><p>The use of photometric stereo techniques is a primary influence on the constraints of a tactile sensor's optical design space. Therefore, we briefly review the photometric stereo algorithm and its assumptions (IV-A.1). We evaluate these restrictions paired with the proposed design goals to set the initial conditions for the design space (IV-A.2). We then generate a raytracing simulation of an initial optical path using illumination design software, identify design optimization parameters (IV-A.3) and generate an optimized optical configuration using the software's built-in optimizer (IV-A.4).</p><p>1) Photometric Stereo: Our implementation of photometric stereo relies on the same techniques first described by Johnson et al. <ref type="bibr" target="#b14">[15]</ref> and used in the original GelSight sensor designs as a way to analytically reconstruct the deformation of an elastomer in 3D. The technique assumes the following three conditions:</p><p>1) The image seen by the vision system is an orthographic projection of the sensor surface, and thus every point in the image corresponds to a point on the sensor surface. Thus, the gradients of the surface deformation can be defined as the partial derivatives of the points seen in the image.</p><p>2) The shading at any point in the image is a function of the surface normal of the sensing surface; this effectively assumes no cast shadows or interreflections in the image.</p><p>3) The albedo (the proportion of incident light reflected by the contact surface) is constant across the sensor's surface. To reconstruct the surface normals we determine the mapping between the intensity at each pixel and the reflectance function. Theoretically, many sets of gradients will correspond to a set of intensity values; therefore, the reflectance function is not "trivially invertible." For this reason, the photometric stereo technique uses images captured under different illumination conditions (from three differently colored channels). The three measurements per pixel overconstrain the problem and allow us to estimate the two gradient values. We measure the intensities using an object of a known shape, e.g., a sphere with a known radius. From the data, we generate a lookup table; this serves as the method of inversion. Finally, we use a fast Poisson solver to integrate the surface gradient and reconstruct the depth.</p><p>While this method does not assume point light sources <ref type="bibr" target="#b14">[15]</ref>, we incorporate illumination homogeneity as a secondorder assumption. Inhomogeneous behavior, e.g., areas with intensity variance and missing illumination, will reduce the depth reconstruction accuracy. The former will disproportionately skew the gradient functions, and the latter will reduce the number of measurements per pixel, making the reflectance-intensity mapping not trivially invertible and will generate incorrect depth values.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>2) Initial Conditions:</head><p>To satisfy the photometric stereo assumptions, we select initial design parameters based on previous designs of GelSight and GelSlim as well as our design goals. We discuss the effects our selections have on the design space.</p><p>• Camera: We choose a Raspberry Pi 160°variable focus wide-angle camera module (ODSEVEN) as it is an inexpensive and compact camera that provides a large field of view and a close minimum focus distance. We cannot completely satisfy the orthographic assumption as the camera's output is warped due to the spherical distortion induced by the wide-angle lens; thus, while all points in the image correspond to a point on the sensing surface, they are not orthographic projections of  one another. We address this discrepancy in Section V-A by performing a pre-processing step that removes the wide-angle distortion. • Shaping Lens: We select a hexagonal prism with an angled loft as the basis for the initial lens geometry.</p><p>The hexagonal shape naturally satisfies the needs of the photometric stereo algorithm used with three illumination channels by providing radially symmetric illumination, which induces the required constraints on the reflectance function <ref type="bibr" target="#b14">[15]</ref>. We scale the initial lens geometry to maximize the camera modules' field of view and, thereby, the total sensing area while constraining the maximum finger thickness to be 20 mm. We choose this constraint based on our observations of compact grippers commonly used in industrial pick-andplace applications. • Gel Shape: The light distribution is affected by the sensing surfaces' curvature. Tactile-sensing applications often use parabolic and spherically curved as well as flat planar sensing surfaces. In some instances, curved surfaces have been used as a replacement for complex shaping lens geometry <ref type="bibr" target="#b1">[2]</ref>. We choose to use a planar surface to allow the fingers to more readily grasp objects lying flush against flat surfaces, for example, on tables or at the bottom of picking bins <ref type="bibr" target="#b16">[17]</ref>. • Gel Material: We choose to use an elastomer skin with Lambertian reflectance that provides a uniform and diffuse albedo. This enables measurements of the surface normal which are more accurate than those where a semi-specular albedo is used <ref type="bibr" target="#b1">[2]</ref>. • Illumination Using a Lambertian reflectance skin limits the design space as the intensity of light reflected by the diffuse albedo is too low to effectively use total internal reflection (TIR) techniques to route and distribute the light across the surface; a technique used in previous versions of GelSlim and GelSight with semi-specular skin <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b15">[16]</ref>. As a result, the luminaries must directly illuminate the elastomer's surface, and the optical design must incorporate alternative methods to illuminate the sensor's surface homogeneously. We aim to accomplish this by optimizing the light distribution with an illumination shaping lens.</p><p>3) Simulation and Parameter Selection: We simulate the optical system configured by the initial conditions using Synopsys LightTools Illumination Design Software linked to a Solidworks CAD model of the shaping lens; this allows us to use Solidworks geometric feature parameters directly as optimization variables. To accurately simulate the optical system, we consider the following:</p><p>• Material Parameters: To model the ray interactions between different materials, we set the refractive indices and reflectance of each optical component using built-in material profiles. • Data Collection: We place a forward simulation receiver on the modeled sensing surface to collect intensity and color distribution data. • Source Models: To simulate the selected photodiodes, we use source models provided by the luminary manufacturer, which contain their package CAD, source distribution, and spectral region data. • Emittance: To model an intensity-matched ideal photometric stereo system, we match radiometric power for all sources. We perform proof of concept testing to constrain the design space and select the lens shape and LED package type. We find that a hybrid swept spline lens distributes illumination intensity more homogeneously than a lens with flat sides 5 while inducing fewer interreflective visual artifacts than planar or spherical convex and concave lenses. Additionally, we find that a 60°viewing angle PLCC-4 Package OSRAM TOPLED Black T66 series LED provides an illumination profile that is diffuse yet easily shaped. We initialize the optimization in Eq.( <ref type="formula">1</ref>) according to the features of the design space seen in Fig. <ref type="figure" target="#fig_3">4</ref>:</p><formula xml:id="formula_0">Given A = [x, y, z, α], B = [L, θ , R 1 , R 2 , R 3 ] (1) minimize f (A, B) sub ject to : 0 ≤ z ≤ t 1 and σ (x, y) = (0, 0) 0 ≤ L ≤ t 2 µ CIE (x, y) = (.333, .333) 0 ≤ α ≤ 90 G(x, y) = (0, 0) 0 ≤ θ ≤ 90 x = m x , y ≥ m y R 1 ≥ 0, R 2 ≥ 0, R 3 ≥ 0</formula><p>Where A and B represent the LED position and shaping lens parameters, respectively, where x, y, z are the coordinate positions within cartesian space and α is the angle of the LED relative to the top face of the lens. t 1 is the total thickness of the lens, and t 2 is the maximum thickness of the shaping feature. The maximum thickness is constrained to 2 mm to ensure the shaping feature does not extend too far from the sensing surface and increase the finger's total thickness. m x,y is coordinate origin within the shaping feature plane. In abstract, the cost function f (A, B) represents the design space modeled by the initial optical configurations within the simulator engine. The CIE mean (µ CIE ) represents the average chromaticity coordinate value for all the bins (i.e., test coordinates) in a receiver mesh, where the X coordinate represents a mix of the three CIE RGB curves and Y represents the luminance value. The goal value designates the chromaticity coordinates of the reference white point (the color coordinates that defined the color "white" and thus, the point at which red, green, and blue are mixed homogeneously). Satisfying this goal ensures that the total illumination distribution approximates the white point. The illuminance mesh standard deviation (σ ) goal value incentivizes the intensity to remain constant across the sensing surface. Thus, the optical configuration will maintain a homogeneous and evenly mixed distribution. The illumination centroid (G(x, y)) is the position of the arithmetic mean of the intensity distribution across the local receiver bins. The goal value further enforces illumination homogeneity by addressing assumption <ref type="bibr" target="#b1">(2)</ref>. The goal value incentivizes positioning the centroid at the center of the lens (G(x, y) = (0, 0)). This directly addresses assumption (2) as it reduces interreflections, which most often occur when high-intensity illumination refracts and reflects while directed at the acute features (ex: sharp corners) often present near the boundary of a lens. Due to the optical configuration's radial symmetry, we can utilize a single parameter set to represent the shaping geometries used for each of the three individual color channels. The full optical configuration is used during the optimization of the proposed minimization problem.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Single Channel CAD Model Initial Design</head><p>Optimized Design All Channels Fig. <ref type="figure">5</ref>. Heat-maps of the simulated radiant flux across the surface of the sensor before and after optimization plotted using a 25x25 bin receiver mesh.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>4) Optimization Results:</head><p>The optimizer evaluates as a two-step process where Solidworks configures the lens features based on the optimization variables and initial conditions, and LightTools performs raytracing to simulate the optical system and evaluate the cost function. We plot and display a comparison of intensity distributions of the initial and final geometries in Fig. <ref type="figure">5</ref>. The optimized shaping features effectively distribute the illumination across the surface of the sensor. We observe that the full channel distribution of the optimized lens is not entirely radially symmetric; this is likely due to interreflective artifacts generated within the compact form factor lens. Additionally, while the distribution is improved, it is not ideally homogeneous as there are still portions of the sensing surface near the edges where there are large deviations in the illumination. We find that at the origin coordinate, the optimized design sufficiently satisfies the aforementioned first and second-order assumptions and demonstrates the desired ability to use the photometric stereo algorithm to generate 3D reconstructions with low noise as seen in Fig. <ref type="figure">I</ref> and Fig. <ref type="figure" target="#fig_5">8</ref>. Reconstructions at the peripheral edges of the sensor are more prone to noisy behavior. This is in comparison with the initial design, which did not produce usable photometric data. We further discuss the finger's resultant capabilities and compare the performance to previous tactile sensor designs in Section VI.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Electrical Design</head><p>The electrical assembly supplies power to and secures the LED luminaries. The circuit diagram is shown in 6. The resistance values R1, R2, and R3, normalize the three color channel's relative illumination while R0 modulates the total intensity. We use the camera module's spectral transmission profile and manufacturer specifications of the current vs. luminous intensity relationship for each LED to select and tune the channel resistances. The LEDs for each channel are wired as a 3x2 array in parallel to homogenize the illumination and minimize sequential intensity loss across LEDs in a channel.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Mechanical Design</head><p>The mechanical assembly consists of the fingertip, fingerbody, and finger-back. These three components are designed to encapsulate the optical path and provide the most compact form factor possible. The fingertip's distal face is curved, which allows the finger to more readily slip between objects when grasping in clutter. The mounting geometry is designed for use with a Weiss WSG-32 gripper but can be easily adjusted to accommodate various grippers. The fingertip and finger-body are joined with an easily separable sliding rail system in addition to several screws. The respective component cavities of the two bodies maintain press-fit tolerances. In combination, these features allow for easy assembly and maintenance of the sensor, as any component can be accessed and easily removed for a replacement if necessary. The modular snap-to-fit mechanical design allows the fingertip to be easily swapped out, if necessary, to switch between task-specific elastomers.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Fabrication and Assembly</head><p>The finger assembly is composed of ten components as seen in Fig. <ref type="figure" target="#fig_2">3</ref>, all of which, except the elastomer, are either 3D printed (Fingertip, finger-body, finger-back), retail made-to-order (Driver PCB, Illumination harness, and acrylic lens) or off the shelf components (camera module, mountain bearings, and M2 Heat Inserts and screws). Once the heat inserts are embedded in the fingertip using a soldering iron, the finger is quickly assembled because of the modular "snap-to-fit" design.</p><p>The elastomer is cast using XP565 (Silicones Inc.) platinum-based silicone mixed in a 1:10 ratio of activator to base. After degassing in a vacuum chamber, it is poured into an acrylic mold. Once cured, the reflective layer was painted using a gray silicone ink (Print-On Silicone Ink, Raw Material Suppliers) using a 10:1 ratio of silicone ink to its catalyst. A silicone solvent (NOVOCS Gloss, Reynolds Advanced Materials) is added to dilute the silicone ink in a 1:10:30 ratio of ink catalyst to ink to solvent, and an airbrush is used to spray the material on top of the elastomer. After the reflective layer has cured, tracking markers are added to the elastomer by laser cutting holes in a grid pattern on the elastomer's painted surface and adding black silicone ink. The marker layer is sealed by spraying an additional layer of black silicone ink in a process similar to that of the reflective layer. Finally, the elastomer is cut to shape using a template and then bonded to the acrylic lens and fingerbody using silicone sealant (Gorilla Silicone Clear Sealant); the completed sensor is then left to cure for 24 hours.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. INTEGRATED ALGORITHMS FOR TACTILE-SENSING</head><p>We briefly discuss the image processing pipeline and demonstrate the measurement methods enabled by the novel GelSlim sensor design.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Pre-Processing</head><p>To sense physically meaningful contact with the tactile finger, one pre-processing step is needed to correct the optical distortion introduced by the acrylic shaping lens (Part 2 in Fig. <ref type="figure" target="#fig_2">3</ref>) and the wide-angle camera module. This wide-angle causes distortions in the raw, tactile image output which can be clearly visualized by the "curved" marker array in the second image of Fig 7 below. To correct the distortion, we first generate the binary mask from the raw, tactile image to separate the marker array from the background and detect each marker's position. Using the marker array's known distribution, we calculate the correspondence between each marker in the distorted image and its true position. We interpolate this correspondence across all of the pixels in the raw image to find the transformation matrix that will reverse the distortion. Finally, we apply the transformation matrix to correct the raw image.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Raw Image</head><p>Binary Mask Transform Matrix Corrected Image Fig. <ref type="figure">7</ref>.</p><p>Diagram of the processing pipeline used to correct spherical distortion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Shape and Geometry</head><p>We describe the photometric stereo depth reconstruction algorithm and its assumptions previously in Section IV-A.1. Fig. <ref type="figure" target="#fig_5">8</ref> demonstrates these capabilities and shows the measured RGB image and reconstructed depth map of some daily objects touched. The local 3D geometry of the object measured by GelSight/GelSlim sensor has been demonstrated to be useful for object pose estimation <ref type="bibr" target="#b11">[12]</ref>, <ref type="bibr" target="#b10">[11]</ref> and force distribution estimation <ref type="bibr" target="#b3">[4]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Shear and Incipient Slip</head><p>An approximated shear force <ref type="bibr" target="#b11">[12]</ref> can be estimated by tracking the motion of the marker array. By analyzing the coherency of the marker motion field, we can also predict slip. The method proposed by Dong et al. <ref type="bibr" target="#b17">[18]</ref> utilized with the previous GelSlim design is compatible with the GelSlim 3.0 finger with minor changes.</p><p>The core idea is to distinguish whether the sensor surface's motion during contact is consistent with a rigid body motion or not. When the object and sensing surface are in stiction, the surface contact patch and object move together as a rigid body. When the object is going to slip, some portion of the surface contact patch starts losing stiction with the object, and the motion of the contact surface is no longer a rigid body motion.</p><p>We first detect the contact region in the tactile image by selecting the region with a depth that exceeds a preset threshold. We track the markers' motion in the contact region as the "real" motion of the sensor surface in contact. We then calculate the marker motion's rigid body transformation matrix in contact and get the "estimated" motion of the sensor surface under rigid body constraints. A significant deviation between the "real" and "estimate" motion field represents incipient slip. Fig. <ref type="figure">9</ref> shows incipient slip detection with the tactile images captured while a chess piece is rotated in the grasp. Fig. <ref type="figure">9</ref>. The evolution from stable contact to incipient slip while the object is being rotated. We label the contact region with yellow color, "real" marker tracking with a red arrow, "estimate" marker tracking under rigid body motion constraints with green arrows, and slipping regions (markers) with a white circle.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Dense Force Distribution</head><p>To measure an accurate force field, we correspond the gel surface's motion field (measured by tracking the 2D marker motion) and the gel's deformation in the z-axis (depth image) to the force field paired with the FEM model of the gel. The method to do so, proposed by Ma et al. <ref type="bibr" target="#b3">[4]</ref> and implemented in GelSlim 2.0, can be augmented using the depth reconstruction offered by the novel GelSlim 3.0 sensor.</p><p>We discretize the gel using m 8-node hexahedron elements, where the displacements of the 8 nodes represent the deformation of one FEM element. We calculate the displacement δ x , δ y of the 4 nodes on the top by interpolating the marker motion field, the displacement δ z with the depth map measurement. The δ x , δ y need to be adjusted based on the viewing angle between the node-camera frame and δ z . We use standard FEM theory to calculate the stiffness matrix K with the 8-node hexahedron elements and measured Young's Modulus and Poisson's ratio of the gel. The force field then can be directly calculated with the following equation:</p><formula xml:id="formula_1">F = KU (<label>2</label></formula><formula xml:id="formula_2">)</formula><p>where U is the displacement matrix of all the nodes which is directly observable. We show the marker motion field, dense shear force and the normal force field in Fig. <ref type="figure" target="#fig_6">10</ref> when the sensor is holding a twisted chess piece. We compare the design components of our sensor to other prominent sensors in Table <ref type="table" target="#tab_2">I</ref>. We find that our design provides a form factor with comparable thickness and price point to the smallest available sensor Digit while providing a sensing area that is twice as large. This is achieved while incorporating all the sensing modalities (high-resolution images, depth, and force) found in previous versions of GelSight and GelSlim. Design, in general, is a compromise; the process and results of designing the novel GelSlim tactile finger are no exception. The tradeoffs demonstrated by the optimized sensor are generalizable to tactile sensors' design in other form factors. Thus they are important lessons to keep in mind for future designs. First and foremost is the use of planar sensing surfaces alongside photometric stereo. In this instance, the sensing surface was not used to shape the illumination in an effort to enable grasping from flush surfaces. Although we demonstrated the ability to integrate these two design features using shaping methods, it came at the cost of significantly constraining the design space. We would like to explore alternative methods of fulfilling the photometric stereo assumptions to achieve more compact integrations. For example, shaping the illumination directly at the source by using custom-designed LED microlenses.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Design Comparison, Limitations and Trade-offs</head><p>Next is the relationship between the camera module's size, the field of view, and the sensor's thickness. To further minimize the form factor, the field of view often must be reduced. We used a wide-angle fisheye lens as a workaround to this tradeoff, but this and other methods, for example utilizing more than one camera, often come at a processing cost. Most image processing software pipelines are sufficiently advanced such that the cost-reward relationship is favorable but may quickly diminish when using alternative workarounds, for example utilizing more than one camera to view the sensing surface. In this instance, the cost-reward relationship might be less favorable due to the amount of high-dimensional data that needs to be processed.</p><p>Finally, and perhaps most important, is the influence of compactness on the second assumption of the photometric stereo algorithm. It is clear from our results that while interreflections can be minimized through shaping methods and absorptive coatings (in our case marker ink), they cannot be entirely eliminated, and thus they will add some residual noise within the reconstruction. While our design can capture texture information, the features have to be relatively large. This is in comparison with the previous versions of GelSight, which could easily reconstruct micro geometries and surface textures <ref type="bibr" target="#b18">[19]</ref>, <ref type="bibr" target="#b1">[2]</ref>, <ref type="bibr" target="#b19">[20]</ref>, <ref type="bibr" target="#b14">[15]</ref>. That being said, left unaccounted for, this interreflective behavior will inhibit the ability to further minimize the sensor thickness in future designs that aim to utilize photometric stereo depth reconstruction.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VII. OPEN-SOURCE TACTILE-SENSING FINGER</head><p>On the GelSlim Github, we provide documentation, design schematics, and production files (.gbr, .step) for all of the requisite components needed to fabricate a sensor. We also provide a simple software GUI to interface with the sensor and a tutorial describing a data collection system's setup using a Raspberry Pi. The software provides easy access, and use of the three integrated tactile-sensing algorithms described (depth reconstruction, dense force distribution and incipient slip detection) and incorporates the ability to collect, measure and plot tactile imprint data in real-time.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VIII. CONCLUSIONS</head><p>We present a novel GelSlim tactile finger design and develop the design using illumination design software and design for assembly techniques to analyze, explore, and optimize the finger within its design space. Specifically, we evaluate the effect of incorporating photometric stereo measurement techniques on the design space and demonstrate methods to optimize illumination shaping features to fulfill its assumptions. We develop a compact form factor with replaceable modules suited for grasping in cluttered bin picking scenarios that are easy to manufacture, use, and maintain. We demonstrate that our sensor can utilize all of the measurement methods used by previous GelSight and GelSlim sensors, specifically 3D depth reconstruction, incipient slip and shear detection, and dense force distribution estimation. We compare our sensor to several other prominent tactile-sensing designs and discuss its limitations. We anticipate our future work to continue exploring and developing illumination shaping designs suited explicitly for analytic tactile measurement methods.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IX. ACKNOWLEDGMENT</head></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. (a) GelSlim 3.0 sensors grasping a chess rook and the respective tactile imprint and measurement results. (b) High-Resolution Tactile Image (c) Depth Reconstruction (d) Incipient Slip (e) Tangential Force Field (f) Normal Force Field.</figDesc><graphic coords="1,261.98,194.93,323.35,215.57" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 .</head><label>2</label><figDesc>Fig. 2. Models of previous and current integrated tactile sensors (from left to right): GelSight [2], GelSlim 2.0 [4], GelSlim MPalm [5], and GelSlim 3.0.</figDesc><graphic coords="2,54.00,193.61,244.81,161.83" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. Exploded diagram of the GelSlim 3.0 tactile finger and its 10 components</figDesc><graphic coords="4,61.42,39.15,373.85,215.22" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4.Diagram of the hybrid swept spline lens with optimization parameters labeled across multiple views. The point m x,y is marked with a red dot.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 6 .</head><label>6</label><figDesc>Fig. 6. Circuit diagrams of the Driver PCB (Top) each color channel has its own LED array (Bottom).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 8 .</head><label>8</label><figDesc>Fig. 8. Raw tactile imprints, prior to pre-processing, and their respective 3D reconstructions (from left to right): ball bearing, screw head, screwdriver handle.</figDesc><graphic coords="7,120.28,30.02,731.95,98.90" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 10 .</head><label>10</label><figDesc>Fig. 10. The marker motion field, tangential force field and normal force field (N) VI. DISCUSSION</figDesc><graphic coords="7,313.20,205.13,244.80,72.10" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE I</head><label>I</label><figDesc>Comparison of GelSlim 3.0, GelSlim 2.0, GelSight, Digit and Omnitatct.</figDesc><table><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>Omnitact [14]</cell></row><row><cell>Size [mm]</cell><cell>37X80x20</cell><cell>50x172x25</cell><cell>40x80x40</cell><cell cols="2">20x27x18 30x30x33</cell></row><row><cell>Weight [g]</cell><cell>45</cell><cell>222</cell><cell>NA</cell><cell>20</cell><cell>NA</cell></row><row><cell cols="2">Sensing Field [mm 2 ] 675</cell><cell>1200</cell><cell>252</cell><cell>304</cell><cell>3110</cell></row><row><cell>Image Resolution</cell><cell>640x480</cell><cell>640x480</cell><cell>640x480</cell><cell>640x480</cell><cell>400x400</cell></row><row><cell>Image FPS</cell><cell>90</cell><cell>90</cell><cell>30</cell><cell>60</cell><cell>30</cell></row><row><cell cols="2">Cost Components [$] 25*</cell><cell>NA</cell><cell>30</cell><cell>15*</cell><cell>600</cell></row></table><note><p><p><p><p>(*Considering the manufacturing of 1000 pieces) GelSlim 3.0 GelSlim 2.0 [4] GelSight</p><ref type="bibr" target="#b1">[2]</ref> </p>Digit</p><ref type="bibr" target="#b2">[3]</ref> </p></note></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><p>This work was supported by the <rs type="funder">NEC Corporation Fund for Research in Computers and Communications</rs>, and by the <rs type="funder">HKSAR Innovation and Technology Fund</rs> (<rs type="affiliation">ITF</rs>) <rs type="grantNumber">ITS-104-19F</rs>. We thank <rs type="institution">Synopsys, Inc.</rs> for providing an educational license for the use of the <rs type="institution">LightTools Illumination Design Software</rs>. This article solely reflects the opinions and conclusions of its authors and not Synopsys or any other Synopsys entity. We thank <rs type="person">Yu She</rs> for assisting with the fabrication of the elastomer.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_vRnrtSJ">
+					<idno type="grant-number">ITS-104-19F</idno>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX</head><p>Simulation settings, optimization parameters and resultant configuration values can be found in the Simulation and Optimization folder at <ref type="url" target="https://github.com/mcubelab/gelslim">https://github.com/mcubelab/gelslim</ref>.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Gelslim: A high-resolution, compact, robust, and calibrated tactilesensing finger</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Donlon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="1927" to="1934" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Improved gelsight tactile sensor for measuring geometry and slip</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/IROS.2017.8202149</idno>
+		<ptr target="http://dx.doi.org/10.1109/IROS.2017.8202149" />
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2017-09">Sep 2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Digit: A novel design for a low-cost compact highresolution tactile sensor with application to in-hand manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Kammerer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P.-W</forename><surname>Chou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Maloon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Most</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Stroud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Santos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Byagowi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="page">2</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Dense tactile force estimation using gelslim and inverse fem</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Donlon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="5418" to="5424" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Tactile dexterity: Manipulation primitives with tactile feedback</title>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">R</forename><surname>Hogan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ballester</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="8863" to="8869" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Development of a tactile sensor based on biologically inspired edge encoding</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chorley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Melhuish</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pipe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rossiter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2009 International Conference on Advanced Robotics</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="1" to="6" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Localization and manipulation of small parts using gelsight tactile sensing</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Platt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">T</forename><surname>Pas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Roscup</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Srinivasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<editor>IROS</editor>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Design of a fully actuated robotic hand with multiple gelsight tactile sensors</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wilson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Localization and manipulation of small parts using gelsight tactile sensing</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Platt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Roscup</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Srinivasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2014 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+			<biblScope unit="page" from="3988" to="3993" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Manipulation by feel: Touch-based control with deep predictive models</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ebert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Mudigonda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="818" to="824" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Tactile mapping and localization from high-resolution tactile imprints</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bauza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Canal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="3811" to="3817" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Cable manipulation with a tactile-reactive gripper</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Sunil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Exoskeleton-covered soft finger with vision-based proprioception and tactile sensing</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">Q</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="page">81</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Omnitact: A multi-directional high-resolution touch sensor</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Padmanabha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ebert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="618" to="624" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Retrographic sensing for the measurement of surface texture and shape</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2009 IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="1070" to="1077" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Sensing and recognizing surface textures using a gelsight sensor</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2013 IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="1241" to="1247" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Robotic pick-and-place of novel objects in clutter with multi-affordance grasping and cross-domain image matching</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K.-T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Donlon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">R</forename><surname>Hogan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bauza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Romo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Fazeli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Alet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">C</forename><surname>Dafle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Holladay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Morona</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">Q</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Green</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Funkhouser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">0</biblScope>
+			<biblScope unit="issue">0</biblScope>
+			<biblScope unit="page">0</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Maintaining grasps within slipping bounds by monitoring incipient slip</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Donlon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="3818" to="3824" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Sensing and recognizing surface textures using a gelsight sensor</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="1241" to="1247" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Microgeometry capture using an elastomeric sensor</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Cole</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Trans. Graph</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="page">7</biblScope>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

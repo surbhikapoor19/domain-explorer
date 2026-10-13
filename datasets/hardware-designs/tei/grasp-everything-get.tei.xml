@@ -1,0 +1,964 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Grasp EveryThing (GET): 1-DoF, 3-Fingered Gripper with Tactile Sensing for Robust Grasping</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-07-30">30 Jul 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Michael</forename><surname>Burgess</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Tactile Image Peeling USB Insertion Using Spatula Hammering Spreading Peanut Butter</orgName>
+								<orgName type="institution">Massachusetts Institute of Technology</orgName>
+							</affiliation>
+						</author>
+						<author role="corresp">
+							<persName><forename type="first">Edward</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+							<email>adelson@csail.mit.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Tactile Image Peeling USB Insertion Using Spatula Hammering Spreading Peanut Butter</orgName>
+								<orgName type="institution">Massachusetts Institute of Technology</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Grasp EveryThing (GET): 1-DoF, 3-Fingered Gripper with Tactile Sensing for Robust Grasping</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-07-30">30 Jul 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">8973C188674056E6F3E778E6C40EEBD0</idno>
+					<idno type="arXiv">arXiv:2505.09771v3[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract/>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The GET gripper is designed to be easily integrated onto parallel grippers commonly found on existing in-the-wild data collection systems with added torque constraint. We demonstrate its capability in completing a variety of household tasks through teleoperation on the ALOHA system <ref type="bibr" target="#b0">[1]</ref>.</p><p>Abstract-We introduce the Grasp EveryThing (GET) gripper, a novel 1-DoF, 3-finger design for securely grasping objects of many shapes and sizes. Mounted on a standard parallel jaw actuator, the design features three narrow, tapered fingers arranged in a two-against-one configuration, where the two fingers converge into a V-shape. The GET gripper is more capable of conforming to object geometries and forming secure grasps than traditional designs with two flat fingers. Inspired by the principle of self-similarity, these V-shaped fingers enable secure grasping across a wide range of object sizes. Further to this end, fingers are parametrically designed for convenient resizing and interchangeability across robotic embodiments with a parallel jaw gripper. Additionally, we incorporate a rigid fingernail for ease in manipulating small objects. Tactile sensing can be integrated into the standalone finger via an externally-mounted camera. A neural network was trained to estimate normal force from tactile images with an average validation error of 1.3 N across a diverse set of geometries. In grasping 15 objects and performing 3 tasks via teleoperation, the GET fingers consistently outperformed standard flat fingers. All finger designs, compatible with multiple robotic embodiments, both incorporating and lacking tactile sensing, are available on GitHub.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Parallel jaw grippers with two flat fingers have dominated robotics in industrial and research settings for decades. These grippers are reliable, easy to control, and simple to model. Recently, their popularity has been reinforced by the rise of learning-from-demonstration style control policies, such as imitation learning and diffusion policy <ref type="bibr" target="#b1">[2]</ref><ref type="bibr" target="#b2">[3]</ref><ref type="bibr" target="#b3">[4]</ref>. These controllers rely on teleoperated demonstrations that are easily collected via one degree-of-freedom (1-DoF) grippers <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b5">6]</ref>.</p><p>Despite their prevalence, traditional flat, two-fingered parallel jaw grippers often create unstable grasps. Often, fingers only make small contact patches on either side of a grasped object. These two antipodal patches cannot strongly resist against torque disturbances <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b7">8]</ref>. Therefore, they are not wellequipped to execute dynamic tasks, particularly those requiring tool usage. A more versatile and robust gripper design is needed to match the generality offered by modern learningbased control pipelines.</p><p>By introducing a third finger, we can create a more robust and universally capable gripper that remains as easy to implement and control. The contact patch provided by this additional finger works to form a lever arm to better resist torques about both normal and frictional directions. With V-shaped fingers, the length of this lever varies as needed in correspondence to the shape or size of grasped objects.</p><p>Through maximizing the dynamic capabilities of a 1-DoF gripper, these fingers could be used with existing robotic embodiments and learning-from-demonstration frameworks to expand the range of trainable tasks. Additionally, tactile sensing can be integrated to promote stronger, contact-rich manipulation performance by incorporating additional modalities in data collection beyond traditional vision <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b8">9]</ref>.</p><p>We present the GET gripper, a novel design for parallel gripper fingers featuring the following contributions:</p><p>• Novel 3-finger design for securely grasping objects and tools of many shapes and sizes. • Rigid fingernails for small objects manipulation.</p><p>• Integration of camera-based tactile sensing with proximity information in same image and a trained neural network for normal force sensing. • Low cost (less than $100) and easy to manufacture. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORKS A. Robotic Gripper Design</head><p>Rigid, parallel jaw grippers are easy to model and control due to their simple geometry and 1-DoF. Recently, they have become especially fundamental in the rise of learning-fromdemonstration style control strategies that heavily rely on teleoperation and in-the-wild data collection because they are natural to teleoperate <ref type="bibr" target="#b1">[2,</ref><ref type="bibr" target="#b4">5]</ref>. Despite their convenience, traditional flat-fingered parallel jaw grippers often form only two contact patches on grasped objects. This limits their ability to constrain against torques and achieve secure grasps, making them less effective for dynamic tasks and tool usage <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b9">10]</ref>. Alternative designs have been developed in attempt to overcome this obstacle. Most notable are compliant structure fingers that deform to increase contact area and further geometrically constrain grasped objects <ref type="bibr" target="#b10">[11]</ref><ref type="bibr" target="#b11">[12]</ref><ref type="bibr" target="#b12">[13]</ref>. These grippers are favorable due to their improved performance over rigid fingers, but still fail in dynamic tasks requiring strong torque resistance. Other form factors have been developed to increase torque resistance beyond the traditional 2-fingered parallel gripper <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b13">14]</ref>.</p><p>By introducing additional DoF, more dexterous, anthropomorphic, and dynamically-capable grippers can be designed <ref type="bibr" target="#b14">[15]</ref><ref type="bibr" target="#b15">[16]</ref><ref type="bibr" target="#b16">[17]</ref><ref type="bibr" target="#b17">[18]</ref>. The increased complexity of these grippers empowers more performative action, including strong multicontact grips and in-hand manipulation behaviors. Yet, hand designs can become bulky, costly, and scale to large numbers of DoF that leave them difficult to control. Crucially, multi-DoF hands are complicated to teleoperate <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b19">20]</ref>, which hinders the development of learning-from-demonstration control policies. Naturally, many have sought to minimize DoFs while maximizing dexterity through underactuation <ref type="bibr" target="#b20">[21]</ref>. However, modeling underactuation can be challenging and teleoperation remains nontrivial.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Camera-Based Tactile Sensors</head><p>Camera-based tactile sensors, such as GelSight, record surface deformation through a camera placed behind a soft silicone fingerpad <ref type="bibr" target="#b21">[22,</ref><ref type="bibr" target="#b22">23]</ref>. These sensors can reconstruct the deformed gel surface in 3D due to strict lighting conditions and optical properties of the sensor's design <ref type="bibr" target="#b21">[22]</ref><ref type="bibr" target="#b22">[23]</ref><ref type="bibr" target="#b23">[24]</ref><ref type="bibr" target="#b24">[25]</ref><ref type="bibr" target="#b25">[26]</ref>. Tactile images from these sensors have been incorporated as a useful modality for learning-based control policies <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b26">27,</ref><ref type="bibr" target="#b27">28]</ref>.</p><p>Recently, researchers have developed approaches where a single camera is used to capture both tactile and proximity data, capturing objects and their associated contact geometry in the same image <ref type="bibr" target="#b27">[28,</ref><ref type="bibr" target="#b28">29]</ref>. This eliminates the need for a wristmounted camera. However, an externally-mounted camera may be susceptible to lighting changes, introducing noise that could inhibit the ability to reconstruct surface depth as precisely as GelSight sensors traditionally do <ref type="bibr" target="#b22">[23]</ref>. This is likely acceptable in learning-based implementations that only utilize RGB tactile images as input, not 3D depth <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b26">27,</ref><ref type="bibr" target="#b27">28]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. DESIGN &amp; FABRICATION</head><p>A. Mechanical Design 1) Secure Grasping: Traditional parallel jaw grippers with two flat fingers face difficulty in securely grasping convex or irregularly-shaped objects. We analyze the geometry of grasps in 2D over a set of example objects in Fig. <ref type="figure" target="#fig_2">3a</ref>. Here, we assume fingers to be rigid. The two flat fingers cannot securely grasp these common objects. Forming only two antipodal point contacts, objects can rotate freely out of the plane about the grasping axis ẑ, even with friction present. The 2-finger gripper also could not strongly resist object rotation about the x-axis with these point contacts. On the other hand, with the GET gripper's three contact points in a two-against-one configuration, we can better conform to convex or irregular geometries and create grasps that better resist rotation about both the x and ẑ-axes.</p><p>Even when grasping more regularly-shaped objects, traditional parallel jaw grippers with two flat fingers struggle to strongly resist torques. We analyze the forces involved in grasping a hammer with a flat, cylindrical handle in Fig. <ref type="figure" target="#fig_2">3b</ref>. Here, we assume fingers are not fully rigid and will form patch contacts with the hammer. The 2-finger gripper is able to withstand torque disturbances about the x and ẑ-axes in proportion to the width of the fingers w. When a third finger is introduced, the ability to withstand torque additionally depends on the distance between fingers L. By designing a parallel gripper with three fingers, we can achieve greater torque Free-body diagram in 3D comparing grasping of a toy hammer with a 2-finger gripper and the GET gripper, where Fmax is the maximum actuation force by the parallel gripper, µ is the coefficient of friction, w is the width of fingers, L is the distance between fingers, and τx,z are disturbance torques applied to the hammer. We take an angular equilibrium about each hammer to calculate the maximum allowable torques before slipping occurs. compensation about both x and ẑ-axes without the need for overly wide, flat fingers, which may hinder performance in smaller-scale tasks. Resistance to torques about the ŷ direction will remain equivalent for both finger configurations and depend on object width. With our 3-fingered configuration, it is important to note that the greatest resistance against torque disturbances functions about the x axis along the length of the fingers. Resistance against disturbances about the grasping axis ẑ will rely on friction, with maximum allowed torque scaling down by the frictional coefficient µ. Objects should be grasped strategically to ensure favorable torque compensation.</p><formula xml:id="formula_0">(-μF max , μF max ) b) a) Butter Knife Spatula Handle 2 Flat Fingers 3 Fingers Wine Glass w × w L F max τ x τ x τ z τ z |τ x | ≤ F max (w + -) |τ z | ≤ μF max (w + -) L 2 L 2 |τ x | ≤ F max w |τ z | ≤ μF max w Parallel Grasp GET Grasp F max F max (0, F max ) (-μF max , μF max ) (-μF max , μF max )</formula><p>Beyond incorporating a third finger to improve geometric conformity and increase torque resistance, we design fingers with soft silicone gel pads to further enhance these capabilities. When these soft fingerpads come in contact with a grasped object, they will deform to the local geometry of the object. This works to increase the area of contact patches and grants flexibility in grasping irregularly-shaped objects. Additionally, depending on the geometry of the object, an indentation formed at the contact patch may provide slip resistance along the face of the finger, with the elastic silicone acting as a spring to resist object movement.</p><p>2) Self-Similarity &amp; Scalability: Our gripper design is inspired by the principle of self-similarity <ref type="bibr" target="#b29">[30]</ref>. In the application of manipulation, we aim to design a gripper that can interact with objects of many sizes and be seamlessly interchanged across different robotic embodiments.</p><p>On the 2-finger side of our gripper, the fingers come together to form a V-shape. This creates a varying distance L between fingers along their length to enable secure grasping of many object sizes, as shown in Fig. <ref type="figure" target="#fig_3">4</ref>. Larger L at the base provides greater compensation against torque disturbances, while smaller L at the tip enables grasping of small objects.</p><p>With this design, it is expected that larger objects are grasped at the base of the fingers and smaller objects at the tip. The thickness of each finger varies along its length. The finger backing is thickest and most stiff at its base, becoming thinner and more compliant towards the tip. Similarly, gel thickness varies from base to tip, enabling more conformity at the base for larger objects. This design is inspired by recent compliant-structure fingers <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b11">12]</ref>.</p><p>To prevent fingers from bending outward and diverging, which could lead to grasp instability, we pitch them inward by angle θ. Importantly, fingers are designed to interdigitate. They can bend flat to a 0 • pitch angle through contact without interfering with each other, allowing even infinitesimally thin objects to be grasped along the length of the finger.</p><p>Fingers are parametrically designed such that they can be resized for compatability with any robotic arm. This is done by adjusting finger length dimension and attachment geometry. Throughout this paper, we refer specifically to fingers designed for the ALOHA system <ref type="bibr" target="#b0">[1]</ref>. But, to demonstrate scalability, additional desgins were fabricated for use with a Franka Emika Panda arm, as shown in Fig. <ref type="figure">6</ref>, and the UMI gripper, as available on GitHub <ref type="bibr" target="#b4">[5]</ref>.</p><p>3) Rigid Fingernail: A rigid fingernail is incorporated at the tip of each finger to enhance ability in grasping small objects. The fingernail assists in prying objects from their surroundings (e.g., a flat surface or a pile of clutter) and lifting them into the gripper's fingers. Our fingernail design seamlessly integrates with the rest of the finger, smoothly transitioning into the soft fingerpads. This ensures that the fingernails do not impede the gripper's ability to grasp larger objects. This design is inspired by previous robotic fingers that have integrated fingernails <ref type="bibr" target="#b30">[31]</ref><ref type="bibr" target="#b31">[32]</ref><ref type="bibr" target="#b32">[33]</ref>. The use of these fingernails for grasping a coin and paper clip is demonstrated in Fig. <ref type="figure">8</ref>. along the edges of the finger to illuminate the sensor pad. Our finger is significantly longer than it is wide. In compensation, lensed blue LEDs are used at the base of the finger to direct light further along its length. Otherwise, red and green SMD LEDs are placed on either side of the finger and equipped with diffusion filters to promote uniform illumination.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Optical Design</head><p>As discussed in Section III-A2, our design is intended to be parametrically scalable. In accordance with this, each LED board could be replaced by flexible COB LED strips, which can be customized to different lengths, eliminating the need to design a new PCB board for each new finger size.</p><p>Gel pads are 4.5 mm deep at the base of the finger. This creates a steep incident angle between the LEDs and the gel surface. Considering this, the gel is coated with gray Lambertian paint to evenly scatter light and improve uniformity.</p><p>A camera is mounted behind the finger on a stalk, angled toward the center of the backing. The backing of the single finger remains open and optically clear, allowing the camera to view the surface of the gel pad. Unlike traditional GelSight sensors <ref type="bibr" target="#b21">[22,</ref><ref type="bibr" target="#b22">23]</ref>, we do not enclose our sensor's camera within an opaque housing. This enables the camera to simultaneously capture environmental proximity information and tactile data in the same image stream. To ensure that background details are not washed out by the bright illumination required for our sensor, we use a high dynamic range (HDR) camera.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Fabrication Process</head><p>The following steps are taken to fabricate fingers. In our experience, this process creates fingers that are capable of enduring at least 1000 usage cycles without any noticeable signs of wear.</p><p>1) Prepare Backings: Backings for each finger are printed on a Markforged 3D printer with Onyx, a reinforced nylon composite. Acrylic pieces are laser cut from a 0.10 in thick sheet and super-glued into place on the single-finger backing. Afterward, a layer of 0.5 mm clear 3M™ VHB™ tape is placed and firmly pressed onto the surface of each backing and cut to size. Fabrication processes are shown in Fig. <ref type="figure">5</ref> 2) Molding Gels: Molds for each finger's gel are printed on a Markforged 3D printer. Since gel thickness varies along the length of each finger, molds retain fine, ring-like patterns that partially resemble a human fingerprint, an artifact of layerheight from the printing process. These textures may work to increase friction on the gel surface. Patterns may be seen on the fabricated prototype in Fig. <ref type="figure" target="#fig_1">2</ref>.</p><p>Print-On® gray ink base is combined with silicone ink catalyst in a 10:1 mass ratio to form a Lambertian paint mixture. Each mold is sprayed with Smooth-On Universal™ Mold Release before being airbrushed with a thin, opaque layer of paint. Optically clear Silicones Inc. XP-565 is mixed in an 18:1 ratio, degassed, and poured into the mold. Cured gels are carefully removed from the mold after 24-48 hrs.</p><p>3) Adhering: With gels and backings prepared, the surface of VHB tape is zapped with a tesla coil. Then, a thin layer of DOWSIL™ P5200 Clear Adhesion Promoter is spread across the surface. After 1-2 min, another layer is applied. Immediately after that, A-564 Medical Adhesive is spread over the tape. Gels are then placed on top with small weights to ensure a secure bond. Leave to cure for 20-30 min.  red and green SMD LEDs (1206 package) are soldered onto 0.6 mm thick PCB boards sized by finger length. All LED arrays are connected to a small PCB board with resistors of 45, 400, and 600 Ω for red, green, and blue respectively. This board is connected to a 3.3 V power source. Resistor values are calibrated empirically to maximize uniformity of illumination for specific finger geometry and LEDs.</p><p>All LED boards are super-glued onto a 3D printed front casing. This casing attaches to the backing via press-fit and can be further secured with super-glue. Before the casing is put into place, gray and diffusion filters are applied along the sides of the acrylic. The gray filter used is "VViViD Smoke Black Adhesive Headlight Wrap", while the diffusion filter used is 3M™ Diffuser 3635-70 <ref type="bibr" target="#b22">[23]</ref>.</p><p>5) Camera: The camera stalk is printed on a Markforged 3D printer and attached to the base of the single finger with M2 screws. This stalk also serves to cover the PCB resistor board. An IMX708 camera is attached to the top of the stalk using 3M™ VHB™ tape. The camera and LEDs are connected to a Raspberry Pi 4B.</p><p>All CAD files and code for streaming tactile images from the sensor are available on GitHub. We upload CAD files for versions of the fingers compatible with the ALOHA system <ref type="bibr" target="#b0">[1]</ref>, Franka Emika Panda arm, and UMI gripper <ref type="bibr" target="#b4">[5]</ref>. Additionally, CAD files are uploaded for versions of the fingers without integrated tactile sensing for a more lightweight design in applications where sensing is not desired.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS &amp; RESULTS</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Tactile Sensing</head><p>Tactile images were captured using an externally-mounted IMX708 camera. Due to the camera's high dynamic range (HDR), proximity information can be captured in the same image as tactile information. Example tactile images are shown in Fig. <ref type="figure" target="#fig_6">7a</ref>. Fine surface features, such as the threads of an M2.5 bolt, are captured in these images. However, it is difficult to uniformly focus the camera along the entire length of the finger. In the provided images, top and bottom regions are more in-focus than the center, resulting in sharper images with higher clarity in those areas. Opposing red and green lights provide balanced illumination, while the lensed blue LEDs at the base effectively distributes light to the fingertip. Due to the curved and irregular profile of the gel pad, achieving uniform color mixing remains challenging, particularly at the edges of the sensor.</p><p>Tactile images were collected alongside corresponding measurements from a force probe over varying indentation geometries. Indentation geometries include 3 simple shapes and 15 common objects, such as a coin, USB stick, Lego brick, and more. The force probe used for this experiment was designed with an embedded MMS101 6-axis force torque sensor. CAD files for this probe are available on GitHub. To collect data, we pressed our single finger tactile sensor into the probe multiple times for each geometry while streaming tactile images and recording force measurements for each frame, as shown in Fig. <ref type="figure" target="#fig_6">7b</ref>. Pressing forces ranged from 0 to 30 N over the collected dataset. In total, 17.5k images were collected. For reference, while streaming at 30 Hz, all of this data can be collected in under 10 min.</p><p>Collected data was used to train a neural network to estimate normal force F z from tactile difference images. This architecture was based on <ref type="bibr" target="#b33">[34]</ref>, with ResNet-18 as its backbone. We trained over data collected from simple indentation geometries and 15 common objects. Models were trained for 50 epochs with a batch size of 32, learning rate of 0.001, and the same random seed with 20% of total data used for validation. Trained models were evaluated over a set of 3 unseen objects.</p><p>The resulting errors from our model during training and over unseen objects are provided in Table <ref type="table">I</ref>. We observed accurate force estimation for each indentation geometry and a strong ability to generalize across object shapes. Our sensor was not fabricated with markers. Force sensing with GelSightlike sensors can be improved by painting black markers on the gel pad surface to track surface displacement <ref type="bibr" target="#b21">[22]</ref>.  <ref type="figure">8</ref>. Grasping small objects with rigid fingernail. The process of grasping small objects, such as a coin and paper clip, off of a flat surface with GET fingers. The nail is used to pry underneath the object and lift it off the table. Grasping is executed via teleoperation on the ALOHA system <ref type="bibr" target="#b0">[1]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Performance in Grasping Objects</head><p>We evaluated our fingers' ability to grasp a set of objects in comparison to standard parallel jaw fingers. To assess hardware independent of controllers, all robotic actions were teleoperated via the ALOHA system <ref type="bibr" target="#b0">[1]</ref>. Objects were chosen among common household objects that encompass a wide range of shapes and sizes. Objects were selected with respect to the ALOHA system's payload capacity of 0.75 kg <ref type="bibr" target="#b0">[1]</ref>.</p><p>For these experiments, we utilized the ALOHA system [1] retrofitted with an enhanced gripper design from the ALOHA 2 <ref type="bibr" target="#b5">[6]</ref>. We compared three different finger configurations: our proposed design, ALOHA ViperX fingers, and a customdesigned set emulating traditional parallel jaw fingers. The traditional fingers are flat and rectangular with a rigid backing and a soft curved gel pad that mimics GET fingers. The ALOHA ViperX fingers are fully rigid with a triangular design that can provide up to four points of contact. We applied high-friction tape across the entire surface of ALOHA ViperX fingers to maximize their capabilities.</p><p>Teleoperation was performed by a set of 3 operators of varying skill levels. Results are reported from each of these teleoperators in aggregation. Most objects started flat on the center of a table in a random orientation, with the exception of larger tool objects that began vertical inside of a cup. Operators attempted to grasp each object with each gripper for 10 trials. Between every trial, the scene was fully reset. Objects were grasped with maximum force allowed by the ALOHA system, which is measured up to approximately 15 N.</p><p>Selected objects are categorized as either "small" or "large", with grasp success measured differently for each. For small objects, a grasp was considered successful if the teleoperator could grab the object off of the table and hold it in the air for 5 s without slipping. For large objects, it was assumed that all could be grasped off the table by each gripper, thus success was instead measured by grasp security. A grasp was considered "secure" if the object did not slip or dislocate when subjected to disturbance forces of up to 3 N applied in any direction. To measure this, grasped objects were probed from multiple directions using the force probe, shown in Fig. <ref type="figure" target="#fig_6">7b</ref>, while force recordings were monitored and slip was determined visually.</p><p>Grasping success for all fingers across large and small objects is plotted in Fig. <ref type="figure">9</ref>. The GET fingers grasped small objects more successfully than baseline fingers. This was likely due to the use of our fingernail design to pick small objects off of the table, as demonstrated in Fig. <ref type="figure">8</ref>.</p><p>Furthermore, the GET fingers were more successful in securely grasping large objects. As shown in Fig. <ref type="figure" target="#fig_2">3a</ref>, traditional parallel jaw fingers create only two antipodal contact patches and must rely on friction to resist disturbances about the grasping axis. This friction is often minimal given small contact patches, resulting in a weak grip where objects are only loosely held in their orientation. The ALOHA ViperX fingers faced similar challenges. Although these fingers can theoretically provide up to four contact points, their rigid profile could not conform to convex or asymmetric geometries, often resulting in contact only being formed at two points. Consequently, they behaved similarly to traditional flat fingers.</p><p>In contrast, the GET fingers more securely grasped large objects. With their ability to create three contact patches and adapt to object geometries, they could better resist disturbances about the normal and frictional directions for all objects. Moreover, when an object is grasped, it indents into the soft gel pads, creating a contact patch that provides elastic resistance in tangential directions. This reduces reliance on friction and discourages slipping due to the gel's spring-like behavior. As a result of these contributions, the GET fingers significantly outperformed baseline fingers in securing large objects.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Performance in Manipulation Tasks</head><p>We evaluated our gripper's ability to complete a set of 3 tasks in comparison to the ALOHA ViperX gripper and a custom-designed traditional fingers. For this experiment, the setup was nearly identical to that of Section IV-B. Tasks were teleoperated via the ALOHA system using a single arm <ref type="bibr" target="#b0">[1]</ref>.</p><p>Tasks were designed to assess grippers' ability to securely hold objects through torque disturbances and manipulate small objects. All tasks were defined as follows:</p><p>• Toy Hammer: A hammer was placed vertically on the table next to a fixed-position board with a nail loosely in a hole. The hammer must be grabbed and used to hit the nail into the board. After, the nail must be pried back Fig. <ref type="figure">9</ref>. Performance in grasping objects. 15 objects of varying size and shape were grasped using GET, ALOHA ViperX <ref type="bibr" target="#b0">[1]</ref>, and traditional parallel jaw fingers. Success in grasping small objects is defined as the ability to grab them off a table. Success in grasping large objects is defined as the ability to securely grasp objects without slipping when subjected to disturbance of &lt;3 N in any direction. Results are reported over 30 trials per object.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Car Part Assembly Toy Hammer</head><p>Peanut Butter Spread  out of the toy board using the other side of the hammer. During this process, the hammer should not dislocate or slip from the grasp.</p><p>• Peanut Butter Spread: A peanut butter jar with a loose lid was placed next to a stack of crackers. The lid must be removed from the jar. Then, a single cracker must be picked and moved to the edge of the table . A butter knife must be grabbed from a vertical orientation, used to scoop peanut butter from the jar, and spread it across the length of the cracker. During this process, no objects should be dropped and the knife should not dislocate or slip from the grasp. • Car Part Assembly: A pile of small rubber pieces inside a bowl was randomized between each trial. A piece must be picked from the pile and transported into its place in the fixed-position plastic piece without being dropped.</p><p>Task performance for each set of fingers is plotted in Fig. <ref type="figure" target="#fig_9">10</ref>. Our fingers outperformed baseline fingers, specifically in the Toy Hammer and Peanut Butter Spread tasks. Traditional fingers struggled to resist torque moments in these tasks given only two small contact patches. Furthermore, they could not reliably pick small objects in the Car Part Assembly task. ALOHA ViperX fingers performed better in the Car Part Assembly task, but struggled in the Peanut Butter Spread task. These rigid fingers could not conform to the butter knife's convex geometry to securely grasp it, as displayed in Fig. <ref type="figure" target="#fig_2">3a</ref>.</p><p>The GET fingers more successfully completed all tasks than baseline fingers. In the Car Part Assembly task, their fingernails helped pick small pieces from clutter and place them firmly into the desired location. In the Peanut Butter Spread task, the GET design could securely grasp the irregularlyshaped butter knife through contact with the cracker. Fingernails were also helpful in this task for removing the peanut butter lid and picking crackers from the stack. In the Toy Hammer task, GET fingers outperformed the ALOHA ViperX fingers, even with the hammer's flat, cylindrical geometry. GET fingers had greater capacity to resist high torque required to pry the nail from the board, as shown in Fig. <ref type="figure" target="#fig_2">3b</ref>. In all tasks, we observe decreased completion time with the GET fingers, suggesting greater teleoperator confidence and ease of use.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Limitations &amp; Future Work</head><p>Despite its capabilities, our gripper, like any other 1-DoF gripper, cannot perform in-hand manipulation or reorientation. To partially overcome this limitation, a bimanual manipulation interface can be utilized to complete further dexterous tasks. Additionally, due to the gripper's asymmetry, a robotic arm with at least 7-DoFs is required to reach any arbitrary pose, unlike standard symmetric grippers that only need 6-DoFs.</p><p>Our tactile sensor does not currently track contact geometry in 3D. Traditionally, GelSight sensors use color mapping to compute gradients and reconstruct depth across the contact surface <ref type="bibr" target="#b22">[23]</ref>. Since our sensor is exposed to external lighting conditions, we cannot rigorously develop this same mapping. For the time being, we forgo depth estimation. If deemed necessary, future work could explore training a neural network to reconstruct depth from tactile images. Additionally, a neural network could be trained for multi-axis force sensing by incorporating markers on the gel pad surface.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION</head><p>We present the GET gripper, a novel 3-fingered design for parallel jaw actuators to more securely grasp objects of many shapes and sizes. This design been shown to outperform standard 2-fingered designs, particularly in grasping small objects and securely holding larger ones, such as tools for dynamic tasks. Additionally, high-resolution tactile imaging is integrated into fingers with force sensing capabilities. The GET gripper could be deployed on teleoperation interfaces to collect rich data for training policies over a wide range of tasks. Designs for use with ALOHA, Franka Emika Panda, and UMI systems are available on GitHub, including variants without tactile sensing or silicone gels for rapid manufacturing.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. Grasp EveryThing (GET) Gripper. (a) Holding a toy hammer with simultaneous tactile image recorded from HDR camera at the back of the single finger side. (b)The GET gripper is designed to be easily integrated onto parallel grippers commonly found on existing in-the-wild data collection systems with added torque constraint. We demonstrate its capability in completing a variety of household tasks through teleoperation on the ALOHA system<ref type="bibr" target="#b0">[1]</ref>.</figDesc><graphic coords="1,65.76,155.13,124.30,173.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 .</head><label>2</label><figDesc>Fig. 2. Assembly of GET components. Left: Rendered exploded view of mechanical and electronic components in each finger, arranged in order of assembly. Parts that are made of Onyx are 3D printed on a Markforged printer. Right: Fabricated set of GET fingers with rigid fingernails highlighted.</figDesc><graphic coords="2,56.65,94.42,111.72,103.37" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. Grasping analysis. (a) Planar geometric analysis of grasping a set of objects with rigid, 2-finger parallel jaw gripper and our 3-fingered design. (b)Free-body diagram in 3D comparing grasping of a toy hammer with a 2-finger gripper and the GET gripper, where Fmax is the maximum actuation force by the parallel gripper, µ is the coefficient of friction, w is the width of fingers, L is the distance between fingers, and τx,z are disturbance torques applied to the hammer. We take an angular equilibrium about each hammer to calculate the maximum allowable torques before slipping occurs.</figDesc><graphic coords="3,109.54,235.35,70.50,89.67" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4. Orthogonal views of GET fingers. Lever arm of grasp L, finger pitch θ, and fingernail dimensions are defined. Smaller objects should be grasped at the tip of the fingers where L is small and larger objects at the base.</figDesc><graphic coords="3,202.02,236.27,79.96,88.73" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 5 .Fig. 6 .</head><label>56</label><figDesc>Fig. 5. Fabrication process of GET fingers. Required steps to fabricate designed fingers, including molding of silicone gels, preparing plastic backings, and adhering soft silicone fingerpads to backings. In total, process takes multiple days to complete with bulk of the time dedicated to silicone curing.ALOHAFranka Emika Panda</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>4 ) 18 FC</head><label>418</label><figDesc>Lighting: Blue 1.8 mm lensed LEDs are soldered onto a 0.6 mm thick PCB board sized by finger width. 0.75 mm thick ResNet-</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 7 .</head><label>7</label><figDesc>Fig. 7. Integrated tactile sensing in GET finger. (a) Tactile images recorded from contact with a set of objects. Difference are calculated with respect to an uncontacted reference image. (b) Left: Data collection process using force probe with interchangeable indentation geometries, including 3 simple geometries and 15 common objects. Right: Force sensing architecture where difference images are sent through ResNet-18 to estimate normal force Fz.</figDesc><graphic coords="5,302.27,63.62,56.18,112.26" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>C</head><label></label><figDesc>a r P a rt A s s e m b ly T o y H a m m e r P e a n u t B u tt e r S p re a d Avg. Time of Successes [s] Success Rate [%] P a rt A s s e m b ly T o y H a m m e r P e a n u t B u tt e r S p re a</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 10 .</head><label>10</label><figDesc>Fig.10. Performance in manipulation tasks. 3 manipulations tasks, as defined on the left, were completed using GET, ALOHA ViperX<ref type="bibr" target="#b0">[1]</ref>, and traditional parallel jaw fingers. Completion time is defined as the average over successful trials for each gripper. Results are reported over 20 attempts per task.</figDesc><graphic coords="7,123.53,306.45,50.39,51.00" type="bitmap" /></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENTS</head><p><rs type="institution">Toyota Research Institute (TRI)</rs> provided funds to support this work. Thank you to <rs type="person">Megha Tippur</rs> for help with PCB board design and <rs type="person">Yuxiang Ma</rs> for setting up ALOHA system.</p></div>
+			</div>			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Learning finegrained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.13705</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Survey of imitation learning for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Intelligent Robotics and Applications</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.02511</idno>
+		<title level="m">Poco: Policy composition from and for heterogeneous robot learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pan</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems</meeting>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Aloha 2: An enhanced low-cost hardware for bimanual teleoperation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Aldaco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Armstrong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Baruch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bingham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Draper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Dwibedi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Goodrich</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2405.02292</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Grasping</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Prattichizzo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Trinkle</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008-09">Sep. 2008</date>
+			<publisher>Springer Handbook of Robotics</publisher>
+			<biblScope unit="page" from="671" to="700" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Comparison of contact capabilities for underactuated parallel jaw grippers for use on industrial robots</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Carpenter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hatton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Balasubramanian</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Design Engineering Technical Conferences and Computers and Information in Engineering Conference</title>
+		<imprint>
+			<publisher>American Society of Mechanical Engineers</publisher>
+			<date type="published" when="2014">2014</date>
+			<biblScope unit="volume">46377</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Vital pretraining: Visuo-tactile pretraining for tactile and non-tactile manipulation policies</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>George</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Gano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Katragadda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">B</forename><surname>Farimani</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Robotic Manipulation. MIT</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<ptr target="http://manipulation.mit.edu" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Fin ray® effect inspired soft robotic gripper: From the robosoft grand challenge toward optimization</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Crooks</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Vukasin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>O'sullivan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Messner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Rogers</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Robotics and AI</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Gelsight fin ray: Incorporating tactile sensing into a soft compliant robotic gripper</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">Q</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE 5th International Conference on Soft Robotics</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note>RoboSoft</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Soft-bubble grippers for robust and perceptive manipulation</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alspach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Uttamchandani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Creasey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ikeda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">Spot® -the agile mobile robot</title>
+		<ptr target="https://bostondynamics.com/products/spot/" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">A century of robotic hands</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Piazza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Grioli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G</forename><surname>Catalano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bicchi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics, and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note>Annual Review of Control</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Gelsight svelte hand: A three-finger, twodof, tactile-rich, low-cost robot hand for dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.10886</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Leap hand: Low-cost, efficient, and anthropomorphic hand for robot learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">From grasping to manipulation with gecko-inspired adhesives on a multifinger gripper</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Ruotolo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Brouwer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">61</biblScope>
+			<biblScope unit="page">9773</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Dexo: Hand exoskeleton system for teaching robot dexterous manipulation in-the-wild</title>
+		<author>
+			<persName><forename type="first">H.-S</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Optimized fingertip mapping for teleoperation of dextrous robot hands</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">N</forename><surname>Rohling</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Hollerbach</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings IEEE International Conference on Robotics and Automation</title>
+		<meeting>IEEE International Conference on Robotics and Automation</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="1993">1993. 1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Soft robotic grippers</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Shintake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Cacucciolo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Floreano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Shea</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Materials</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="page">1707035</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Gelsight: High-resolution robot tactile sensors for estimating geometry and force</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Gelsight wedge: Measuring high-resolution 3d contact geometry with a compact robot finger</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Rainbowsight: A family of generalizable, curved, camera-based tactile sensors for shape reconstruction</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Tippur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Learning object compliance via young&apos;s modulus from single grasps using camera-based tactile sensors</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Burgess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Willemet</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Physics-informed online estimation of compliance with gelsight sensor</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Willemet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Burgess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">8th IEEE-RAS International Conference on Soft Robotics Extended Abstracts</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Survey of imitation learning for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Int. J. Intell. Robot. Appl</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="362" to="369" />
+			<date type="published" when="2019-12">Dec. 2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Polytouch: A robust multi-modal tactile sensor for contact-rich manipulation using tactile-diffusion policies</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Multimodal proximity and visuotactile sensing with a selectively transmissive soft membrane</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">M</forename><surname>Campbell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pikul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE 5th International Conference on Soft Robotics</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note>RoboSoft</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Fractals and self similarity</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">E</forename><surname>Hutchinson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Indiana University Mathematics Journal</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<date type="published" when="1981">1981</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">A soft gripper with retractable nails for advanced grasping and manipulation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Stalin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Subramaniam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">V</forename><surname>Alvarado</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Improvement of precision grasping performance by interaction between soft finger pulp and hard nail</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kumagai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Obata</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yabuki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yokoi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Togo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Soft Robotics</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">Under-actuated robotic gripper with multiple grasping modes inspired by human finger</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Liao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Nigatu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Dong</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Allsight: A low-cost and high-resolution round tactile sensor with zero-shot learning capability</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Azulay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Curtis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sokolovsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Levitski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Slomovik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Lilling</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sintov</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<date type="published" when="2024-01">Jan. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

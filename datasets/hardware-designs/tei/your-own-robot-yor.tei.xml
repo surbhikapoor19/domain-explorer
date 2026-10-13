@@ -1,0 +1,1649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">YOR: Your Own Mobile Manipulator for Generalizable Robotics RBY1-A XLeRobot Mobile ALOHA Tidybot!&quot; YOR</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2026-02-11">11 Feb 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<title level="a" type="main">YOR: Your Own Mobile Manipulator for Generalizable Robotics RBY1-A XLeRobot Mobile ALOHA Tidybot!&quot; YOR</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-02-11">11 Feb 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">2642A1859F48A43CDBC1B401FF0311FB</idno>
+					<idno type="arXiv">arXiv:2602.11150v1[cs.RO]</idno>
+					<note type="submission">Omnidirectional Yes No No Yes Yes DOFs (upper body) 12 20 12 N/A 13 Bimanual Yes Yes Yes No Yes Vertical Control No Yes No No Yes</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract/>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>The transformative power of robust hardware platforms and data collection infrastructure has fundamentally shaped recent advances in robotics. <ref type="bibr">Dobb-E (Shafiullah et al., 2023)</ref> and UMI <ref type="bibr" target="#b26">(Chi et al., 2024)</ref> enabled portable data collection using hand-held grippers without requiring robot hardware during demonstration; ALOHA <ref type="bibr" target="#b22">(Zhao et al., 2023)</ref>, Open-TeleVision <ref type="bibr" target="#b26">(Cheng et al., 2024)</ref> and OpenTeach <ref type="bibr" target="#b32">(Iyer et al., 2024)</ref> introduced intuitive bimanual teleoperation for stationary and mobile settings. Recently, models such as 𝜋 0.5 <ref type="bibr" target="#b44">(Intelligence et al., 2025)</ref> and ACT-1 (Sunday <ref type="bibr" target="#b49">Team, 2025)</ref> which scaled these ideas have demonstrated remarkable mobile manipulation capabilities. The success of the scaling efforts underscores a critical insight: the availability of capable yet affordable robot platforms is a key enabler for progress in the field. When platforms are expensive or difficult to maintain, research remains confined to laboratories, limiting the diversity of tasks, environments, and operational conditions that can be explored. Affordable and robust robotic platforms allow researchers to take them into the wild and run experiments that would otherwise be impossible. Despite these advances, striking the right balance between manipulation capability, ease of use, and affordability has been a challenge. Humanoid robots, while promising, are still maturing: whole-body control and reliable locomotion remain active research challenges <ref type="bibr" target="#b31">(He et al., 2024;</ref><ref type="bibr" target="#b53">Ze et al., 2025)</ref>, making them less practical for large-scale mobile manipulation research today. Commercial mobile manipulators such as RB-Y1 (Rainbow <ref type="bibr" target="#b35">Robotics, 2024)</ref> and Dexmate (DexMate Inc., 2025) offer capable platforms, but come with significant drawbacks: high costs, large footprints unsuitable for home environments, and proprietary designs that are difficult to extend or customize for research purposes. TidyBot++ <ref type="bibr">(Wu et al., 2023a)</ref> demonstrated an affordable open-source alternative but relies on a single arm, lacking bimanual capabilities, and requires a long-reach manipulator to achieve sufficient workspace. XLeRobot <ref type="bibr" target="#b51">(Wang et al., 2025)</ref> offers an impressively low-cost entry point for robotics research, but its limited workspace, payload capacity, and durability constrain its applicability to real-world tasks.</p><p>Based on these observations, we argue that an ideal platform for scalable mobile manipulation research should possess the following characteristics: (1) Low cost, enabling practitioners on a budget to access capable robots; (2) Simple and robust control, avoiding the complexity of balance controllers and minimizing hardware failures; (3) Omnidirectional mobility, allowing intuitive navigation without non-holonomic constraints; (4) Bimanual manipulation with vertical reach, providing the dexterity and workspace needed for real-world tasks; and (5) Compliance, providing adaptability during manipulation and reducing the need for overly cautious and slow teleoperation.</p><p>We present YOR, an open-source mobile manipulator designed around these principles. YOR integrates an omnidirectional base, a telescopic vertical lift, and two compliant 6-DoF arms, achieving whole-body mobility and bimanual manipulation at a bill-of-materials cost under $10K. YOR's swerve drive base features four independently rotating wheel modules, enabling omnidirectional motion that relaxes the non-holonomic constraints of traditional differential drive bases. With a footprint of 43×34.5 cm, YOR can navigate cluttered indoor spaces where larger platforms cannot operate. A telescopic vertical lift with a stroke length of 63.5 cm extends YOR's reach from floor level to overhead, providing the vertical workspace necessary for real-world household tasks such as picking objects from the ground or retrieving items from shelves. For bimanual manipulation, YOR is equipped with two PiPER arms fitted with custom grippers. The arms' compliant actuation ensures safe interaction during contact-rich tasks and reduces the need for overly cautious teleoperation. YOR integrates a ZED 2i stereo camera and supports onboard SLAM, enabling autonomous navigation and mapping in novel environments. YOR's slender profile allows   <ref type="bibr" target="#b36">(Wu et al., 2024)</ref> relies on a single arm with no vertical control. XLeRobot <ref type="bibr" target="#b51">(Wang et al., 2025)</ref> is impressively low cost but its payload and reach limits its use cases. Due to its large footprint and non-holonomic base, Mobile ALOHA <ref type="bibr">(Fu et al., 2024b)</ref> has limited navigation capability. RBY1-A (Rainbow Robotics, 2024) and similar options on the market have many similar features to YOR but come with almost an order of magnitude higher price tag.</p><p>an operator standing behind the robot to maintain direct line-of-sight to the workspace, facilitating intuitive teleoperation without relying on head-mounted displays or camera streaming setups. Together, these design choices yield a platform that is low-cost, easy to build, and capable of whole-body bimanual manipulation and navigation. Our key contributions are as follows:</p><p>• We identify a practical form factor for low-cost mobile manipulation research-an omnidirectional base with a vertical lift and dual compliant arms-that balances capability, controllability, and cost. • We present YOR, a fully open-source hardware and software package that embodies this form factor, with a bill-of-materials cost of under US$10K. • We validate YOR's capabilities through integration tests demonstrating whole-body control, bimanual manipulation, and autonomous navigation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Related Work</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1.">Low-Cost Mobile Manipulation Platforms</head><p>Most robotic hardware historically exists on a spectrum of precision and reliability, trading off against cost to find the optimal platform for any particular task. Early examples of this in mobile manipulators are Willow Garage's PR2 <ref type="bibr" target="#b7">(Garage, 2012)</ref>   <ref type="bibr">compact actuators (Katz, 2018)</ref>, the precision requirements from hardware for coarse-grained mobile manipulation have also come down. Consequently, a series of low-cost hardware platforms have been built that rely primarily on learned policies, such as Mobile-ALOHA <ref type="bibr">(Fu et al., 2024a)</ref>, Tidybot++ <ref type="bibr" target="#b36">(Wu et al., 2024)</ref>, XLeRobot <ref type="bibr" target="#b51">(Wang et al., 2025)</ref>, LeKiwi <ref type="bibr" target="#b38">(Chandaka et al., 2025)</ref>, which we compare against in detail in Fig. <ref type="figure" target="#fig_0">2</ref>. Their success has also inspired proprietary ventures in this space, in the form of RB-Y1 (Rainbow Robotics, 2024), DexMate (DexMate Inc., 2025), etc. Our work attempts to address the lack of an affordable yet capable robot with sufficient reach and mobility, and build upon prior work to find a novel form-factor at this price point. We also note that with affordable mobile platforms, the prevalent interest is in mobile manipulation for indoor and home environments, as opposed to industrial applications <ref type="bibr" target="#b18">(Shafiullah et al., 2023;</ref><ref type="bibr" target="#b21">Yenamandra et al., 2023;</ref><ref type="bibr" target="#b34">Liu et al., 2024;</ref><ref type="bibr" target="#b37">Yang et al., 2024;</ref><ref type="bibr" target="#b47">Liu et al., 2025)</ref>. Therefore, our evaluation scenarios in this work also focus on indoor, home-like environments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2.">Data Collection for Mobile Manipulation</head><p>Recent works have proposed data collection platforms to address the limited availability of manipulation demonstrations. There are many systems which support fixed-arm setups such as OpenTeach <ref type="bibr" target="#b32">(Iyer et al., 2024)</ref>, BunnyVisionPro <ref type="bibr" target="#b40">(Ding et al., 2025)</ref>, GELLO <ref type="bibr">(Wu et al., 2023b)</ref>, ALOHA <ref type="bibr" target="#b22">(Zhao et al., 2023)</ref>, and AirEXO <ref type="bibr" target="#b15">(Fang et al., 2023)</ref>. Data collection for mobile manipulation presents additional challenges as the operator needs to control navigation and other degrees of freedom in the upper-body. Mobile ALOHA <ref type="bibr">(Fu et al., 2024b)</ref> uses joint-space mappings between the leader and follower arms mounted on a mobile base that follows the operator's movements. This approach requires a base with a large footprint and cannot support control in vertical axis. JoyLo <ref type="bibr" target="#b45">(Jiang et al., 2025)</ref> uses a GELLO setup with JoyCons attached at the ends, using buttons and joysticks to control the base and height. However, this setup requires the operator to be fixed in one place, making mobile teleoperation difficult. Tidybot++ <ref type="bibr" target="#b36">(Wu et al., 2024)</ref> proposes using pose tracking features and touch screens of mobile phones to collect data. While easy to set up and extend, using two mobile phones is not ergonomic and lack the tactile feedback of buttons and joysticks for prolonged use.</p><p>Several works proposed low-cost handheld data collection devices <ref type="bibr" target="#b26">(Chi et al., 2024;</ref><ref type="bibr" target="#b42">Etukuru et al., 2025;</ref><ref type="bibr" target="#b54">Choi et al., 2026)</ref>. These devices enable scalable data collection without needing real robots and operators can record more dexterous demonstrations <ref type="bibr" target="#b49">(Team, 2025)</ref>. Since robots need to learn from trajectories recorded by humans, mobile robots with more degrees of freedom are theoretically more capable of benefiting from this type of data and overcome kinematic limitations. Previous research <ref type="bibr" target="#b30">(Ha et al., 2024;</ref><ref type="bibr" target="#b43">Gupta et al., 2025)</ref> has explored how to deploy policies learned from this data on mobile platforms. However, integrating global navigation with local manipulation remains an challenge, particularly optimizing whole-body motion to handle environmental constraints and resolve kinematic redundancy.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3.">Mapping and Navigating Dynamic Environments</head><p>Autonomous indoor navigation has been a foundational problem in robotics for over four decades, with early work by <ref type="bibr" target="#b2">Moravec and Elfes (Moravec and Elfes, 1985)</ref> on occupancy grids. Classical algorithms remain central to modern systems: A* <ref type="bibr" target="#b0">(Hart et al., 1968</ref>) provides optimal graph-based path planning, while Pure Pursuit <ref type="bibr">(Coulter, 1992a)</ref> enables robust trajectory tracking through geometric curvature commands. Modern commercial hardware <ref type="bibr" target="#b9">(Keselman et al., 2017;</ref><ref type="bibr" target="#b48">Stereolabs, 2025)</ref> and software packages such as OpenVINS <ref type="bibr" target="#b12">(Geneva et al., 2020)</ref>, cuVSLAM <ref type="bibr" target="#b46">(Korovko et al., 2025)</ref> allows easy integration of mapping capabilities to new platforms. Prior work such as <ref type="bibr" target="#b24">(Bajracharya et al., 2024)</ref> also inspires parts of our navigation stack. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Hardware Design</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">Design Principles</head><p>YOR is designed to have the most critical capabilities for mobile manipulation in human-centered environments with minimal complexity and cost. To achieve this, we adhere to four core principles:</p><p>• Low-Cost and Modularity: To maximize accessibility, YOR is constructed from commercial offthe-shelf components. As illustrated in Fig. <ref type="figure" target="#fig_1">3</ref>, the total Bill of Materials (BOM) is approximately US$9,250, significantly lower than comparable bimanual platforms. The modular design allows individual subsystems, such as the compute unit or the robotic arms, to be upgraded independently as hardware evolves. • Controllability: Effective mobile manipulation requires precise positioning in cluttered environments. We prioritized a swerve drive base that allows YOR to reorient its manipulation workspace in any direction. YOR is also passively stable, which simplifies control during dynamic motion. • Safety and Compliance: Designed for human-centered environments, YOR features a small footprint and low total mass to minimize kinetic energy. The robotic arms utilize compliant control strategies (detailed in Section 3.4) rather than stiff position control, ensuring safe interaction and adaptable manipulation. Additionally, the vertical lift mechanism is self-locking, preventing sudden drops in the event of power loss. • Open Source Accessibility: To foster community development, the entire project is open-source.</p><p>All CAD files, bill of materials, and software will be publicly shared, lowering the barrier to entry for researchers wanting to replicate or modify the platform for their specific needs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Mobile Base</head><p>The mobility system of YOR is built upon an omnidirectional swerve drive architecture, enabling decoupled translational and rotational control. This agility is critical for mobile manipulation tasks, allowing the robot to precisely align its workspace with target objects in cluttered environments without the non-holonomic constraints of differential drive systems <ref type="bibr" target="#b6">(Siegwart et al., 2011)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.1.">Hardware Configuration</head><p>We utilize four commercial off-the-shelf REV Robotics 3-inch MAXSwerve Modules (REV, 2023) at a cost of approximately $625 per module. Each module acts independently, integrating two brushless motors: a NEO 550 coupled to an UltraPlanetary gearbox for azimuth (steering) control, and a high-torque NEO Vortex motor for wheel propulsion.</p><p>The modules feature a compact 3-inch (76.2 mm) wheel diameter. This size is a deliberate design choice that minimizes the wheel's scrub radius, significantly reducing the static steering torque requirements compared to larger casters <ref type="bibr" target="#b5">(Wong, 2008)</ref>. The compact footprint allows the wheels to be mounted at the absolute geometric extremities of the chassis, maximizing the area of the support polygon to improve stability.</p><p>To support the dynamic loads of a vertical lift and dual manipulators, the base is constructed from dense aluminum extrusions and houses the high-density components-including the battery, power distribution, and primary compute units-at the lowest point as shown in Figure <ref type="figure" target="#fig_3">4</ref>. This mass concentration lowers the global center of mass, maximizing the static stability margin and minimizing the risk of toppling during acceleration or heavy lifting <ref type="bibr" target="#b1">(Messuri and Klein, 1985)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.2.">Kinematics and Control</head><p>The robot's base frame ℱ 𝑏 is defined at the geometric center. The kinematics mapping from the chassis velocity twist v 𝑏 = [𝑣 𝑥 , 𝑣 𝑦 , 𝜔] 𝑇 to the individual wheel velocity vectors is governed by the coupling matrix 𝐶 ∈ R 8×3 <ref type="bibr" target="#b23">(Aoki et al., 2024)</ref>. Based on our chassis dimensions of half-width 𝑊 = 0.152 m and half-length 𝐿 = 0.106 m, the inverse kinematics relation is derived as:</p><formula xml:id="formula_0">V modules = 𝐶 • v 𝑏 = ⎡ ⎢ ⎢ ⎢ ⎢ ⎢ ⎢ ⎢ ⎢ ⎢ ⎢ ⎣ 1 0 𝑊 1 0 -𝑊 1 0 -𝑊 1 0 𝑊 0 1 𝐿 0 1 𝐿 0 1 -𝐿 0 1 -𝐿 ⎤ ⎥ ⎥ ⎥ ⎥ ⎥ ⎥ ⎥ ⎥ ⎥ ⎥ ⎦ ⎡ ⎣ 𝑣 𝑥 𝑣 𝑦 𝜔 ⎤ ⎦</formula><p>(1)</p><p>The resulting vector V modules contains the Cartesian velocity components for each of the four modules (FL, FR, RR, RL) organized as V modules = [𝑣 𝑥1 , . . . , 𝑣 𝑥4 , 𝑣 𝑦1 , . . . , 𝑣 𝑦4 ] 𝑇 . These are converted to polar coordinates to generate the steering angle 𝜃 𝑖 and drive velocity 𝑣 𝑖 setpoints for the distributed motor controllers:</p><formula xml:id="formula_1">𝜃 𝑖 = atan2(𝑣 𝑖𝑦 , 𝑣 𝑖𝑥 )</formula><p>(2)</p><formula xml:id="formula_2">𝑣 𝑖 = √︁ 𝑣 2 𝑖𝑥 + 𝑣 2 𝑖𝑦 (3)</formula><p>To ensure smooth operation, we implement a "shortest-turn" optimization in the low-level controller. If a target angle 𝜃 𝑡𝑎𝑟𝑔𝑒𝑡 requires a rotation greater than 90 ∘ from the current state, the controller reverses the drive motor direction (𝑣 𝑖 ← -𝑣 𝑖 ) and targets the equivalent opposite angle (𝜃 𝑡𝑎𝑟𝑔𝑒𝑡 ← 𝜃 𝑡𝑎𝑟𝑔𝑒𝑡 + 𝜋). This minimizes steering latency and reduces wear on the azimuth gears <ref type="bibr" target="#b27">(Contributors, 2024)</ref>. Although the drive system is mechanically capable of achieving translational velocities up to 1.5 m/s, we impose a software-defined velocity limit of 0.25 m/s. This cap prioritizes safety during teleoperation and autonomous policy execution, ensuring the system maintains quasi-static stability even when the manipulators are fully extended or handling payloads.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>NMC Battery 24V 20 Ah</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.">Vertical Lift</head><p>To extend the vertical workspace of the robot, YOR integrates a telescopic lift column originally designed for standing desks. We selected this commercial off-the-shelf mechanism for its proven reliability and mechanical rigidity; such actuators are typically validated for over 10, 000 load cycles and are engineered to maintain high stability under heavy offset loads, making them ideal for carrying the bimanual manipulator assembly <ref type="bibr" target="#b8">(Wise et al., 2016)</ref>.</p><p>The lift provides a substantial stroke, capable of adjusting the shoulder height from a minimum of 0.60 m (23.6 inches) to a maximum of 1.24 m (48.8 inches). This wide range enables the robot to pick up objects off of the ground or high shelves, covering most of the relevant vertical workspace in human-centered environments.</p><p>For precise actuation, the lift employs a closed-loop control architecture managed by a dedicated Raspberry Pi Pico microcontroller <ref type="bibr">(Ras, 2023)</ref>. The Pico reads real-time position data from the lift's quadrature encoder and drives the DC motor via a BTS7960 high-current H-bridge <ref type="bibr">(Inf, 2004)</ref>. This feedback loop allows for variable Pulse-Width Modulation (PWM) regulation, enabling accurate height positioning and stable velocity control up to a maximum of 35 mm/s.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4.">Arms</head><p>We build YOR as a bimanual robot that supports two 6-DoF arms and custom grippers as manipulation tools. We choose AgileX PiPER arms due to their low cost (US$2,500) and light weight (4.2 kg). The arms are mounted onto a custom shoulder plate readily available from any online sheet metal service provider. This plate is designed to have arm mounting points at 45 degrees sideways tilt. We choose this shape to balance the forward and downward reach of the arms. The angled shoulders also prevent the elbows of the arms from colliding with each other even if their mounting points are close. Overall this design helps keep the robot footprint small.</p><p>For the end effector on the arms, we design custom grippers with an angular jaw that allows both precise manipulation and large force application. Each gripper uses an iPhone as an off-the-shelf sensor suite.</p><p>As our primary focus is indoor household applications, we design YOR arms to be compliant. For operating around humans, a compliant controller is essential to adapt the manipulator's motion in response to external forces, and to ensure safety during deployment of a learned policy. Therefore, we implement a joint stiffness controller. The typical joint stiffness controller objective is</p><formula xml:id="formula_3">𝜏 𝑔 (𝑞) + 𝐾 𝑝 (𝑞 ref -𝑞) + 𝐾 𝑑 ( qref -q)</formula><p>where 𝑞 is the measured joint positions and 𝑞 ref is the target position set by the upstream controller. The system acts like a spring-damper around the reference position with stiffness coefficient 𝐾 𝑝 and damping coefficient 𝐾 𝑑 . The feedforward torque gravity compensation allows us to set low stiffness gains, resulting in compliant movement. This arm controller runs with two layers. The low-level real time controller runs at 200 Hz. It uses Ruckig <ref type="bibr" target="#b13">(Berscheid and Kröger, 2021)</ref> real time trajectory generation to make sure that the commands obey safety limits. The high-level controller sets targets for the low-level controller to track at lower frequencies. We provide both joint control and task-space control for the arms. In joint control mode, the targets are set directly. In task-space control mode, Mink <ref type="bibr" target="#b52">(Zakka, 2025)</ref> is used to solve inverse kinematics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Applications of YOR</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.">Whole-Body Teleoperation</head><p>To enable imitation learning on our platform, we design an intuitive whole-body teleoperation system that uses Meta Quest 3/3S controllers to control all components of YOR. The pose of the Quest controllers</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Load the dishwasher</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Open dishwasher</head><p>Close dishwasher Move and pickup dish Place dish are calibrated and retargeted to the end-effector (EE) pose of the arms. Instead of retargeting the operator's bending motions to control height, we choose to directly control the lift via sending <ref type="bibr">[up, down]</ref> velocity command with the grip buttons on the controllers. The inverse kinematics task is defined as the relative pose of end-effector with respect to top of the lift. Compared to whole-body retargeting, this design choice eliminates the need for the operator to squat in uncomfortable positions and decouple the height and arm control. To control the base, we use the joysticks on the controllers to command linear and angular velocities. In Figure <ref type="figure" target="#fig_4">5</ref>, we show some examples of tasks YOR is able to complete with this teleoperation system.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Water the plants</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.">Policy Learning</head><p>In this section, we demonstrate YOR's capacity as a platform for bimanual mobile manipulation policy learning. We train YOR on a "recycling" task, throwing away a large cardboard box into a recycle bin. This task requires YOR to pick up the box with both grippers, lift the box up and over the recycle bin, move around an obstacle to approach the bin, and place the box inside. See Figure <ref type="figure" target="#fig_5">6</ref> for visualization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.1.">Data collection</head><p>We collect expert demonstrations with teleoperation at 30Hz and discard any trajectories where the robot loses odometry tracking, yielding a final dataset of 100 trajectories. For visual input, we record 256 × 256 RGB images from two iPhone wrist cameras following the setup in <ref type="bibr" target="#b42">(Etukuru et al., 2025)</ref> and the ZED  2i head camera. For proprioception, we record end-effector poses in the top-of-lift reference frame, lift height, and base odometry from ZED. We set the first frame odometry as the world frame of that whole trajectory. The policy predicts a 19-dimensional action (7D end-effector pose and gripper command per arm, base translation, sin, cos of base yaw and lift position). During preprocessing, we drop static frames from each trajectory.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.2.">Architecture</head><p>We adopt VQ-BeT <ref type="bibr" target="#b33">(Lee et al., 2024)</ref> for policy learning. The wrist and head camera image features are extracted via a shared ResNet-50 encoder trained using self-supervised learning on a diverse set of pickup data; each image feature is then concatenated with the linearly up-projected proprioception data. In total, at each timestep, we have 4 new observation tokens each of which consists of 768 dimension of visual feature and 256 dimension of proprioception, where each wrist contributes an observation token and the head camera image is split into two observation tokens from left/right crop. A transformer decoder then predicts discretized actions and action offsets from a window of past three observations. We refer readers to <ref type="bibr" target="#b33">Lee et al. (2024)</ref> for more architectural details.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.3.">Evaluation</head><p>The onboard Jetson computes and publishes robot pose in real time, and ZED image and wrist camera images are all published via ZMQ <ref type="bibr" target="#b55">(Cui, 2026)</ref> in real time for remote machine inference. We stream the policy action to the Raspberry Pi onboard, which controls both the arms, the lift, and communicates with Jetson through a local network to run base position PID control. We deploy the trained policy for 10 trials as a proof of concept to validate our hardware capabilities.</p><p>Pick Up Lifting Locomotion Total Success Rate 10/10 10/10 9/10 9/10</p><p>The policy is able to learn to grab the box with both grippers, and lift it up to the desired height. The main failure mode was odometry drift due to head camera occlusion. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.">SLAM and Navigation</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.1.">Motivation</head><p>Whole-body mobile manipulation requires accurate base localization within a geometric model of the environment to reach manipulation-relevant poses while avoiding collisions in clutter. Our system therefore couples real-time state estimation with dense mapping and classical planning to provide a reliable, metric backbone for task execution.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.2.">Architecture</head><p>Onboard the robot, we use visual-inertial SLAM <ref type="bibr" target="#b11">(Qin et al., 2018)</ref> to estimate the robot pose as a time-varying rigid transform 𝑇 WB (𝑡) ∈ SE(3). This transform is used for closed-loop control on pose and for map-fusion in a consistent world-frame. Our perception stack is based on the ZED 2i stereo depth camera. Odometry comes from the ZED-SDK <ref type="bibr" target="#b48">(Stereolabs, 2025)</ref>, along with loop closure signals, which are used to compute the final pose of the camera in the world frame. RGB and stereo depth observations are converted to point clouds and integrated into a voxel map in the world frame, with voxel filtering and outlier rejection at 5 Hz. For navigation, we employ histogram based floor detection to find the lowest height mode in the voxel data, then project the rest of the voxels onto a 2D grid. We derive the global map after sufficient voxel inflation to account for robot size and additional voxel inflation to add higher cost near obstacles. The live point cloud is down-sampled, transformed to the world frame and similarly projected to a local 2D cost map. This is integrated with the global cost map at 10 Hz by linearly interpolating the cells. Mapping updates are gated by pose-quality checks to prevent map corruption during tracking degradation. We plan collision-free paths using a weighted A* planner and plan again if new obstacles block the current path. The resulting waypoint sequence is sent to the base controller which uses Pure Pursuit <ref type="bibr">(Coulter, 1992b)</ref> algorithm to track them. A PID controller is used to track a look-ahead point along this path at 50 Hz with feedback from the estimated base pose. We also similarly provide a non-planner based absolute and delta position controller for policy based control. State estimation, mapping, planning, and control modules are run in separate processes and communicate via a lightweight RPC solution <ref type="bibr" target="#b55">(Cui, 2026)</ref>. This design provides real-time performance and modularity for customization. We demonstrate the whole-body control, repeatability, accuracy, stability, real-time planning and navigation of the SLAM system using tally-mark, whole-body coordination and dynamic obstacle avoidance demos.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.3.">Experiments</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>(A) (B) (C)</head><p>Figure <ref type="figure">10</ref>: To display YOR's precision in mobile manipulation, the robot moves in a loop and make marks at the same position on a small paper in (A). In (B) we show the target loop in the robot's internal representation, and in (C) we display the resultant marks on the paper. Next to the marks is a US nickel (radius 10.6 mm) for scale.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Odometry and loop closure</head><p>We demonstrate YOR's odometry accuracy and loop-closure performance via the tally-mark demo. As illustrated in Fig. <ref type="figure">10</ref>, YOR marked a reference point on a white paper and returned to mark the sheet once every loop, while traversing the environment. After ten loops, the return marks were within a radius of 12 mm from the initial mark, which is within the positional accuracy (50 mm) of our SLAM pipeline.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Whole-body coordination</head><p>The whole-body coordination demo shows the accuracy of the base pose estimation and the end effector task space control coupled together during diverse motions. To illustrate this, YOR held a ball in its gripper while the mobile base executed a lateral translation, with the arm controller compensating for the base movement. As shown in the Fig. <ref type="figure" target="#fig_8">9</ref>, the end-effector deviated by 16 mm, showcasing minimal tracking error of the whole-body control system.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Dynamic obstacle avoidance</head><p>In the dynamic obstacle avoidance demo, YOR navigates toward a fixed goal while a walking human interrupts the planned route. Upon detection, the planning algorithm updates the voxel occupancy and triggers a replan, producing a collision-free path around the human within one </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Conclusion</head><p>In this work, we introduce YOR, an open source, affordable bimanual mobile manipulator. While in its current form YOR provides many attractive capacities for researchers in mobile manipulation, there are further research in the future that will make this platform even stronger. One straightforward improvement would be to mount affordable 7-DOF arms <ref type="bibr" target="#b41">(Enactic AI, 2025)</ref> instead of 6-DOF ones to decrease the possibility of singularities while teleoperating or deploying policies on YOR. Similarly, while we have integrated capable SLAM systems onto YOR, state-of-the-art in semantic navigation <ref type="bibr" target="#b47">(Liu et al., 2025)</ref> would make it even more capable in performing zero-shot mobile manipulation in the real world.</p><p>Finally, further research into whole-body controllers and perceptive loco-manipulation will also open up the possibility of many new dynamic and dexterous tasks that may be difficult with our current setup.</p><p>smoothing to the commanded EE pose: an exponential low-pass filter on translation with time constant 𝜏 trans = 0.20 s and SLERP-based smoothing on orientation with 𝜏 rot = 0.30 s, both using the blending coefficient 𝛼 = 1 -exp(-∆𝑡/𝜏 ).</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Comparison of different mobile manipulators with YOR: Tidybot++<ref type="bibr" target="#b36">(Wu et al., 2024)</ref> relies on a single arm with no vertical control. XLeRobot<ref type="bibr" target="#b51">(Wang et al., 2025)</ref> is impressively low cost but its payload and reach limits its use cases. Due to its large footprint and non-holonomic base, Mobile ALOHA(Fu et al., 2024b)  has limited navigation capability. RBY1-A (Rainbow Robotics, 2024) and similar options on the market have many similar features to YOR but come with almost an order of magnitude higher price tag.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure3: YOR is designed using off-the-shelf components in a modular configuration, with a total bill-of-materials cost of US$9,250, the majority coming from the robot arms.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Internal layout of the mobile base following a "heavy base" philosophy. High-density components (battery, compute, and power distribution) are mounted centrally at the lowest elevation to lower the center of mass, flanked by four corner-mounted swerve modules.</figDesc><graphic coords="7,179.90,366.07,254.75,143.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: A teleoperated YOR completes daily tasks in home environments with its extended workspace and bimanual arms. In these tasks, we teleoperate YOR to open a dishwasher and use its mobile base to load and close it. YOR can also use the lift to lower its height and water plants or pick up a basket from the ground.</figDesc><graphic coords="9,174.09,247.36,230.58,129.70" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: We evaluate YOR's bimanual whole-body locomanipulation capability through an imitation learning policy. In this task, YOR can autonomously pick up a box, navigate around an obstacle and drop it in the recycling bin.</figDesc><graphic coords="10,60.38,72.63,490.69,111.06" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: YOR's mapping pipeline combines the point clouds and visual-intertial odometry provided by the head-mounted ZED camera.</figDesc><graphic coords="11,85.79,215.58,70.00,51.93" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Using the static map and current observations, YOR can dynamically plan a path, avoid obstacles and accomplish indoor navigation.</figDesc><graphic coords="12,62.36,85.04,487.24,125.53" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Demonstration of whole-body coordination. The arm controller actively compensates for base motion in real-time, effectively locking the end-effector's pose in the world frame while YOR translates and rotates around it.</figDesc><graphic coords="12,184.18,367.98,243.64,228.86" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Real-time obstacle avoidance in YOR's SLAM systems. When YOR detects a novel obstacle (in this case, a walking human), it plans a path around them within a second to reach the goal point without collision. On the top, we show the internal voxel map representation, where Green shows the planned path and red shows detected obstacles. The bottom row shows third-person view of the environment and the plan.</figDesc><graphic coords="14,432.03,158.93,116.29,65.29" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head></head><label></label><figDesc>costing almost half a million US$, and a decade later Hello Robot Stretch (Kemp et al., 2022) costing US$20k. With the advent of learning-based control and cheap,</figDesc><table /></figure>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Appendix</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.1. Bill of materials</head><p>YOR is made of modular components that are available off-the-shelf on the market. Table <ref type="table">1</ref> shows a breakdown of each component necessary to build YOR and their current price. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.2. Policy learning hyperparameters</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3.1. Base Position Control PID Tuning</head><p>We tune the base position controller gains to ensure convergence within the specified position and yaw tolerances. Tuning proceeds by first applying constant translational and rotational setpoints and adjusting the proportional gains to achieve a desirable convergence rate. We then increase the derivative gains to suppress overshoot and finally adjust the integral gains to compensate for near-setpoint ground friction and residual steady-state error.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3.2. Velocity Filtering</head><p>The base controller smooths velocity commands with an exponential moving average (EMA) filter:</p><p>where v cmd (𝑡) is the commanded velocity, v filt (𝑡 -1) the previous filtered value, and 𝛼 = 0.2.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3.3. Floor Filtering</head><p>The floor height is estimated by computing the 5th percentile of the vertical point-cloud coordinates, averaging all points within a 0.1 m band above this percentile, and temporally smoothing the result with an EMA.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3.4. Odometry and Loop-Closure Experiment</head><p>The tally-mark demonstration validates YOR's loop-closure capability. A ZED-camera SLAM pipeline estimates the base pose and builds a static occupancy grid for A* path planning. Planned paths are streamed to the robot via RPC with waypoint spacing of roughly 2× the grid cell size (0.05-0.15 m); planning terminates once the robot is within 0.02 m of the goal.</p><p>Each closed-loop tally follows the route HOME → P1 → P2 → P3 → HOME. Upon return, a two-stage docking procedure is executed: an absolute move_to(𝑥, 𝑧, 𝜓) with 2 cm translational tolerance, followed by in-place heading alignment to the saved HOME direction with 0.04 rad tolerance. End-of-loop drift is reported as (∆𝑥, ∆𝑧) and yaw error, where 𝜓 = 0 faces +𝑍 and 𝜓 = 𝜋/2 faces +𝑋. At HOME the arm is commanded to a fixed mark configuration.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3.5. Whole-body coordination experiment</head><p>We evaluate whole-body coordination by keeping the end-effector (EE) fixed in the world frame while the mobile base moves. The system consists of two concurrent processes: base localization and whole-body control. The localization node streams the base pose [𝑞 𝑥 , 𝑞 𝑦 , 𝑞 𝑧 , 𝑞 𝑤 , 𝑥, 𝑦, 𝑧] with a timestamp at 120 fps. On the control side, a non-blocking receiver thread caches the most recent pose, and the main control loop runs at 120 Hz.</p><p>At the start of each trial we record the initial world-to-base transform from the localizer and the initial base-to-EE transform from the robot interface; together these define the EE's initial world-frame pose. At every control step the commanded EE pose is updated so that this world-frame pose remains invariant under base motion-that is, translation and yaw changes reported by the base localization are compensated by the arm. To reduce visible jitter while preserving responsiveness, we apply lightweight </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">A formal basis for the heuristic determination of minimum cost paths</title>
+		<author>
+			<persName><forename type="first">Peter</forename><forename type="middle">E</forename><surname>Hart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nils</forename><forename type="middle">J</forename><surname>Nilsson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bertram</forename><surname>Raphael</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSSC.1968.300136</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Systems Science and Cybernetics</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="100" to="107" />
+			<date type="published" when="1968">1968</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Automatic body equilibrium for a legged robot</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Anthony</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Charles</forename><forename type="middle">A</forename><surname>Messuri</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="50" to="65" />
+			<date type="published" when="1985">1985</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">High resolution maps from wide angle sonar</title>
+		<author>
+			<persName><forename type="first">Hans</forename><surname>Moravec</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">E</forename><surname>Elfes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of (ICRA) International Conference on Robotics and Automation</title>
+		<meeting>(ICRA) International Conference on Robotics and Automation</meeting>
+		<imprint>
+			<date type="published" when="1985-03">March 1985</date>
+			<biblScope unit="page" from="116" to="121" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Implementation of the pure pursuit path tracking algorithm</title>
+		<author>
+			<persName><forename type="first">R</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Craig</forename><surname>Coulter</surname></persName>
+		</author>
+		<idno>CMU-RI- TR-92-01</idno>
+		<imprint>
+			<date type="published" when="1992-01">January 1992</date>
+			<pubPlace>Pittsburgh, PA</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Implementation of the pure pursuit path tracking algorithm</title>
+		<author>
+			<persName><forename type="first">Craig</forename><surname>Coulter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">BTS7960 High Current PN Half Bridge Datasheet. Infineon Technologies</title>
+		<imprint>
+			<date type="published" when="1992">1992. 2004</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Technical report</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Theory of Ground Vehicles</title>
+		<author>
+			<persName><forename type="first">Jo</forename><surname>Yung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wong</forename></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+			<publisher>John Wiley &amp; Sons</publisher>
+		</imprint>
+	</monogr>
+	<note>4th edition</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Roland</forename><surname>Siegwart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Davide</forename><surname>Illah R Nourbakhsh</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Scaramuzza</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011">2011</date>
+			<publisher>MIT press</publisher>
+		</imprint>
+	</monogr>
+	<note>Introduction to Autonomous Mobile Robots. 2nd edition</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Pr2 user manual</title>
+		<author>
+			<persName><forename type="first">Willow</forename><surname>Garage</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Fetch and freight: Standard platforms for service robot applications</title>
+		<author>
+			<persName><forename type="first">Melonee</forename><surname>Wise</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Ferguson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Derek</forename><surname>King</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Diehr</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Dymesich</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Workshop on Autonomous Mobile Service Robots</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Intel realsense stereoscopic depth cameras</title>
+		<author>
+			<persName><forename type="first">Leonid</forename><surname>Keselman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Iselin Woodfill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anders</forename><surname>Grunnet-Jepsen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Achintya</forename><surname>Bhowmik</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/1705.05548" />
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">G</forename><surname>Benjamin</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Katz</surname></persName>
+		</author>
+		<ptr target="http://hdl.handle.net/1721.1/118671" />
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+		<respStmt>
+			<orgName>Massachusetts Institute of Technology</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">PhD thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Vins-mono: A robust and versatile monocular visual-inertial state estimator</title>
+		<author>
+			<persName><forename type="first">Peiliang</forename><surname>Tong Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shaojie</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Shen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE transactions on robotics</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="1004" to="1020" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Openvins: A research platform for visual-inertial estimation</title>
+		<author>
+			<persName><forename type="first">Patrick</forename><surname>Geneva</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Eckenhoff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Woosik</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yulin</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guoquan</forename><surname>Huang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="4666" to="4672" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Jerk-limited real-time trajectory generation with arbitrary target states</title>
+		<author>
+			<persName><forename type="first">Lars</forename><surname>Berscheid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Torsten</forename><surname>Kröger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="volume">XVII</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">The design of stretch: A compact, lightweight mobile manipulator for indoor human environments</title>
+		<author>
+			<persName><forename type="first">Aaron</forename><surname>Charles C Kemp</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Henry</forename><forename type="middle">M</forename><surname>Edsinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Blaine</forename><surname>Clever</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Matulevich</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="3150" to="3157" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Low-cost exoskeletons for learning whole-arm manipulation in the wild</title>
+		<author>
+			<persName><forename type="first">Hongjie</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Hao-Shu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jieji</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruo</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weiming</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cewu</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Lu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.14975</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<author>
+			<persName><forename type="first">Raspberry</forename><surname>Pi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pico</forename></persName>
+		</author>
+		<ptr target="https://www.raspberrypi.com/products/raspberry-pi-pico/" />
+		<title level="m">Raspberry Pi Ltd</title>
+		<imprint>
+			<date type="published" when="2023-01-30">2023. January 30, 2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<ptr target="https://www.revrobotics.com/rev-21-3005/" />
+		<title level="m">MAXSwerve Module. REV Robotics</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="2026" to="2027" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<author>
+			<persName><forename type="first">Nur</forename><surname>Muhammad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mahi</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anant</forename><surname>Rai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haritheja</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiqian</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ishan</forename><surname>Misra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumith</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.16098</idno>
+		<title level="m">On bringing robots home</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Tidybot: Personalized robot assistance with large language models</title>
+		<author>
+			<persName><forename type="first">Jimmy</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rika</forename><surname>Antonova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adam</forename><surname>Kan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marion</forename><surname>Lepert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeannette</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Szymon</forename><surname>Rusinkiewicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Funkhouser</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/s10514-023-10139-z</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Autonomous Robots</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="1087" to="1102" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Gello: A general, low-cost, and intuitive teleoperation framework for robot manipulators</title>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yide</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhongke</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xingyu</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.13037</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<author>
+			<persName><forename type="first">Sriram</forename><surname>Yenamandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arun</forename><surname>Ramachandran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karmesh</forename><surname>Yadav</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Austin</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mukul</forename><surname>Khanna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Theophile</forename><surname>Gervet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tsung-Yen</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vidhi</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><forename type="middle">William</forename><surname>Clegg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Turner</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2306.11565</idno>
+		<title level="m">Openvocabulary mobile manipulation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.13705</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Switching sampling space of model predictive path-integral controller to balance efficiency and safety in 4wids vehicle navigation</title>
+		<author>
+			<persName><forename type="first">Mizuho</forename><surname>Aoki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kohei</forename><surname>Honda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hiroyuki</forename><surname>Okuda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tatsuya</forename><surname>Suzuki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="3196" to="3203" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Demonstrating mobile manipulation in the wild: A metrics-driven approach</title>
+		<author>
+			<persName><forename type="first">Max</forename><surname>Bajracharya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">James</forename><surname>Borders</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Helmick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lukas</forename><surname>Kaul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Kruse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Leichty</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeremy</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carolyn</forename><surname>Matl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Frank</forename><surname>Michel</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.01474</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Open-television: Teleoperation with immersive active visual feedback</title>
+		<author>
+			<persName><forename type="first">Xuxin</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jialong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shiqi</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ge</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2407.01512" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenjia</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuer</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyuan</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.10329</idno>
+		<title level="m">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Standard algorithm for shortest-path azimuth optimization</title>
+		<author>
+			<persName><forename type="first">Wpilib</forename><surname>Contributors</surname></persName>
+		</author>
+		<ptr target="https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html" />
+	</analytic>
+	<monogr>
+		<title level="m">Swerve drive kinematics and odometry</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.02117</idno>
+		<title level="m">Mobile aloha: Learning bimanual mobile manipulation with low-cost whole-body teleoperation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Mobile aloha: Learning bimanual mobile manipulation with low-cost whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.02117</idno>
+		<ptr target="https://arxiv.org/abs/2401.02117" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">Umi on legs: Making manipulation policies mobile with manipulation-centric whole-body controllers</title>
+		<author>
+			<persName><forename type="first">Huy</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yihuai</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2407.10353" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<author>
+			<persName><forename type="first">Tairan</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhengyi</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xialin</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenli</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chong</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weinan</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kris</forename><surname>Kitani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Changliu</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guanya</forename><surname>Shi</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2406.08858</idno>
+		<title level="m">Omnih2o: Universal and dexterous human-to-humanoid whole-body teleoperation and learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<author>
+			<persName><forename type="first">Aadhithya</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhuoran</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yinlong</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Irmak</forename><surname>Guzey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siddhant</forename><surname>Haldar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumith</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.07870</idno>
+		<title level="m">Open teach: A versatile teleoperation system for robotic manipulation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<author>
+			<persName><forename type="first">Seungjae</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yibin</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haritheja</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jin</forename><surname>Kim</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.03181</idno>
+		<title level="m">Nur Muhammad Mahi Shafiullah, and Lerrel Pinto. Behavior generation with latent actions</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<author>
+			<persName><forename type="first">Peiqi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yaswanth</forename><surname>Orru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chris</forename><surname>Paxton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nur</forename><surname>Muhammad Mahi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.12202</idno>
+		<title level="m">Okrobot: What really matters in integrating open-knowledge models for robotics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<author>
+			<persName><forename type="first">Rainbow</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.rainbow-robotics.com" />
+	</analytic>
+	<monogr>
+		<title level="m">Rb-y1: Mobile manipulator robot</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">Tidybot++: An open-source holonomic mobile manipulator for robot learning</title>
+		<author>
+			<persName><forename type="first">Jimmy</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">William</forename><surname>Chong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Holmberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aaditya</forename><surname>Prasad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yihuai</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Oussama</forename><surname>Khatib</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Szymon</forename><surname>Rusinkiewicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeannette</forename><surname>Bohg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2412.10447</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Harmonic mobile manipulation</title>
+		<author>
+			<persName><forename type="first">Ruihan</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yejin</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rose</forename><surname>Hendrix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aniruddha</forename><surname>Kembhavi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kiana</forename><surname>Ehsani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="3658" to="3665" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<author>
+			<persName><forename type="first">Manav</forename><surname>Chandaka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bhargav</forename><surname>Chandaka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pepijn</forename><surname>Kooijmans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gloria</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Advait</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Lekiwi</surname></persName>
+		</author>
+		<ptr target="https://github.com/SIGRobotics-UIUC/LeKiwi" />
+		<title level="m">Low-cost mobile manipulator</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main">Dexmate: Ai-powered robotic hands and dexterous manipulation systems</title>
+		<ptr target="https://www.dexmate.com.CommercialPlatform" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<publisher>DexMate Inc</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Bunny-visionpro: Real-time bimanual dexterous teleoperation for imitation learning</title>
+		<author>
+			<persName><forename type="first">Runyu</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuzhe</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiyue</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chengzhe</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shiqi</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruihan</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaojuan</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="12248" to="12255" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m" type="main">A fully open-source humanoid arm for physical ai research</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">I</forename><surname>Enactic</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Openarm</surname></persName>
+		</author>
+		<ptr target="https://github.com/enactic/openarm" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="2026" to="2027" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Robot utility models: General policies for zero-shot deployment in new environments</title>
+		<author>
+			<persName><forename type="first">Haritheja</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Norihito</forename><surname>Naka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zijin</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seungjae</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julian</forename><surname>Mehu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aaron</forename><surname>Edsinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chris</forename><surname>Paxton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumith</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Pinto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nur</forename><surname>Muhammad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mahi</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA55743.2025.11127857</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2025 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="8275" to="8283" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<title level="m" type="main">Umi-on-air: Embodiment-aware guidance for embodiment-agnostic visuomotor policies</title>
+		<author>
+			<persName><forename type="first">Harsh</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaofeng</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huy</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuer</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Muqing</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dongjae</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sebastian</forename><surname>Scherer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guanya</forename><surname>Shi</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2510.02614" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main">a vision-language-action model with open-world generalization</title>
+		<author>
+			<persName><forename type="first">Physical</forename><surname>Intelligence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noah</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">James</forename><surname>Darpinian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karan</forename><surname>Dhabalia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danny</forename><surname>Driess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adnan</forename><surname>Esmail</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Equi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niccolo</forename><surname>Fusai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuel</forename><forename type="middle">Y</forename><surname>Galliker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dibya</forename><surname>Ghosh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lachy</forename><surname>Groom</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karol</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brian</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Szymon</forename><surname>Jakubczak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tim</forename><surname>Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liyiming</forename><surname>Ke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Devin</forename><surname>Leblanc</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adrian</forename><surname>Li-Bell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohith</forename><surname>Mothukuri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Suraj</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Pertscih</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Allen</forename><forename type="middle">Z</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lucy</forename><forename type="middle">Xiaoyang</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Laura</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jost</forename><surname>Tobias Springenberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kyle</forename><surname>Stachowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">James</forename><surname>Tanner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quan</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Homer</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anna</forename><surname>Walling</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haohuan</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lili</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ury</forename><surname>Zhilinsky</surname></persName>
+		</author>
+		<idno>𝜋 0.5</idno>
+		<ptr target="https://arxiv.org/abs/2504.16054" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<author>
+			<persName><forename type="first">Yunfan</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruohan</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Josiah</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yanjie</forename><surname>Ze</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hang</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cem</forename><surname>Gokmen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiajun</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2503.05652</idno>
+		<title level="m">Behavior robot suite: Streamlining real-world whole-body manipulation for everyday household activities</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<monogr>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Korovko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dmitry</forename><surname>Slepichev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Efitorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aigul</forename><surname>Dzhumamuratova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Viktor</forename><surname>Kuznetsov</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2506.04359</idno>
+		<title level="m">Hesam Rabeti, and Joydeep Biswas. cuvslam: Cuda accelerated visual odometry</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Dynamem: Online dynamic spatio-semantic memory for open world mobile manipulation</title>
+		<author>
+			<persName><forename type="first">Peiqi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhanqiu</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohit</forename><surname>Warke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumith</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chris</forename><surname>Paxton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nur</forename><surname>Muhammad Mahi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pinto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2025 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="13346" to="13355" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Zed sdk: Spatial perception framework</title>
+		<author>
+			<persName><surname>Stereolabs</surname></persName>
+		</author>
+		<ptr target="https://github.com/stereolabs/zed-sdk" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="2025" to="2037" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title level="m" type="main">Act-1: A robot foundation model trained on zero robot data</title>
+		<author>
+			<persName><forename type="first">Sunday</forename><surname>Team</surname></persName>
+		</author>
+		<ptr target="https://www.sunday.ai/journal/no-robot-data" />
+		<imprint>
+			<date type="published" when="2025-11">November 2025</date>
+			<biblScope unit="page" from="2026" to="2027" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Gen-0: Embodied foundation models that scale with physical interaction</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">I</forename><surname>Generalist</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Team</surname></persName>
+		</author>
+		<ptr target="https://generalistai.com/blog/nov-04-2025-GEN-0" />
+	</analytic>
+	<monogr>
+		<title level="j">Generalist AI Blog</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<monogr>
+		<title level="m" type="main">Xlerobot: A practical low-cost household dual-arm mobile robot design for general manipulation</title>
+		<author>
+			<persName><forename type="first">Gaotian</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhuoyi</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huang</forename><surname>Yiyang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liu</forename><surname>Yihao</surname></persName>
+		</author>
+		<ptr target="https://github.com/Vector-Wangel/XLeRobot" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<monogr>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Zakka</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Mink</surname></persName>
+		</author>
+		<ptr target="https://github.com/kevinzakka/mink" />
+		<title level="m">Python inverse kinematics based on MuJoCo</title>
+		<imprint>
+			<date type="published" when="2025-12">December 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<monogr>
+		<author>
+			<persName><forename type="first">Yanjie</forename><surname>Ze</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siheng</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weizhuo</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Angjoo</forename><surname>Kanazawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rocky</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guanya</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiajun</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karen</forename><surname>Liu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2511.02832</idno>
+		<title level="m">Twist2: Scalable, portable, and holistic humanoid data collection system</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<author>
+			<persName><forename type="first">Hojung</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yifan</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuer</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seongheon</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Austin</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaomeng</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mark</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2601.09988" />
+		<title level="m">-the-wild compliant manipulation with umi-ft</title>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<author>
+			<persName><forename type="first">Jeff</forename><surname>Cui</surname></persName>
+		</author>
+		<idno>2025-10-22T03:40</idno>
+		<ptr target="https://github.com/jeffacce/commlink.original-date" />
+		<title level="m">jeffacce/commlink</title>
+		<imprint>
+			<date type="published" when="2026-01">January 2026</date>
+			<biblScope unit="page">31</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

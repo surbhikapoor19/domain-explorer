@@ -1,0 +1,1407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">ShapeForce: Low-Cost Soft Robotic Wrist for Contact-Rich Manipulation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-12-11">11 Dec 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Jinxuan</forename><surname>Zhu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zihao</forename><surname>Yan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yangyu</forename><surname>Xiao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jingxiang</forename><surname>Guo</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chenrui</forename><surname>Tie</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xinyi</forename><surname>Cao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yuhang</forename><surname>Zheng</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<author role="corresp">
+							<persName><forename type="first">Lin</forename><surname>Shao</surname></persName>
+							<email>linshao@nus.edu.sg</email>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+							<affiliation key="aff0">
+								<orgName type="department">School of Computing</orgName>
+								<orgName type="institution">National University of Singapore</orgName>
+								<address>
+									<addrLine>Singapore. 2 RoboScience</addrLine>
+									<settlement>Shenzhen</settlement>
+									<region>China</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">ShapeForce: Low-Cost Soft Robotic Wrist for Contact-Rich Manipulation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-12-11">11 Dec 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">8C6A6CCA798A28F6A217A37EEDF33CFF</idno>
+					<idno type="arXiv">arXiv:2511.19955v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Contact feedback is essential for contact-rich robotic manipulation, as it allows the robot to detect subtle interaction changes and adjust its actions accordingly. Sixaxis force-torque sensors are commonly used to obtain contact feedback, but their high cost and fragility have discouraged many researchers from adopting them in contact-rich tasks.</p><p>To offer a more cost-efficient and easy-accessible source of contact feedback, we present ShapeForce, a low-cost, plugand-play soft wrist that provides force-like signals for contactrich robotic manipulation. Inspired by how humans rely on relative force changes in contact rather than precise force magnitudes, ShapeForce converts external force and torque into measurable deformations of its compliant core, which are then estimated via marker-based pose tracking and converted into force-like signals. Our design eliminates the need for calibration or specialized electronics to obtain exact values, and instead focuses on capturing force and torque changes sufficient for enabling contact-rich manipulation. Extensive experiments across diverse contact-rich tasks and manipulation policies demonstrate that ShapeForce delivers performance comparable to six-axis force-torque sensors at an extremely low cost. More details of this project can be found at our project page: <ref type="url" target="https://shapeforce.github.io/">https://shapeforce.github.io/</ref>.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Contact-rich manipulation is crucial for moving robots beyond simple pick-and-place capabilities toward performing real-world, skillful tasks. Tasks such as peg insertion, assembly, and screw tightening often require detecting subtle interaction transitions, such as whether a peg has aligned with a hole or whether a screw has been fully tightened. In these scenarios, visual perception alone is insufficient for monitoring task progress, verifying success, or perceiving occluded events. In contrast, contact feedback provides a complementary sensing modality, allowing the robot to infer interaction states and decide when to adapt its action policies.</p><p>Traditionally, contact sensing has been achieved using dedicated six-axis force-torque (FT) sensors <ref type="bibr" target="#b0">[1]</ref>- <ref type="bibr" target="#b2">[3]</ref>. These devices rely on rigid mechanical structures with strain gauges or piezoelectric elements to deliver high-precision force and torque signals. However, they are typically priced in the thousands of U.S. dollars and are prone to damage under intensive contact forces, further increasing maintenance and replacement costs. These limitations highlight the need for a cost-effective sensing solution that can provide reliable contact feedback and support contact-rich manipulation tasks. Fig. <ref type="figure">1</ref>: ShapeForce: a low-cost, plug-and-play sensing system that provides force-like signals, enabling contact-rich tasks with comparable performance of force-torque sensors.</p><p>Several prior works <ref type="bibr" target="#b3">[4]</ref>- <ref type="bibr" target="#b11">[12]</ref> have explored alternative approaches to low-cost contact-modality sensing. However, they remain difficult to widely reproduce and apply in contact-rich tasks for two main reasons: (1) they require specialized electrical components <ref type="bibr" target="#b3">[4]</ref>- <ref type="bibr" target="#b7">[8]</ref>; and (2) they rely on force-torque sensors for data collection and calibration <ref type="bibr" target="#b8">[9]</ref>- <ref type="bibr" target="#b11">[12]</ref>. In both cases, these requirements mainly serve to obtain precise ground-truth force and torque measurements, which creates a clear conflict between the need for accurate sensing and the goal of low-cost and widely reproducible fabrication.</p><p>Taking inspiration from how humans perform contactrich tasks, we note that when inserting a key into a lock or tightening a bottle cap, humans rarely access the exact numerical value of the applied force and torque. Instead, we rely on perceiving relative changes in force and torque to detect key interaction events and adjust our actions at the right moment. This observation suggests that precise groundtruth measurement is not strictly necessary for contact-rich manipulation, as long as the system can capture reliable trends and relative changes in interaction forces. This insight provides a way to resolve the conflict between accuracy and simplicity: by focusing on relative force and torque changes rather than exact force-torque values, we can remove the dependence on expensive force-torque sensors for calibration and specialized electronics for measurement, enabling a design that is low cost, easy to fabricate, and widely reproducible, while still delivering reliable contact feedback.</p><p>Guided by this idea, we present ShapeForce, a low-cost, plug-and-play soft wrist that converts external forces and torques into measurable deformations of its compliant core. These deformations are subsequently captured by a wristmounted RGB camera and transformed into six-dimensional force-like signals via marker-based pose tracking. Our design removes the need for expensive force-torque sensors or specialized electronics, instead relying only on a 3Dprinted material and a wrist-mounted RGB camera commonly available in fine-grained robotic manipulation setups. This makes ShapeForce extremely easy to fabricate, deploy, and integrate into existing systems, while still preserving the contact information necessary to detect contact events.</p><p>We evaluate ShapeForce on a diverse suite of contactrich tasks, including peg insertion, USB insertion, bottle cap tightening, toy desk assembly, whiteboard wiping, and maze exploration. We integrate it with classical algorithms for contact-rich tasks, including search routines (e.g., holefinding) and force-control strategies, collectively denoted as search-and-control policy, as well as learning-based policy. Across all tasks and policy settings, ShapeForce consistently improves task success compared to baselines without contact feedback and matches the performance of systems using force-torque sensors, while offering significantly lower fabrication cost and a simple, reproducible design.</p><p>Our key contributions are as follows:</p><p>• We present ShapeForce, a low-cost, plug-and-play soft robotic wrist that captures its proprioceptive deformation and converts it into force-like signals to support contact-rich manipulation tasks. • Inspired by human perception, we resolve the accuracysimplicity trade-off by providing a task-effective force representation based on relative changes, further reducing the reproduction and deployment burden. • We integrate our sensing system with both classical search-and-control and learning-based policies, and show experimentally that it consistently improves task success across diverse contact-rich scenarios, demonstrating the effectiveness of our force-like signals.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK A. Mechanical Design of Robotic Wrists</head><p>The human wrist enables highly dexterous manipulation, inspiring numerous robotic wrist designs. Prior works <ref type="bibr" target="#b12">[13]</ref>- <ref type="bibr" target="#b16">[17]</ref> have explored compact and variable-stiffness architectures to expand manipulator workspace, improve flexibility, and facilitate manipulation in constrained environments. While these actively actuated designs provide precise and stable control, they often increase system complexity, reduce robustness under collision, and raise manufacturing costs.</p><p>To mitigate these drawbacks, several studies <ref type="bibr" target="#b17">[18]</ref>- <ref type="bibr" target="#b20">[21]</ref> have investigated passively compliant wrists to reduce cost while enhancing flexibility. The main challenge of passive compliance lies in balancing flexibility with positional precision. Recent works, such as BiFlex <ref type="bibr" target="#b17">[18]</ref>, leverage controlled buckling <ref type="bibr" target="#b21">[22]</ref> to achieve bimodal stiffness, inspiring us to tune design parameters to balance compliance and stability.</p><p>Unlike these prior efforts, our approach not only exploits passive compliance but also leverages deformation as a sensing modality to estimate external forces and torques, enabling a contact-aware policy for contact-rich manipulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Vision-based Deformation Perception</head><p>Vision-based Deformation Perception (VBDeformP) is a perception paradigm that leverages visual sensing to estimate the deformation of objects or structures, which are subsequently used for force sensing <ref type="bibr" target="#b8">[9]</ref>, <ref type="bibr" target="#b11">[12]</ref>, <ref type="bibr" target="#b22">[23]</ref>, <ref type="bibr" target="#b23">[24]</ref>, reconstruction <ref type="bibr" target="#b10">[11]</ref>, <ref type="bibr" target="#b24">[25]</ref>, and tactile perception <ref type="bibr" target="#b9">[10]</ref>, <ref type="bibr" target="#b25">[26]</ref>. These deformable structures are usually made of thermoplastic polyurethane (TPU) and can be manufactured by 3D printing, providing a low-cost perceptual approach.</p><p>A major challenge lies in representing the deformation of a soft body, which theoretically has infinite degrees of freedom. Prior works address this by using fiducial markers <ref type="bibr" target="#b26">[27]</ref> or segmentation models such as SAM <ref type="bibr" target="#b23">[24]</ref> to extract features, followed by regression models trained with paired forcetorque data for deformation-to-force mapping. In contrast, we constrain deformation using a hard-soft-hard sandwichlike structure and encode it as the relative pose of two rigid ends, which is subsequently turned into single-marker pose tracking. The structural design enables a easier deformation estimation and benefits the deformation as representation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Reproducible and Accessible Sensor Designs</head><p>Several prior works propose reproducible and accessible contact-sensing solutions through different mechanisms. eFlesh <ref type="bibr" target="#b5">[6]</ref> combines parameterized cut-cell microstructures with off-the-shelf Hall effect sensors to build a highly customizable magnetic tactile sensor. Vision-based tactile sensors such as DIGIT <ref type="bibr" target="#b27">[28]</ref> use a compact camera and a transparent elastomer to visually capture surface deformations. Building on this foundational idea, ReSkin <ref type="bibr" target="#b28">[29]</ref>, AnySkin <ref type="bibr" target="#b29">[30]</ref>, and the TacTip family <ref type="bibr" target="#b30">[31]</ref> have further expanded the capabilities of vision-based tactile sensing.</p><p>However, most of these methods focus on recovering absolute force values or detailed tactile signals, which typically require calibration with ground-truth data or additional specialized electronics. In contrast, our design can be fabricated with a standard laboratory 3D printer with easyaccessible materials and uses only a wrist-mounted RGB camera to perceive, a setup that is already common in robotic manipulation. This simple and reproducible design lowers the fabrication and deployment barrier and increases its potential for adoption in both research and real-world applications.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. METHODOLOGY</head><p>Our methodology consists of three components. We first present the mechanical design and fabrication, focusing on how the compliant core achieves desired deformation behavior (Sec. III-A). We then describe capturing deformation via marker-based pose tracking and converting it into forcelike signals (Sec. III-B). Finally, we show how these signals are integrated into search-and-control policies and learningbased policies to enhance contact-rich tasks (Sec. III-C). </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Mechanism Design and Fabrication</head><p>We followed two key principles for design and fabrication. First, the sensor is designed to provide a high-quality representation of external force and torque with sufficient sensitivity, while maintaining stability and precision under dynamic motion. Second, the system should be low-cost and simple to fabricate using easy-accessible materials, and also easy to assemble. Based on these two principles, the detailed mechanism design and fabrication process are as follows:</p><p>1) Mechanism Design: The mechanism design is illustrated in the exploded view in Fig. <ref type="figure" target="#fig_0">2A(i)</ref>. ShapeForce consists of two main components: (1) a central compliant core (blue) that converts external forces and torques into measurable deformations, and (2) rigid connectors (white) that both link the core to the robot and constrain its deformation.</p><p>The compliant core is the centerpiece of our system, designed to translate external wrenches into measurable proprioceptive deformation. In typical contact-rich manipulation with a wrist-mounted gripper, the dominant interaction wrench components are the axial force F z (e.g., during insertion or pressing) and the torsional moment T z (e.g., during screwing or twisting). External forces and torques along other directions can often be transformed through suitable robotic arm pose adjustments into equivalent effects along F z or T z of the compliant core. Our design therefore emphasizes these components, mechanically decoupling F z and T z as illustrated in Fig. <ref type="figure" target="#fig_0">2A</ref>(iii)(iv), providing highquality representation while allowing their sensitivities to be independently tuned to match task requirements. The remaining wrench components are tuned to maintain sufficient stiffness for stability and precise motion, while preserving passive compliance that improves robustness during contact. Building on this design principle, the compliant core is divided into two functional layers that decouple and emphasize the axial force F z and torsional moment T z .</p><p>The upper layer adopts a hollow cylindrical shell with a lattice of square cutouts as the primary deformable structure <ref type="bibr" target="#b31">[32]</ref>, which provides reliable deformation while reducing weight and material usage. A centrally placed flexible sleeve (Fig. <ref type="figure" target="#fig_0">2A</ref>, iii) increases stiffness against lateral forces F x and F y , while remaining compliant to F z . This selective stiffening balances deflection, suppresses undesired lateral motion, and mitigates oscillations induced by gripper inertia, ultimately improving stability and positioning accuracy.</p><p>The lower layer consists of two concentric rings of different radii connected by wave-like support structures, as shown in Fig. <ref type="figure" target="#fig_0">2A</ref>(iv). The inner ring is mechanically coupled to the rigid base via a spline connection, while the outer ring is attached to the rigid circle frame and constrained by a circle rail. When an external torsional moment T z is applied, the inner and outer rings undergo relative rotation, producing an angular displacement that is quasi-linear to the applied torque. This configuration enables a relatively stable and measurable torsional deformation.</p><p>2) Fabrication: All components can be fabricated using a commercial-level 3D printer and assembled with only a few screws within ten minutes. The compliant core is printed with thermoplastic polyurethane (TPU), and the rigid connectors are made of polylactic acid (PLA), with a total material consumption of approximately six U.S. dollars. Fabrication details can be found in the appendix on our project page.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Deformation Sensing and Force Representation</head><p>In this section, we introduce how the deformation of the compliant core is captured and transformed into force-like signals. Theoretically, we can denote that the deformation of the compliant core as ∆T ∈ SE(3), which correlates with the external force F ext and torque T ext applied at the endeffector. There exists an approximately linear mapping:</p><formula xml:id="formula_0">ϕ : ∆T ↔ (F ext , T ext )<label>(1)</label></formula><p>Benefiting from the hard-soft-hard sandwich structure, the state of the compliant core is fully characterized by the relative pose between its two rigidly connected ends. Because the robot flange and the fiducial tag are rigidly attached to the upper and lower connectors, respectively, their poses naturally serve as reference frames to compute this transform.</p><p>Let F T T,0 ∈ SE(3) denote the initial transform from the flange frame to the tag frame in the absence of external loads, and F T T,t ∈ SE(3) the corresponding transform at time step t under external forces and torques. The resulting deformation transform is then computed as:</p><formula xml:id="formula_1">∆T t = ( F T T,0 ) -1 F T T,t ,<label>(2)</label></formula><p>where ∆T t ∈ SE(3) compactly represents the relative motion of the connectors induced by external loading. Estimating the external wrench thus reduces to estimating F T T,t .</p><p>In practice, the tag pose is first obtained in the camera frame, cam T T , using OpenCV's ChArUco marker detection. Because the camera is mounted on the robot flange, we use hand-eye calibration to obtain the extrinsic matrix K E , which maps the camera frame to the flange frame:</p><formula xml:id="formula_2">F T cam = K E .</formula><p>The tag pose in the flange frame can then be expressed as:</p><formula xml:id="formula_3">F T T,t = F T cam cam T T .<label>(3)</label></formula><p>To ensure that the signal is physically meaningful, we align the translation of F T cam with the geometric center of the lower connector and its rotation with the end-effector pose using a single rigid-body transformation from the CAD model. The resulting transform ∆T t ∈ SE(3) is then decomposed into translation and Euler angles ∆T t ∈ R 6 to obtain a 6D representation directly correlated with the forcetorque components. This provides an intuitive and physically consistent description of the compliant core deformation state, which is subsequently used as a force-like signal for contact-aware control and policy learning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Integrating Force-like Signals into Policies</head><p>Given the deformation signal ∆T t , we aim to validate its utility across a wide range of policies for contact-rich manipulation. To this end, we consider two representative paradigms: classical search-and-control policy, which combines search strategies and control algorithms using ∆T t as both a state indicator and a reference signal. learning-based policy, which integrates ∆T t with other observations as an additional input to enhance policy training.</p><p>1) Search-and-Control Policy: Prior works on contactrich manipulation <ref type="bibr" target="#b32">[33]</ref>, <ref type="bibr" target="#b33">[34]</ref> employ a wide range of search and control strategies, including random and spiral search trajectories, tilt-based alignment methods, and hybrid position/force controllers. These approaches remain widely used in real-world assembly and have proven effective in solving contact-rich tasks. We adopt several of these classical methods as the skill library of our search-and-control policy, denoted by π = {π 1 , π 2 , . . . , π n }, where each π i represents a standard search or control skill. Our force-like signal ∆T t is then used either as a trigger for policy switching via simple thresholding, or as a reference for force control to regulate and adapt the robot's actions. Further implementation breakdown of each task can be found on Section VI-B.</p><p>2) Learning-Based Policy: Recent advances <ref type="bibr" target="#b34">[35]</ref>- <ref type="bibr" target="#b36">[37]</ref> in learning-based methods, such as imitation learning, have shown strong capability for contact-rich tasks by learning from demonstrations, thereby reducing the need for manually tuning parameters and thresholds. We adopt popular imitation learning policies, such as the Action Chunking Transformer (ACT) <ref type="bibr" target="#b37">[38]</ref> and the Diffusion Policy (DP) <ref type="bibr" target="#b38">[39]</ref>, as the backbone and train a contact-rich policy with our forcelike signal ∆T t in conjunction with other observations. We then compare it against the use of a force-torque sensor or the absence of contact sensing, to further evaluate its performance in learning-based tasks.</p><p>During training the imitation policy, the policy parameters θ are optimized to minimize the discrepancy between the predicted actions ât and the expert demonstrations a t :</p><formula xml:id="formula_4">ât = π θ (∆T t , I t , o prop t ),<label>(4)</label></formula><formula xml:id="formula_5">θ ⋆ = arg min θ ℓ(â t , a t ),<label>(5)</label></formula><p>where ℓ(•) is a supervised imitation loss, I t is the visual image of the wrist camera, o prop t is the proprioception of the robotic arm, such as joint angles, and ∆T t is our force-like signal embedded by a linear layer.</p><p>Once trained, the policy uses the optimized parameters θ ⋆ during deployment to output actions directly:</p><formula xml:id="formula_6">a t = π θ ⋆ (∆T t , I t , o prop t ).<label>(6)</label></formula><p>Further details of the deployment and performance of the learning-based policy can be found at Section IV-B and Section VI-B.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENT</head><p>In this section, we perform a series of experiments aimed at answering the following questions.</p><p>• Q1: Can ShapeForce provide a high-quality force-torque representation, as well as sufficient sensitivity and stability for contact-rich manipulation? (Sec. IV-A) • Q2: How does ShapeForce perform in real-world contact-rich tasks with different tasks and policies? (Sec. IV-B) • Q3: Can ShapeForce maintain long-term durability, and ensure that pretrained policies perform consistently under extensive use? (Sec. IV-C)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Mechanical Properties and Performance</head><p>To validate the force-torque representation quality, sensing sensitivity as well as stability of the mechanical design, we conduct the following experiments:</p><p>1) Correlation between Wrench and Deformation: The relationship between the wrench (force and torque) F t and the deformation-based force-like signal ∆T t generated by ShapeForce can be approximated by a linear stiffness model:</p><formula xml:id="formula_7">F t ≈ K ∆T t ,<label>(7)</label></formula><p>where K ∈ R 6×6 is the equivalent stiffness matrix of the compliant core, and F t = (F x , F y , F z , T x , T y , T z ) T ∈ R 6 is the six-dimensional ground-truth force and torque.</p><p>To validate this approximation, we collected paired data of F t by a commercial force and torque sensor and force-like signal ∆T t from ShapeForce, and estimated the equivalent stiffness matrix K via linear regression. We report the coefficient of determination (R 2 ) for each wrench component (F x , F y , F z , T x , T y , T z ) in Table <ref type="table" target="#tab_0">I</ref>. The mean R 2 of 0.9577 demonstrates that the general relationship between ∆T t and the ground-truth wrench is highly linear. This near-linear correspondence suggests that our representation can serve as an effective proxy for ground-truth force-torque signals: in the context of search-and-control policies, it provides contact feedback that correspond proportionally to real interactions, enabling accurate event triggering and reference tracking; when applied within learning-based policies, it can be embedded through a simple linear layer to convey temporal contact information, making it a practical, highly cost-efficient alternative to physical force-torque sensors. Moreover, if ground-truth wrench values are required, our system can reconstruct them by applying a straightforward linear transformation based on the estimated stiffness matrix K. A visualization example is presented in Figure <ref type="figure" target="#fig_1">3</ref>, demonstrating that our method can also reconstruct groundtruth force values via a simple linear transformation with high accuracy, achieving high fidelity in practice.</p><p>2) Sensing Sensitivity and Stability: Sensitivity is a key metric for evaluating force-torque sensor performance. Since ShapeForce relies on an RGB camera for perception, its sensitivity is fundamentally limited by the visual resolution. To evaluate this for ShapeForce, we refer to the fiducialbased sensitivity analysis in prior work <ref type="bibr" target="#b39">[40]</ref> to calculate our theoretical sensitivity. First, the pixel-level resolution d R is set to 1/4 based on prior work. Using the physical tag width w tag (mm) and its image width w img (px), the translational sensitivities are computed as:</p><formula xml:id="formula_8">s z = s x = w tag w img d R (mm).</formula><p>And rotational sensitivity s θy is obtained from the chordlength relation:</p><formula xml:id="formula_9">l chord = 2r sin θ 2 ,</formula><p>where r is the half-diagonal of the image patch, and set θ to be 45 degrees, and the minimum detectable angle s θ satisfies:</p><formula xml:id="formula_10">s θ = θ l chord d R</formula><p>The axial sensitivity s θz , s θx , and s y are estimated via similar-triangle geometry. Stacking the translational and rotational sensitivities into s = [s x , s y , s z , s θx , s θy , s θz ] T , the minimum detectable wrench is estimated by:</p><formula xml:id="formula_11">F min ≈ K s,</formula><p>where K ∈ R 6×6 is the calibrated stiffness matrix mentioned before. Our result shows that ShapeForce achieves a minimum detectable wrench of:</p><p>F min = [ 0.41, 0.45, 0.87, 0.13, 0.12, 0.03 ] T N or N • m,</p><p>The F min results showcase the sensitivity of our system to subtle forces and torques, which prove that our design is capable of detecting fine-grained contact information to support a wide range of delicate contact-rich tasks.</p><p>Also, we evaluated the stability of our mechanical design by mounting a payload on the lower connector and rotating it at different angles to evaluate the 2D displacement distance from the central axis. We mounted a payload of 0.8kg and the lever arm of a force is 6.8 cm to simulate the gravity effect of grasping an object and the end-effector. The result is shown in Table <ref type="table" target="#tab_1">II</ref>. The stability results show that the soft wrist provides sufficient stiffness to support the payload and maintain accurate motion. Overall, these results indicate that ShapeForce provides both high sensitivity, allowing the detection of subtle forces and torques, and sufficient mechanical stability to maintain precise motion under realistic payloads. Together, these properties ensure that the system delivers reliable and physically meaningful feedback for a variety of contact-rich tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Effectiveness in Real-World Manipulation Tasks</head><p>To directly validate ShapeForce's task performance, we evaluate performance across six representative contact-rich manipulation tasks with the aforementioned two types of policies: search-and-control policy and learning-based policy. The details of the implementation and results are as follows:</p><p>1) Search-and-Control Policy: In this setting, we use ShapeForce as a six-axis force-torque sensor to provide contact feedback for search-and-control policies. For insertion tasks, we employ search-based algorithms to locate the target, while classical controllers such as PID are used to track desired forces during tasks like whiteboard wiping. Other state transitions are triggered by simple thresholdbased events.</p><p>For each task, we evaluate the performance of ShapeForce and a 6-axis force-torque sensor from UFactory, which provides ground-truth measurements. Performance is measured by success rate, with outcomes assessed by a human expert due to the explicit nature of the tasks. We do not compare with a setting without any contact feedback, as searchand-control policies cannot be designed without it, and the  success rate ought to be zero. We evaluate each both setup in task for 20 times to ensure statistical reliability.</p><p>Results are summarized in Table <ref type="table" target="#tab_2">III</ref>. Our system achieves a success rate comparable to that of a 6-axis force-torque sensor, demonstrating that the proposed force-like signal can serve as an effective substitute for ground-truth measurements. Unlike commercial sensors, however, our approach requires no expensive hardware and is seamlessly integrated into the robot, offering a low-cost yet highly reliable alternative for search-and-control manipulation policies.</p><p>The only noticeable drop occurs in the USB insertion task, where the inherent compliance of our design introduces slight uncertainty. Despite our efforts to mitigate this effect, tasks that demand extreme precision in contact detection, such as USB insertion, remain more challenging. In particular, distinguishing between the correct and incorrect orientations during insertion requires detecting differences within a tolerance of about 1 mm, which can be easily falsely triggered by noise or compliance-related uncertainty. However, our system outperforms the 6-axis force-torque sensor in the toy desk assembly task, which requires highly precise alignment of the insertion direction to properly engage the threads. Here, the compliant nature of our design becomes advantageous: even with slight orientation errors, the passive deformation of the wrist compensates for misalignment, allowing smooth insertion and tightening. In contrast, a rigid wrist would cause large contact forces under the same condition, often leading to slippage between the leg and the gripper and ultimately task failure. This highlights the inherent robustness provided by passive compliance. Overall, ShapeForce performs a comparable performance with forcetorque sensor in classical search-and-control policy.</p><p>2) Learning-based Policy: To validate that our force-like signal ∆T t can be applied in learning-based policy therefore further prove that it can be a effective alternative of groundtruth force-torque signals, we adopt two imitation learning policies Action Chunking Transformer (ACT) <ref type="bibr" target="#b37">[38]</ref> and the Diffusion Policy (DP) <ref type="bibr" target="#b38">[39]</ref> as our backbones to evaluate.</p><p>We first construct a 15-step temporal history of ∆T t , encode it via a linear projection layer, and concatenate it with other observations to train the policies. This design enhances the contact-awareness of both policies. Expert demonstrations are collected using the Gello teleoperation system <ref type="bibr" target="#b40">[41]</ref>, with 50 trajectories per task for each policy. To improve robustness and prevent overfitting, we add small random positional and orientational variation to the objects during both data collection and evaluation. We benchmark our method on four contact-rich manipulation tasks: peg insertion, USB insertion, whiteboard wiping, and toy desk assembly. Performance is compared against two baselines: (i) policies trained without any force-related input, and (ii) policies using ground-truth force-torque signals.</p><p>The results of our experiments are summarized in Table IV. Across all tasks, policies trained without any force or deformation signal perform significantly worse. These policies can only replicate demonstrated motion patterns without perceiving contact states, which causes them to learn an "average" behavior that fails under dynamic variations. This limitation is particularly evident in tasks requiring sustained contact, such as whiteboard wiping. In this task, visual occlusion from the eraser often prevents the policy from accurately estimating the surface distance by image. Meanwhile, the board's orientation and height distance vary across trials. Successfully wiping requires consistent contact pressure. Without force-related signals, success rates for both ACT and DP policies drop below 30%. In contrast, when incorporating either ground-truth force or our deformation signal ∆T t , both policies exceed 90% success rate. This huge leverage demonstrate the critical role of force-related observations for contact-rich imitation learning.</p><p>Comparing ShapeForce with the ground-truth sensor, our deformation signal ∆T t achieves success rates comparable to those of the force sensor, further demonstrating the linear relationship between ∆T t and the wrench, which is approximately equivalent for the learning-based method. And in some cases, like the toy desk assembly task, ShapeForce enables the ACT policy to reach 80% success, compared to 65% with the force sensor, highlighting the advantages of passive compliance. Overall, these results show that Shape-Force generalizes well in imitation learning and serves as an effective, low-cost alternative to force-torque sensors.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Durability and Sensing Consistency</head><p>As a low-cost sensing system made from 3D-printed compliant materials, durability is crucial for practical use, so we performed an aging test to evaluate the durability of the sensor. We fix the lower connector to a fixture and  move the robotic arm to apply force in various directions to the compliant core. Generally, aging of the elastic material can cause some plastic deformation and degradation of its linear response characteristics. To comprehensively evaluate the influence, we adopt parameters-tuned search-and-control policies and a pretrained ACT model for multiple tasks after aging 1k, 5k, 10k, and 20k times.</p><p>Results are shown in Table <ref type="table" target="#tab_4">V</ref>. For search-and-control policies, performance was evaluated on whiteboard wiping and toy desk assembly. Stiffness degradation lowers the force threshold, reducing the applied force under the same conditions. This causes a minor drop in whiteboard wiping performance after 20k repetitions, but the magnitude remains small, demonstrating the robustness and consistency of our system under search-and-control policy. For learning-based policy, we tested the pretrained ACT model directly on peg insertion and toy desk assembly. The result demonstrates that ACT can perform consistently in relatively simple tasks like peg insertion, but in complicated tasks like toy desk assembly, our pretrained policy fails due to the degradation of linearity and elastic property. However, after fine-tuning with five demonstrations, the performance can quickly recover to a success rate nearly matching that of a brand-new sensor. In a nutshell, the aging test demonstrates that ShapeForce has high long-term durability and policy consistency under extensive use, and can be rapidly restored through minimal fine-tuning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION AND DISCUSSION</head><p>In this paper, we introduce ShapeForce, a low-cost, plugand-play soft robotic wrist that provides force-like signals enabling contact-rich tasks. We proved the efficiency of this force-like signal through extensive experiments on various contact-rich tasks with different policies, where ShapeForce significantly improves success rates and is comparable to commercial force-torque sensors. This work not only offers a cost-efficient, easily reproducible alternative to traditional force-torque sensors but also provides a fundamental insight: the trade-off between accuracy and simplicity in sensing systems can be effectively optimized by leveraging taskrelevant features to construct an equivalent representation.</p><p>However, ShapeForce has some limitations. Its passive compliance makes precise motion difficult under high payloads, and its material properties are not fully optimized. These limitations stem from its original design goals of being low-cost, accessible, and reproducible. Despite these limitations, we hope this work will encourage and inspire more researchers to study further and explore the contactrich tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. APPENDIX</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Fabrication Details</head><p>Directly inferring material parameters from desired mechanical properties is challenging due to the heterogeneous, multi-component nature of the structure. To address this, we conducted extensive empirical tests across representative tasks, systematically varying material and structural parameters. Based on these experiments, we selected a set of parameters that best balance all design objectives and used them for subsequent deployment.</p><p>To contextualize this parameter selection, we revisit our overarching design requirements. For the upper layer, we aim to (i) enhance sensitivity along the Z-axis while maintaining sufficient structural stiffness under lateral impact, and (ii) minimize displacement under large lateral loads. To achieve these performance targets, we systematically explored key 3D printing parameters that influence mechanical strength, including infill density (15-80%), number of wall loops (2-6), and dimensional parameters of the compliant core geometry. As for the lower layer, since it is mechanically decoupled from the upper layer, we predetermined its fabrication parameters. Instead, after finalizing the upper-layer parameters, we fine-tuned the thickness of the connecting structures between the inner and outer rings of the lower layer based on its actual mechanical response.</p><p>After an iterative experimental process, we converged on a parameter set that effectively balances the competing requirements of sensitivity and stiffness, as detailed in Table <ref type="table" target="#tab_5">VI</ref>. To address the challenges of contact-rich manipulation, we adopt a hybrid framework that combines exploratory motion strategies with reactive force control, which is referred to as a search-and-control policy. This paradigm integrates classical algorithms for tasks involving uncertain or unmodeled contacts: search routines are used to resolve geometric uncertainty, while force control strategies (e.g., PID with force feedback) regulate interaction forces during insertion or wiping. The switch of policies are decided by preset thresholds. By combining perceptiondriven search with low-level force control, the policy enables robust execution of contact-rich tasks.</p><p>We evaluate this approach on five representative realworld tasks: peg insertion, USB insertion, toy desk assembly, bottom-cap screw tightening, and whiteboard wiping. To address this series of contact-rich tasks, we adopt representative baseline algorithms, including classical search and control methods. A detailed breakdown about policies of each task is provided below. 2) Learning-Based Policy: We integrate our force-like signal into both the ACT (Action Chunking Transformers) in Figure <ref type="figure" target="#fig_4">6</ref> and DP (Diffusion Policy) in Figure <ref type="figure" target="#fig_5">7</ref>. The imitation learning data is collected using Gello hardware. For the force-like signal, we apply polynomial filtering as preprocessing during data collection and also perform realtime polynomial filtering during deployment. When used in the policy, the force-like signal is stacked over the past 15 timesteps and then fed into the policy through a linear layer. For the ACT policy, cond vectors compose of visual features (from frozen ResNet-18), robot joint states, and processed force-like history, are fed into a transformer encoder-decoder with 4 layers each. The model predicts a chunk of 45 future actions in a single forward pass. For the Diffusion Policy, the similar conditioning inputs are fed into a 1D U-Net Network to guide a denoising process over 48 action steps.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Adaptability</head><p>To ensure broad applicability across different robotic platforms, we designed a set of lightweight and modular adapters as shown in Figure <ref type="figure" target="#fig_6">8</ref>. These adapters allow our system to be seamlessly mounted on various types of grippers and robotic arms, rather than being restricted to a single hardware configuration. With this modular design, users can quickly switch between end-effectors or deploy the system on different manipulators without additional customization, significantly enhancing its efficiency and flexibility for realworld deployment in novel robots.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Exploratory Designs</head><p>The ShapeForce structure exhibits strong generality and is not limited to a single type of robotic manipulator. In addition to its wrist-mounted configuration, we explored mounting ShapeForce at the fingertips of a dexterous hand, which is shown in Figure <ref type="figure" target="#fig_7">9</ref>. In this setup, the pose of one end can be obtained through forward kinematics (FK), while the other end can be estimated using a fiducial tag. Together, these allow accurate deformation estimation and thus reliable force prediction, even in this more complex configuration. This exploratory design highlights the potential of ShapeForce to be generalized across diverse end-effectors. We envision this direction as a promising step toward making ShapeForce a universal and adaptable sensing module that can be seamlessly integrated into the end-effectors of various robotic platforms.   </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: Overview of ShapeForce: (A) Mechanical design of ShapeForce, including (i) exploded view, (ii) finite element analysis (FEA) results, (iii) longitudinal section, (iv) cross section; (B) Perception-to-control pipeline. Marker-based pose tracking converts deformation into 6D displacement, producing force-like signals that inform contact-aware policies. Both search-and-control policies and imitation-learning policies are supported, enabling execution of contact-rich tasks.</figDesc><graphic coords="3,54.00,50.08,504.00,283.50" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Visualization of predicted vs. ground-truth signals: the blue dots represent ShapeForce's predictions, and the black line represents ground-truth data.</figDesc><graphic coords="5,313.20,50.08,244.81,147.05" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: Robot Experiment Setup: We use Ufactory xArm7 robotic arm for manipulation and an Intel RealSense D435 for visual perception. ShapeForce is mounted on the robotic wrist to obtain the contact information.</figDesc><graphic coords="6,66.24,50.08,220.32,159.97" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Visualization of Toy Desk Assembly: Comparison of the F z and T z components of our force-like signal with ground-truth measurements. After proportional scaling, the signals exhibit close alignment, confirming that our representation preserves the essential contact information.</figDesc><graphic coords="6,313.20,153.87,244.78,133.88" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: Structure of the ACT-based Network.</figDesc><graphic coords="9,66.24,193.87,220.31,148.28" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Structure of the DP-based Network.</figDesc><graphic coords="9,325.44,61.92,220.31,148.45" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 8 :</head><label>8</label><figDesc>Fig. 8: Examples of our adapter design installed on two different grippers, demonstrating the flexibility to accommodate diverse hardware platforms.</figDesc><graphic coords="9,325.44,260.94,220.32,165.24" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 9 :</head><label>9</label><figDesc>Fig. 9: An exploratory example where ShapeForce is adapted from a wrist-mounted configuration to the fingertips of a dexterous hand, showcasing its potential generalizability across different end-effectors.</figDesc><graphic coords="9,313.20,500.66,220.32,165.24" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I :</head><label>I</label><figDesc>R 2 between ∆T t and Ground-truth Wrench.</figDesc><table><row><cell></cell><cell>Fx</cell><cell>Fy</cell><cell>Fz</cell><cell>Tx</cell><cell>Ty</cell><cell>Tz</cell></row><row><cell>R 2</cell><cell cols="6">0.962 0.9681 0.9587 0.9739 0.9675 0.9159</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE II :</head><label>II</label><figDesc>Displacement under Different Angles</figDesc><table><row><cell>Orientation Angle ( • )</cell><cell>30</cell><cell>45</cell><cell>60</cell><cell>90</cell></row><row><cell>Value(mm)</cell><cell cols="4">1.497 2.418 2.857 3.312</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE III :</head><label>III</label><figDesc>Task Success Rate of Search-and-Control Policy</figDesc><table><row><cell>Task</cell><cell cols="2">With F/T Sensor ShapeForce</cell></row><row><cell>Peg Insertion</cell><cell>100%</cell><cell>100%</cell></row><row><cell>USB Insertion</cell><cell>100%</cell><cell>90%</cell></row><row><cell>Toy Desk Assembly</cell><cell>65%</cell><cell>80%</cell></row><row><cell>Bottom Cap Screw Tightening</cell><cell>100%</cell><cell>100%</cell></row><row><cell>Whiteboard Wiping</cell><cell>100%</cell><cell>100%</cell></row><row><cell>Maze Exploration</cell><cell>100%</cell><cell>100%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>TABLE IV :</head><label>IV</label><figDesc>Task Success Rate of Learning-based Policy</figDesc><table><row><cell>Task</cell><cell cols="3">Without Sensor With F/T Sensor ShapeForce</cell></row><row><cell>Peg Insertion (ACT)</cell><cell>60%</cell><cell>85%</cell><cell>90%</cell></row><row><cell>Peg Insertion (DP)</cell><cell>65%</cell><cell>75%</cell><cell>85%</cell></row><row><cell>USB Insertion (ACT)</cell><cell>40%</cell><cell>85%</cell><cell>75%</cell></row><row><cell>USB Insertion (DP)</cell><cell>35%</cell><cell>80%</cell><cell>75%</cell></row><row><cell>Whiteboard Wiping (ACT)</cell><cell>25%</cell><cell>95%</cell><cell>95%</cell></row><row><cell>Whiteboard Wiping (DP)</cell><cell>30%</cell><cell>90%</cell><cell>90%</cell></row><row><cell>Toy Desk Assembly (ACT)</cell><cell>45%</cell><cell>65%</cell><cell>80%</cell></row><row><cell>Toy Desk Assembly (DP)</cell><cell>40%</cell><cell>50%</cell><cell>70%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>TABLE V :</head><label>V</label><figDesc>Task Success Rate after Aging Test</figDesc><table><row><cell>Task</cell><cell>1k</cell><cell>5k</cell><cell>10k</cell><cell>20k</cell></row><row><cell>Whiteboard Wiping (S&amp;C)</cell><cell cols="4">100% 100% 100% 95%</cell></row><row><cell>Toy Desk Assembly (S&amp;C)</cell><cell>80%</cell><cell>80%</cell><cell>80%</cell><cell>80%</cell></row><row><cell>Peg Insertion (ACT)</cell><cell>85%</cell><cell>85%</cell><cell>85%</cell><cell>85%</cell></row><row><cell>Toy Desk Assembly (ACT)</cell><cell>80%</cell><cell>80%</cell><cell>60%</cell><cell>60%</cell></row><row><cell>Toy Desk Assembly (ACT-finetune)</cell><cell>85%</cell><cell>80%</cell><cell>80%</cell><cell>80%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>TABLE VI :</head><label>VI</label><figDesc>Key Materiel and Structural parameters.</figDesc><table><row><cell>Type</cell><cell>Detail</cell></row><row><cell>Bambu Lab TPU 95A (core)</cell><cell>infill 80% , wall loops 2</cell></row><row><cell cols="2">Bambu Lab PLA Basic (frame) infill 30% , wall loops 2</cell></row><row><cell>Compliant Core</cell><cell>thickness of beams 2.3 mm</cell></row><row><cell>Compliant Core</cell><cell>length of beams 7.3 mm</cell></row><row><cell>Compliant Core</cell><cell>width of beams 1.5 mm</cell></row><row><cell>Compliant Core</cell><cell>thickness of sleeve 6 mm</cell></row><row><cell>Wave-like Support</cell><cell>thickness 3 mm</cell></row><row><cell>Layer height</cell><cell>0.2 mm</cell></row></table><note><p>B. Real-World Experiment Details 1) Search-and-Control Policy:</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>•</head><label></label><figDesc>Peg Insertion: (i) a visual servo search to approach the hole, with threshold τ 1 triggered when the end-effector reaches the search surface; (ii) a directional surface search, where threshold τ 2 is triggered upon detecting the hole; (iii) a compliance-based insertion, continuing until threshold τ 3 is reached. Similar to peg insertion but with orientation ambiguity: the plug can align in two ways, yet only one allows full insertion. The policy detects the hole via τ 1 , attempts insertion, and if τ 2 signals failure, rotates 180°to retry. Combines first and second type, inserting and screwing the tightening of table legs.• Whiteboard Wiping: (i) visual servoing to approach the surface until τ 1 is triggered; (ii) using PID maintains consistent contact force by chasing τ 2 to wiping. • Maze Exploration: (i) heuristic direction-prioritized greedy search until collision force τ 1 is triggered; (ii) real-time force-monitored reverse retreat until safe force τ 2 is reached, registering a transient escape node; (iii) direction-level dead-end learning with backtracking and path pruning.</figDesc><table /><note><p><p>• USB Insertion: • Bottom-cap Screw Tightening: (i) a visual servo search to approach and align until τ 1 triggered; (ii) a forceguided screw motion until threshold τ 2 is reached.</p>• Toy Desk Assembly:</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head>TABLE VII :</head><label>VII</label><figDesc>Comparison of key hyperparameters for ACT and Diffusion Policy (DP).</figDesc><table /></figure>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0" />			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Shape optimal design and force sensitivity evaluation of six-axis force sensors</title>
+		<author>
+			<persName><forename type="first">L.-P</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K.-T</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors and Actuators A: Physical</title>
+		<imprint>
+			<biblScope unit="volume">63</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="105" to="112" />
+			<date type="published" when="1997">1997</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Six-axis force/torque sensors for robotics applications: A review</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">Y</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Laws</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">R</forename><surname>Baena</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors Journal</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">24</biblScope>
+			<biblScope unit="page">251</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Force sensing and control in micromanipulation</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Systems, Man, and Cybernetics, Part C (Applications and Reviews)</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="713" to="724" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Gelsight wedge: Measuring high-resolution 3d contact geometry with a compact robot finger</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="6468" to="6475" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Tacto: A fast, flexible, and open-source simulator for high-resolution vision-based tactile sensors</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P.-W</forename><surname>Chou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="3930" to="3937" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<author>
+			<persName><forename type="first">V</forename><surname>Pattabiraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Panozzo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Zorin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bhirangi</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2506.09994</idno>
+		<title level="m">eflesh: Highly customizable magnetic touch sensing using cutcell microstructures</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Cable manipulation with a tactile-reactive gripper</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Sunil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">A soft tactile sensor based on magnetics and hybrid flexible-rigid electronics</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Neto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Ribeiro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Nunes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Jamone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bernardino</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Cardoso</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">15</biblScope>
+			<biblScope unit="page">5098</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Teaching oral care via vision-based deformable perception</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Soft Science</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page">36</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Proprioceptive state estimation for amphibious tactile sensing</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zhong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="4684" to="4698" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Proprioceptive learning with soft polyhedral networks</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">43</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page" from="1916" to="1935" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Activespn: Active soft polyhedral networks with pose estimation for in-finger object manipulation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">0</biblScope>
+			<biblScope unit="issue">0</biblScope>
+			<biblScope unit="page">0</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note>accepted</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Dexwrist: A robotic wrist for constrained and dynamic manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Peticco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Ulloa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Marangola</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename></persName>
+		</author>
+		<idno type="arXiv">arXiv:2507.01008</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">A compact soft articulated parallel wrist for grasping in narrow spaces</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Negrello</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mghames</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Grioli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Garabini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G</forename><surname>Catalano</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="3161" to="3168" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Compact modular robotic wrist with variable stiffness capability</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hwang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">A configurable architecture for two degree-of-freedom variable stiffness actuators to match the compliant behavior of human joints</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lemerle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G</forename><surname>Catalano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bicchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Grioli</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Robotics and AI</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page">614145</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Design, analysis, and construction of a 2rss-1u compact, singularity free humanoid robot wrist mechanism</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Taheri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Yousefi-Koma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Yazdani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 11th RSI International Conference on Robotics and Mechatronics (ICRoM)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="897" to="903" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Biflex: A passive bimodal stiffness flexible wrist for manipulation in unstructured environments</title>
+		<author>
+			<persName><forename type="first">G.-C</forename><surname>Jeong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dalla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">D</forename><surname>Gasperina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Deshpande</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Chin</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Martín-Martín</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">A modular soft robotic wrist for underwater manipulation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kurumaya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">T</forename><surname>Phillips</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">P</forename><surname>Becker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Rosen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">F</forename><surname>Gruber</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">C</forename><surname>Galloway</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Suzumori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Wood</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Soft robotics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="399" to="409" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">A compact, cable-driven, activatable soft wrist with six degrees of freedom for assembly tasks</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Drigalski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Tanaka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hamaya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Nakashima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Shibata</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ijiri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="8752" to="8757" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">A stiffness variable passive compliance device with reconfigurable elastic inner skeleton and origami shell</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Kong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Chinese Journal of Mechanical Engineering</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">75</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Theory of buckling and post-buckling behavior of elastic structures</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Budiansky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in applied mechanics</title>
+		<imprint>
+			<date type="published" when="1974">1974</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Visual learning towards soft robot force control using a 3d metamaterial with differential stiffness</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="1269" to="1278" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Forces for free: Vision-based contact force estimation with a compliant hand</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Bateux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">103</biblScope>
+			<biblScope unit="page">5046</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Reconstructing soft robotic touch via in-finger vision</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zhong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Intelligent Systems</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page">2400022</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">A vision-based tactile sensing system for multimodal contact information perception via neural network</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Instrumentation and Measurement</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Vision-based tactile intelligence with soft robotic metamaterial</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Materials &amp; Design</title>
+		<imprint>
+			<biblScope unit="volume">238</biblScope>
+			<biblScope unit="page">112629</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Digit: A novel design for a low-cost compact high-resolution tactile sensor with application to in-hand manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P.-W</forename><surname>Chou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Maloon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">R</forename><surname>Most</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Stroud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Santos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Byagowi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Kammerer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">Reskin: versatile, replaceable, lasting tactile skins</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bhirangi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hellebrekers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Majidi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2111.00071</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Anyskin: Plug-and-play skin sensing for robotic touch 2024</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bhirangi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Pattabiraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Erciyes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hellebrekers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2409.08276" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">The tactip family: Soft optical tactile sensors with 3d-printed biomimetic morphologies</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ward-Cherrier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Pestell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Cramphorn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Winstone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">E</forename><surname>Giannaccini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rossiter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">F</forename><surname>Lepora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Soft robotics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="216" to="227" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">A review on integration of lightweight gradient lattice structures in additive manufacturing parts</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Seharing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">H</forename><surname>Azman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Abdullah</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Mechanical Engineering</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page">1687814020916951</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Search strategies for pegin-hole assemblies with position uncertainty</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">R</forename><surname>Chhatpar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S</forename><surname>Branicky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings 2001 IEEE/RSJ International Conference on Intelligent Robots and Systems. Expanding the Societal Role of Robotics in the the Next Millennium</title>
+		<meeting>2001 IEEE/RSJ International Conference on Intelligent Robots and Systems. Expanding the Societal Role of Robotics in the the Next Millennium</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2001">2001</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="1465" to="1470" />
+		</imprint>
+	</monogr>
+	<note>Cat. No. 01CH37180</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Force control command synthesis for assembly using a discrete event framework</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Austin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mccarragher</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of International Conference on Robotics and Automation</title>
+		<meeting>International Conference on Robotics and Automation</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="1997">1997</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="933" to="938" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Forcemimic: Force-centric imitation learning with force-motion capture system for contact-rich manipulation</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2025 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="1105" to="1112" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2503.02881</idno>
+		<title level="m">Reactive diffusion policy: Slow-fast visual-tactile policy learning for contact-rich manipulation</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Adaptive compliance policy: Learning approximate compliance for diffusion guided control</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2025 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="4829" to="4836" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<title level="m" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.13705</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="page">02783649241273668</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Low-cost fiducial-based 6-axis force-torque sensor</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ouyang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Howe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="1653" to="1659" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Gello: A general, lowcost, and intuitive teleoperation framework for robot manipulators</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

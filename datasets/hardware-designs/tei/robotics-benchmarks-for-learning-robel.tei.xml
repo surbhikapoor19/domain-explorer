@@ -1,0 +1,1256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">ROBEL: Robotics Benchmarks for Learning with Low-Cost Robots</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2019-12-16">16 Dec 2019</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Michael</forename><surname>Ahn</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Google Research</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Henry</forename><surname>Zhu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">UC Berkeley</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kristian</forename><surname>Hartikainen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">UC Berkeley</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Hugo</forename><surname>Ponte</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Google Research</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Abhishek</forename><surname>Gupta</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">UC Berkeley</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">UC Berkeley</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+							<affiliation key="aff1">
+								<orgName type="institution">Google Research</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Google Research</orgName>
+								<address>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">ROBEL: Robotics Benchmarks for Learning with Low-Cost Robots</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2019-12-16">16 Dec 2019</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">6B04AD688D14AA8209F6F45166174A73</idno>
+					<idno type="arXiv">arXiv:1909.11639v3[cs.RO]</idno>
+					<note type="submission">Figure 1: ROBEL robots: D&apos;Kitty (left) and D&apos;Claw (middle and right</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>benchmarks</term>
+					<term>reinforcement learning</term>
+					<term>low cost robots</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>ROBEL is an open-source platform of cost-effective robots designed for reinforcement learning in the real world. ROBEL introduces two robots, each aimed to accelerate reinforcement learning research in different task domains: D'Claw is a three-fingered hand robot that facilitates learning dexterous manipulation tasks, and D'Kitty is a four-legged robot that facilitates learning agile legged locomotion tasks. These low-cost, modular robots are easy to maintain and are robust enough to sustain on-hardware reinforcement learning from scratch with over 14000 training hours registered on them to date. To leverage this platform, we propose an extensible set of continuous control benchmark tasks for each robot. These tasks feature dense and sparse task objectives, and additionally introduce score metrics for hardware-safety. We provide benchmark scores on an initial set of tasks using a variety of learning-based methods. Furthermore, we show that these results can be replicated across copies of the robots located in different institutions. Code, documentation, design files, detailed assembly instructions, trained policies, baseline details, task videos, and all supplementary materials required to reproduce the results are available at www.roboticsbenchmarks.org</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Learning-based methods for solving robotic control problems have recently seen significant momentum, driven by the widening availability of simulated benchmarks <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b1">2,</ref><ref type="bibr" target="#b2">3]</ref> and advancements in flexible and scalable reinforcement learning <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b5">6,</ref><ref type="bibr" target="#b6">7]</ref>. While learning through simulation is relatively inexpensive and scalable, developments on these simulated environments often encounter difficulty in deploying to real-world robots due to factors such as inaccurate modeling of physical phenomena and domain shift. This motivates the need to develop robotic control solutions directly in the real world on physical hardware. Modern advancements in reinforcement learning have shown some success in the real world <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b8">9,</ref><ref type="bibr" target="#b9">10]</ref>. However, learning on real robots generally does not take into account physical limitations -aggressive exploration can induce wear and permanent damage to the robot due to collisions with itself and the surrounding physical environment. A significant portion of current robotics research is conducted on high-cost, industrial-quality robots that are intended for precise, human-monitored operation in controlled environments. Furthermore, these robots are designed around traditional control methods that focus on precision, repeatability, and ease of characterization. This stands in sharp contrast with learning-based methods that are robust to imperfect sensing and actuation, but demand (a) a high degree of resilience to allow real-world trial-and-error learning over a long duration, (b) low cost and ease of maintenance to enable scalability through replication, and (c) reliable mechanisms to allow large scale data collection without strict human monitoring requirements for providing rewards and episodic resets.</p><p>To address these emerging requirements, we introduce ROBEL -an open-source platform for costeffective, modular robots that are designed around the needs of reinforcement learning in the real world. This release of ROBEL consists of two robots that are each intended to accelerate research in a distinct task domain: a nine degree of freedom (DOF) manipulation robot D'Claw and a twelve DOF locomotion robot D'Kitty. In addition, ROBEL includes a wide variety of benchmark tasks that run in the real world and support a simulated back-end to facilitate rapid prototyping. We present performance metrics on these benchmark tasks over a diverse collection of learning-based methods. Finally, we show that these robots are replicable and are able to reproduce desired behavior from a control policy that was trained on a different copy of the robot.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head><p>Before delving into the specifics of ROBEL, we first review current work looking into simulated benchmarks, the disconnect between the challenges in simulation and reality, hardware benchmarks, and factors influencing real world progress in relevance to continuous control problems in robotics.</p><p>Recent advancements in continuous control problems in robotics via learning based methods are fueled in part by access to fast compute at affordable rates, and in part by algorithmic developments <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b10">11]</ref> that generalize and scale well with the complexities of high dimensional problems. Access to easy to use simulated benchmarks <ref type="bibr" target="#b11">[12,</ref><ref type="bibr" target="#b2">3,</ref><ref type="bibr" target="#b0">1]</ref> has significantly catalyzed these developments by facilitating fast prototyping, and by providing standard metrics for analysis and comparisons between various methods.</p><p>Various algorithms have been shown to be effective on a large set of simulated environments <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b6">7]</ref>, but these developments have not precipitated down in equal proportions to real world systems, owing to the large divide between the challenges presented by the real world and their simulated counterparts. Precise and programmable resets, noise-free instantaneous observations, high data bandwidth, and lack of concern for environmental safety are a few of the many privileges that the prevalent simulated environments <ref type="bibr" target="#b11">[12,</ref><ref type="bibr" target="#b2">3,</ref><ref type="bibr" target="#b0">1]</ref> enjoy, which are impractical in the real world. In contrast, ROBEL exposes many of these challenges on physical hardware and provides the tools to study them, encouraging future development to directly address these issues.</p><p>Algorithms for applying RL to real world robotics have either (a) resorted to solving problems in simulation and transferring to the real world, relying on algorithms like domain randomization to deal with domain shift by solving a more challenging robust control problem <ref type="bibr" target="#b12">[13,</ref><ref type="bibr" target="#b13">14,</ref><ref type="bibr" target="#b14">15,</ref><ref type="bibr" target="#b15">16]</ref>, or (b) have resorted to completely pose and solve the problem in the real world <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b16">17]</ref>. While the former does not scale well as the task complexity grows <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b18">19]</ref>, the latter has traditionally required a significant time and cost investment that is task-specific, and is not commonly accessible more broadly to the field. Shared investments in terms of competitive challenges <ref type="bibr" target="#b19">[20,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b21">22]</ref> have also been investigated to boost research and developments on physical robots in the real world. These challenges have failed to stay relevant to the scientific community owing to significant costs and reproducibility issues. ROBEL alleviates these investments by providing a low-cost, easily extensible platform to facilitate real world results by the broader community under reproducible settings.</p><p>Roboticists have long been fascinated by the idea of building low cost manipulation <ref type="bibr" target="#b22">[23,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b24">25]</ref> as well as locomotion platforms <ref type="bibr" target="#b25">[26,</ref><ref type="bibr" target="#b26">27]</ref>. Many of these platforms can be limited to few DoFs <ref type="bibr" target="#b22">[23]</ref>, aggressively under-actuated <ref type="bibr" target="#b23">[24]</ref> for simplicity and cost gains, or are difficult to independently assemble and replicate <ref type="bibr" target="#b24">[25,</ref><ref type="bibr" target="#b23">24]</ref>. ROBEL leverages its modular design to provide high DOF, easy-toassemble robots, while retaining easy control and reasonable precision: D'Claw has nine actuated DOFs while remaining low cost. On the other end, <ref type="bibr" target="#b26">[27]</ref> is perhaps the closest, but more expensive, counterpart of our D'Kitty platform.</p><p>Although not posed as benchmarks, the idea of comparing progress in the real world via shared datasets <ref type="bibr" target="#b27">[28]</ref>, testbeds <ref type="bibr" target="#b28">[29]</ref>, and hardware designs <ref type="bibr" target="#b23">[24,</ref><ref type="bibr" target="#b29">30,</ref><ref type="bibr" target="#b30">31]</ref> has been around for a while. Recently, benchmarking in the real world using commercially available platforms has also been proposed <ref type="bibr" target="#b31">[32,</ref><ref type="bibr" target="#b32">33]</ref>. These benchmarks include robot-centric tasks such end-effector reaching, joint angle tracking, and grasping via parallel jaws grippers. To further diversify the benchmarking scene, ROBEL presents a wide variety of high DoF tasks spanning dexterous manipulation as well as quadruped locomotion.</p><p>With learning-based methods <ref type="bibr" target="#b3">[4]</ref>, it is common to measure the average episodic return to evaluate the performance of an agent. These returns are task-specific and often ignore the challenges of the real world, such as unsafe exploration, movement quality, hardware risks, energy expenditure, etc. These challenges are highlighted by the DARPA Robotics Challenge <ref type="bibr" target="#b19">[20,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b21">22]</ref> where many robots failed to achieve their task objective due to undervaluing safety objectives, thereby indicating that real world challenges (such as safety) are important objectives to prioritize. Hardware safety considerations have been posing as explicit constraints (position, velocity, acceleration, jerk limits) as well as regularization (energy, control cost) before, but have not found appropriate emphasis in existing <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b0">1,</ref><ref type="bibr" target="#b11">12]</ref> learning related benchmarks. Addressing this, ROBEL provides three signals (dense-reward, sparse-score and hardware-safety) to facilitate the study of these challenges. As the number of actuated DOFs of a system grows, we tend to see a proportional increase in cost and decrease in reliability. The modularity of ROBEL allows us to build reasonably high DOF robots while remaining low-cost and easily maintainable. The robots only use off-the-shelf components, commonly-available prototyping tools (3D printers, laser cutters), and require only a few hours to build (Table <ref type="table" target="#tab_0">1</ref>). ROBEL robots are actuated at joint level (i.e. no transmission between joint and actuators) via Dynamixel smart actuators <ref type="bibr" target="#b33">[34]</ref> that feature fully integrated motors with an embedded controller, reduction drive, and high-baudrate communication. Multiple actuators can be daisy-chained together to increase the number of DOFs in the system, which allows ROBEL robots to be easy to build (Table <ref type="table" target="#tab_0">1</ref>) and extend. For the context of this work we use a USB-serial bus <ref type="bibr" target="#b34">[35]</ref> for communication to the robots. An 12V power supply is used to power the platforms. ROBEL platforms also support a wide variety of choices in sensing and actuation modes, which are summarized in Table <ref type="table" target="#tab_1">2</ref>. The schematic details of ROBEL platforms are summarized in Figure <ref type="figure" target="#fig_2">3</ref>. Detailed CAD models and bill of materials (BOM) with step-by-step assembly instructions are included in the supplementary materials package. ROBEL platforms have also been independently replicated and tested for reliability (subsection 5.3) at a geographically remote location which demonstrates the reproducibility (details in subsection 5.2) of the ROBEL platforms and associated results.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">ROBEL</head><note type="other">Hardware Platforms</note></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Benchmark Tasks</head><p>ROBEL proposes a collection of tasks for D'Claw and D'Kitty to serve as a foundation for real-world benchmarking for continuous control problems in robotics. We first outline the formulations of these benchmark tasks, and then provide details of the tasks grouped into manipulation and locomotion.</p><p>ROBEL tasks are formulated in a standard Markov decision process (MDP) setting <ref type="bibr" target="#b36">[37]</ref>, in which each step, corresponding to a time t in the environment, consists of a state observation s, an input action a, a resulting reward r d , and a resulting next state s . In addition to the reward r d , which is usually dense, ROBEL also provides a sparse signal called score r s , which can be interpreted as a sparse task objective without any shaping. To standardize quantification a policy's π performance, ROBEL provides success evaluator φ se (π) metrics and hardware safety φ hs (π) metrics.  To implement the MDP setting, we employ the commonly-adopted OpenAI Gym <ref type="bibr" target="#b1">[2]</ref> API. ROBEL is presented as an open-source Python library consisting of modular, reusable software components that enable a common interface to interact with hardware and simulation. Figure <ref type="figure" target="#fig_4">4</ref> provides architectural outline of ROBEL. The implementation of the environments are largely agnostic to whether they are running on real hardware robot or simulation robot. The simulated robot is a modular component of the system and can be exchanged for any physics simulation engines. Figure <ref type="figure" target="#fig_2">3b</ref>, and Figure <ref type="figure" target="#fig_2">3e</ref> show the simulated robot modelled in Mu-JoCo <ref type="bibr" target="#b37">[38]</ref>. We encourage the usage of simulation primarily as a rapid prototyping tool and promote purely real-world hardware results as ROBEL benchmarks.</p><p>The reward r d is the most commonly used signal in reinforcement learning that the agents directly optimize. Since the reward often consists of multiple sub-goals and regularization terms, score r s provides a more direct task-specific sparse objective. Success evaluator φ se (π) is defined to be reward (or score) agnostic. It evaluates success (task-specific) percentage of policy over multiple runs. Unlike rewards and score, which are provided at each step, hardware safety φ hs (π) is an array of counters that evaluates a policy over the specified horizon to measure the number of safety violations. We include the following violations in our safety measure: joint limits, velocity limits, and current limits.</p><p>We propose an initial set of ROBEL benchmark tasks to tackle a variety of challenges involving manipulation and locomotion. We summaries the tasks below and encourage readers to refer to Appendix A and supplementary material <ref type="foot" target="#foot_0">1</ref> for task details. This task is motivated by the primary objective of a manipulator to conform to its surrounding in order to prepare for the upcoming maneuverscommonly observed as various pre-grasp and latching maneuvers (Figure <ref type="figure" target="#fig_11">5a</ref>). This set of tasks is posed as trying to match randomly selected joint angle targets. Successful completion of this task demonstrates the capability of a manipulator to have controlled access to all its joints. This set of tasks are comparatively easier to train, thereby facilitates fast iteration cycles and a gradual transition to the rest of the tasks. Two variants of this task are provided: a static variant DClawPoseFixed where the desired joint angles remain constant, and a dynamic variant DClawPoseRandom where the desired joint angle is time-dependent and oscillates between two goal positions that are sampled at the beginning of the episode. b) Turn (rotate to a fixed target angle): This task encapsulates the ability of a manipulator to reposition unactuated DoFs present in the environments to target configurations -commonly observed as turning various knobs, latches and handles. This set of tasks is posed as trying to match randomly selected joint angle targets for the unactuated object(s). Successful completion of this task demonstrates the ability of a manipulator to bring desired changes on external targets. In order to succeed, the manipulator requires not only co-ordination between the internal DoFs, but also an understanding of environment dynamics perceived through contact interactions. Three variants of this task are provided: DClawTurnFixed where initial and target angles are constant, DClawTurnRandom where both initial and target angles are randomly selected, DClawTurnRandomDynamics where initial and target angles are randomly selected as well as the environment (object size, surface, and dynamics properties) is randomized.</p><p>c) Screw (rotate to a moving target angle): This task focuses on the ability of a manipulator to continuously rotate an unactuated object at a constant velocity. This set of tasks is posed as trying to match joint angle targets that are themselves moving. Although very similar to turn tasks but the nuances of moving target challenge the manipulator's strategy to constantly evolve as the target drifts. Fingers often enter singular positions as the rotation progresses. A successful strategy needs to learn finger co-ordinated gating to simultaneous progress as well as stay out of local minima. Three variants of this task are provided: DClawScrewFixed where target velocity is constant, DClawScrewRandom where the initial angle and target velocity is randomly selected, DClawScrewRandomDynamics where the initial angle and target velocity is randomly selected as well as the environment (object size, surface, and dynamics properties) is randomized.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Locomotion Benchmark on D'Kitty</head><p>The twelve DoF locomotion platform D'Kitty is capable of exhibiting diverse behaviors. We structure this group of the benchmark tasks on the platform around simple locomotion behaviors exhibited by quadrupeds.  This task involves D'Kitty changing its orientation from an initial facing direction to a desired facing direction. This set of tasks is posed as matching the target configuration of the torso. A successful strategy requires maneuvering the torso via the ground reaction forces while maintaining balance. Three variants of this task are provided: DKittyOrientFixed maneuvers to a fixed target orientation, DKittyOrientRandom maneuvers to a random target orientation, DKittyOri-entRandomDynamics maneuver to a random target orientation where the environment (surface, dynamics properties of D'Kitty and ground height map) is randomized. See supplementary materials 1  for full details c) Walk: This task involves the D'Kitty moving its world position from an initial cartesian position to desired cartesian position while maintaining a desired facing direction. This task is posed as matching the cartesian position of the torso with a distant target. Successful strategy needs to exhibit locomotion gaits while maintaining heading. Three variants of this task are provided: DKit-tyWalkFixed walk to a fixed target location, DKittyWalkRandom walk to a randomly selected target location, DKittyWalkRandomDynamics walk to a selected target location where the environment (surface, dynamics properties of D'Kitty and ground height map) is randomized. See supplementary materials 1 for full details ROBEL tasks variants are carefully designed to represent a wide task spectrum. The fixed variants (task-name suffix "Fixed") are fast to iterate and are helpful for getting started. The random variants (task-name suffix "Random") present a wide initial and goal distribution to study task generalization.</p><p>In addition to the wider distribution, the random dynamics variants (task-name suffix "RandomDynamics") presents variability in the various environment properties. This variant is hardest to solve and is well suited for sim2real line of research. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Experiments</head><p>We first summarize on-hardware training runs of various reinforcement learning algorithms that are included as ROBEL baselines. Later we evaluate ROBEL for its reproducibility with-in the same as well as at a geographically separated location, and reliability over extended usage. We conclude by presenting performance of our baselines over the proposed safety metrics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Baselines</head><p>ROBEL has been tested to meet the rigor of a wide variety of learning algorithms. One candidate from each algorithmic class was added to the spectrum of baselines (Figure <ref type="figure" target="#fig_8">7</ref>). We include Natural Policy Gradient <ref type="bibr" target="#b38">[39]</ref> for on-policy, Soft Actor Critic <ref type="bibr" target="#b6">[7]</ref> for off-policy, Demo Augmented Policy Gradients <ref type="bibr" target="#b39">[40]</ref> for demonstration accelerated methods, and behavior cloning as supervised learning baseline. Using the sim-robot, dynamics randomized variant of all the tasks (referred as randomDynamics) are also included in the package to facilitate sim2real research direction. We also invite the open source community to add to our family of baselines via our open source repository. We test ROBEL reproducibility on multiple platforms independently developed at different locations (60 miles apart) via different groups (no in-person visits) using only ROBEL documentation 2 . We evaluate ROBEL's reproducibility by studying the effectiveness of a policies on different hardware. Figure <ref type="figure" target="#fig_9">8</ref> outlines the effectiveness of a policy on multiple hardware across two different sites.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Reproducibility</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Reliability</head><p>We provide a qualitative measure of the reliability of the system in Table <ref type="table" target="#tab_2">3</ref>. It should be noted that these metrics include data gathered while the system was under development. The matured system reported in this paper is much more reliable. Figure <ref type="figure">9</ref> provides a qualitative depiction of the robustness of the system using side by side comparison of a new and used D'Claw assembly.</p><p>The system is fairly robust in facilitating multiple day real-world experimentation on the hardware. Occasional maintenance needs primarily include screws becoming loose. We attribute this to the vibrations caused by recurring collision impacts during manipulation and locomotion. We also observe occasional motor failures (Table <ref type="table" target="#tab_2">3</ref>). Owing to the modularity of ROBEL, this is easy to replace <ref type="foot" target="#foot_2">3</ref> .  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4">Safety</head><p>Smooth, elegant behavior has been a desirable but hard-to-define trait for all continuous control problems. Various forms of regularization on control, velocity, acceleration, jerks, and energy are often used to induce such properties. While there is not a universally accepted definition for smoothness, few metrics for safe behaviors can be defined in terms of hardware safety limits. In addition to dense and sparse objective, ROBEL also provides hardware safety objectives, which has been largely ignored in available benchmarks <ref type="bibr" target="#b2">[3]</ref>[12] <ref type="bibr" target="#b0">[1]</ref>. ROBEL defines safety objects over position, velocity, and torque violations calculated over a finite horizon trajectory. The success evaluator, provided with all benchmarks, not only reports the average task success metric, but also reports the average number of safety violations. A benchmarks challenge is considered successful when there are no safety violations. Figure <ref type="figure">10</ref> shows the average number of joint per episode under safety violations for two RL agents. We observe that these policies, while successful in solving the task, exhibit significant safety violations. While safety is desirable, it has largely been ignored in existing RL benchmarks resulting in limited progress. We hope that safety-metric included in ROBEL will sprout research in this direction.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusion</head><p>This work proposes ROBELan open source platform of cost-effective robots designed for on-device reinforcement learning experimentation needs. ROBEL platforms are robust and have sustained over 14000 hours of real world training on them till date. ROBEL feature a 9-DOF manipulation platform D'Claw, and a 12-DOF locomotion platform D'Kitty , with a set of prepackaged benchmark tasks around them. We show the performance of these benchmarks on a variety of learning-based agents -on-policy (NPG), off-policy (SAC), demo-accelerated method (DAPG), and supervised method (BC). We provide these results as baselines for ease of comparison and extensibility. We show reproducibility of the ROBEL's benchmarks by independently reproducing results at a remote site. We are excited to bring ROBEL to the larger robotics community and look forward to the possibilities it presents towards the evolving experimentation needs of learning-based methods, and robotics in general. (c) DKittyOrientRandomDynamics: same as previous. The joint gains, damping, friction loss, geometry friction coefficients, and masses are randomized. In addition, a randomized height field is generated with heights up to 0.05m The successor evaluator indicates success if the facing angle error is within the goal threshold and the D'Kitty is sufficiently upright at the last step (t = T ) of the episode:</p><formula xml:id="formula_0">φ se (π) = E τ ∼π [1(e (τ ) T,f acing &lt; 5 • ) * 1(u (τ )</formula><p>T,kitty &gt; cos(15 . The observation space is a 52-size 1D vector of the shared observation space entries, h t,goal and p goal -p t,kitty . The reward function is defined as: r t = r t,upright -4d t,goal + 2h t,goal + r bonus small + r bonus big r bonus small = 5(d t,goal &lt; 0.5 or h t,goal &gt; cos(25 • ))</p><p>r bonus big = 10(d t,goal &lt; 0. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3 Safety metrics</head><p>The following safety scores are shared between all tasks.</p><p>(i) Position violations: This score indicates that the joint positions are near their operating bounds.</p><p>For the N joints of the robot, this is defined as:</p><formula xml:id="formula_1">s position = N i=1 1(|θ i -β i,lower | &lt; ) + 1(|θ i -β i,upper | &lt; )</formula><p>where β i,lower and β i,upper is the respective lower and upper joint position bound for the ith joint, and is the threshold within which the joint position is considered to be near the bound. (ii) Velocity violations: This score indicates that the joint velocities are exceeding a safety limit For the N joints of the robot, this is defined as:</p><formula xml:id="formula_2">s velocity = N i=1 1(| θi | &gt; α i )</formula><p>where α i is the speed limit for the ith joint. (iii) Current violations: This score indicates that the joints are exerting forces that exceed a safety limit. For the N joints of the robot, this is defined as:</p><formula xml:id="formula_3">s current = N i=1 1(|k i | &gt; γ i )</formula><p>where γ i is the current limit for the ith joint.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B Locomotion benchmark performance on D'Kitty</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C ROBEL reproducibility</head></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Cost comparison of RO-BEL with other commonly used platforms. We note that (a) ROBEL platforms have the most economical price point, thereby facilitating experiment's scalability and (b) Prices scale linearly with # of DOFs, thanks to modular design, thereby facilitating experiments' complexity</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head></head><label></label><figDesc>The combination of reproducibility and scalibility exhibited by ROBEL platforms presents to the field of robotics a lucrative preposition of a standard set of benchmarks (proposed in section 4) to facilitate sharing and collaborative comparison of results. ROBEL consists of the following two platforms: (a) D'Claw-real (b) D'Claw-sim (c) D'Claw schematic details (d) D'Kitty-real (e) D'Kitty-sim (f) D'Kitty schematic details</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: ROBEL features two low-cost, robust, modular platforms -D'Claw (9 DOF manipulation platform) and D'Kitty (12 DOF locomotion platform) 1. D'Claw (Figure 3a-3c) is a nine-DOF manipulation platform capable of performing dexterous manipulation. It consists of three identical fingers mounted symmetrically on a circular laser cut base. The finger tips are 3D printed parts. The base can be fixed to a stationary position, or mounted to a portable frame. D'Claw robots have been featured in wide stream of prior research [10, 7, 36] and have registered 1000s of hours of real world training on them. 2. D'Kitty (Figure 3d-3f) is a twelve-DOF quadruped capable of agile locomotion. It consists of four identical legs mounted symmetrically on a square base. The feet are simple 3d printed parts with rubber ends. D'Kitty is symmetric along all three axes and can also walk normally when upside down.</figDesc><graphic coords="4,115.41,233.83,79.20,79.04" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: ROBEL architecture</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>4. 1 Figure 5 :</head><label>15</label><figDesc>Figure 5: D'Claw manipulation benchmarks: Pose, Turn and Screw are motivated by commonly observed manipulation behaviors in daily life a) Pose (conform to the shape of the environment):This task is motivated by the primary objective of a manipulator to conform to its surrounding in order to prepare for the upcoming maneuverscommonly observed as various pre-grasp and latching maneuvers (Figure5a). This set of tasks is posed as trying to match randomly selected joint angle targets. Successful completion of this task demonstrates the capability of a manipulator to have controlled access to all its joints. This set of tasks are comparatively easier to train, thereby facilitates fast iteration cycles and a gradual transition to the rest of the tasks. Two variants of this task are provided: a static variant DClawPoseFixed where the desired joint angles remain constant, and a dynamic variant DClawPoseRandom where the desired joint angle is time-dependent and oscillates between two goal positions that are sampled at the beginning of the episode. b) Turn (rotate to a fixed target angle): This task encapsulates the ability of a manipulator to reposition unactuated DoFs present in the environments to target configurations -commonly observed as turning various knobs, latches and handles. This set of tasks is posed as trying to match randomly selected joint angle targets for the unactuated object(s). Successful completion of this task demonstrates the ability of a manipulator to bring desired changes on external targets. In order to succeed, the manipulator requires not only co-ordination between the internal DoFs, but also an understanding of environment dynamics perceived through contact interactions. Three variants of this task are provided: DClawTurnFixed where initial and target angles are constant, DClawTurnRandom where both initial and target angles are randomly selected, DClawTurnRandomDynamics where initial and target angles are randomly selected as well as the environment (object size, surface, and dynamics properties) is randomized.</figDesc><graphic coords="5,113.43,299.38,126.72,126.72" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head></head><label></label><figDesc>(a) Stand: getting upright (b) Orient: align heading (c) Walk: get to target</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: D'Kitty locomotion benchmarks a) Stand: Standing upright is one of the most fundamental behavior exhibited by the animals.This task involves reaching a pose while being upright. A successful strategy requires maintaining the stability of the torso via the ground reaction forces. Three variants of this task are provided: DKittyStandFixed standing up from a fixed initial configuration, DKittyStandRandom standing up from a random initial configuration, DKittyStandRandomDynamics standing up from random initial configuration where the environment (surface, dynamics properties of D'Kitty and ground height map) is randomized. See supplementary materials1 for full details b) Orient: This task involves D'Kitty changing its orientation from an initial facing direction to a desired facing direction. This set of tasks is posed as matching the target configuration of the torso. A successful strategy requires maneuvering the torso via the ground reaction forces while maintaining balance. Three variants of this task are provided: DKittyOrientFixed maneuvers to a fixed target orientation, DKittyOrientRandom maneuvers to a random target orientation, DKittyOri-entRandomDynamics maneuver to a random target orientation where the environment (surface, dynamics properties of D'Kitty and ground height map) is randomized. See supplementary materials1  for full details c) Walk: This task involves the D'Kitty moving its world position from an initial cartesian position to desired cartesian position while maintaining a desired facing direction. This task is posed as matching the cartesian position of the torso with a distant target. Successful strategy needs to exhibit locomotion gaits while maintaining heading. Three variants of this task are provided: DKit-tyWalkFixed walk to a fixed target location, DKittyWalkRandom walk to a randomly selected target location, DKittyWalkRandomDynamics walk to a selected target location where the environment (surface, dynamics properties of D'Kitty and ground height map) is randomized. See supplementary materials1 for full details</figDesc><graphic coords="6,245.81,250.19,120.39,99.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Success percentage for D'Claw and D'Kitty tasks trained on a physical D'Claw robot and a simulated D'Kitty robot using several agents: Soft Actor Critic (SAC)[7], Natural Policy Gradient (NPG)[39], Demo-augmented Policy Gradient (DAPG)[40], and Behavior Cloning (BC) over 20 trajectories. Success is measured via the success evaluator φ se (π) of the task (See Appendix A for details). Each timestep corresponds to 0.1 real-world seconds</figDesc><graphic coords="7,108.00,172.00,396.00,99.00" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Left-3: Training reproducibility between two real D'Claw robots, developed at different laboratory locations, over the benchmark tasks. Right: Effectiveness of a policy on different hardware it wasn't trained on. Score denotes closeness to to the goal.</figDesc><graphic coords="7,108.00,538.11,396.00,99.00" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 9 :Figure 10 :</head><label>910</label><figDesc>Figure 9: Change in physical appearance depicting D'Claw resilience to extreme usage. (left: new D'Claw) (right: operational for 6 months)Figure 10: Safety violations observed during the training of the DClawScrewFixed task</figDesc><graphic coords="8,242.64,219.45,126.72,101.38" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>( a )</head><label>a</label><figDesc>DKittyOrientFixed: constant initial facing (0 • ) and goal facing (180 • ). (b) DKittyOrientRandom: random initial facing ([-60 • , 60 • ]) and goal facing ([120 • , 240 • ])</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head></head><label></label><figDesc>5 and h t,goal &gt; cos(25 • )) and the shared reward function constants are α upright = 1, α f alling = -500, β = cos(25 • ). Three variants of this task are provided: (a) DKittyWalkFixed: constant distance (2m) towards 0 • . (b) DKittyWalkRandom: random distance ([1, 2]) towards random angle ([-60 • , 60 • ]) (c) DKittyWalkRandomDynamics: same as previous. The joint gains, damping, friction loss, geometry friction coefficients, and masses are randomized. In addition, a randomized height field is generated with heights up to 0.05m The successor evaluator indicates success if the goal distance is within a threshold and the D'Kitty is sufficient upright at the last step of the episode: φ se (π) = E τ ∼π [1(d (τ ) T,goal &lt; 0.5) * 1(u (τ ) T,kitty &gt; cos(25 • ))]</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Success percentage (3 seeds) for all D'Kitty tasks trained on a simulated D'Kitty robot using Soft Actor Critic (SAC), Natural Policy Gradient (NPG), Demo-Augmented Policy Gradient (DAPG), and Behavior Cloning (BC) over 20 trajectories. Each timestep corresponds to 0.1 simulated seconds.</figDesc><graphic coords="14,108.00,99.10,396.00,247.50" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_14"><head>Figure 12 :</head><label>12</label><figDesc>Figure 12: SAC training performance of D'Claw tasks on two real D'Claw robots each at different laboratory locations. Score denotes the closeness to the goal. Each timestep corresponds to 0.1 simulated seconds. Each task is trained over two different task objects: a 3-prong valve and a 4prong valve.</figDesc><graphic coords="14,108.00,438.75,396.01,198.00" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="1,108.00,159.71,396.01,196.31" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 :</head><label>1</label><figDesc>ROBEL</figDesc><table><row><cell></cell><cell cols="2">platform initial</cell></row><row><cell cols="3">cost and time investments</cell></row><row><cell cols="3">platform D'Claw D'Kitty</cell></row><row><cell># DOF</cell><cell>9</cell><cell>12</cell></row><row><cell>Price ($)</cell><cell>3500</cell><cell>4200</cell></row><row><cell cols="2">Build(hr) 4</cell><cell>6</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 :</head><label>2</label><figDesc>ROBEL platform features a variety of sensing options, control modes, limits and communication speeds</figDesc><table><row><cell>Property</cell><cell>Options</cell></row><row><cell>Control</cell><cell>Torque, Velocity, Position, Extended</cell></row><row><cell></cell><cell>Position, Current, PWM</cell></row><row><cell>Sensing</cell><cell>Position, Velocity, Current, Realtime tick,</cell></row><row><cell></cell><cell>Trajectory, Temperature, Input Voltage</cell></row><row><cell>Limits</cell><cell>Position, Velocity, PWM, Current</cell></row><row><cell cols="2">Bandwidth 9600 bps ∼ 4.5 Mbps</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 3 :</head><label>3</label><figDesc>(approximate) Usage statistics of ROBEL over 12 months. Note that statistics include data from when ROBEL was still under development</figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head></head><label></label><figDesc>• )] (iii) Walk: This task has the D'Kitty move its current Cartesian position p t,kitty to a desired Cartesian position p goal , minimizing the distance d t,goal = ||p goal -p t,kitty || 2 . Additionally, the D'Kitty is incentivized to face towards the goal. The heading alignment is calculated as h t,goal = R ŷ,t,kitty •</figDesc><table><row><cell>p goal -p t,kitty</cell></row><row><cell>d t,goal</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>code repository, detailed documentation, and task videos are available at www.roboticsbenchmarks.org</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1"><p>Occasional minor clarification over emails were later adopted into the documentation</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_2"><p>Broken motors are repairable via manufacturers RMA. Motor sub-assemblies are available online as well.</p></note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgments</head><p>We thank <rs type="person">Aravind Rajeswaran</rs>, <rs type="person">Emo Todorov</rs>, <rs type="person">Vincent Vanhoucke</rs>, <rs type="person">Matt Neiss</rs>, <rs type="person">Chad Richards</rs>, <rs type="person">Thinh Nguyen</rs>, <rs type="person">Byron David</rs>, <rs type="person">Garrett Peake</rs>, <rs type="person">Krista Reymann</rs>, and the rest of <rs type="institution">Robotics at Google</rs> for their contributions and discussions all along the way.</p></div>
+			</div>			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Appendix A ROBEL task details</head><p>In this section, we outline details of the benchmark task presented in section 4.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.1 D'Claw tasks</head><p>The action space of all D'Claw tasks (subsection 4.1) is a 1D vector of 9 D'Claw joint positions.</p><p>(i) Pose: This task involves posing D'Claw by driving its joints θ t to a desired joint angles θ goal sampled randomly from the feasible joint angle space at the beginning of the episode. The observation space s t is a 36-size 1D vector that consists of the current joint angles θ t , the joint velocities θt , the error between the goal and current joint angles, and the last action. The reward function is defined as:</p><p>Three variants of this task are provided: (a) DClawPoseFixed: a static variant where the desired joint angles remain constant for the episode (b) DClawPoseRandom: a dynamic variant where the desired joint angle is time-dependent and oscillates between two goal positions that are sampled at the beginning of the episode. (c) DClawPoseRandomDynamic: same as previous. The joint damping, and the joint friction loss are randomized at the beginning of every episode. Success evaluator metric φ se (π) of policy π is defined using the mean absolute tracking error being within the threshold β = 10</p><p>(ii) Turn: This task involves rotating an object from an initial angle θ 0,obj to a goal angle θ goal,obj . The observation space is a 21-size 1D vector of the current joint angles θ t , the joint velocities θt , the sine and cosine values of the object's angle θ t,obj , the last action, and the error between the goal and the current object angle ∆θ t,obj = θ t,obj -θ goal,obj . The reward function is defined as</p><p>Three variants of this task are provided: (a) DClawTurnFixed: constant initial angle (0 • ) and constant goal angle (180 • ). (b) DClawTurnRandom: random initial and goal angle. (c) DClawTurnRandomDynamics: same as previous. The position of the D'Claw relative to the object, the object's size, the joint damping, and the joint friction loss are randomized at the beginning of every episode. Success evaluator metric φ se (π) of policy π is defined using the error in last step of the episode (t = T ) being within the goal threshold β = 0.1 as:</p><p>(iii) Screw: This task involves rotating an object at a desired velocity θdesired from an initial angle. This is represented by a θ t,goal that is updated every step as θ t,goal = θ t-1,goal + θdesired * dt. Screw tasks have the same observation space and reward definitions as the Turn tasks. Three variants of this task are provided: Success evaluator metric φ se (π) of policy π is defined using the mean absolute tracking error being within the threshold β = 0.1</p><p>The action space of all of the D'Kitty tasks is a 1D vector of 12 joint positions. The observation space shares 49 common entries: the Cartesian position (3), Euler orientation (3), velocity (3), and angular velocity (3) of the D'Kitty torso, the joint positions θ (12) and velocities θ (12) of the 12 joints, the previous action <ref type="bibr" target="#b11">(12)</ref>, and 'uprightness' u t,kitty <ref type="bibr" target="#b0">(1)</ref>. The uprightness u t,kitty of the D'Kitty is measured as it's orientation projected over the global vertical axis:</p><p>The D'Kitty tasks share a common term in the reward function r t,upright regarding uprightness defined as:</p><p>where β is the cosine similarity threshold with the global z-axis beyond which we consider the D'Kitty to have fallen. When perfectly upright α t,upright reward is collected, when alignment (u t,kitty ) falls below the threshold β, the episode terminates early and α f alling is collected.</p><p>(i) Stand: This task involves D'Kitty coordinating its 12 joints θ t to stand upright maintaining a pose specified by θ goal . The observation space is a 61-size 1D vector of the shared observation space entries and pose error e t,pose = (θ goal -θ t ). The reward function is defined as: where ēt,pose is mean absolute pose error, p t,kitty is the cartesian position of D'Kitty on the horizontal plane and the shared reward function constants are α upright = 2, α f alling = -100, β = cos(90 • ). Three variants of this task are provided: (a) DKittyStandFixed: constant initial pose. (b) DKittyStandRandom: random initial pose. (c) DKittyStandRandomDynamics: same as previous. The joint gains, damping, friction loss, geometry friction coefficients, and masses are randomized. In addition, a randomized height field is generated with heights up to 0.05m The successor evaluator indicates success if the mean pose error is within the goal threshold β = π 12 and the D'Kitty is sufficiently upright at the last step (t = T ) of the episode:</p><p>T,kitty &gt; 0.9)] (ii) Orient: This task involves D'Kitty matching its current facing direction ω t with a goal facing direction ω goal , thus minimizing the facing angle error e t,f acing between ω desired and ω t . The observation space is a 53-size 1D vector of the shared observation space entries, ω t and ω goal represented as unit vectors on the (X,Y) plane, and angle error e t,f acing . The reward function is defined as: r t = r t,upright -4e t,f acing -4||p t,kitty || 2 + r bonus small + r bonus big r bonus small = 5(e t,f acing &lt; 15 • or u t,kitty &gt; cos(15 • ))</p><p>r bonus big = 10(e t,f acing &lt; 5 • and u t,kitty &gt; cos(15 • ))</p><p>where the shared reward function constants are α upright = 2, α f alling = -500, β = cos(25 • ). Three variants of this task are provided:</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Doron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Muldal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">D L</forename><surname>Casas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Budden</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Abdolmaleki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Merel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lefrancq</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1801.00690</idno>
+		<title level="m">Deepmind control suite</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">G</forename><surname>Brockman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Cheung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pettersson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schulman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zaremba</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1606.01540</idno>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Openai gym. arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Plappert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Andrychowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mcgrew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tobin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chociej</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Welinder</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zaremba</surname></persName>
+		</author>
+		<title level="m">Multi-goal reinforcement learning: Challenging robotics environments and request for research</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Reinforcement learning: An introduction</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">S</forename><surname>Sutton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">G</forename><surname>Barto</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<publisher>MIT press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">P</forename><surname>Lillicrap</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Hunt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pritzel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Heess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Silver</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Wierstra</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1509.02971</idno>
+		<title level="m">Continuous control with deep reinforcement learning</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Deeploco: Dynamic locomotion skills using hierarchical deep reinforcement learning</title>
+		<author>
+			<persName><forename type="first">X</forename><forename type="middle">B</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berseth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Van De Panne</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Graphics</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<author>
+			<persName><forename type="first">T</forename><surname>Haarnoja</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hartikainen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Tucker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1812.05905</idno>
+		<title level="m">Soft actor-critic algorithms and applications</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Learning hand-eye coordination for robotic grasping with deep learning and large-scale data collection</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Pastor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Krizhevsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ibarz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Quillen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">4-5</biblScope>
+			<biblScope unit="page" from="421" to="436" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Supersizing self-supervision: Learning to grasp from 50k tries and 700 robot hours</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE international conference on robotics and automation</title>
+		<imprint>
+			<date type="published" when="2016">2016. 2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Dexterous manipulation with deep reinforcement learning: Efficient, general, and low-cost</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rajeswaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1810.06045</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Nonlinear model predictive control</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Allgöwer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zheng</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+			<publisher>Birkhäuser</publisher>
+			<biblScope unit="volume">26</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Benchmarking deep reinforcement learning for continuous control</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Houthooft</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schulman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Domain randomization for transferring deep neural networks from simulation to the real world</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tobin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Fong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zaremba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="23" to="30" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">Cad2rl: Real single-image flight without a single real image</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sadeghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1611.04201</idno>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Andrychowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chociej</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Jozefowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mcgrew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pachocki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Petron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Plappert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ray</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1808.00177</idno>
+		<title level="m">Learning dexterous in-hand manipulation</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Sim-to-real reinforcement learning for deformable object manipulation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Matas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>James</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">J</forename><surname>Davison</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1806.07851</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Qt-opt: Scalable deep reinforcement learning for vision-based robotic manipulation</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kalashnikov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">P</forename><surname>Sampedro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ibarz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Jang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Quillen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Holly</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Vanhoucke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Bayessim: adaptive domain randomization via probabilistic inference for robotics simulators</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ramos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">C</forename><surname>Possas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1906.01728</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bhairav</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Manfred</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Florian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">P</forename><surname>Christopher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Liam</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1904.04762</idno>
+		<title level="m">Active domain randomization</title>
+		<imprint>
+			<date>20189</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Team ihmc&apos;s lessons learned from the darpa robotics challenge trials</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Shrewsbury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bertrand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Duran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Floyd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abeles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Stephen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Mertins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lesman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="192" to="208" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Robot competitions-ideal benchmarks for robotics research</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Behnke</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of IROS-2006 Workshop on Benchmarks in Robotics Research</title>
+		<meeting>of IROS-2006 Workshop on Benchmarks in Robotics Research</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">The robot that won the darpa grand challenge</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Thrun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Montemerlo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Dahlkamp</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Stavens</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Aron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Diebel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Fong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Halpenny</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hoffmann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="661" to="692" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">The highly adaptive sdm hand: Design and performance evaluation</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">D</forename><surname>Howe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The international journal of robotics research</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="585" to="597" />
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Design and fabrication of a soft robotic hand with embedded actuators and sensors</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Cleary</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-J</forename><surname>Su</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Mechanisms and Robotics</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page">21007</biblScope>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Design of a highly biomimetic anthropomorphic robotic hand towards artificial limb regeneration</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Todorov</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2016 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="3485" to="3492" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">A three-dimensional passive-dynamic walking robot with two legs and knees</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">H</forename><surname>Collins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wisse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ruina</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">The mit super mini cheetah: A small, low-cost quadrupedal robot for dynamic locomotion</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Bosworth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hogan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2015 IEEE International Symposium on Safety, Security, and Rescue Robotics (SSRR)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">The ycb object and model set: Towards common benchmarks for manipulation research</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Calli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Walsman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Srinivasa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2015 international conference on advanced robotics (ICAR)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="510" to="517" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">The robotarium: A remotely accessible swarm robotics research testbed</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pickem</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Glotfelter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Mote</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ames</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Feron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Egerstedt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="1699" to="1706" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Towards a personal robotics development platform: Rationale and design of an intrinsically safe personal robot</title>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">A</forename><surname>Wyrobek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Berger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">M</forename><surname>Van Der Loos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">K</forename><surname>Salisbury</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2008 IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2008">2008</date>
+			<biblScope unit="page" from="2165" to="2170" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">The raven: Design and validation of a telesurgery system</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Lum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">C</forename><surname>Friedman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Sankaranarayanan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>King</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Fodero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Leuschke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Hannaford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rosen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">N</forename><surname>Sinanan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="1183" to="1197" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">R</forename><surname>Mahmood</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Korenkevych</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Vasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bergstra</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1809.07731</idno>
+		<title level="m">Benchmarking reinforcement learning algorithms on real-world robots</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Pong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1905.07447</idno>
+		<title level="m">Replab: A reproducible low-cost arm benchmark platform for robotic learning</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<ptr target="http://www.robotis.us/dynamixel/" />
+		<title level="m">Dynamixel smart actuator</title>
+		<imprint>
+			<date type="published" when="2019-07-02">2019-07-02</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<ptr target="http://www.robotis.us/u2d2/" />
+		<title level="m">Usb-serial bus</title>
+		<imprint>
+			<date type="published" when="2019-07-02">2019-07-02</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<title level="m" type="main">Stochastic latent actor-critic: Deep reinforcement learning with a latent variable model</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">X</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nagabandi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1907.00953</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">Markov decision processes: Discrete stochastic dynamic programming</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">L</forename><surname>Puterman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1994">1994</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Mujoco: A physics engine for model-based control</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Todorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2012 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">A natural policy gradient</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Kakade</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in neural information processing systems</title>
+		<imprint>
+			<date type="published" when="2002">2002</date>
+			<biblScope unit="page" from="1531" to="1538" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main">Learning complex dexterous manipulation with deep reinforcement learning and demonstrations</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rajeswaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Vezzani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schulman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Todorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1709.10087</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

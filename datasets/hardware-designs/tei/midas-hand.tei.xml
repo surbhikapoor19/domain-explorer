@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">MIDAS Hand: Modular low-Impedance Directly-driven Anthropomorphic Sensing Hand</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Alvin</forename><surname>Zhu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+							</affiliation>
+							<affiliation key="aff1">
+								<orgName type="department">Department of Electrical and Com- puter Engineering</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mingzhang</forename><surname>Zhu</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">Department of Mechanical and Aerospace Engineering</orgName>
+								<orgName type="institution">UCLA</orgName>
+								<address>
+									<settlement>Los Angeles</settlement>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Quanyou</forename><surname>Wang</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">Department of Mechanical and Aerospace Engineering</orgName>
+								<orgName type="institution">UCLA</orgName>
+								<address>
+									<settlement>Los Angeles</settlement>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Beom</forename><forename type="middle">Jun</forename><surname>Kim</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">Department of Mechanical and Aerospace Engineering</orgName>
+								<orgName type="institution">UCLA</orgName>
+								<address>
+									<settlement>Los Angeles</settlement>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jose</forename><surname>Victor</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">S</forename><forename type="middle">H</forename><surname>Ramos</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">Department of Mechanical and Aerospace Engineering</orgName>
+								<orgName type="institution">UCLA</orgName>
+								<address>
+									<settlement>Los Angeles</settlement>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dennis</forename><surname>Hong</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">Department of Mechanical and Aerospace Engineering</orgName>
+								<orgName type="institution">UCLA</orgName>
+								<address>
+									<settlement>Los Angeles</settlement>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">MIDAS Hand: Modular low-Impedance Directly-driven Anthropomorphic Sensing Hand</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">3F55005238CB31109140F527B4F219AC</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Dexterous manipulation is limited not only by algorithms but by a shortage of accessible hand hardware that combines human-scale morphology, ease of manufacturing or maintenance, tactile sensing, and practical cost. Existing dexterous hands tend to optimize some of these properties at the expense of others. We present MIDAS Hand, a low-cost, opensource, human-scale dexterous hand with integrated tactile sensing for manipulation research. MIDAS Hand provides 16 total degrees of freedom (DoF) with 13 active DoF, directlydriven actuation with measurably low backdrive torque, and 283 three-axis tactile taxels in a compact 700 g package with a bill of materials under 3,000 USD. Built from 3D-printed components, it assembles in under three hours while providing the strength, repeatability, and maintainability needed for repeated real-world experiments. Alongside the hardware, we release a full stack: design files, build documentation, control and tactile python APIs, simulation models, and retargeting and teleoperation pipelines. We characterize MIDAS Hand through workspace and grasp-taxonomy analysis, payload and reliability tests, backdrivability measurements, and teleoperation demonstrations with tactile sensing, showing that it offers a balanced, reproducible platform for tactile dexterous manipulation and human-to-robot data collection. More details are available at <ref type="url" target="https://midas-hand.com">https://midas-hand.com</ref>.</p><p>* denotes equal contribution.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Dexterous manipulation is challenging since many everyday tasks require more than stable grasping: a hand must adjust contacts, regulate interaction forces, manipulate objects under uncertainty, and operate tools built for the human hand. Recent dexterous learning, teleoperation, and demonstration-collection methods have produced increasingly capable behaviors, but they are data-hungry and remain strongly constrained by the hand hardware used to collect data and execute policies <ref type="bibr" target="#b0">[1]</ref><ref type="bibr" target="#b1">[2]</ref><ref type="bibr">[3]</ref><ref type="bibr" target="#b3">[4]</ref>. The hand is thus not only an end-effector, but also a sensing platform, a data-collection device, and the physical interface between algorithms and the real world.</p><p>These roles impose competing requirements: a research hand must be dexterous enough for contact-rich tasks, instrumented to sense its contacts, robust for repeated trials, affordable, and reproducible. Human-scale morphology and tactile sensing matter most. Because objects and tools are built around the size, workspace, and opposition of the human hand, comparable morphology simplifies interaction, teleoperation, retargeting, and human-to-robot skill transfer,  and thumb opposition and finger workspace are tied to precision and fine manipulation <ref type="bibr" target="#b4">[5]</ref><ref type="bibr" target="#b5">[6]</ref><ref type="bibr" target="#b6">[7]</ref><ref type="bibr" target="#b7">[8]</ref>. Tactile feedback supplies contact, force, shear, and interaction-state information that vision cannot observe under occlusion. By enabling slip detection, grasp-stability monitoring, and contact-state estimation, it is increasingly central to tactile-reactive control and visuotactile learning <ref type="bibr" target="#b8">[9]</ref><ref type="bibr" target="#b9">[10]</ref><ref type="bibr" target="#b10">[11]</ref><ref type="bibr" target="#b11">[12]</ref><ref type="bibr" target="#b12">[13]</ref>.</p><p>No existing hand jointly satisfies these requirements. Commercial hands offer mature integration and high dexterity but remain costly, closed-sourced, and hard to modify <ref type="bibr" target="#b13">[14]</ref><ref type="bibr">[15]</ref><ref type="bibr" target="#b14">[16]</ref>, while open-source hands improve accessibility yet individually trade away human-scale morphology, dense tactile sensing, robustness, or maintainability <ref type="bibr">[17]</ref><ref type="bibr" target="#b17">[18]</ref><ref type="bibr" target="#b18">[19]</ref><ref type="bibr" target="#b19">[20]</ref><ref type="bibr" target="#b20">[21]</ref>. Dense tactile sensing in particular is difficult to integrate into a compact, low-cost, reproducible hand, precisely where contact-rich manipulation needs it most. Accessible hardware is also only part of the solution: without control and tactile APIs, simulation models, and retargeting and teleoperation tools, a hand still demands substantial integration effort before it can support demonstration collection and learning.</p><p>We present MIDAS Hand, a low-cost, open-source, human-scale dexterous hand with integrated tactile sensing for both real-world experiments and scalable demonstration collection. It provides 16 total DoFs with 13 active DoFs across four fingers, an opposable thumb, and 283 three-axis tactile taxels, all in a 700 g package under USD 3,000. Its actuation is directly-driven, with each actuator driving its joint through rigid linkages rather than tendons, and its lowfriction transmission yields measurably low backdrive torque for compliant interaction. The modular 3D-printed structure assembles in under three hours with easy maintenance. We release the full stack including design files, control and tactile APIs, simulation models, retargeting and teleoperation pipelines, and characterize the hand through kinematic, backdrivability, tactile, reliability, and manipulation experiments.</p><p>Contributions. The contributions of this work are: (i) a compact, human-scale dexterous hand that reaches a balance prior open hands achieve only individually: directly-driven backdrivable actuation, dense multi-axis tactile sensing, and low-cost 3D-printed construction. (ii) a full-stack, opensource software and data-collection ecosystem (control and tactile APIs, auto homing, simulation models, retargeting, and teleoperation) usable beyond the originating lab. (iii) experimental validation across workspace and grasp-taxonomy coverage, payload, reliability, backdrivability, and tactile and teleoperation demonstrations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>Commercial hands such as the Allegro Hand, Wuji Hand, and Sharpa Wave provide mature hardware, but their high cost, proprietary designs, and restricted access to hardware and software internals make them difficult to modify, deploy in academic labs, or furthur develop <ref type="bibr" target="#b13">[14]</ref><ref type="bibr">[15]</ref><ref type="bibr" target="#b14">[16]</ref>. Among opensource platforms, LEAP Hand is low-cost and anthropomorphic but larger than a human hand and lacks tactile sensing [17], while RUKA, RUKA-v2, and ORCA are tendondriven and lack high-resolution tactile feedback <ref type="bibr" target="#b17">[18]</ref><ref type="bibr" target="#b18">[19]</ref><ref type="bibr" target="#b19">[20]</ref>; CRAFT adds hybrid hard-soft compliance but is likewise tendon-driven <ref type="bibr" target="#b20">[21]</ref>. Directly-driven actuation offers several advantages over tendon-driven designs: it is structurally simpler and easier to maintain, transfers more readily from simulation to hardware, and keeps all actuators inside the hand rather than a separate forearm module, allowing the hand to attach directly from the wrist without adding unnecessary forearm length to commercial 6-and 7-DoF arms. These actuation benefits are shared by other directly-driven hands such as Wuji Hand and Sharpa Wave. MIDAS Hand pairs directly-driven actuation with human-scale morphology, low backdrive torque, integrated high-resolution tactile sensing, low cost, and modular maintainability in a single reproducible platform.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Tactile sensing for dexterous manipulation</head><p>Tactile sensing is increasingly essential for robust contactrich manipulation research. Tactile-reactive and visuotactile learning systems show that contact feedback provides information that is hard to infer from vision <ref type="bibr" target="#b8">[9]</ref><ref type="bibr" target="#b9">[10]</ref><ref type="bibr" target="#b10">[11]</ref><ref type="bibr" target="#b11">[12]</ref>, and studies on full-hand systems demonstrate that broader tactile coverage enhances real-world interaction and physical reasoning <ref type="bibr" target="#b12">[13]</ref>. Yet dense tactile integration in a compact hand poses mechanical, electrical, and maintenance challenges, and hands that achieve it are often costly or hard to reproduce. MI-DAS Hand does not propose a new sensor; it integrates commercial multi-axis tactile arrays <ref type="bibr" target="#b21">[22]</ref> into a low-cost, reproducible hand as a default modality, validated through tactile sensing experiments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Teleoperation, retargeting, and data collection</head><p>Dexterous manipulation also depends on software: simulation, hardware APIs, retargeting, and teleoperation pipelines lower the effort to collect demonstrations and transfer policies. DexPilot, AnyTeleop, and contact-rich retargeting map human motion onto robotic hands <ref type="bibr" target="#b22">[23]</ref><ref type="bibr" target="#b23">[24]</ref><ref type="bibr" target="#b24">[25]</ref>, while recent work scales teleoperation and data collection through haptic gloves, egocentric data, EMG-based pose estimation, and high-DoF retargeting <ref type="bibr">[3,</ref><ref type="bibr" target="#b25">[26]</ref><ref type="bibr" target="#b26">[27]</ref><ref type="bibr" target="#b27">[28]</ref><ref type="bibr" target="#b28">[29]</ref>. These efforts show that data-driven manipulation needs not only retargeting but sensorized, reproducible hands with accessible APIs and synchronized streams, which MIDAS Hand provides by releasing hardware, simulation, retargeting, and teleoperation tools together.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. SYSTEM DESIGN</head><p>MIDAS Hand is designed as a low-cost, human-scale dexterous hand platform for manipulation research. As summarized in Table <ref type="table" target="#tab_0">I</ref>, the design aims to balance several practical requirements that are often difficult to achieve simultaneously, including anthropomorphic size, dexterity, integrated tactile sensing, low weight and cost, and ease of fabrication and maintainability. The hand features a fourfinger configuration with 16 total DoFs and 13 active DoFs, including a four-DoF thumb and three opposing fingers. The mechanical structure is primarily fabricated from 3D-printed components, allowing the hand to remain lightweight and low-cost while supporting repeated real-world manipulation experiments. In addition, MIDAS Hand integrates tactile sensing and provides supporting electronics and software infrastructure for calibration, simulation, retargeting, and teleoperation. The following sections describe the mechanical design, electronics, and software stack in detail.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Actuation and transmission</head><p>MIDAS Hand drives all 13 active joints with identical high-performance Dynamixel XM335-T323-T servomotors. The actuation system is embedded within a compact structure, leveraging directly-driven actuation with rigid linkages for transmission. This approach provides high torque density and precise position control, while the low-friction transmission keeps the joints backdrivable for compliant, robust  interaction with diverse objects. The resulting backdrive torque is characterized in Sec. IV-A.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Finger Configuration &amp; Kinematics</head><p>To achieve anthropomorphic grasping capabilities, the finger configurations of MIDAS Hand are designed based on human anatomical and clinical data <ref type="bibr" target="#b29">[30,</ref><ref type="bibr" target="#b30">31]</ref>, with the joint nomenclature defined in Fig. <ref type="figure" target="#fig_2">2</ref>. The overall hand dimensions (205×120×55 mm), measured on the physical MIDAS Hand prototype, closely match the average adult human hand, ensuring seamless integration into human-centric environments and teleoperation setups.</p><p>The index, middle, and ring fingers utilize an underactuated architecture driven by a crossed four-bar linkage mechanism for the Distal Interphalangeal (DIP) joint. As illustrated in Fig. <ref type="figure" target="#fig_3">3</ref> (a), this kinematic coupling enforces a deterministic relationship between the DIP and Proximal Interphalangeal (PIP) joints, allowing simultaneous flexion through a single actuator. This approach significantly reduces control complexity while improving compliance and structural reliability during power grasps. The resulting sagittal-plane workspace of the index finger is evaluated in Fig. <ref type="figure" target="#fig_3">3 (b)</ref>. Assuming equal overall hand length between the robot and a human hand, and scaling human index-finger proportions from population anthropometric data <ref type="bibr" target="#b29">[30]</ref>, the MIDAS Hand finger covers 80.1% of the human index finger's sagittal-plane workspace, computed as the fraction of the human workspace area also reachable by the robot finger; the excess robot workspace reflects its proportionally longer index finger relative to the human population average. The thumb features 4 active DoF to replicate a humanlike opposition workspace. Instead of mounted orthogonally to the palm, the thumb incorporates an oblique second joint axis. This design ensures that its neutral orientation closely aligns with which of human biological counterpart. This kinematic configuration enables the thumb to sweep across the palm and directly oppose the other fingertips, supporting a diverse repertoire of grasping modes (pinch, power grasps, and in-hand object stabilization) within a compact, humanscale form factor. The full joint range of motion (ROM) is summarized in Table <ref type="table" target="#tab_1">II</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Modularity and Assembly</head><p>The index, middle, and ring fingers are identical, selfcontained modules, each integrating its three actuators, the crossed four-bar DIP linkage, and a fingertip tactile module. Each module mounts to the palm through a few M2 screws and two wire connectors, so removing a finger requires no internal rewiring. As a result, the complete hand can be assembled from its 3D-printed components in under three hours, and a finger module can be swapped in under 15 minutes on average. This modularity simplifies maintenance and repair, supporting sustained use across repeated realworld experiments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Tactile sensing</head><p>To support contact-rich manipulation, MIDAS Hand integrates high-density commercial tactile sensing arrays on the thumb and fingertips. The index, middle, and ring fingertips use Paxini PX6AX-GEN3-DP-S2015-Elite tactile modules, while the thumb uses the larger PX6AX-GEN3-DP-M2826-Omega module to provide a larger sensing area and higher load capacity for thumb-opposition grasps. Each S2015-Elite module provides 52 three-axis taxels, while the M2826-Omega provides 127 taxels, for a total of 3×52+127 = 283 taxels across the hand. The sensors are mounted on the primary contact surfaces of the thumb, index, middle, and ring fingers, allowing the hand to measure local contact location and force distribution during grasping and manipulation.</p><p>According to the manufacturer-reported specifications, each tactile module provides multi-axis force sensing with normal and shear force measurements. The sensors support a normal force range up to 25 N and a tangential force range up to ±10 N, with a maximum output rate of 83.3 Hz. The reported minimum recognition force is 0.1 N, and the spatial resolution is 1 mm. These characteristics allow MI-DAS Hand to capture contact position, normal loading, and shear information as shown in Fig. <ref type="figure" target="#fig_4">4</ref>, which are important for stable grasping, contact monitoring, and future tactile feedback control. The tactile sensors are connected through the vendor-provided high-speed communication board and streamed to the host computer together with actuator state feedback.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Electronics</head><p>The electronic architecture of MIDAS Hand is designed to provide a compact and maintainable interface for actuator control and tactile data acquisition. A custom distribution board located in the palm routes power and TTL communication to the Dynamixel actuators. Each finger module connects directly to this board, thereby enabling all actuators to share a common TTL communication bus. This layout reduces wiring complexity, simplifies assembly and debugging, and allows individual finger modules to be replaced or serviced independently. A U2D2 power hub provides the external power interface and communication link between the hand and the host computer. Tactile sensing is handled through Paxini's high-frequency communication board, which interfaces with the tactile sensors and streams contact measurements to the host system. By separating actuator distribution, tactile acquisition, and host communication into dedicated modules, the electronics remain compact, modular, and easy to maintain for repeated manipulation experiments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Open-Source Ecosystem</head><p>To make MIDAS Hand reproducible beyond the originating lab, we release the complete ecosystem summarized in Fig. <ref type="figure" target="#fig_5">5</ref>. On the hardware side, the release includes the full CAD models on Onshape, downloadable STEP files, bill of materials, PCB design files, and a step-by-step assembly guide, together with tactile sensor and actuator kit bundles that simplify part sourcing. This combined with the modular 3D-printed structure allow the hand to be built and serviced without specialized tooling or complex custom components.</p><p>The software stack spans the pipeline from human input to data collection. Human finger motion is captured either through vision-based hand tracking or a MANUS glove. When paired with the MANUS Haptic Pro, fingertip forces measured by the tactile arrays are mapped back to perfinger haptic feedback, providing the operator with contact cues during demonstration collection. A retargeting layer performs fingertip inverse kinematics with pinch calibration to convert the tracked motion into robot joint commands, built on existing open-source retargeting codebases <ref type="bibr" target="#b23">[24]</ref> and tuned for the MIDAS Hand kinematics. As shown in Fig. <ref type="figure" target="#fig_6">6</ref>, both input modalities enable MIDAS Hand to reproduce different human hand configurations in real time. The underlying hardware API provides actuator joint control together with automatic joint and tactile-sensor calibration. The auto-homing routine re-establishes consistent joint references before use, which is particularly important for a 3D-printed hand, where assembly variation, actuator replacement, and gradual wear of printed components introduce small offsets over time.</p><p>For simulation, we provide URDF files, MJCF models with simplified contact, and setup files for simulation-based learning environments, supporting visualization, controller development, and sim-to-real policy transfer. All layers lead into a data collection interface that streams synchronized joint and tactile states, enabling demonstration collection for learning-based manipulation with minimal additional setup.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS AND RESULTS</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Backdrivability</head><p>We quantify backdrivability as the single-joint backdrive torque: the joint torque required to initiate motion when a joint is pushed externally. All other joints of the hand are locked so that only the joint under test rotates; a slowly increasing force is applied with a digital force gauge, and the force at motion onset is converted to joint torque through the measured moment arm. Actuators are torque-disabled, so the values reflect passive mechanical backdrivability rather than active compliance. The identical protocol was applied in-house to the Sharpa Wave and Wuji Hand.</p><p>Because MIDAS Hand uses identical actuators at every joint, its backdrive torque is essentially uniform at ≈0.02 N • m (Table <ref type="table" target="#tab_2">III</ref>); the finger DIP is passive and inherits the PIP compliance. The Sharpa Wave requires 0.03-0.62 N•m, highest at the proximal joints, making MIDAS Hand roughly 3.5-30× more backdrivable despite both using directly-driven actuation, while the Wuji Hand joints are non-backdrivable. These results confirm the low joint impedance targeted by our design, enabling compliant, contact-rich interaction; the backdrivable joints also yield under sudden external loads rather than resisting them, improving impact resistance and overall robustness.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Thumb Opposition Workspace</head><p>To evaluate thumb opposability, we computed the intersection between the thumb contact-center workspace and that of each opposing finger, normalized by the corresponding finger workspace: the portion of each finger's reachable workspace that the thumb can oppose. As shown in Fig. <ref type="figure" target="#fig_7">7</ref> (a), the normalized overlap decreases from the index finger (49.52%) to the middle (40.03%) and ring fingers (24.54%). The measured thumb opposition workspace follows a humanlike radial-to-ulnar distribution. Kuo et al. <ref type="bibr" target="#b4">[5]</ref> reported that, in normal human hands, the normalized functional workspace for thumb-finger precision manipulation decreases from the index to the middle and ring fingers (33.65%, 27.10%, and 23.50%, respectively). The same decreasing trend observed in our robotic hand suggests that its thumb opposition workspace is similar to that of the human hand in its crossfinger distribution.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Strength Tests</head><p>To evaluate the structural strength and load capacity of MIDAS Hand, we performed two representative loading tests. In the fingertip load test shown in Fig. <ref type="figure" target="#fig_8">8</ref> (a), the index finger was used to lift a suspended load of up to 1.2 kg, demonstrating the strength of the fingertip and transmission under concentrated loading. The actuator overheated shortly after lifting this load, indicating that sustained high-load  operation is limited primarily by actuator thermal limits rather than immediate mechanical failure. In the wholehand payload test shown in Fig. <ref type="figure" target="#fig_8">8</ref> (b), MIDAS Hand was able to grasp and lift a total load of around 9.5 kg. The result indicates that the mechanical payload capacity of the hand exceeds 9.5 kg under this grasping configuration. More aggressive failure-limit testing will be conducted in the future work to determine the true maximum payload capacity. Together, these tests demonstrate that the hardware can withstand substantial fingertip and whole-hand loads for manipulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Reliability &amp; Repeatability</head><p>With the setup shown in Fig. <ref type="figure" target="#fig_9">9</ref> (a), we performed a continuous 2-hour grasping test comprising 5,143 grasp cycles to assess the reliability of MIDAS Hand, where actuator temperature and endpoint position error were recorded over time. For each finger, the endpoint position error was computed as the Euclidean distance between the measured fingertip position and its commanded reference position, combining the displacement components in the three directions into a single scalar error value.</p><p>As shown in Fig. <ref type="figure" target="#fig_9">9</ref> (b), the maximum actuator temperature increased rapidly during the initial stage of operation and then gradually converged to a steady value of approximately 49 • C, indicating that the system reached thermal equilibrium without continued temperature rise. The endpoint position error of the thumb, index, middle, and ring fingers was also monitored throughout the test, as shown in Fig. <ref type="figure" target="#fig_9">9 (c</ref>). Although small variations were observed, the endpoint errors remained bounded over the full test duration and did not show an obvious increasing trend. These results suggest that MIDAS Hand can maintain stable thermal behavior and consistent finger positioning across more than 5,000 consecutive grasp cycles, supporting its reliability for extended manipulation experiments.</p><p>To further quantify the finger repeatability, we performed an additional test using a higher-precision measurement setup. The final endpoint position of each closing motion was measured with a mechanical dial indicator over 100 repeated trials (Fig. <ref type="figure" target="#fig_10">10 (a)</ref>). As shown in Fig. <ref type="figure" target="#fig_10">10</ref> (b), the position cluster achieved a repeatability of 0.051 mm, with average measurement of 0.207 mm and a standard deviation of 0.016 mm. This small spread indicates that MIDAS Hand achieves highly consistent repeated closing motions under the tested condition.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Dexterity and Grasp Taxonomy</head><p>To assess the dexterity of MIDAS Hand, we tested the hand on the 33 grasp types defined in the GRASP taxonomy <ref type="bibr" target="#b31">[32]</ref>. As shown in Fig. <ref type="figure" target="#fig_11">11</ref>, MIDAS Hand successfully reproduced 32 of the 33 grasp types, covering a broad range of power, precision, intermediate, and tool-related grasps. These results demonstrate that the hand provides sufficient kinematic dexterity and thumb opposition to support diverse grasping interactions with everyday objects. The only unsuccessful grasp type required the little finger, which is absent in the current four-finger MIDAS Hand design. Overall, the taxonomy evaluation shows that MIDAS Hand covers most common human grasp categories despite a reduced finger.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. DISCUSSION</head><p>The results position MIDAS Hand as a practical hardware platform for contact-rich manipulation and clarify its design trade-offs. The uniformly low backdrive torque (≈0.02 N•m, below even the directly-driven commercial hands we measured) enables compliant interaction, and joints that yield under sudden loads add robustness across the strength and reliability tests. The passive DIP coupling trades independent distal control and part of the human sagittal workspace (80.1% coverage) for a lower actuator count and cost, yet the 32 of 33 taxonomy grasps and the human-like opposition trend indicate that the dexterity needed for common grasps is preserved. Finally, payload is bounded by actuator thermal limits rather than structural strength: the 3D-printed structure sustained a 9.5 kg whole-hand load while a 1.2 kg fingertip load overheated the actuator, and continuous operation stabilized near 49 • C, providing practical duty-cycle guidance for sustained experiments.</p><p>Several limitations remain. The four-finger design simplifies the hand and lowers cost, but the absence of a little finger limits grasps that rely on ulnar-side support, as reflected in the taxonomy test, and may reduce stability in some in-hand manipulation motions. The current evaluation characterizes hardware-level properties rather than task-level autonomous manipulation, so the results should be read as evidence of hardware readiness rather than manipulation performance. In addition, tactile sensing is presently demonstrated as a sensing modality and has not yet been incorporated into closedloop control. Future work will quantitatively characterize the integrated tactile system, incorporate tactile feedback into control, extend the software ecosystem with learning interfaces, and evaluate manipulation policies trained with and without tactile input on the released platform.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSION</head><p>We presented MIDAS Hand, a low-cost, open-source, human-scale dexterous hand that combines directly-driven backdrivable actuation, dense three-axis tactile sensing, and modular 3D-printed construction in a single reproducible platform. Experiments demonstrated a uniformly low backdrive torque of ≈0.02 N • m, roughly 3.5-30× lower than a comparable directly-driven commercial hand; coverage of 32 of the 33 GRASP taxonomy types; a human-like radial-toulnar thumb opposition trend; whole-hand payloads exceeding 9.5 kg; closing repeatability with a standard deviation of 0.016 mm; and stable operation over more than 5,000 consecutive grasp cycles. Together with the released hardware designs, control and tactile APIs, simulation models, and teleoperation pipeline, these results establish MIDAS Hand as a practical foundation for tactile feedback control, scalable demonstration collection, and learning-based dexterous manipulation. </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 1 :</head><label>1</label><figDesc>Fig. 1: (a) MIDAS Hand and its key specifications. (b) Representative grasps: scissor operation, pen use, and irregular-object grasping.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: Kinematic structure and joint nomenclature of the MIDAS Hand.</figDesc><graphic coords="3,49.34,236.06,260.18,191.62" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Fingertip ROM and linkage mechanism of MIDAS Hand. (a) Side view of the passive DIP linkage coupling PIP and DIP motion. (b) Sagittal-plane workspace of the MIDAS Hand finger (red) versus a human index finger (blue).</figDesc><graphic coords="3,46.00,232.01,261.10,193.08" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: Tactile sensor readings during object grasping.</figDesc><graphic coords="4,60.12,23.69,180.60,144.54" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Overview of the MIDAS Hand open-source ecosystem: hardware release artifacts, teleoperation inputs, retargeting, hardware API, simulation, and data collection.</figDesc><graphic coords="5,55.22,91.88,242.33,223.00" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: Retargeting and teleoperation demonstration. Human hand poses are mapped to MIDAS Hand joint commands in real time through (a) vision-based hand tracking and (b) the MANUS glove.</figDesc><graphic coords="5,163.60,479.99,135.85,101.89" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Thumb and finger contact-center workspace intersection for MIDAS Hand. The colored points indicate the overlapping workspace where the thumb and each opposing finger can reach a common contact location.</figDesc><graphic coords="6,209.92,54.00,153.25,127.25" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Fig. 8 :</head><label>8</label><figDesc>Fig. 8: Strength tests of MIDAS Hand. (a) Fingertip load test. (b) Whole-hand payload test.</figDesc><graphic coords="6,72.35,233.64,106.67,142.23" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 9 :</head><label>9</label><figDesc>Fig. 9: Reliability test of the MIDAS Hand. (a) Experimental setup for the continuous grasping test. The hand was commanded to repeatedly perform a grasping motion for 2 h (5,143 cycles). (b) Maximum actuator temperature over time during the test. (c) Endpoint position error over the 2 h test.</figDesc><graphic coords="7,54.00,154.04,121.09,100.91" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Fig. 10 :</head><label>10</label><figDesc>Fig. 10: Repeatability test of the MIDAS Hand. (a) Experiment setup to measure the endpoint position difference for each trial. (b) Experiment result of 100 trials.</figDesc><graphic coords="7,175.09,153.58,123.71,101.34" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Fig. 11 :</head><label>11</label><figDesc>Fig. 11: GRASP taxonomy evaluation. MIDAS Hand successfully reproduces 32 of the 33 grasp types defined in the GRASP taxonomy. The only unsuccessful grasp requires the little finger, which is absent in the current four-finger design.</figDesc><graphic coords="8,188.65,620.28,64.36,71.31" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I :</head><label>I</label><figDesc>Comparison of open-source and commercially available dexterous robotic hands.</figDesc><table><row><cell></cell><cell>LEAP [17]</cell><cell>RUKA v2 [19]</cell><cell>ORCA [20]</cell><cell>Allegro v5 Plus [14]</cell><cell>Sharpa Wave [16]</cell><cell>Wuji Hand [15]</cell><cell>MIDAS Hand (Ours)</cell></row><row><cell>Hands</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>Total DoF</cell><cell>16</cell><cell>20</cell><cell>17</cell><cell>16</cell><cell>22</cell><cell>20</cell><cell>16</cell></row><row><cell>Actuation</cell><cell>Direct</cell><cell>Tendon</cell><cell>Tendon</cell><cell>Direct</cell><cell>Direct</cell><cell>Direct</cell><cell>Direct</cell></row><row><cell>Tactile Sensor</cell><cell>No</cell><cell>No</cell><cell>Yes (BTF)</cell><cell>Yes (Pneumatic)</cell><cell>Yes (DTA)</cell><cell>No</cell><cell>Yes (DTA)</cell></row><row><cell>Size</cell><cell>∼30% larger</cell><cell>Human-scale</cell><cell>Human-scale</cell><cell>∼30% larger</cell><cell>Human-scale</cell><cell>Human-scale</cell><cell>Human-scale</cell></row><row><cell>Weight (g)</cell><cell>∼1,000</cell><cell>N.A.</cell><cell>∼1,200</cell><cell>1,240</cell><cell>∼1,300</cell><cell>&lt;600</cell><cell>∼700</cell></row><row><cell>Cost (USD)</cell><cell>∼2,000</cell><cell>∼1,500</cell><cell>∼2,500</cell><cell>∼11,000</cell><cell>∼50,000</cell><cell>∼16,000</cell><cell>&lt;3,000</cell></row></table><note><p>BTF: binary tactile feedback. DTA: dynamic tactile array.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE II :</head><label>II</label><figDesc>MIDAS Hand Joint ROM</figDesc><table><row><cell>Finger</cell><cell>Joint Name</cell><cell>Limits [deg]</cell></row><row><cell>Thumb</cell><cell>CMC Roll</cell><cell>[0, 123]</cell></row><row><cell></cell><cell>CMC Side</cell><cell>[-45, 52]</cell></row><row><cell></cell><cell>MP</cell><cell>[-90, 90]</cell></row><row><cell></cell><cell>IP</cell><cell>[-90, 90]</cell></row><row><cell cols="2">Index, Middle, Ring MCP Ab/Ad</cell><cell>[-45, 45]</cell></row><row><cell></cell><cell>MCP Pitch</cell><cell>[-103, 0]</cell></row><row><cell></cell><cell>PIP</cell><cell>[-83, 0]</cell></row><row><cell></cell><cell>DIP*</cell><cell>[-107, 0]</cell></row><row><cell></cell><cell></cell><cell></cell></row></table><note><p>* Passive joint, coupled to the PIP through the four-bar linkage.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE III :</head><label>III</label><figDesc>Single-joint backdrive torque (N • m; lower is more backdrivable). Sharpa Wave and MIDAS Hand were measured in-house with the same force-gauge protocol; Wuji Hand joints could not be backdriven.</figDesc><table><row><cell></cell><cell>Joint</cell><cell cols="3">Sharpa Wave Wuji Hand MIDAS Hand</cell></row><row><cell></cell><cell>MCP</cell><cell>0.35</cell><cell>×</cell><cell>0.02</cell></row><row><cell>Finger</cell><cell>PIP</cell><cell>0.11</cell><cell>×</cell><cell>0.02</cell></row><row><cell></cell><cell>DIP</cell><cell>0.03</cell><cell>×</cell><cell>passive</cell></row><row><cell></cell><cell>CMC</cell><cell>0.62</cell><cell>×</cell><cell>0.02</cell></row><row><cell>Thumb</cell><cell>MP</cell><cell>0.32</cell><cell>×</cell><cell>0.02</cell></row><row><cell></cell><cell>IP</cell><cell>0.07</cell><cell>×</cell><cell>0.02</cell></row></table><note><p>×: joint could not be backdriven.</p></note></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Dexumi: Using human hand as the universal manipulation interface for dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="437" to="459" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Dexexo: A wearability-first dexterous exoskeleton for operator-agnostic demonstration and learning</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zhu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2603.17323</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Egoscale: Scaling dexterous manipulation with diverse egocentric human data</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zheng</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2602.16710</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Towards human-like manipulation through rlaugmented teleoperation and mixture-of-dexterous-experts vla</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2603.08122</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Functional workspace for precision manipulation between thumb and fingers in normal hands</title>
+		<author>
+			<persName><forename type="first">L.-C</forename><surname>Kuo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-Y</forename><surname>Chiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C.-W</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-Y</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-N</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Electromyography and Kinesiology</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="829" to="839" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">The precision of the human hand: Variability in pinch strength and manual dexterity</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bardo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Symmetry</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Kinematic optimization of phalanx length ratios in robotic hands using potential dexterity</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Kang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ahn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">I</forename><surname>Park</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2604.20686[cs.RO</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Karma: A kinematic metric for fine manipulation ability in robotic hands</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Peticco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename></persName>
+		</author>
+		<idno type="arXiv">arXiv:2605.15548</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">T-rex: Tactile-reactive dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Niu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2606.17055</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Vitacformer: Learning cross-modal representation for visuo-tactile dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Heng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Geng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2506.15953[cs.RO</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Omnivtla: Vision-tactile-language-action model with semantic-aligned tactile sensing</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Cheng</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2508.08706</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Vtam: Video-tactile-action models for complex physical interaction beyond vlas</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yuan</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2603.23481</idno>
+		<idno>arXiv: 2603.23481 [cs.RO</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Opentouch: Bringing full-hand touch to real-world interaction</title>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">R</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2512.16842[cs.CV</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m">Allegro hand v5 plus</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m">Sharpa wave</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Medium Wrap</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Leap hand: Low-cost, efficient, and anthropomorphic hand for robot learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Agarwal</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Ruka: Rethinking the design of humanoid hands with learning</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zorin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Ruka-v2: Tendon driven open-source dexterous hand with wrist and abduction for robot learning</title>
+		<author>
+			<persName><forename type="first">X</forename><forename type="middle">L</forename><surname>Liu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2603.26660[cs.RO</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Orca: An open-source, reliable, costeffective, anthropomorphic robotic hand for uninterrupted dexterous task learning</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">C</forename><surname>Christoph</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<meeting>the IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</meeting>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note>eprint: 2504.04259 (cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Craft: A tendondriven hand with hybrid hard-soft compliance</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Moon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lazebnik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Jain</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2603.12120[cs.RO</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Paxini</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Dexpilot: Vision-based teleoperation of dexterous robotic hand-arm system</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Anyteleop: A general vision-based dexterous robot arm-hand teleoperation system</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Kinematic motion retargeting for contact-rich anthropomorphic manipulations</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">S</forename><surname>Lakshmipathy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">K</forename><surname>Hodgins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">S</forename><surname>Pollard</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.04820[cs.GR</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">DOGlove: Dexterous Manipulation with a Low-Cost Open-Source Haptic Force Feedback Glove</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems<address><addrLine>LosAngeles, CA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2025-06">Jun. 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Dexemg: Towards dexterous teleoperation system via emg2pose generalization</title>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2603.05861[cs.RO</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Dexterous teleoperation of 20-dof bytedexter hand via human motion retargeting</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Wen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2507.03227</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<author>
+			<persName><forename type="first">O</forename><surname>Rayyan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gilles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Cui</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2603.17065</idno>
+		<title level="m">Teledex: Accessible dexterous teleoperation</title>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note>cs.RO</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">An anthropometric study for the anthropomorphic design of tomato-harvesting robots</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Miao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">163</biblScope>
+			<biblScope unit="page" from="104" to="881" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">The normal active range of motion of the index, middle, ring, and little fingers in a sample of indian population</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Karanjkar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Indian Journal of Plastic Surgery</title>
+		<imprint>
+			<biblScope unit="volume">57</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="248" to="255" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">The grasp taxonomy of human grasp types</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Feix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-B</forename><surname>Schmiedmayer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kragic</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Human-Machine Systems</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="66" to="77" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

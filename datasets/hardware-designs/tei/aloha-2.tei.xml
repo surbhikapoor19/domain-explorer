@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">ALOHA 2: An Enhanced Low-Cost Hardware for Bimanual Teleoperation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2024-02-07">7 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName><surname>Aloha</surname></persName>
+							<email>aloha-2@googlegroups.com</email>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jorge</forename><surname>Team</surname></persName>
+						</author>
+						<author>
+							<persName><surname>Aldaco</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Travis</forename><surname>Armstrong</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Robert</forename><surname>Baruch</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jeff</forename><surname>Bingham</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sanky</forename><surname>Chan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kenneth</forename><surname>Draper</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Debidatta</forename><surname>Dwibedi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Pete</forename><surname>Florence</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Spencer</forename><surname>Goodrich</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Wayne</forename><surname>Gramlich</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Torr</forename><surname>Hage</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Alexander</forename><surname>Herzog</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jonathan</forename><surname>Hoech</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Thinh</forename><surname>Nguyen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ian</forename><surname>Storz</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Baruch</forename><surname>Tabanpour</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Leila</forename><surname>Takayama</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jonathan</forename><surname>Tompson</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ayzaan</forename><surname>Wahid</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ted</forename><surname>Wahrburg</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sichun</forename><surname>Xu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sergey</forename><surname>Yaroshenko</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kevin</forename><surname>Zakka</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Google DeepMind</orgName>
+							</affiliation>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">ALOHA 2: An Enhanced Low-Cost Hardware for Bimanual Teleoperation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-07">7 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">973F3F33DC291A9A22BF323FCAB080A4</idno>
+					<idno type="arXiv">arXiv:2405.02292v1[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Diverse demonstration datasets have powered significant advances in robot learning, but the dexterity and scale of such data can be limited by the hardware cost, the hardware robustness, and the ease of teleoperation. We introduce ALOHA 2, an enhanced version of ALOHA that has greater performance, ergonomics, and robustness compared to the original design. To accelerate research in large-scale bimanual manipulation, we open source all hardware designs of ALOHA 2 with a detailed tutorial, together with a MuJoCo model of ALOHA 2 with system identification. See the project website at</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ALOHA 2</head><p>ALOHA 2, like the original <ref type="bibr" target="#b7">Zhao et al. (2023)</ref>, consists of a bimanual parallel-jaw gripper workcell with two ViperX 6-DoF arms (Trossen Robotics, a) (the "follower"), along with 2 smaller WidowX arms <ref type="bibr">(Trossen Robotics, b)</ref> (the "leader"). The WidowX contains the same kinematic structure as the ViperX, in a smaller form factor. The follower joints are synchronized with the leader arms, and users teleoperate the follower arms by backdriving, or "puppeteering", the leader arms. The setup also contains cameras that produce images from multiple viewpoints, allowing collection of RGB data during teleoperation. The robots are mounted on a 48" x 30" table, with an aluminum cage to provide additional mount points for cameras and a gravity compensation system, which are detailed below.</p><p>To support research on complex manipulation tasks, we aim to significantly scale up data collection on the ALOHA platform, including the number of robots in use, the amount of hours of data per robot, and the diversity of data collection. This scaling process shifts the requirements and scope relative to the first ALOHA platform. For ALOHA 2, we build on the strengths of ALOHA platform while also targeting the following areas for further improvement:</p><p>• Performance and Task Range: We seek to enhance key components that enable ALOHA's performance, including grippers and controllers, to enable a broader set of manipulation tasks. • User Friendliness and Ergonomics: To optimize data collection at scale, we prioritize user experience and comfort. This includes improvements to the responsiveness and ergonomic design of user-facing systems. • Robustness: We want to increase system robustness to minimize downtime caused by diagnosis and repairs. This involves simplifying mechanical designs and ensuring the overall ease of maintenance for a larger robot fleet.</p><p>To this end, we make the following concrete improvements:</p><p>• Grippers: We create a new low-friction rail design for both the leader and follower grippers. For the leader robots, this improves teleoperation ergonomics and responsiveness. For the followers, this improves latency and the force output of the grippers. In addition, we upgrade the grip tape material on the fingers to improve durability and grasping of small objects. • Gravity Compensation: We create a passive gravity compensation mechanism using off-theshelf components that improves the durability compared to ALOHA 's original rubber band system. • Frame: We simplify the frame surrounding the workcell, while maintaining the rigidity of the camera mounting points. These changes allow space for both human-robot collaborators and props for the robot to interact with. • Cameras: We use smaller Intel RealSense <ref type="bibr" target="#b1">(Keselman et al., 2017)</ref> D405 cameras and custom 3D-printed camera mounts to reduce the footprint of the follower arms, which less inhibits manipulation tasks. These cameras also have a larger field of view, provide depth, have global shutter, and allow for more customization compared to the original consumer-grade webcams. • Simulation: We model the exact specifications of the ALOHA 2 robot in a MuJoCo model in MuJoCo Menagerie, which allows improved data collection, policy learning, and evaluation in simulation for challenging manipulation tasks.</p><p>We find that these improvements make it easier to teleoperate challenging tasks tasks like folding a T-shirt, tying a knot, throwing objects, or industrial tasks with tight tolerances. These improvements make it easier to collect 100s of demonstrations on these tasks per robot per day. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Hardware Leader Grippers (The device the human holds in their hands)</head><p>For smoother teleoperation and improved ergonomics, we replace the original scissor leader gripper design from ALOHA with a low friction rail design with reduced mechanical complexity. To further reduce strain, we also lower the backdriving friction by swapping the original leader's gripper motors (XL430-W250-T) with a lower-friction alternative (XC430-W150-T), which have a lower gear ratio and use lower-friction metal instead of plastic gears. 1 The new design requires approximately 10 times less force to open and close than the previous ALOHA scissor design (Fig. <ref type="figure" target="#fig_3">4</ref>). The lower friction significantly reduces the operator's hand fatigue and strain during long data collection sessions, notably on the lumbrical muscles 2 responsible for opening the gripper.</p><p>When deciding on the linear rail design, we also considered two additional designs. First is the original ALOHA scissor design, which uses custom 3d printed rotors and rails to backdrive the leader gripper motor. In addition, we evaluate a spring loaded trigger design, where pulling the trigger closes the gripper and releasing it opens the gripper to it's neutral open position (See Figure <ref type="figure" target="#fig_2">3</ref> for images and renderings of the evaluated grippers). We had 6 users teleoperate ALOHA 2 to unwrap candy using the original ALOHA scissor design, the linear rail design, and the trigger design. While users had varying preferences, the linear rail was rated well by nearly all operators.</p><p>Follower Grippers (The end-effector of the robot, i.e. the robot fingers that manipulate objects)</p><p>We design and manufacture low-friction follower grippers, replacing the original design from ALOHA. The lower friction reduces perceived latency between leader and follower grippers, significantly 1 <ref type="url" target="https://www.youtube.com/watch?v=JwAkSwwa0A4">https://www.youtube.com/watch?v=JwAkSwwa0A4</ref> 2 <ref type="url" target="https://my.clevelandclinic.org/health/body/25060-anatomy-of-the-hand-and-wrist">https://my.clevelandclinic.org/health/body/25060-anatomy-of-the-hand-and-wrist</ref>  improving user experience during teleoperation. We show the difference in latency between the old design and new design in the supplementary video. The new grippers are also capable of applying 2 times more force than the old design, allowing for stronger and more stable grasps of objects.</p><p>In addition, we improve the compliance of the gripper mechanism by removing the original PLA + acrylic structure, and replacing it with 3D printed carbon fiber nylon. Both the gripper fingers and the supporting structure can deform when loaded, improving the safety of the system.</p><p>We keep the "see-through" design of the finger links from the original ALOHA. In addition, we make improvements to the gripping tape on the fingers. We find that the original gripping tape on ALOHA wears out over time, and the roundness at the tips of the fingers makes picking up small objects difficult. We apply a polyurethane gripping tape to the inside of the gripper. We also apply strips of tape on the outside of the finger to increase traction for tasks that require manipulating objects with the outer side of the gripper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Gravity Compensation</head><p>We design a more robust passive gravity compensation for the leader robots to ease operator wear during teleoperation. We construct this using off-the-shelf components, including adjustable hanging retractors that allows operators to tune the load balancing forces to their comfort level.</p><p>We run a study to evaluate the passive hardware gravity compensation system against an active software-based system. We develop the active system using inverse dynamics from the MuJoCo model to calculate equivalent torques for the gravity load and then command these torques to the joints of the leader robot. To conduct the study, 6 users teleoperate the robots for 10 minute sessions, and attempt to perform a precise task of inserting shapes into corresponding holes in a box. The operators attempt the task on both systems in a randomly assigned order. We compare performance on the task across the two systems, and find that on average operators performed better with the passive gravity compensation system (1.38 vs 0.97 shapes inserted per minute). Based on feedback from study participants, we speculate that the passive system allows more smooth and predictable movements. Study participants mention that the active system requires more force and results in choppier movement, perhaps due to poorly tuned servo gains or slight latency in applying counteracting forces. In addition, we find that the passive system provides two additional advantages. First, it can allow safer teleoperation by fully disabling joint actuation on the leaders, as software bugs or edge cases may cause large or unexpected movements of the leader robots. Second, the force retractors give a natural centering for the arms to keep the wrists on the leader arms from over-rotating, which seemed to be a weakness of the active gravity compensation. Despite choosing the passive system for ALOHA 2, we speculate that an active system can perhaps be developed and tuned to surpass performance of our passive system, and could potentially be extended to allow useful features like providing tactile feedback to the user.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Frame</head><p>We redesign the support frame and build it using 20x20mm aluminum extrusions. The frame provides support for the leader robots, gravity compensation system, and provides mount points for the overhead and worms-eye cameras. Compared to ALOHA, we simplify the design to remove the vertical frames on the side of the table opposite to the teleoperator. The added space allows for diverse styles of data collection. For example, a human collaborator can more easily stand at the opposite side of the workspace and interact with the robot, allowing collection of human-robot interactive data. Additionally, larger props can be placed in front of the table for the robot to interact with.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Cameras</head><p>We upgrade the cameras used in the ALOHA system to 4 RealSense D405 cameras. These cameras enable high resolution RGB and depth in a small form factor, as well as provide global shutter. We note that although depth and global shutter were not necessary for the results demonstrated on the first ALOHA system, they might be considered "nice to haves" for enabling different experimentation and pushing performance. We design new camera mounts for both the wrist cameras, as well as the overhead and worms-eye views (See Figure <ref type="figure" target="#fig_5">6</ref>). The lower profile of the cameras on the wrists reduces the number of collision states and improves teleoperation for certain fine grained manipulation tasks, especially those that require close contact between the arms or navigating through tight spaces.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Teleoperation</head><p>We run the teleoperation software stack using ROS2 <ref type="bibr" target="#b2">(Macenski et al., 2022)</ref>. Upon startup, both leader and follower arms initialize to the home position. Operators can start a data collection session by closing the gripper using the finger attachments on either of the leader robots. Operators can save or discard a session using foot pedals positioned underneath the workcell.</p><p>During a teleoperation session, we log sensor streams from the robot including images, leader and follower joint positions, and other auxiliary data provided by the ROS2 system. We take several measures at collection time to ensure that downstream pipelines receive complete, high quality data, since this is crucial for robotic learning pipelines. Session statistics such as sensor availability and latency are visible to the operator during collection to ensure data is reliably logged. Sessions are automatically shut down for missing data to ensure downstream learning pipelines always receive complete data. When sessions are logged, we record the operator username, time, and the robot identifier along with the raw sensors streams from the robot. Including the additional data allows filtering data downstream if issues are found for certain robots during a period of time. We record leader and follower joint data at 50Hz, which as the original ALOHA system showed, outperforms lower frequency teleoperation. Ergonomics. Much of the motivation for the improvements highlighted in this report is to ensure comfort for users during teleoperation. We reiterate several of the features, and add several new considerations to maximize ergonomic benefit:</p><p>• Low friction grippers reduce strain on fingers and wrists during teleoperation.</p><p>• Passive gravity compensation counteracts the weight of the leader arms, to reduce wear on shoulders and arms during long teleoperation sessions. • Swappable finger attachments of different sizes on the leaders allow customization for users with different hand sizes. • Adjustable height chairs allow users to adjust to their optimal height during teleoperation.</p><p>• Suggested rest intervals for users to take breaks at least 2 minutes long, and avoid long continuous sessions. We observe that taking breaks at least every 10 minutes minimizes wear from repetitive motion. Users are also instructed to take breaks upon feeling any signs of fatigue, and mix up tasks to teleoperate between breaks to avoid continuous repeated motions for a single task.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Simulation</head><p>We release a MuJoCo Menagerie <ref type="bibr" target="#b3">(Todorov et al., 2012)</ref>  <ref type="bibr" target="#b6">(Zakka et al., 2022)</ref> model of the ALOHA 2 workcell, useful for teleoperation and learning in simulation. The new model is more physically accurate and has higher visual fidelity than previously released ALOHA models. We perform system identification using logged trajectories from a real ALOHA 2 setup to set physics parameters in the MuJoCo model. In particular, we collect 11 trajectories in real using the leader arms and minimize the residuals between real and simulated trajectories using a nonlinear least squares solver. Real trajectories consist of sinusoidal motions targeting the control limits of motors in the follower arm.</p><p>The optimization tunes the proportional gain, damping, armature, joint friction, and torque limits of all position controlled actuators. The gripper is modeled using a position controlled linear actuator with an equality constraint between the gripper fingers. For higher visual fidelity, we match camera intrinsics as closely as possible to the real setup (See Figure <ref type="figure">8</ref> for the simulated camera views), and we import assets for the table, table extrusions, and follower grippers.</p><p>Figure <ref type="figure">7</ref> | Rendering of the MuJoCo model. The model contains ViperX robots with wrist cameras, mounted on a replica of the aluminum extrusion frame. We precisely model all cameras and robot positions of the ALOHA 2 specification, and perform system identification to ensure similar behavior to real.</p><p>Figure <ref type="figure">8</ref> | Teleoperating tasks in simulation. We show the 4 camera views recorded during simulation collection runs using objects from the Google Scanned Objects Dataset <ref type="bibr" target="#b0">(Downs et al., 2022)</ref>.</p><p>The realistic model allows fast, intuitive, and scalable simulation data collection using an ALOHA 2 WidowX leader setup. We hope that an open source, high quality model with system identification can enable sharing of teleoperated simulation data across institutions and accelerate research in policy learning in simulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Conclusion</head><p>We present a low-cost system for bimanual teleoperation, enhancing performance, user-friendliness, and robustness compared to the previous ALOHA system. We make concrete improvements to hardware such as grippers, gravity compensation, frame, and cameras, while also providing a high quality simulation model. We hope ALOHA 2 will enable large scale data collection for fine-grained bimanual manipulation to advance research in robot learning.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 |</head><label>1</label><figDesc>Figure 1 | ALOHA 2: An Enhanced Low-Cost Hardware for Bimanual Teleoperation. Top: The fleet of ALOHA 2 robots capable of collecting 1000s of demonstrations per day. Bottom: A detailed image of an ALOHA 2 workcell with gravity compensation, the redesigned leader and follower grippers, and images from the frame-mounted cameras.</figDesc><graphic coords="1,166.29,522.11,259.66,185.49" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 |</head><label>2</label><figDesc>Figure 2 | Renderings of leader and follower gripper designs. Left: follower gripper with Intel RealSense D405, custom 3d-printed camera mount, and low friction follower rail design. Right: leader gripper with swappable finger mounts and low friction leader rail design.</figDesc><graphic coords="3,284.16,66.84,237.55,281.75" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 |</head><label>3</label><figDesc>Figure 3 | The leader grippers evaluated for ALOHA 2. Left: the original ALOHA scissor design. Middle: low friction rail design which was ultimately chosen based on user studies. Right: rendering of the trigger design that was also considered.</figDesc><graphic coords="4,62.36,85.04,470.55,192.31" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 |</head><label>4</label><figDesc>Figure 4 | ALOHA 2 improves the ergonomics and closing force of grippers. Left: Force required from the operator to open leader grippers. ALOHA 2 reduces the force from 14.68N to 0.84N, reducing hand fatigue and improving ergonomics. Right: Closing force at the tip of follower grippers. ALOHA 2 is capable of exerting more than double the force compare to the old design (27.9N vs. 12.8N) .</figDesc><graphic coords="5,107.90,77.44,188.22,217.96" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 |</head><label>5</label><figDesc>Figure 5 | The redesigned frame. Left: A rendering of the frame, which provides structure for gravity compensation and mount points for the cameras. Right: The frame allows space for collection of human-robot collaborative data.</figDesc><graphic coords="6,50.20,74.52,264.31,234.98" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 6 |</head><label>6</label><figDesc>Figure 6 | The four camera views recorded during teleoperation on a real workcell. From left to right: overhead camera, worms-eye camera, left wrist camera, right wrist camera. All four cameras record 848 x 480 rgb images.</figDesc><graphic coords="7,62.36,85.04,470.54,270.82" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="8,62.36,178.09,470.54,177.90" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="8,62.36,437.29,470.55,269.97" type="bitmap" /></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgements</head><p>We thank <rs type="person">Tom Erez</rs>, <rs type="person">Matthew Mounteer</rs>, <rs type="person">Francesco Romano</rs>, <rs type="person">Stefano Saliceti</rs>, and <rs type="person">Yuval Tassa</rs> for help with the simulation model. We thank <rs type="person">Tomas Jackson</rs> for photography of the ALOHA 2 fleet. We thank <rs type="person">Corey Lynch</rs> for help with software setup and ROS2 integration. We thank <rs type="person">Chikezie Ejiasi</rs> for creating character illustrations used in figures. We would also like to thank members of the wider <rs type="institution">Google DeepMind Robotics team</rs> for their support.</p></div>
+			</div>			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Author Contributions</head><p>Please cite this work as "ALOHA 2 Team (2024)".</p><p>• Core Team (core contributors; leading the project effort; leading design, implementation, and/or research on the platform): </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Google scanned objects: A high-quality dataset of 3d scanned household items</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Downs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Francis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Koenig</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Kinman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hickman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Reymann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">B</forename><surname>Mchugh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Vanhoucke</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2204.11918" />
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Intel realsense stereoscopic depth cameras</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Keselman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Iselin Woodfill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Grunnet-Jepsen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bhowmik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition workshops</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition workshops</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="1" to="10" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Robot operating system 2: Design, architecture, and uses in the wild</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Macenski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Foote</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Gerkey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lalancette</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Woodall</surname></persName>
+		</author>
+		<idno type="DOI">10.1126/scirobotics.abm6074</idno>
+		<ptr target="https://www.science.org/doi/abs/10.1126/scirobotics" />
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">66</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Mujoco: A physics engine for model-based control</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Todorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+		<idno type="DOI">10.1126/scirobotics.abm6074</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2012 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="5026" to="5033" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<author>
+			<persName><forename type="first">Trossen</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.trossenrobotics.com/viperx-300-robot-arm-6dof.aspx" />
+		<title level="m">Viperx 300 robot arm 6dof</title>
+		<imprint>
+			<biblScope unit="page" from="2024" to="2025" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<author>
+			<persName><forename type="first">Trossen</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.trossenrobotics.com/widowx-250-robot-arm-6dof.aspx" />
+		<title level="m">Widowx 250 robot arm 6dof, b</title>
+		<imprint>
+			<biblScope unit="page" from="2024" to="2025" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">MuJoCo Menagerie: A collection of highquality simulation models for MuJoCo</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zakka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mujoco</forename><forename type="middle">Menagerie</forename><surname>Contributors</surname></persName>
+		</author>
+		<ptr target="http://github.com/google-deepmind/mujoco_menagerie" />
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,2096 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators</title>
+				<funder ref="#_Qnw7UhA">
+					<orgName type="full">National Science Foundation</orgName>
+					<orgName type="abbreviated">NSF</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2024-07-18">18 Jul 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Philipp</forename><surname>Wu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yide</forename><surname>Shentu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zhongke</forename><surname>Yi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xingyu</forename><surname>Lin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-07-18">18 Jul 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">C096E4EEA11452A7584F828EC99CB499</idno>
+					<idno type="arXiv">arXiv:2309.13037v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Fig. 1: We show GELLO teleoperation systems built for three different types of robots: (A) two UR5s, (B) an xArm, and (C) a Franka. The user can teleoperate the robot arms by controlling the GELLO devices. The bill of materials for each GELLO device is less than $300.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>In recent years, robotics has gone through a remarkable transformation driven by the increasing integration of data-driven methods in every component, ranging from perception to control. The ability to learn from diverse data helps robots generalize to new scenarios which would be difficult to achieve by a manually designed system. For manipulation, there have been great successes in leveraging imitation learning <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b1">[2]</ref>, <ref type="bibr" target="#b2">[3]</ref>, <ref type="bibr" target="#b3">[4]</ref> where system performance improves with larger datasets <ref type="bibr" target="#b4">[5]</ref>, <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>, <ref type="bibr" target="#b7">[8]</ref>. However, existing systems are still bottlenecked by the dataset size as well as the complexity and diversity of the tasks within the dataset.</p><p>Human teleoperation has consistently proven to be one of the best ways to control robot manipulators to collect demonstrations for imitation learning. Teleoperation has a long history and enabled impressive robot capabilities in a diverse range of challenging situations such as fine grain manipulation of everyday tasks <ref type="bibr" target="#b8">[9]</ref>, robot surgery <ref type="bibr" target="#b9">[10]</ref>, <ref type="bibr" target="#b10">[11]</ref>, <ref type="bibr" target="#b11">[12]</ref>, underwater exploration <ref type="bibr" target="#b12">[13]</ref>, <ref type="bibr" target="#b13">[14]</ref>, and disaster relief <ref type="bibr" target="#b14">[15]</ref>, <ref type="bibr" target="#b15">[16]</ref>, all of which would be useful skills for a robot to learn. A common feature of the teleoperation devices used in these systems is their bilateral capability, which enables the operator to not only direct commands at the robot but also receive force feedback from the robot's environment. While performant, these teleoperation systems typically require highfidelity sensors due to their strict system requirements, leading to higher costs that ultimately limit accessibility.</p><p>As a result, a more commonly used approach is to build a teleoperation system that captures control signals from lower-cost commodity electronic devices like 3D-mouse <ref type="bibr" target="#b16">[17]</ref>, VR controllers <ref type="bibr" target="#b17">[18]</ref>, <ref type="bibr" target="#b18">[19]</ref> or cameras, which is then converted to a robot action. However, these systems abstract away the kinematic constraints of the robot and can be unintuitive to new users. "A Low-cost Open-source Hardware System for Bimanual Teleoperation" (ALOHA) presents a teleoperation system leveraging an off-the-shelf servo-based arm to control a manipulator of similar size and kinematics, showing impressive teleoperation capabilities for fine-grained manipulation tasks despite being unilateral <ref type="bibr" target="#b8">[9]</ref>. Nevertheless, the ALOHA system is tailored to a specific robot arm and has a higher cost due to having additional robot arms as controllers for the user.</p><p>In this paper, we introduce GELLO, a GEneraL, LOw-cost, and intuitive teleoperation framework for robot manipulators, targeted towards enabling a scalable way to collect demos by exploring the limits of affordability and simplicity. GELLO is designed to be low-cost, easy to build, and intuitive for humans to use. The key principle is to build miniature, kinematically equivalent controllers with 3D-printed parts and off-the-shelf motors as joint encoders. We clarify that the ideas behind GELLO are not new, rather our contributions can be summarized in the three points below:</p><p>1) We present practical implementations of GELLO as a teleoperation system for three commonly used robot arms with simple and low-cost designs. 2) We perform a comprehensive user study demonstrating the system's effectiveness compared to other prevalent low-cost teleoperation systems in the literature.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3)</head><p>We fully open-source the hardware and software needed to replicate and operate GELLO to ensure accessibility for the research community to build upon, complete with a bill of materials and assembly instructions <ref type="foot" target="#foot_0">1</ref> .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Teleoperation Systems for Manipulation</head><p>Low-cost Controllers. Teleoperation systems have a longstanding history and various low-cost sensors have been used to provide the interface for human-robot interaction. Commonly used teleoperation systems include joysticks and spacemouses <ref type="bibr" target="#b19">[20]</ref>, <ref type="bibr" target="#b20">[21]</ref>, <ref type="bibr" target="#b21">[22]</ref>, commercial VR controllers <ref type="bibr" target="#b3">[4]</ref>, <ref type="bibr" target="#b22">[23]</ref>, <ref type="bibr" target="#b23">[24]</ref>, <ref type="bibr" target="#b24">[25]</ref>, RGB cameras <ref type="bibr" target="#b25">[26]</ref>, <ref type="bibr" target="#b26">[27]</ref>, <ref type="bibr" target="#b27">[28]</ref>, <ref type="bibr" target="#b28">[29]</ref> or IMU sensors <ref type="bibr" target="#b29">[30]</ref>, <ref type="bibr" target="#b30">[31]</ref>, <ref type="bibr" target="#b31">[32]</ref>, However due to the morphological differences between these control devices and the robots, the user often can only perform teleoperation in the more abstracted end-effector space. The kinematic constraints of the robot arms therefore are not perceived by the human operators. This prevents the operator from precisely controlling the arm near the areas of kinematic singularities and self-collisions, which reduces the demonstration throughput and increases failures. Moreover, both VR and camera-based solutions can suffer from occlusion and additional latency. $300 VR (Meta Quest 2) <ref type="bibr" target="#b17">[18]</ref> $300</p><p>Robot-to-robot Teleop (e.g. UR5) $30,000 Haptic Device (Omega7 <ref type="bibr" target="#b44">[45]</ref>) $40,000</p><p>Notably, the recent ALOHA system showcases impressive fine-grained bi-manual manipulation with Dynamixel-based servo arms, where an additional two arms of similar form factor function as controllers <ref type="bibr" target="#b8">[9]</ref>. Similar to other more conventional but costly teleoperation systems <ref type="bibr" target="#b32">[33]</ref>, <ref type="bibr" target="#b33">[34]</ref>, <ref type="bibr" target="#b34">[35]</ref>, the teleoperation device is another fully-fledged robot arm, with size and capability comparable to the manipulator arm, which can increase the cost. In comparison, we use lowcost components to design a scaled replica of the target arm, resulting in an economical solution that still maintains the advantages of using a kinematically isomorphic arm as the controller.</p><p>Bilateral Teleoperation Systems. In contrast to unilateral teleoperation approaches, bilateral teleoperation enables the user to feel force feedback from the target arm <ref type="bibr" target="#b35">[36]</ref>, <ref type="bibr" target="#b36">[37]</ref>, an active area of research with a wide range of methodologies. One such approach uses additional robot arms that are isomorphic to the target robots serving as controllers <ref type="bibr" target="#b32">[33]</ref>, <ref type="bibr" target="#b33">[34]</ref>, <ref type="bibr" target="#b34">[35]</ref>, <ref type="bibr" target="#b37">[38]</ref>, <ref type="bibr" target="#b38">[39]</ref>, <ref type="bibr" target="#b39">[40]</ref>. This approach enables environment feedback from the manipulator to be directly relayed back to the joints of the control device. Also, the user can easily sense the kinematic constraints of the robot arm, as the controller arm has the same kinematic constraints. Additionally, there have been efforts to design 1-to-1 exoskeletons for teleoperation purposes <ref type="bibr" target="#b40">[41]</ref>, <ref type="bibr" target="#b41">[42]</ref>, <ref type="bibr" target="#b42">[43]</ref>. These systems, though effective, are typically bespoke for specific robots, leading to a varied design approach across different robot types. Another avenue explored in the literature is the use of special input devices with haptic feedback <ref type="bibr" target="#b43">[44]</ref>, <ref type="bibr" target="#b44">[45]</ref>. While these devices offer a tangible sense of the robot's kinematic constraints, they often have a very tight operation space and additionally require translating the robot's kinematic constraints into tangible force feedback increasing system complexity <ref type="bibr" target="#b45">[46]</ref>, <ref type="bibr" target="#b12">[13]</ref>. In contrast to these approaches, our contribution presents a generalized framework for designing affordable and easily accessible exoskeleton-like unilateral controllers. We provide instances of our approach for three widely-used robot arms. Our system, GELLO, stands out for its affordability, portability, and replicability, reducing the challenges associated with collecting quality teleoperated human demonstrations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Learning from Human Demonstrations</head><p>Learning from demonstrations has been a popular framework for enabling robots to perform a wide range of tasks <ref type="bibr" target="#b4">[5]</ref>, <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>, <ref type="bibr" target="#b3">[4]</ref>, <ref type="bibr" target="#b28">[29]</ref>, <ref type="bibr" target="#b46">[47]</ref>, <ref type="bibr" target="#b47">[48]</ref>. Prior works have observed that the performance of the learning system scales with the size of the dataset. As such, there are substantial ongoing efforts at collecting larger and larger datasets <ref type="bibr" target="#b48">[49]</ref>, <ref type="bibr" target="#b49">[50]</ref>. However, collecting human demonstrations can be expensive and time-consuming. For example, the data collection process as done by Brohan et al. <ref type="bibr" target="#b4">[5]</ref> spanned over 17 months with a team of researchers. On the other hand, significant efforts have been made towards better human-robot interaction to address the bottleneck. Some examples include sharing control between the human and the robot <ref type="bibr" target="#b19">[20]</ref>, or enabling a human to operate multiple robots simultaneously <ref type="bibr" target="#b50">[51]</ref>. These approaches are complementary to our objective, which is to build teleoperation systems that are more accessible and intuitive to use. Finally, a promising direction is learning directly from human videos <ref type="bibr" target="#b51">[52]</ref>, <ref type="bibr" target="#b52">[53]</ref>, <ref type="bibr" target="#b53">[54]</ref>, <ref type="bibr" target="#b54">[55]</ref>, <ref type="bibr" target="#b55">[56]</ref>, <ref type="bibr" target="#b56">[57]</ref>. While collecting videos of humans performing the tasks directly is relatively inexpensive, overcoming the morphology gap between robots and humans remains challenging.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. TELEOPERATION DEVICE DESIGN</head><p>The focus for the design of GELLO is to create an interface that is both economically accessible and easy-to-use for users aiming to render high-quality demonstrations in robot learning. The primary design principles are summarized as follows:</p><p>• Low-cost: We aim to show that a capable system can be constructed at an affordable price, thus minimizing the entry barrier. This is achieved through the use of economical backdrivable servo motors, 3D printed components, and a minimalist design, making it possible to construct a teleoperation solution for under $300. A cost comparison is shown in Table <ref type="table" target="#tab_0">I</ref>. We will show that GELLO outperforms other low-cost options in our user study while being much cheaper than the other systems. • Capable: GELLO is designed to be easy to use for human operators. We demonstrate GELLO's capabilities on a range of complex bi-manual manipulation and contact-rich tasks. • Portable: The diversity of demonstration data collected in different tasks and environments is critical to the final performance of the learning system. As such, we design GELLO to be compact, and self-contained, facilitating easy transportation. We show GELLO performing tasks across both lab and in-the-wild environments.</p><p>• Simple to replicate: The sourcing for parts is minimal beyond off-the-shelf motors and 3D printing components.</p><p>The assembly process is also straightforward, requiring minimal technical expertise. We follow these design principles to make GELLO for three types of robot arms, as shown in Figure <ref type="figure">1</ref>. The instantiation of our approach centers around critical components like motor selection, kinematically equivalent structure, joint regularization, and 3D printed parts.</p><p>a) Servo selection: The critical component to enable GELLO's construction is the availability of low-cost, fullyfeatured servos. Specifically, we used the DYNAMIXEL XL330 series <ref type="bibr" target="#b57">[58]</ref>. Despite their affordability, these servos are equipped with high-resolution 12-bit encoders, enabling This results in an unfavorable joint configuration for subsequent tasks or even collision with the table. Right: With joint regularization in place, the elbow exhibits minimal movement, leading to a more advantageous joint configuration. We find that simple rubber bands or springs are effective. Fig. <ref type="figure">3</ref>: A quantitative analysis of the effects of implementing simple joint regularization on the force necessary to maintain the teleoperation device in a stationary position at various heights. Without the joint regularization, the measured force required to resist gravity is approximately constant around 1.9N. This can make it more difficult for the operator to feel the kinematic limits of the robot. With regularization, we see that near the table, the restorative force helps reduce the required force to compensate for gravity while when far away, a higher restorative force is provided, encouraging the user to avoid singularities. joint measurements within 0.088 of a mechanical degree. These encoders provide measurements of the servo's position, allowing accurate mapping of the controller's configuration to the target arm. In principle, a servo is not even necessary for the construction of GELLO, as we only need to read joint positions. However, in practice, a servo package provides an easy off-the-shelf, self-contained solution that has an encoder and communication protocol, simplifying construction, usage, and maintenance, furthering the goal of easy replication. In addition, the servo actuator provides physical resistance as the user backdrives it, which acts as natural damping and improves stability for the user. For this reason, we use the XL-330-288T, which provides the highest gear ratio offering the most resistance.</p><p>b) A scaled kinematically equivalent structure: We build GELLO as a small-scale version of the target arm which possesses a kinematically equivalent structure. This means that the joints and links of GELLO correspond directly to those of the target arm, allowing the user to control the GELLO manipulator as if they were directly controlling the target arm, as in kinesthetic teaching <ref type="bibr" target="#b58">[59]</ref>. The kinematically equivalent structure is generated by taking the DH parameters Fig. <ref type="figure">4</ref>: We design and instantiate GELLO for 3 different robot arms. We experiment with GELLO across these three arms on a range of tasks to qualitatively observe the teleportation behavior. GELLO's portable and self-sufficient design enables us to gather data across a wide range of environments.</p><p>of the target arm, and then scaling the lengths by a factor of α. Although the optimal α for comfort will be user and robot dependent, we used α = 0.5 in our implementation and found it to be effective. Joint positions are read from the GELLO device and directly sent as a joint command to the target arm for operation, avoiding the need to compute inverse kinematics. The user can feel resistance from the controller when the joints are close to kinematic singularities or joint limits and is thus more aware of these failures, leading to more reliable teleoperation. At the same time, the miniature design makes the controller more portable while still allowing the user to operate full-scale robot arms. c) Joint regularization: With only passive servo motors, the arm is constantly dragged by gravity to undesirable configurations during operation. We find that by adding simple joint regularizers, we can counteract the force of gravity on the manipulator, making it easier for the user to control. We employ rudimentary but effective passive joint regularization that involves the use of mechanical components such as springs or rubber bands to ensure that the device maintains a "natural" posture. This prevents the arm from adopting other kinematically viable yet unconventional positions, as illustrated in Figure <ref type="figure" target="#fig_0">2</ref>, which may result in collisions. We only add joint regularization elements to the joints that exhibit the most significant resistance against gravity in the arm's default resting position, which for the UR design, is the second and third joint. We quantitatively study this in Figure <ref type="figure">3</ref>. We also find that joint regularization provides passive force feedback to the user which differs near the extremities of the joint range. This can help inform the user about the current configuration of the arm. d) 3D printed parts: The use of 3D printed parts in GELLO allows a high degree of customization, enabling users to design and print parts that match the specific robot hardware. 3D printing allows us to easily design GELLO systems for 3 kinematically different robots. 3D printing is also a cost-effective method of producing parts, further contributing to the low-cost nature of GELLO.</p><p>Following these simple design principles, we instantiate and test GELLO for three commonly used robot arms, the Universal Robot UR5, uFactory xArm7, and Franka Panda.</p><p>Example tasks that we can perform with GELLO on the different robots are illustrated in Figure <ref type="figure">4</ref>.</p><p>The control setting of direct joint control results in a very simple software stack. Joint angles are read directly from the GELLO device using the DYNAMIXEL provided python API and are commanded to the follower robot. We use the various python APIs for each robot type to send commands to the follower robot. We use ZMQ <ref type="bibr" target="#b59">[60]</ref> for message passing between processes, and provide a simple protocol for extending to new robot types.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS</head><p>We conduct experiments to evaluate GELLO as a teleoperation system. Quantitatively, we compare the performance of GELLO with other common low-cost teleoperation systems used in the literature across 5 tasks exploring various aspects of manipulation. Qualitatively, we study GELLO through tests on robots from 3 different manufacturers across a variety of manipulation tasks in diverse settings.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. User Study Procedure</head><p>We conducted a user study involving 12 participants, focusing on bi-manual robot teleoperation using two UR robots to assess the comparative effectiveness of GELLO, 3D mouses, and VR controllers under controlled conditions. All participants were volunteers from our university and none of the participants had professional training in robot teleoperation prior to the study. An overview of our experimental study is shown in Figure <ref type="figure" target="#fig_1">5</ref>, where details of the 5 tasks we study are provided. These tasks cover a wide range of different manipulation challenges such as control over large work spaces, deformable objects, and fine-grain manipulation. Control with a 3D mouse or VR controller requires additional tuning of gain parameters that affect how sensitive the controller is to human input. A larger gain results in a larger robot motion for a fixed human control input. We tune each by testing the device across the 5 tasks, ensuring control is sensitive enough to achieve the fine-grain USB insertion tasks while still being responsive enough for quickly traversing across the workspace in the banana handoff task.</p><p>Before experimenting with the teleoperation tools, each user was granted a brief 6-minute orientation session, introducing them to the basics of the robot and teleoperation itself, as well as the task requirements. To reduce potential biases, no device-specific instructions were given in this orientation, and video demonstrations of the task do not show any particular device. This is then followed by the sequential introduction of all 3 different teleoperation devices. Upon introducing a new device, users were given a 5-minute practice phase, allowing them to gain familiarity with the device and its usage. During this time, users are allowed to experiment with the device and practice the tasks however they please. Next, the participants begin the task execution phase, with a time limit of 45 seconds for the hat task, and 90 seconds for the remaining tasks. This is repeated for all 3 teleoperation devices. The order in which each participant learns to use the three devices is randomized. This eliminates any potential bias from a fixed ordering. There are 6 possible orderings that the user can operate the devices. Each order is seen twice. Users were instructed to solve the task as best they could while avoiding self-collision (collision between the follower robot with itself or the other follower robot) or collision with the environment. The robot will be stopped when failure happens and the current task is terminated immediately. We record the task success and failure mode or task completion time as applicable. In the end, we have the user accomplish the same tasks without a robot using their hands. For privacy, no other user-specific data was collected.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. User Study Results</head><p>In Table <ref type="table" target="#tab_1">II</ref>, we show the success rate across distinct tasks for each teleoperation device. Using GELLO consistently results in the top success rate. For the simplest task, which only requires controlling a single arm, placing the hat on the rack, GELLO and VR perform comparably with respect to mean completion time. In more complex tasks, such as the banana handoff which requires both arms to maneuver across the large workspace, using spacemouse or VR leads to more failures like self-collisions or hitting singularities, suggesting that GELLO offers easier control in more broad use cases. For the task of towel folding, GELLO also shows a large advantage over the other two devices. We hypothesize that this is because GELLO offers more intuitive control and thus better coordination between the two arms. Interestingly, for the task of plugging in the USB cable, using GELLO also resulted in a much higher success rate. This is despite VR or spacemouse having the advantage of simplifying the problem by keeping one controller static while focusing their attention on the other, a common strategy users employed.</p><p>In Table <ref type="table" target="#tab_1">III</ref>, we present a breakdown on the different failure modes for each teleoperation system. Our observations suggest that, unlike other devices that operate in Cartesian space, GELLO requires minimal user expertise. This is further corroborated by the lowest timeout count for GELLO in comparison to other teleoperation systems. Furthermore, GELLO's isomorphic joint structure design ensures that teleoperation with GELLO has the least collision risk. Qualitatively we observed that self collisions were a common problem for the spacemouse and VR controllers due to the teleoperator paying attention only to the end effector and its relative motion. These devices, unlike GELLO, are unobservant of kinematic and robot-to-robot constraints which could explain the high amount of self-collisions.</p><p>Figure <ref type="figure" target="#fig_2">6</ref> provides a summary of the completion times taken by each device across all five tasks, given successful task execution. Utilizing GELLO results in consistently faster completion times. This not only signifies that GELLO is easier to use with a higher success rate but also indicates its efficiency; faster completion times would enable users to achieve more successful operations in a given time frame.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Teleoperation System Capabilities</head><p>We further demonstrate the capabilities of GELLO on more challenging manipulation tasks, including in real-world environments across the three different robot platforms. We show some of them in Figure <ref type="figure">4</ref> and put more videos on our project website. These tasks include contact-rich tasks, long-horizon tasks, and challenging bi-manual coordination tasks. Tasks like filling water bottles require a certain payload on the robot arm and would be difficult for smaller arms to perform, such as the ViperX arm used in the ALOHA system <ref type="bibr" target="#b8">[9]</ref>. GELLO is also effective for 7 DOF arms, such as the Panda and xArms, despite the extra degree of freedom. We find that the kinematically equivalent structure enables a user to directly manage the arm's null space if required, which can be advantageous when operating in cluttered spaces.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. DISCUSSION</head><p>Due to limited output torque of the motors used, GELLO does not provide force feedback to the users, which limits GELLO's capabilities when teleoperating for more contactrich tasks. We made this compromise to keep GELLO lowcost, more accessible, and more applicable to all robot arms, as bilateral devices also require force sensing capability for the target robot. However, we hope to incorporate this as an optional capability in the future for more advanced usage.</p><p>Our user study is limited to inexperienced users who are only briefly taught about teleoperation and who only practiced for a limited time. Additional training can significantly improve the user's proficiency in using teleoperation devices and we leave such study to future work.</p><p>In this paper, we introduced GELLO, a general lowcost teleoperation platform for manipulation. Our results demonstrate its effectiveness through a user study on teleoperation with a bi-manual robot system using two UR5s. To demonstrate versatility and make GELLO more accessible, we design GELLO for 3 robots. We hope GELLO will lower the barrier to collecting large and high-quality demonstration datasets, and thus accelerate progress in robot learning.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: This figure illustrates the trajectory of GELLO both with and without joint regularization. Left: Without joint regularization the elbow joint drops.This results in an unfavorable joint configuration for subsequent tasks or even collision with the table. Right: With joint regularization in place, the elbow exhibits minimal movement, leading to a more advantageous joint configuration. We find that simple rubber bands or springs are effective.</figDesc><graphic coords="3,313.20,211.57,110.87,166.56" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: An illustration of the experimental setup for our user study. The primary workspace of our experiments, indicated in green, showcases the scene of a bimanual robot station comprising of two UR5 robots with the complete task suit. The figure details the five tasks which are represented by the numerically labelled frames in blue: (1) Place a hat on a rack, (2) Open a case and fetch the sleeping mask inside, (3) Hand over a banana to the kitchen area, (4) Fold a towel, and (5) Plug in a USB cable. These tasks are designed to explore different teleoperation challenges such as articulated object interaction, large workspaces, deformable objects, and precise insertion. The three different bimanual teleoperation devices are shown by the letter-labelled images: (A) GELLO, (B) VR (Meta Quest2) controllers, and (C) 3D Mice (SpaceMouse). Each user attempts to accomplish the 5 tasks with all 3 teleoperation devices.</figDesc><graphic coords="5,64.08,54.57,483.84,302.70" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 6 :Failure</head><label>6</label><figDesc>Fig.6: Comparison with other teleoperation systems on the required duration for each task. For every combination of task and system, the average completion time (smaller is better) is plotted only for successful trials. Colored dots indicates the completion time for each user under each task-system pairing. Human, plotted in blue, gives a lower bound on teleoperation completion time, where the user directly accomplished each task with their hands.TABLE III:The failure count for each failure mode aggregated across all 5 tasks. Each ✗ indicates a single failure of that type from our trials. The "Other" category captures all other irrecoverable task failure modes such as dropping the working item outside the reach of the robots. Failure Mode GELLO 3D Mice VR Timeout ✗ ✗✗✗✗✗✗✗✗✗ ✗✗✗✗✗ Self Collision ✗ ✗✗✗✗✗ ✗✗✗✗✗ Env Collision ✗✗✗ ✗✗✗✗✗✗ ✗✗✗✗✗✗ Other ✗✗ ✗</figDesc><graphic coords="6,77.46,54.57,453.60,181.44" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="1,79.98,157.62,448.56,266.28" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="4,56.52,54.57,498.95,172.55" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I :</head><label>I</label><figDesc>An approximate cost comparison of the price of commonly used teleoperation systems for robot learning research. In our user study, we show that GELLO compares favorably to other low-cost options (e.g. spacemouse and VR) while being orders of magnitudes cheaper than other options.</figDesc><table><row><cell>Teleop Device</cell><cell>Approximate Cost</cell></row><row><cell>3D Mouse (SpaceNavigator[17])</cell><cell>$150</cell></row><row><cell>GELLO (Ours)</cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE II :</head><label>II</label><figDesc>The task success rate for different teleoperation systems. GELLO achieves the top success rate across the board.</figDesc><table><row><cell>Device</cell><cell>Hat</cell><cell cols="5">Mask Banana Towel USB Avg</cell></row><row><cell>Gello</cell><cell cols="2">0.92 0.92</cell><cell>1.0</cell><cell>0.92</cell><cell>0.83</cell><cell>0.92</cell></row><row><cell cols="3">3D Mice 0.75 0.58</cell><cell>0.67</cell><cell>0.58</cell><cell>0.58</cell><cell>0.63</cell></row><row><cell>VR</cell><cell cols="2">0.92 0.83</cell><cell>0.75</cell><cell>0.58</cell><cell>0.5</cell><cell>0.72</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>Website https://wuphilipp.github.io/gello/</p></note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENTS</head><p><rs type="person">Philipp Wu</rs> was supported in part by the <rs type="funder">NSF</rs> <rs type="programName">Graduate Research Fellowship Program</rs>. We thank <rs type="person">Rachel Thomasson</rs> for providing valuable insights on teleoperation and feedback on early drafts of the manuscript. We thank <rs type="person">Youngwoon Lee</rs>, <rs type="person">Kevin Zakka</rs>, and <rs type="person">Laura Smith</rs> for valuable discussions regarding GELLO. We thank <rs type="person">Hannah Chong</rs> for feedback on the presentation of the manuscript. We thank <rs type="person">Tingfan Wu</rs> and <rs type="person">Charles Xu</rs>, for help with testing on the Franka robot.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_Qnw7UhA">
+					<orgName type="program" subtype="full">Graduate Research Fellowship Program</orgName>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Is imitation learning the route to humanoid robots?</title>
+		<author>
+			<persName><forename type="first">S</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Trends in Cognitive Sciences</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="233" to="242" />
+			<date type="published" when="1999">1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">A survey of robot learning from demonstration</title>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">D</forename><surname>Argall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chernova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Veloso</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Browning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">57</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="469" to="483" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m">Springer Handbook of Robotics</title>
+		<editor>
+			<persName><forename type="first">B</forename><surname>Siciliano</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">O</forename><surname>Khatib</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Berlin; Heidelberg</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Deep imitation learning for complex manipulation tasks from virtual reality teleoperation</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Mccarthy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Jow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="5628" to="5635" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Carbajal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chebotar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dabis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ibarz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Jackson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Jesmonth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">J</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Julian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kalashnikov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kuang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Leal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K.-H</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Malla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Manjunath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Mordatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Nachum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Parada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Peralta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Perez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Quiambao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Rao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ryoo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Salazar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sanketi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sayed</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sontakke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Stone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Vanhoucke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Vega</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zitkovich</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+	<note>Rt-1: Robotics transformer for real-world control at scale,&quot; 2022</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Carbajal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chebotar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Choromanski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Driess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Dubey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G</forename><surname>Arenas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Julian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kalashnikov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kuang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Leal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T.-W</forename><forename type="middle">E</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Michalewski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Mordatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Rao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Reymann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ryoo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Salazar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sanketi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sermanet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Soricut</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Vanhoucke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wahid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Welker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wohlhart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zitkovich</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+	<note>Rt-2: Visionlanguage-action models transfer web knowledge to robotic control,&quot; 2023</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">BC-z: Zero-shot task generalization with robotic imitation learning</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Jang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Khansari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kappler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ebert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lynch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">5th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">A generalist agent</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Reed</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zolna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Parisotto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">G</forename><surname>Colmenarejo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Novikov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Barth-Maron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gimenez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Sulsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">T</forename><surname>Springenberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Eccles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bruce</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Razavi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Edwards</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Heess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hadsell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Vinyals</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bordbar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>De Freitas</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">A scaled bilateral teleoperation system for robotic-assisted surgery with time delay</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Poignet</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Intelligent &amp; Robotic Systems</title>
+		<imprint>
+			<biblScope unit="volume">95</biblScope>
+			<biblScope unit="page">7</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">History of robotic surgery : From aesop® and zeus® to da vinci®</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Pugin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Bucher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Morel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Visceral Surgery</title>
+		<imprint>
+			<biblScope unit="volume">148</biblScope>
+			<biblScope unit="issue">5</biblScope>
+		</imprint>
+	</monogr>
+	<note>Supplement, pp. e3-e8, 2011, robotic surgery</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Using dvrk teleoperation to facilitate deep learning of automation tasks for an industrial robot</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mahler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Laskey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 13th IEEE Conference on Automation Science and Engineering</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Controlling ocean one: Human-robot collaboration for deep-sea manipulation</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Brantner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Khatib</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="28" to="51" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Design, prototyping and testing of a modular small-sized underwater robotic arm controlled through a master-slave approach</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Barbieri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Bruno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gallo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Muzzupappa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">L</forename><surname>Russo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Ocean Engineering</title>
+		<imprint>
+			<biblScope unit="volume">158</biblScope>
+			<biblScope unit="page" from="253" to="262" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">The hermes humanoid system: A platform for full-body teleoperation with balance feedback</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ramos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mayo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Ubellacker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Cheung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2015 IEEE-RAS 15th International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="730" to="737" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Approaches to robotic teleoperation in a disaster scenario: From supervised autonomy to direct control</title>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">D</forename><surname>Katyal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">Y</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">A</forename><surname>Hechtman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">P</forename><surname>Para</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">G</forename><surname>Mcgee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">C</forename><surname>Wolfe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Murphy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Kutzer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">W</forename><surname>Tunstel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">P</forename><surname>Mcloughlin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2014">2014. 2014</date>
+			<biblScope unit="page" from="1874" to="1881" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Spacemouse</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Connextion</surname></persName>
+		</author>
+		<ptr target="https://3dconnexion.com/us/spacemouse/" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Meta quest</title>
+		<ptr target="https://www.meta.com/quest" />
+	</analytic>
+	<monogr>
+		<title level="j">Meta</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Vive vr products</title>
+		<author>
+			<persName><surname>Vive</surname></persName>
+		</author>
+		<ptr target="https://www.vive.com/us/product/" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Robot learning on the job: Human-in-the-loop autonomy and learning during deployment</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Bao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RSS</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Spawnnet: Learning generalizable visuomotor skills from pre-trained networks</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>So</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mahalingam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Viola: Imitation learning for vision-based manipulation with object proposal priors</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Stone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">CoRL</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">A motion retargeting method for effective mimicry-based teleoperation of robot arms</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rakita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mutlu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gleicher</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2017 ACM/IEEE International Conference on Human-Robot Interaction</title>
+		<meeting>the 2017 ACM/IEEE International Conference on Human-Robot Interaction</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="361" to="370" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Perceiver-actor: A multi-task transformer for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Shridhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Manuelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="785" to="799" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Holo-dex: Teaching dexterity with immersive mixed reality</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">P</forename><surname>Arunachalam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Güzey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="5962" to="5969" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Dexpilot: Vision-based teleoperation of dexterous robotic hand-arm system</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-W</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Birchfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="9164" to="9170" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Robotic telekinesis: Learning a robotic hand imitator by watching humans on youtube</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sivakumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2202.10448</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Anyteleop: A general vision-based dexterous robot arm-hand teleoperation system</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-W</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+		<respStmt>
+			<orgName>RSS</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Grasping in the wild: Learning 6dof closed-loop grasping from low-cost demonstrations</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Funkhouser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="4978" to="4985" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Shared-autonomy control for intuitive bimanual tele-manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Laghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Maimeri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Marchand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Leparoux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Catalano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ajoudani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bicchi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE-RAS 18th International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="1" to="9" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">A walking motion imitation framework of a humanoid robot by human walking recognition from imu motion data</title>
+		<author>
+			<persName><forename type="first">S.-K</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kim</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2010-01">01 2010</date>
+			<biblScope unit="page" from="343" to="348" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">A teleoperation interface for loco-manipulation control of mobile collaborative robotic assistant</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Balatti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lorenzini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ajoudani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="3593" to="3600" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">The dlr bimanual haptic device with optimized workspace</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hulin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hertkorn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Kremer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Schätzle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Artigas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sagardia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Zacharias</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Preusche</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2011 IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="page" from="3441" to="3442" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">A low cost modular actuator for dynamic robots</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Katz</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page">1</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">Ph.D. dissertation</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Nimbro avatar: Interactive immersive telepresence with force-feedback telemanipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schwarz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lenz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rochow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schreiber</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Behnke</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="5312" to="5319" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Stability and transparency in bilateral teleoperation</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lawrence</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics and Automation</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="624" to="637" />
+			<date type="published" when="1993">1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">A design framework for teleoperators with kinesthetic feedback</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Hannaford</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics and Automation</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="426" to="434" />
+			<date type="published" when="1989">1989</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Parti-a haptic virtual reality control station for modelmediated robotic applications</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Elsner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Reinerth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Figueredo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Naceri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Walter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Haddadin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Virtual Reality</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page">925794</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Bimanual telemanipulation with force and haptic feedback and predictive limit avoidance</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lenz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Behnke</surname></persName>
+		</author>
+		<idno>abs/2109.13382</idno>
+	</analytic>
+	<monogr>
+		<title level="j">CoRR</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main">Beautiful fluid actuators from disney research make soft, safe robot arms</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Ackerman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">A teleoperation system with an exoskeleton interface</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Jo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bae</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2013 IEEE/ASME International Conference on Advanced Intelligent Mechatronics</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="1649" to="1654" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">A force-sensitive exoskeleton for teleoperation: An application in elderly care robotics</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Toedtheide</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Sadeghian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Naceri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Haddadin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page">630</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Bilateral humanoid teleoperation system using whole-body exoskeleton cockpit tablis</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ishiguro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Makabe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Nagamatsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kojio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Kojima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sugai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kakiuchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Okada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Inaba</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="6419" to="6426" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<title level="m" type="main">phantom omni&quot; -6 dof master device</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">H</forename><surname>Lab</surname></persName>
+		</author>
+		<ptr target="https://delfthapticslab.nl/device/phantom-omni/" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main">Haptic devices</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Dimension</surname></persName>
+		</author>
+		<ptr target="https://www.forcedimension.com/products" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">A bimanual robotic teleoperation architecture with anthropomorphic hybrid grippers for unstructured manipulation tasks</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Ponraj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">V</forename><surname>Prituja</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ren</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Applied Sciences</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Learning and generalization of motor skills by learning from demonstration</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Pastor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Hoffmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Asfour</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Schaal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2009 IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="763" to="768" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<title level="m" type="main">Robocat: A self-improving foundation agent for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Bousmalis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Vezzani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Devin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">X</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bauza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Davchev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Raju</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Laurens</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Fantacci</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Dalibard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zambelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Martins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Pevceviciute</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Blokzijl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Denil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Batchelor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Lampe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Parisotto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Żołna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Reed</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">G</forename><surname>Colmenarejo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Scholz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Abdolmaleki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Groth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-B</forename><surname>Regli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Sushkov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Rothörl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">E</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Aytar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Barker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ortiz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Riedmiller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">T</forename><surname>Springenberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hadsell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Nori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Heess</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Bridgedata v2: A dataset for robot learning at scale</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hansen-Estruch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>He</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2308.12952</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title level="m" type="main">Rh20t: A robotic dataset for learning diverse skills in one-shot</title>
+		<author>
+			<persName><forename type="first">H.-S</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dass</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Lim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nikolaidis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Pato: Policy assisted teleoperation for scalable robot data collection</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<monogr>
+		<title level="m" type="main">One-shot visual imitation learning via meta-learning</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<editor>CoRL</editor>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Avid: Learning multi-stage tasks via pixel-level translation of human videos</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Dhawan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RSS</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Human-to-robot imitation in the wild</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RSS</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">Dexmv: Imitation learning for dexterous manipulation from human videos</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-H</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">European Conference on Computer Vision</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="570" to="587" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<title level="m" type="main">Mimicplay: Long-horizon imitation learning by watching human play</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Anandkumar</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2302.12422</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>So</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Dou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.00025</idno>
+		<title level="m">Any-point trajectory modeling for policy learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<monogr>
+		<title level="m" type="main">Dynamixel xl</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Robotis</surname></persName>
+		</author>
+		<ptr target="https://www.robotis.us/xl/" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main">Discriminative and adaptive imitation in uni-manual and bi-manual tasks</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">G</forename><surname>Billard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Calinon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Guenter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">54</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="370" to="384" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+	<note>the Social Mechanisms of Robot Programming from Demonstration</note>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">"</forename><surname>Zeromq</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zeromq</surname></persName>
+		</author>
+		<ptr target="https://zeromq.org/" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

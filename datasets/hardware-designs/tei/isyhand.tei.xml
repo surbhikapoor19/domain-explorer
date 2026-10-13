@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">ISyHand: A Dexterous Multi-finger Robot Hand with an Articulated Palm</title>
+				<funder ref="#_c6FpDwB">
+					<orgName type="full">NHR@FAU) of the Friedrich-Alexander-Universität Erlangen-Nürnberg</orgName>
+					<orgName type="abbreviated">FAU</orgName>
+				</funder>
+				<funder ref="#_xxfBCa9">
+					<orgName type="full">German Federal Ministry of Research, Technology and Space (BMFTR)</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Robotics Institute Germany</orgName>
+					<orgName type="abbreviated">RIG</orgName>
+				</funder>
+				<funder ref="#_xHuutdt">
+					<orgName type="full">Erlangen National High Performance Computing Center</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Bavarian</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-09-30">30 Sep 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Benjamin</forename><forename type="middle">A</forename><surname>Richardson</surname></persName>
+							<email>richardson@is.mpg.de</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Intelligence Department</orgName>
+								<orgName type="department" key="dep2">Max Planck Institute for Intelligent Systems</orgName>
+								<orgName type="institution">Benjamin A. Richardson and Katherine J. Kuchenbecker are with the Haptic</orgName>
+								<address>
+									<settlement>Stuttgart</settlement>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Felix</forename><surname>Grüninger</surname></persName>
+							<email>grueninger@is.mpg.de</email>
+							<affiliation key="aff1">
+								<orgName type="institution" key="instit1">Felix Grüninger is with the Robotics ZWE</orgName>
+								<orgName type="institution" key="instit2">Max Planck In- stitute for Intelligent Systems, Stuttgart and Tübingen</orgName>
+								<address>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Lukas</forename><surname>Mack</surname></persName>
+							<email>lukas.mack@uni-a.de</email>
+							<affiliation key="aff2">
+								<orgName type="laboratory">Lukas Mack and Joerg Stueckler are with the Intelligent Perception in Technical Systems Group</orgName>
+								<orgName type="institution">University of Augsburg</orgName>
+								<address>
+									<settlement>Augsburg</settlement>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Joerg</forename><surname>Stueckler</surname></persName>
+							<email>joerg.stueckler@uni-a.de</email>
+							<affiliation key="aff2">
+								<orgName type="laboratory">Lukas Mack and Joerg Stueckler are with the Intelligent Perception in Technical Systems Group</orgName>
+								<orgName type="institution">University of Augsburg</orgName>
+								<address>
+									<settlement>Augsburg</settlement>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Katherine</forename><forename type="middle">J</forename><surname>Kuchenbecker</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Intelligence Department</orgName>
+								<orgName type="department" key="dep2">Max Planck Institute for Intelligent Systems</orgName>
+								<orgName type="institution">Benjamin A. Richardson and Katherine J. Kuchenbecker are with the Haptic</orgName>
+								<address>
+									<settlement>Stuttgart</settlement>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">ISyHand: A Dexterous Multi-finger Robot Hand with an Articulated Palm</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-09-30">30 Sep 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">1948024B59F841B2491E2056804D9715</idno>
+					<idno type="arXiv">arXiv:2509.26236v1[cs.RO]</idno>
+					<note type="submission">Accepted for publication at the IEEE-RAS International Conference on Humanoid Robots (Humanoids) 2025.</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The rapid increase in the development of humanoid robots and customized manufacturing solutions has brought dexterous manipulation to the forefront of modern robotics. Over the past decade, several expensive dexterous hands have come to market, but advances in hardware design, particularly in servo motors and 3D printing, have recently facilitated an explosion of cheaper open-source hands. Most hands are anthropomorphic to allow use of standard human tools, and attempts to increase dexterity often sacrifice anthropomorphism. We introduce the open-source ISyHand (pronounced easy-hand), a highly dexterous, low-cost, easy-to-manufacture, on-joint servo-driven robot hand. Our hand uses off-the-shelf Dynamixel motors, fasteners, and 3D-printed parts, can be assembled within four hours, and has a total material cost of about 1,300 USD. The ISyHand's unique articulated-palm design increases overall dexterity with only a modest sacrifice in anthropomorphism. To demonstrate the utility of the articulated palm, we use reinforcement learning in simulation to train the hand to perform a classical in-hand manipulation task: cube reorientation. Our novel, systematic experiments show that the simulated ISyHand outperforms the two most comparable hands in early training phases, that all three perform similarly well after policy convergence, and that the ISyHand significantly outperforms a fixed-palm version of its own design. Additionally, we deploy a policy trained on cube reorientation on the real hand, demonstrating its ability to perform real-world dexterous manipulation.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>The dexterity, strength, robustness, and tactile sensing of the human hand are crucial to the human ability to perceive, manipulate, and use objects. A person can firmly squeeze and operate a heavy tool in one hand while the other gently holds a delicate object. This vast range of capabilities is crucial to the human ability to physically interact with objects and accomplish tasks across a wide array of environments. Although reproducing the aforementioned traits in a robot hand is challenging, human-like dexterous manipulation will be necessary if robots are to become more ubiquitous and generally capable in human-centered environments.</p><p>Robotic Grippers: Some work has pushed simple grippers, such as parallel jaw or underactuated multi-finger grippers, Fig. <ref type="figure">1</ref>: The ISyHand's articulated palm facilitates grasping.</p><p>to their manipulation limits <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b1">[2]</ref>, <ref type="bibr" target="#b2">[3]</ref>, <ref type="bibr" target="#b3">[4]</ref>, <ref type="bibr" target="#b4">[5]</ref>, but these grippers are fundamentally limited in their dexterity. Parallel jaw grippers can perform pick-and-place tasks, pinch laundry and fold it on a hard surface <ref type="bibr" target="#b3">[4]</ref>, and even perform simple object rotations around a single axis <ref type="bibr" target="#b2">[3]</ref>, <ref type="bibr" target="#b4">[5]</ref>. Underactuated multi-fingered grippers typically excel at grasping by conforming to the shape of a grasped object, but they lack the dexterity for robust manipulation <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b1">[2]</ref>. The most dexterous grippers are multi-finger hands with fully actuated or almost fully actuated degrees of freedom (DoF).</p><p>High-DoF multi-finger hands are more dexterous, but this capability comes at the cost of needing many individual actuators to move each joint independently and coordinate finger movements for more complex manipulation tasks. Several different actuation mechanisms have been implemented on multi-fingered hands; these are primarily tendondriven <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref> and on-joint servo-driven <ref type="bibr" target="#b7">[8]</ref>, <ref type="bibr" target="#b8">[9]</ref>, <ref type="bibr" target="#b9">[10]</ref>, <ref type="bibr" target="#b10">[11]</ref>, <ref type="bibr" target="#b11">[12]</ref>, although pneumatically actuated hands have also been developed <ref type="bibr">[13]</ref>, <ref type="bibr" target="#b12">[14]</ref>. Tendon-driven hands provide certain advantages: they are similar in size to a human hand, can move very quickly, and can generate high torque at certain joints by using multiple tendons. However, they are typically quite complex to manufacture and maintain, and most of the actuators need to be located outside the hand, typically inside a large forearm. They can also be more difficult to control because of the interactions between tendons, the need to calibrate motor positions, and their complex forward dynamics. Pneumatically driven hands have similar drawbacks, with large wrists for valves, intricate tubing to direct airflow, and likely an external cabinet to supply pressurized air. They can also be difficult to control, requiring precise valves to accurately control pressure, and their actuation can be noisy. On-joint servo-driven hands offer a balanced approach to design and control. While typically larger than tendonbased and pneumatic hands, these hands are much simpler to manufacture, maintain, and repair. Additionally, they are far easier to control; each joint can simply be commanded to a desired position. Servo-driven hands therefore seem to be the most accessible option for the research community.</p><p>Two of the most prominent servo-driven multi-finger robot hands are the Allegro hand and the LEAP hand <ref type="bibr" target="#b9">[10]</ref>, both of which are similar in size to our ISyHand (see Figs. <ref type="bibr" target="#b0">1,</ref><ref type="bibr" target="#b1">2)</ref>. The servo-driven, four-fingered, 16-DoF Allegro hand is a popular tool for robotic in-hand manipulation <ref type="bibr" target="#b13">[15]</ref>, <ref type="bibr" target="#b14">[16]</ref> likely because it is easy to use and not prohibitively expensive (17,000 USD). However, the custom closed-source hardware makes it difficult to repair, and hardware failures have been repeatedly reported <ref type="bibr" target="#b9">[10]</ref>, <ref type="bibr" target="#b13">[15]</ref>, although the new version of the hand uses more robust motors. The Tilburg hand is very similar to the Allegro Hand, though less expensive (5,170 USD) <ref type="bibr" target="#b15">[17]</ref>. However, it is still closed-source. The LEAP hand has four fingers with 16 DoF and addresses some of the shortcomings of the Allegro hand by introducing a novel kinematic mechanism in the fingers that greatly increases finger dexterity when the hand is open or closed. Because it is fully open-sourced and can be assembled from off-the-shelf components, it can be built and repaired by a larger group of non-experts. Additionally, it is substantially less expensive, with a cost of about 2,000 USD. However, the finger kinematics make teleoperation awkward because they are highly non-anthropomorphic. Additionally, it is unclear if the LEAP hand excels at other manipulation tasks. Finally, because it uses off-the-shelf connectors to link the motors, the design is not easy to modify or customize.</p><p>We propose the ISyHand (pronounced easy-hand), a robust, dexterous, 18-DoF robot hand (Fig. <ref type="figure">1</ref>). Like the LEAP hand, the ISyHand is inexpensive and made with off-theshelf and 3D-printed components. It takes approximately four hours to assemble with a material cost of approximately 1,300 USD. Because its body and linkages are 3D-printed, our hand can easily be repaired and broken parts replaced. The ISyHand uses a unique linkage design that routes and houses cabling along the sides of the fingers, reducing wear and risk of damage. Additionally, we introduce a new kinematic mechanism, a 2-DoF articulated palm, that substantially increases the dexterity of the ISyHand while allowing us to maintain anthropomorphism in the finger joints.</p><p>In-hand Manipulation: Besides evaluating the low-level kinematic and dynamic properties of a robot hand and its actuators (joint repeatability/endurance, thumb opposability, finger manipulability ellipsoids, and grasp strength), related Fig. <ref type="figure">2</ref>: Size comparison between our ISyHand (left), the Allegro hand (center), and the LEAP hand (right).</p><p>work also demonstrates more complex manipulation tasks to highlight possible applications for particular robot hands. For example, manipulation dexterity has often been demonstrated by manually teleoperating the robot hand to grasp and interact with a variety of everyday objects <ref type="bibr" target="#b16">[18]</ref>, <ref type="bibr" target="#b6">[7]</ref>, <ref type="bibr" target="#b9">[10]</ref>. When recorded, these demonstrations can be used to distill autonomous manipulation policies through imitation learning that can solve the demonstrated tasks. Christoph et al. <ref type="bibr" target="#b6">[7]</ref> use teleoperated robot hand trajectories of a pick-and-place task to train an imitating policy that is later evaluated in repeated task execution over seven hours to showcase the real-world durability and repeatability of their robot hand. Shaw et al. <ref type="bibr" target="#b9">[10]</ref> pretrain manipulation policies for the LEAP hand with imitation learning on internet video data and finetune them with trajectories originating from the Allegro hand; in particular, they train for different pick, place, rotate, and push tasks and evaluate the ratio of successful task executions over multiple trials for both hands.</p><p>Since collecting demonstrations for imitation learning is tedious, reinforcement learning (RL) can instead be deployed to train a policy from scratch in simulation and later transfer it to the real robot. Shaw et al. <ref type="bibr" target="#b9">[10]</ref> train an RL policy to rotate a cube in-hand around the vertical z-axis for both the LEAP and the Allegro hands in simulation and transfer the LEAP hand's policy onto the real system. Similarly, Christoph et al. <ref type="bibr" target="#b6">[7]</ref> train a policy to rotate a tennis ball in-hand. Recent work demonstrates impressive RL policies for in-hand reorientation of objects, such as a medium-sized cube <ref type="bibr" target="#b13">[15]</ref>, cylinders <ref type="bibr" target="#b14">[16]</ref>, and various small items <ref type="bibr" target="#b17">[19]</ref>, all transferred to the real Allegro hand. While the aforementioned approaches lead to impressive showcases of dexterous manipulation, they mainly reflect the capabilities of the specific robot hand in combination with the particular machine-learning method. There is often no systematic evaluation of how the proposed contributions (e.g., new mechanical design features) influence a hand's performance in complex object-manipulation tasks in comparison to existing robots hands.</p><p>We propose a systematic approach to evaluate the performance of our new robot hand ISyHand against the Allegro and LEAP hands in the prevalent in-hand cube reorientation task. Specifically, for each robot hand we train for a fixed number of steps a set of RL policies that covers a grid of possible initial and target cube positions (see Section III-A). This strategy enables us to systematically discover the best spatial cube manipulation location for each hand (and thus report the actual best performance for each hand) in early training phases and discover how manipulation performance varies across each hand's workspace. We further train the best policies for much longer to compare training progress and convergence. Importantly, we perform an ablation study of our robot hand without its articulated palm joints, called ISyHand (flat). Our grid evaluation allows us to demonstrate that palm articulation confers a substantial performance advantage for the in-hand cube reorientation task in early training phases. The open-source hand design and code can be found at isyhand.is.mpg.de.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. HAND DESIGN</head><p>The ISyHand resembles human hands and is approximately 50% larger than the hand of an average male adult. At 255 mm long, 130 mm wide and 38 mm thick, it is similarly sized to both the Allegro and LEAP hands and weighs approximately 620 g. Like many existing on-joint servodriven hands, the ISyHand has three fingers and a thumb. The main feature that sets our design apart from existing hands is its 2-DoF articulated palm. This articulated palm allows the ISyHand to mimic the degrees of freedom in human finger joints while increasing the system's overall dexterity compared to existing rigid-palm designs like the Allegro and LEAP hands. In total, the hand has 18 DoF, as illustrated in Fig. <ref type="figure" target="#fig_0">3</ref>. Each joint is driven by a Dynamixel motor, which provides high angular resolution and torque-limited position control. As demonstrated by the 21 diverse grasps shown in Fig. <ref type="figure">4</ref>, its articulated palm allows the ISyHand to perform delicate pinching grips with the fingertips (e.g., plucking berries, grabbing very small objects), spread the fingers wide to grab larger objects, and cup smaller objects with a tighter grip. Beyond the additional dexterity introduced by the palm joints, the ISyHand was designed to be affordable, robust, modular, and a general platform for tactile sensing. The cost of all of the hand components is comparable to the LEAP hand and far cheaper than the Allegro or Tilburg hands. Because all components were custom-designed and are opensourced, they can be modified to create additional morphologies. Additionally, the thumb attaches to the palm using an insert that can be customized to change the angle of the thumb for different applications. The palm and finger surfaces are flat for mounting thin tactile sensors, the fingertips can be easily modified to accommodate fingertip tactile sensors, and the cable routing was designed with enough space to accommodate additional wiring.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Hardware</head><p>The ISyHand is assembled from Dynamixel motors, offthe-shelf fasteners, and 3D-printed linkages and soft fingertips. The total hardware cost (including the motors, motor electronics, power supply, fasteners, and 3D-printing filament) is approximately 1,300 USD. A summary of the primary hardware components is shown in Table <ref type="table" target="#tab_0">I</ref>.</p><p>1) Motors: The hand uses twelve Dynamixel XL330-M288-T and six XC330-M288-T motors. There are three XL motors in each finger and the thumb used for flexion and extension (Fig. <ref type="figure" target="#fig_0">3a,</ref><ref type="figure">f</ref>). The more powerful XC motors are used for finger ab-and adduction (Fig. <ref type="figure" target="#fig_0">3b,</ref><ref type="figure">c</ref>), palm flexion (Fig. <ref type="figure" target="#fig_0">3d</ref>), and thumb rotation (Fig. <ref type="figure" target="#fig_0">3e</ref>). The motors are daisychained along each link to a central hub on the back of the palm (Fig. <ref type="figure" target="#fig_1">5</ref>). The off-the-shelf Robotis U2D2 is used for communication, and a custom board is used for power injection. The motors are controlled via USB using either the Dynamixel Wizard application or the Dynamixel SDK.</p><p>2) 3D-printed Components: The majority of components other than the motors, specifically the palm segments and finger linkages, are 3D-printed plastic parts that can be fabricated on most 3D printers. The parts are designed to be robust when printed in a variety of materials, including Onyx, PCTG, PLA, PLA+, and flexible TPU. Additionally, Fig. <ref type="figure">4</ref>: The ISyHand performing a subset of grasps from the GRASP taxonomy <ref type="bibr" target="#b18">[20]</ref>.</p><p>the finger linkages are designed to symmetrically distribute forces and torques across the motor axes, reducing asymmetric loading and increasing the longevity of the motors. The fingertips are printed using Filaflex 60A to make them deformable for easier object manipulation, and they have embedded fingernails for precision pinching grasps.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Cabling</head><p>One of the drawbacks of the LEAP hand and other existing on-joint servo-driven hands is the exposed motor wiring along the fingers, which often causes practical problems. A snagged wire can break and compromise the entire circuit, and the wires can degrade as they are twisted and stretched. To address this issue, we designed cable routing into the finger links, as seen in the left panel of Fig. <ref type="figure" target="#fig_1">5</ref>. The first layer of the link (attached directly to a motor) routes the cable from the proximal motor to the underside of the link and from the distal motor to the top. Pre-bending the wires in the primary actuation direction ensures that they will not wear out as quickly. The second layer of the link (shown detached from the motor in Fig. <ref type="figure" target="#fig_1">5</ref>) covers and protects the wires.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Evaluation</head><p>Similar to Kosanovic and Vaz <ref type="bibr" target="#b11">[12]</ref>, we ran multiple experiments to evaluate the physical capabilities of the ISyHand as well as its repairability. Camera-based teleoperation was used to evaluate finger speed, progressive loading to evaluate payload capacity, and opposed pressing to evaluate pinching force between the thumb and index and middle fingers. Finally, disassembly and reassembly were performed multiple times for several difficult-to-replace motors.</p><p>Finger speed: Finger speed was measured by using Medi-aPipe <ref type="bibr" target="#b19">[21]</ref>, a camera-based hand-tracking tool, to teleoperate the ISyHand. The hand was fully opened and closed ten Payload capacity: To measure payload capacity, the ISy-Hand was used to repeatedly lift a bucket with progressively increasing weight. The hand was commanded to hold the bucket handle using a power grasp with maximum motor torque, and the experimenter then slowly lifted it. The first lift was performed with 3 kg, and each successive lift was performed with an additional 0.5 kg to a maximum of 7 kg. This process was repeated five times, and the final trial was tested up to 9 kg. There were zero failures across all lifts.</p><p>Pinching force: We placed a scale between the fingertips and ran three pinching tests: one used only thumb and index flexion, the second added the middle finger and palm, and the third added thumb rotation. The mean pinching forces over five trials per test were 3.5 N, 5.6 N, and 5.5 N, respectively.</p><p>Motor repair time: Five representative joints were disassembled and reassembled by an expert to measure repair time. The average time across all five joints was 5:08 (min.:s), with the outer palm joint taking the longest at 7:26 and the index distal joint taking the shortest at 3:22.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. SIMULATION EXPERIMENTS</head><p>To evaluate the in-hand manipulation capability of the ISyHand compared to the Allegro and LEAP hands as well as the fixed-palm ISyHand (flat), we perform reinforcement learning (RL) experiments in simulation for the standard inhand cube reorientation task. Our novel grid-based evaluation systematically evaluates manipulation capabilities across the entire surface of each hand.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Cube Reorientation Experiment Setup</head><p>We compare the ISyHand (18 DoF) to a reduced variant with non-articulated palm joints called ISyHand (flat) (16 DoF), the Allegro hand (16 DoF) with BioTac fingertips as set up in <ref type="bibr" target="#b20">[22]</ref>, and the LEAP hand (16 DoF) with simulation assets taken from <ref type="bibr" target="#b9">[10]</ref> in a cube-reorientation RL task. A rendering of each hand's simulation asset is shown in Fig. <ref type="figure">2</ref>.</p><p>For the cube-reorientation task, we build on the simulation experiment for the Allegro hand in <ref type="bibr" target="#b20">[22]</ref>. An RL policy is trained with PPO in IsaacGym to manipulate a colored cube to match a target pose (position and orientation); the cube is initialized directly above its target position in an orientation that is the product of consecutive random rotations around the y-and x-axes. Target cube orientations are randomly generated in the same way. We take without modification the original policy's action space, observation space, reward shaping and PPO training hyperparameters from the code base of <ref type="bibr" target="#b20">[22]</ref> and keep them identical for all hands, although the dimensionality of the action and observation spaces depend on the hand's DoF. We refer to the Allegro hand part of supplementary material of <ref type="bibr" target="#b20">[22]</ref> for a description of the reward function. The joint limits (position, velocity and effort) are taken from the respective URDF file of each hand. While the original joint effort limit for the Allegro hand is set to 0.35 in the URDF, it is increased in <ref type="bibr" target="#b20">[22]</ref> to 0.5, which we also use for a fairer comparison. Since there are no actuatorspecific properties available in all URDF files and we do not have access to all real hands for measuring the properties, the joint stiffness, damping, friction and armature parameters are set to unified values taken from <ref type="bibr" target="#b20">[22]</ref>, presented in Table <ref type="table" target="#tab_1">II</ref>. All contact-related material properties (friction, restitution, compliance) are the default values of IsaacGym. To create collision meshes in simulation, the convex mesh decomposition feature of IsaacGym is used with a maximum of four convex meshes per link mesh. While the translational error of the cube is part of the reward, successes are counted only for matching cube orientations (within a tolerance) <ref type="bibr" target="#b20">[22]</ref>.</p><p>When running the original task, we found that the number of successful consecutive cube reorientations highly depends on the position of the cube relative to the hand. To test how the performance of each hand depends on the initial/target location of the cube, we trained and evaluated RL policies across a grid of cube positions that extends beyond the entire inside surface of the hands. We place the origin of the grid's x-and y-coordinates directly above the center of the joint axis that connects the middle finger to the palm (grid-origin cell framed black in Fig. <ref type="figure">6</ref>) at the height of the palm surface. The grid extends from -10 cm to 14 cm horizontally and from -14 cm to 18 cm vertically with an equidistant spacing of 2 cm. For each grid cell a policy is trained in simulation following the approach in <ref type="bibr" target="#b20">[22]</ref>, where the initial and target xand y-position for the cube are set to the respective grid-cell position and the cube's initial and target z-height is fixed to half the cube's diagonal length (5.6 cm) plus an 0.5 cm offset above the palm surface. For fairness, at the beginning of each episode, all hands are initialized in a horizontal pose with the fingers laid flat and the thumb pointing upwards.</p><p>Like <ref type="bibr" target="#b20">[22]</ref>, we set the number of training epochs to 5,000 (around 655 million simulation steps) for the grid experiments. This training depth is a reasonable tradeoff between performance and training time, as each hand learns to perform multiple successful cube reorientations, and the average real-world training time across all hands for a single grid cell policy is 3.66 hours on an NVIDIA A40 GPU. Parallelizing training across multiple GPUs (e.g., on a computing cluster) makes it feasible to train 221 grid cell policies for each hand over multiple seeds. After training all grid-cell policies for 5,000 epochs, we evaluated them on a separate, fixed test sequence of target orientations that were randomly sampled as in training and generated beforehand. This deterministic procedure allows us to compare the performance of each gridcell policy to any other grid-cell policy of any other hand. Each grid-cell policy is evaluated on 100 20-s-long episodes for which the number of consecutive cube reorientation successes is counted. We run the full grid training and evaluation with three different seeds for each hand.</p><p>Although this experiment rigorously tests early learning for each hand, we did not observe training convergence within 5,000 epochs. Thus, we trained an additional single policy per hand to 300,000 epochs to compare further training progress and performance convergence. The single policy for each hand was trained on the best performing grid-cell (marked green in Fig. <ref type="figure">6</ref>) from the above evaluation using one of the original three seeds. Then, the policy with the highest reward during these 300,000 training epochs was evaluated as above (see Fig. <ref type="figure">8</ref>). Since training for such an extended period takes several days per policy, conducting the full grid experiment for 300,000 epochs would be computationally challenging and expensive, even with access to a large computing cluster. Fig. <ref type="figure">6</ref> displays the evaluation results of the grid-cell policies trained for 5,000 epochs. The ISyHand's policies associated with the best performing grid-cell (marked green in Fig. <ref type="figure">6</ref>) complete 31.46 consecutive cube reorientations on average. The Allegro hand's best grid-cell policies achieve 24.16, followed by the LEAP hand's with 22.27 and the ISyHand (flat)'s with 22.25 on average. In addition to highlighting the best-performing regions of the hands, the grid experiment also reveals how manipulation performance varies across each hand's palmar workspace. Table <ref type="table" target="#tab_1">III</ref> reports the maximum and sum of all grid-cell values and the number of grid-cells whose values surpass certain thresholds. The ISyHand has the most grid cells that score more than 1, more than 10, and more than 20 successful consecutive cube reorientations. It is also the only hand that achieves more than 30 in any grid cell during this early-learning experiment.</p><p>The reward curves for the 300,000-epoch training are shown in Fig. <ref type="figure">7</ref>. While the Allegro and LEAP hands show steady progress throughout training, the ISyHand achieves the fastest learning within the first 25,000 epochs. It is also the first hand to reach a reward value close to its convergence plateau (∼16,000 reward at ∼150,000 epochs) with only marginal improvement afterward. Toward the end of training, the ISyHand, Allegro hand, and LEAP hand reach similar reward ranges of 15,000 to 17,000. ISyHand (flat) achieves only a lower reward range between 13,000 and 14,000.</p><p>Fig. <ref type="figure">8</ref> reports the evaluation performance of the policy that achieves the highest reward within the 300,000 training epochs for each hand. The LEAP hand achieves the highest median of successful consecutive cube rotations with 71, closely followed by the ISyHand with 70, the Allegro hand with 69 and the ISyHand (flat) with 60. We applied the paired Wilcoxon signed-rank test on all pairs of hands to assess whether the evaluation samples stem from distributions that are statistically similar. The differences between the distributions are statistically significant with p &lt; 0.05 after a Bonferroni correction. Recordings of the best-performing grid-cell policies of each hand for both the early and longterm trainings are shown in the supplementary video. Due to the approximate modeling of the actuators and the links in simulation, the policies trained in simulation for these TABLE III: The maximum and sum of all grid-cell values and the number of grid cells that hold success values s greater than or equal 1, 10, 20 and 30 for each hand in the simulated in-hand cube-reorientation task. The ISyHand outperforms the other hands in every category and is the only one that achieves a policy with more than 30 successful consecutive cube rotations on average during the evaluation episodes. experiments are unlikely to run on the real robot hands without performance loss. Thus, we train a new policy to decrease the sim-to-real gap.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. REAL-WORLD EXPERIMENT</head><p>To evaluate the capabilities of the real ISyHand, we performed a sim-to-real experiment by training an RL policy in IsaacGym for cube reorientation and deploying it directly on the real robot. We trained the policy for fully random target cube orientations in three axes. We used FoundationPose <ref type="bibr" target="#b21">[23]</ref> with an Intel RealSense D405 RGB-D camera <ref type="bibr" target="#b22">[24]</ref> to track cube pose. The setup can be seen in Fig. <ref type="figure">9</ref>. Because both the ISyHand links and the cube are hard plastic, they have such low contact friction that the cube can slide out of the palm if it is slightly tilted. To solve this mechanical issue, we wrapped the finger links in 3D-printed flexible covers made from Recreus TPU Filaflex 70A and covered the palm in tough tape.</p><p>Because the standard cube-reorientation environment is unlikely to train a policy that would be successful in the real world, we instead trained our policy using DeXtreme <ref type="bibr" target="#b13">[15]</ref>. At a high level, DeXtreme uses curriculum learning to perform automatic domain randomization in simulation to train a policy that is robust to real-world variability and noise. At the beginning of training, the randomization is almost none. As the policy improves and learns the task, more randomization is added. When trained to convergence, the model can learn to deal with a broad range of friction with the object, random noise and latency in both the robot joint readings and commands, noise in the object pose estimate, and more. As such policies are computationally intensive to train, we trained only a single policy on 8,192 agents for 10,000 epochs, much less than the 16,384 agents per GPU across 8 GPUs on which the original DeXtreme policies were trained <ref type="bibr" target="#b13">[15]</ref>.</p><p>1) Setup: The robot hand setup consists of three primary components: the object-pose tracker, the robot hand driver, and the policy. Each of these components runs in a separate ROS2 node and communicates over ROS topics. Additionally, we use a 3D-printed version of the cube used in the DeXtreme work. The cube weighs approximately 95 g and is 6.5 cm per edge. As stated above, FoundationPose <ref type="bibr" target="#b21">[23]</ref> is used to track the position and orientation of the cube from the RealSense RGB and depth images. On an Nvidia GeForce RTX 2080 Ti, the pose estimator runs at approximately 31 Hz and is fed into the policy. The hand driver runs at 100 Hz, relaying pose commands from the policy to the hand motors and communicating the most recent joint positions to the policy. The policy is deployed using ONNX Runtime at 30 Hz to match the default control rate of the simulation.</p><p>2) Experiment: To evaluate the overall performance of the policy on the ISyHand, we roll out the policy 20 times for two minutes per rollout and count the number of consecutive successes. If the cube is dropped, the episode ends. If the hand becomes stuck in an unrecoverable position, the episode continues. Finally, we discard any episode for which the pose-tracking fails, defined as a substantial deviation between the actual and perceived cube poses.   <ref type="figure">8</ref>: Evaluation performance of the best policy for each hand after 300,000 epochs. The ISyHand, Allegro hand, and LEAP hand clearly outperform ISyHand (flat). All pairwise differences between hands are statistically significant (p &lt; 0.05 with a Bonferroni correction).</p><p>3) Results and Observations: The policy was rolled out a total of 30 times with 10 episodes discarded because of a pose tracker failure. An example rollout can be seen in the supplementary video. The results of the episodes are summarized in Table <ref type="table" target="#tab_3">IV</ref>, and two stills from one of the Fig. <ref type="figure">9</ref>: The robot setup with the camera positioned over the hand (left). Two stills taken during a policy rollout (right). episodes are shown in Fig. <ref type="figure">9</ref>. Overall, the hand performs well considering only a single policy was trained. We observed the palm providing stability and robustness by catching the cube on the outside hand edge and rolling it back onto the palm center. The average number of successful cube reorientations per episode was 6.1, while the fewest and most were 0 and 16. The most common failure case was the pose tracking, which could be remedied by adding additional cameras or training a custom object tracker. A less common but concerning failure case was the cube getting stuck. Typically, this issue occurred when a corner of the cube would catch the edge of the 3D-printed friction wrap. Most of these failures could be remedied with tighter wrapping. We originally also noticed the corners of the cube frequently getting stuck between two fingers or two finger links. Slightly rounding the edges and corners of the cube before testing greatly reduced this issue; increasing the resolution of the contact model in simulation might lead to a better policy. It is also important to note that we trained our policy directly on the standard DeXtreme implementation in Isaac-GymEnvs. The method could likely be tuned to the ISyHand to improve overall performance. Additionally, it might be necessary to train with more agents for the policy to converge across the various domain randomizations. However, even with these limitations, this experiment demonstrates that the ISyHand can perform dexterous manipulation in the real world and rarely drops the cube.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION AND OUTLOOK</head><p>The ISyHand is a low-cost, robust, highly dexterous robot hand. It is more modular and adaptable than existing on-joint servo-driven hands, as new links can easily be added and the models can be modified. Additionally, typically weak components of existing hands, such as motor cables and joint limits, are carefully integrated into the design and robustified. Importantly, we introduce a novel articulated palm, which was demonstrated through reinforcement learning experiments to improve in-hand manipulation skills. Indeed, our full grid-based cube reorientation experiment provides a uniquely rigorous evaluation of the in-hand manipulation capabilities of the ISyHand and the popular Allegro and LEAP hands, highlighting the benefit of the articulated palm in early training stages. This evaluation method could be used for comparisons with concurrent (such as the Tessolo DG-5F hand <ref type="bibr" target="#b23">[25]</ref>) and future hand designs, and similar approaches could be applied to additional tasks. Additionally, the evaluation could be more realistic if hands are trained using DeXtreme-like domain randomization. These types of experiments could shine more light on optimal hand designs, and learning-based approaches could even be used to further optimize hand design, including the location and angle of palm articulations. Finally, our sim-to-real experiments demonstrate that a policy trained using DeXtreme in simulation can be deployed on the real ISyHand.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Six motions that display the 18 articulated DoF of the ISyHand. (a) Three DoF in each finger allow for flexion. (b, c) Each finger is connected to the palm via a revolute joint that enables ab-and adduction. (d) Two articulated palm joints create a flexible palm. (e) The joint that connects the thumb to the palm enables thumb rotation. (f) Like the other fingers, the thumb has three DoF for flexion. While the finger flexions depicted in a and f are limited by self-contacts, the other articulations each show the full range of motion.</figDesc><graphic coords="3,51.07,543.26,152.29,85.67" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Left: The ISyHand cable covers streamline routing of the three-wire motor cables, which are daisy-chained along each finger. Top right: Thumb adapter. Bottom right: Power injection and distribution.</figDesc><graphic coords="4,321.59,328.19,226.77,148.55" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 6 :Fig. 7 :</head><label>67</label><figDesc>Fig.6: Average evaluation performance of each hand on the simulated cube-reorientation task for all grid points, with three policies trained for 5,000 epochs per grid cell. For each hand, the grid cell associated with the most reorientation successes is outlined in green. ISyHand clearly outperforms ISyHand (flat) and the Allegro and LEAP hand in terms of consecutive rotations and size of manipulability region.</figDesc><graphic coords="7,324.28,252.79,221.40,210.58" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig.</head><label></label><figDesc>Fig.8: Evaluation performance of the best policy for each hand after 300,000 epochs. The ISyHand, Allegro hand, and LEAP hand clearly outperform ISyHand (flat). All pairwise differences between hands are statistically significant (p &lt; 0.05 with a Bonferroni correction).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="1,324.02,173.21,221.91,248.76" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I :</head><label>I</label><figDesc>Primary hardware components.</figDesc><table><row><cell>Component</cell><cell>Model</cell><cell>Provider</cell><cell>Total Cost</cell></row><row><cell>Servo Motors</cell><cell>12x XL330-M288-T 6x XC330-M288-T</cell><cell>Robotis Robotis</cell><cell>330 USD 620 USD</cell></row><row><cell>Communication</cell><cell>U2D2</cell><cell>Robotis</cell><cell>60 USD</cell></row><row><cell>Power</cell><cell>Custom injector, 5V supply</cell><cell>N/A</cell><cell>40 USD</cell></row><row><cell>Linkages</cell><cell>CPE HG100</cell><cell>Fillamentum</cell><cell>35 USD</cell></row><row><cell>Fingertips</cell><cell>Filaflex 60A</cell><cell>Recreus</cell><cell>60 USD</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE II :</head><label>II</label><figDesc>Simulation parameters for all joints of all hands.</figDesc><table><row><cell>B. Results and Discussion for Cube Reorientation</cell><cell></cell><cell></cell><cell></cell></row><row><cell>Joint Parameter</cell><cell>ISyHand</cell><cell cols="2">Allegro Hand LEAP Hand</cell></row><row><cell>Velocity Limit</cell><cell>5.50-5.90</cell><cell>6.28</cell><cell>8.48</cell></row><row><cell>Effort Limit</cell><cell>0.52-0.93</cell><cell>0.50</cell><cell>0.95</cell></row><row><cell>Stiffness</cell><cell>3.0</cell><cell>3.0</cell><cell>3.0</cell></row><row><cell>Damping</cell><cell>0.1</cell><cell>0.1</cell><cell>0.1</cell></row><row><cell>Friction</cell><cell>0.01</cell><cell>0.01</cell><cell>0.01</cell></row><row><cell>Armature</cell><cell>0.001</cell><cell>0.001</cell><cell>0.001</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>TABLE IV :</head><label>IV</label><figDesc>Summary of the cube-reorientation experiments with the real ISyHand across 30 two-minute-long episodes.</figDesc><table><row><cell>Mean Cube</cell><cell>Max Cube</cell><cell cols="2">Drops Stuck Pose-Tracking</cell></row><row><cell cols="2">Reorientations Reorientations</cell><cell></cell><cell>Failures</cell></row><row><cell>6.1</cell><cell>16</cell><cell>3</cell><cell>7</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENTS</head><p>The authors thank the <rs type="programName">MPI-IS Grassroots program</rs> and <rs type="person">Cyber Valley</rs> for supporting the development of the ISyHand. <rs type="person">L. Mack</rs> and <rs type="person">J. Stueckler</rs> gratefully acknowledge the HPC resources provided by the <rs type="funder">Erlangen National High Performance Computing Center</rs> (<rs type="funder">NHR@FAU) of the Friedrich-Alexander-Universität Erlangen-Nürnberg (FAU)</rs> under the <rs type="projectName">BayernKI</rs> project <rs type="grantNumber">v119ee</rs> for the RL grid experiments in simulation. BayernKI funding is provided by <rs type="funder">Bavarian</rs> state authorities. This work was also partially supported by the <rs type="funder">Robotics Institute Germany (RIG)</rs>, which is funded by the <rs type="funder">German Federal Ministry of Research, Technology and Space (BMFTR)</rs> under grant number <rs type="grantNumber">16ME1008</rs>.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_xHuutdt">
+					<orgName type="program" subtype="full">MPI-IS Grassroots program</orgName>
+				</org>
+				<org type="funded-project" xml:id="_c6FpDwB">
+					<idno type="grant-number">v119ee</idno>
+					<orgName type="project" subtype="full">BayernKI</orgName>
+				</org>
+				<org type="funding" xml:id="_xxfBCa9">
+					<idno type="grant-number">16ME1008</idno>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Yale OpenHand project: Optimizing open-source hand designs for ease of fabrication and adoption</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Dollar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="32" to="40" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Right Hand Robotics</title>
+		<ptr target="https://righthandrobotics.com/products" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Variable-friction finger surfaces to enable within-hand manipulation via gripping and sliding</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">J</forename><surname>Spiers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Calli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="4116" to="4123" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Flattening and folding towels with a single-arm robot based on reinforcement learning</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Shehawy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pareyson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Caruso</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">De</forename><surname>Bernardi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Zanchettin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Rocco</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">169</biblScope>
+			<biblScope unit="page">104506</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">In-hand manipulation with a simple belted parallel-jaw gripper</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Holladay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rus</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1334" to="1341" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Shadow dexterous hand</title>
+		<ptr target="https://www.shadowrobot.com/dexterous-hand-series" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">ORCA: An open-source, reliable, cost-effective, anthropomorphic robotic hand for uninterrupted dexterous task learning</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">C</forename><surname>Christoph</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Eberlein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Katsimalis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Roberti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sympetheros</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Vogt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Liconti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">G</forename><surname>Cangan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Hinchet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">K</forename><surname>Katzschmann</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2504.04259" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Allegro hand</title>
+		<ptr target="https://www.wonikrobotics.com/robot-hand" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Highly dexterous humanoid manipulator (HDHM) designed for avatar systems</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chagas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Vaz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Kosanovic</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Oh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Int. Conf. Consumer Electronics (ICCE)</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1" to="5" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">LEAP hand: Low-cost, efficient, and anthropomorphic hand for robot learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Agarwal</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Dexterous manipulation from images: Autonomous realworld RL via substep guidance</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Doshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rovinsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Int. Conf. on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="5938" to="5945" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Introducing H4ND: Hyper-resilient, 4fingered, nimble, dexterous anthropomorphic robot hand optimized for research</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kosanovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">C</forename><surname>Vaz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Int. Conf. on Ubiquitous Robots (UR)</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="342" to="349" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">A novel type of compliant and underactuated robotic hand for dexterous grasping</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Deimel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Brock</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="issue">1-3</biblScope>
+			<biblScope unit="page" from="161" to="185" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">DeXtreme: Transfer of agile in-hand manipulation from simulation to reality</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Petrenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Makoviichuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">V</forename><surname>Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zhurkevich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Sundaralingam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">S</forename><surname>Narang</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA48891.2023.10160216</idno>
+		<ptr target="https://doi.org/10.1109/ICRA48891.2023.10160216" />
+	</analytic>
+	<monogr>
+		<title level="m">Proc. IEEE Int. Conf. on Robotics and Automation (ICRA)</title>
+		<meeting>IEEE Int. Conf. on Robotics and Automation (ICRA)</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="5977" to="5984" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Lessons from learning to spin &quot;pens</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Che</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning (CoRL)</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Tilburg hand</title>
+		<ptr target="https://www.tilburg-robotics.eu/" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">RUKA: Rethinking the design of humanoid hands with learning</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zorin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Guzey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Kondrich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">X</forename><surname>Bhattasali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2504.13165" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<author>
+			<persName><forename type="first">H</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Suresh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<title level="m">General In-Hand Object Rotation with Vision and Touch</title>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+	<note>Conf. on Robot Learning (CoRL)</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">The GRASP taxonomy of human grasp types</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Feix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-B</forename><surname>Schmiedmayer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kragic</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Human-Machine Systems</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="66" to="77" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">MediaPipe Hand Landmarker</title>
+		<ptr target="https://ai.google.dev/edge/mediapipe/solutions/vision/handlandmarker" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Isaac Gym: High performance GPU-based physics simulation for robot learning</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wawrzyniak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Storey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Macklin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hoeller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Rudin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>State</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. Neural Information Processing Systems (NeurIPS) Track on Datasets and Benchmarks</title>
+		<meeting>Neural Information essing Systems (NeurIPS) Track on Datasets and Benchmarks</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">FoundationPose: Unified 6D pose estimation and tracking of novel objects</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kautz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Birchfield</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. Conf. on Computer Vision and Pattern Recognition (CVPR)</title>
+		<meeting>Conf. on Computer Vision and Pattern Recognition (CVPR)</meeting>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">Intel Realsense 405</title>
+		<ptr target="https://www.intelrealsense.com/depth-camera-d405/" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<ptr target="https://en.tesollo.com/dg-5f/" />
+		<title level="m">Tesollo DG-5F robot hand</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

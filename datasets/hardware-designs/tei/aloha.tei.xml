@@ -1,0 +1,2083 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</title>
+				<funder>
+					<orgName type="full">FANUC</orgName>
+				</funder>
+				<funder ref="#_eTcBbEc">
+					<orgName type="full">ONR</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Stanford Robotics</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2023-04-23">23 Apr 2023</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Stanford</forename><surname>University</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">U</forename><forename type="middle">C</forename><surname>Berkeley</surname></persName>
+						</author>
+						<title level="a" type="main">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2023-04-23">23 Apr 2023</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">93F449BDE379EF2EE3EE6C9D31F55297</idno>
+					<idno type="arXiv">arXiv:2304.13705v1[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>ALOHA : A Low-cost Open-source Hardware System for Bimanual Teleoperation</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The user teleoperates by backdriving the leader robots, with the follower robots mirroring the motion. Right: ALOHA is capable of precise, contact-rich, and dynamic tasks. We show examples of both teleoperated and learned skills.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Fine manipulation tasks involve precise, closed-loop feedback and require high degrees of hand-eye coordination to adjust and re-plan in response to changes in the environment. Examples of such manipulation tasks include opening the lid of a condiment cup or slotting a battery, which involve delicate operations such as pinching, prying, and tearing rather than broad-stroke motions such as picking and placing. Take opening the lid of a condiment cup in Figure <ref type="figure" target="#fig_2">1</ref> as an example, where the cup is initialized upright on the table: the right gripper needs to first tip it over, and nudge it into the opened left gripper. Then the left gripper closes gently and lifts the cup off the table. Next, one of the right fingers approaches the cup from below and pries the lid open. Each of these steps requires high precision, delicate hand-eye coordination, and rich contact. Millimeters of error would lead to task failure.</p><p>Existing systems for fine manipulation use expensive robots and high-end sensors for precise state estimation <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b59">60,</ref><ref type="bibr" target="#b31">32,</ref><ref type="bibr" target="#b40">41]</ref>. In this work, we seek to develop a low-cost system for fine manipulation that is, in contrast, accessible and reproducible. However, low-cost hardware is inevitably less precise than high-end platforms, making the sensing and planning challenge more pronounced. One promising direction to resolve this is to incorporate learning into the system. Humans also do not have industrial-grade proprioception <ref type="bibr" target="#b70">[71]</ref>, and yet we are able to perform delicate tasks by learning from closed-loop visual feedback and actively compensating for errors. In our system, we therefore train an end-to-end policy that directly maps RGB images from commodity web cameras to the actions. This pixel-to-action formulation is particularly suitable for fine manipulation, because fine manipulation often involves objects with complex physical properties, such that learning the manipulation policy is much simpler than modeling the whole environment. Take the condiment cup example: modeling the contact when nudging the cup, and also the deformation when prying open the lid involves complex physics on a large number of degrees of freedom. Designing a model accurate enough for planning would require significant research and task specific engineering efforts. In contrast, the policy of nudging and opening the cup is much simpler, since a closed-loop policy can react to different positions of the cup and lid rather than precisely anticipating how it will move in advance.</p><p>Training an end-to-end policy, however, presents its own challenges. The performance of the policy depends heavily on the training data distribution, and in the case of fine manipulation, high-quality human demonstrations can provide tremendous value by allowing the system to learn from human dexterity. We thus build a low-cost yet dexterous teleoperation system for data collection, and a novel imitation learning algorithm that learns effectively from the demonstrations. We overview each component in the following two paragraphs. Teleoperation system. We devise a teleoperation setup with two sets of low-cost, off-the-shelf robot arms. They are approximately scaled versions of each other, and we use jointspace mapping for teleoperation. We augment this setup with 3D printed components for easier backdriving, leading to a highly capable teleoperation system within a $20k budget. We showcase its capabilities in Figure <ref type="figure" target="#fig_2">1</ref>, including teleoperation of precise tasks such as threading a zip tie, dynamic tasks such as juggling a ping pong ball, and contact-rich tasks such as assembling the chain in the NIST board #2 <ref type="bibr" target="#b3">[4]</ref>. Imitation learning algorithm. Tasks that require precision and visual feedback present a significant challenge for imitation learning, even with high-quality demonstrations. Small errors in the predicted action can incur large differences in the state, exacerbating the "compounding error" problem of imitation learning <ref type="bibr" target="#b46">[47,</ref><ref type="bibr" target="#b63">64,</ref><ref type="bibr" target="#b28">29]</ref>. To tackle this, we take inspiration from action chunking, a concept in psychology that describes how sequences of actions are grouped together as a chunk, and executed as one unit <ref type="bibr" target="#b34">[35]</ref>. In our case, the policy predicts the target joint positions for the next k timesteps, rather than just one step at a time. This reduces the effective horizon of the task by k-fold, mitigating compounding errors. Predicting action sequences also helps tackle temporally correlated confounders <ref type="bibr" target="#b60">[61]</ref>, such as pauses in demonstrations that are hard to model with Markovian single-step policies. To further improve the smoothness of the policy, we propose temporal ensembling, which queries the policy more frequently and averages across the overlapping action chunks. We implement action chunking policy with Transformers <ref type="bibr" target="#b64">[65]</ref>, an architecture designed for sequence modeling, and train it as a conditional VAE (CVAE) <ref type="bibr" target="#b54">[55,</ref><ref type="bibr" target="#b32">33]</ref> to capture the variability in human data. We name our method Action Chunking with Transformers (ACT), and find that it significantly outperforms previous imitation learning algorithms on a range of simulated and real-world fine manipulation tasks.</p><p>The key contribution of this paper is a low-cost system for learning fine manipulation, comprising a teleoperation system and a novel imitation learning algorithm. The teleoperation system, despite its low cost, enables tasks with high precision and rich contacts. The imitation learning algorithm, Action Chunking with Transformers (ACT), is capable of learning precise, close-loop behavior and drastically outperforms previous methods. The synergy between these two parts allows learning of 6 fine manipulation skills directly in the real-world, such as opening a translucent condiment cup and slotting a battery with 80-90% success, from only 10 minutes or 50 demonstration trajectories.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>Imitation learning for robotic manipulation. Imitation learning allows a robot to directly learn from experts. Behavioral cloning (BC) <ref type="bibr" target="#b43">[44]</ref> is one of the simplest imitation learning algorithms, casting imitation as supervised learning from observations to actions. Many works have then sought to improve BC, for example by incorporating history with various architectures <ref type="bibr" target="#b38">[39,</ref><ref type="bibr" target="#b48">49,</ref><ref type="bibr" target="#b25">26,</ref><ref type="bibr" target="#b6">7]</ref>, using a different training objective <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b41">42]</ref>, and including regularization <ref type="bibr" target="#b45">[46]</ref>. Other works emphasize the multi-task or few-shot aspect of imitation learning <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b24">25,</ref><ref type="bibr" target="#b10">11]</ref>, leveraging language <ref type="bibr" target="#b50">[51,</ref><ref type="bibr" target="#b51">52,</ref><ref type="bibr" target="#b25">26,</ref><ref type="bibr" target="#b6">7]</ref>, or exploiting the specific task structure <ref type="bibr" target="#b42">[43,</ref><ref type="bibr" target="#b67">68,</ref><ref type="bibr" target="#b27">28,</ref><ref type="bibr" target="#b51">52]</ref>. Scaling these imitation learning algorithms with more data has led to impressive systems that can generalize to new objects, instructions, or scenes <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b25">26,</ref><ref type="bibr" target="#b6">7,</ref><ref type="bibr" target="#b31">32]</ref>. In this work, we focus on building an imitation learning system that is low-cost yet capable of performing delicate, fine manipulation tasks. We tackle this from both hardware and software, by building a high-performance teleoperation system, and a novel imitation learning algorithm that drastically improves previous methods on fine manipulation tasks. Addressing compounding errors. A major shortcoming of BC is compounding errors, where errors from previous timesteps accumulate and cause the robot to drift off of its training distribution, leading to hard-to-recover states <ref type="bibr" target="#b46">[47,</ref><ref type="bibr" target="#b63">64]</ref>. This problem is particularly prominent in the fine manipulation setting <ref type="bibr" target="#b28">[29]</ref>. One way to mitigate compounding errors is to allow additional on-policy interactions and expert corrections, such as DAgger <ref type="bibr" target="#b46">[47]</ref> and its variants <ref type="bibr" target="#b29">[30,</ref><ref type="bibr" target="#b39">40,</ref><ref type="bibr" target="#b23">24]</ref>. However, expert annotation can be time-consuming and unnatural with a teleoperation interface <ref type="bibr" target="#b28">[29]</ref>. One could also inject noise at demonstration collection time to obtain datasets with corrective behavior <ref type="bibr" target="#b35">[36]</ref>, but for fine manipulation, such noise injection can directly lead to task failure, reducing the dexterity of teleoperation system. To circumvent these issues, previous works generate synthetic correction data in an offline manner <ref type="bibr" target="#b15">[16,</ref><ref type="bibr" target="#b28">29,</ref><ref type="bibr" target="#b69">70]</ref>. While they are limited to settings where lowdimensional states are available, or a specific type of task like grasping. Due to these limitations, we need to address the compounding error problem from a different angle, compatible with high-dimensional visual observations. We propose to reduce the effective horizon of tasks through action chunking, i.e., predicting an action sequence instead of a single action, and then ensemble across overlapping action chunks to produce trajectories that are both accurate and smooth. Bimanual manipulation. Bimanual manipulation has a long history in robotics, and has gained popularity with the lowering of hardware costs. Early works tackle bimanual manipulation from a classical control perspective, with known environment dynamics <ref type="bibr" target="#b53">[54,</ref><ref type="bibr" target="#b47">48]</ref>, but designing such models can be timeconsuming, and they may not be accurate for objects with complex physical properties. More recently, learning has been incorporated into bimanual systems, such as reinforcement learning <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b9">10]</ref>, imitating human demonstrations <ref type="bibr" target="#b33">[34,</ref><ref type="bibr" target="#b36">37,</ref><ref type="bibr" target="#b58">59,</ref><ref type="bibr" target="#b66">67,</ref><ref type="bibr" target="#b31">32]</ref>, or learning to predict key points that chain together Middle: Detailed view of the "handle and scissor" mechanism and custom grippers. Right: Technical spec of the ViperX 6dof robot <ref type="bibr" target="#b0">[1]</ref>.</p><p>motor primitives <ref type="bibr" target="#b19">[20,</ref><ref type="bibr" target="#b18">19,</ref><ref type="bibr" target="#b49">50]</ref>. Some of the works also focus on fine-grained manipulation tasks such as knot untying, cloth flattening, or even threading a needle <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b17">18,</ref><ref type="bibr" target="#b30">31]</ref>, while using robots that are considerably more expensive, e.g. the da Vinci surgical robot or ABB YuMi. Our work turns to low-cost hardware, e.g. arms that cost around $5k each, and seeks to enable them to perform high-precision, closed-loop tasks. Our teleoperation setup is most similar to Kim et al. <ref type="bibr" target="#b31">[32]</ref>, which also uses joint-space mapping between the leader and follower robots. Unlike this previous system, we do not make use of special encoders, sensors, or machined components. We build our system with only off-the-shelf robots and a handful of 3D printed parts, allowing non-experts to assemble it in less than 2 hours.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION</head><p>We seek to develop an accessible and high-performance teleoperation system for fine manipulation. We summarize our design considerations into the following 5 principles.</p><p>1) Low-cost: The entire system should be within budget for most robotic labs, comparable to a single industrial arm. 2) Versatile: It can be applied to a wide range of fine manipulation tasks with real-world objects. 3) User-friendly: The system should be intuitive, reliable, and easy to use. 4) Repairable: The setup can be easily repaired by researchers, when it inevitably breaks. 5) Easy-to-build: It can be quickly assembled by researchers, with easy-to-source materials. When choosing the robot to use, principles 1, 4, and 5 lead us to build a bimanual parallel-jaw grippers setup with two ViperX 6-DoF robot arms <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b65">66]</ref>. We do not employ dexterous hands due to price and maintenance considerations. The ViperX arm used has a working payload of 750g and 1.5m span, with an accuracy of 5-8mm. The robot is modular and simple to repair: in the case of motor failure, the low-cost Dynamixel motors can be easily replaced. The robot can be purchased off-the-shelf for around $5600. The OEM fingers, however, are not versatile enough to handle fine manipulation tasks. We thus design our own 3D printed "see-through" fingers and fit it with gripping tape (Fig <ref type="figure" target="#fig_0">3</ref>). This allows for good visibility when performing delicate operations, and robust grip even with thin plastic films.</p><p>We then seek to design a teleoperation system that is maximally user-friendly around the ViperX robot. Instead of mapping the hand pose captured by a VR controller or camera to the end-effector pose of the robot, i.e. task-space mapping, we use direct joint-space mapping from a smaller robot, WidowX, manufactured by the same company and costs $3300 <ref type="bibr" target="#b1">[2]</ref>. The user teleoperates by backdriving the smaller WidowX ("the leader"), whose joints are synchronized with the larger ViperX ("the follower"). When developing the setup, we noticed a few benefits of using joint-space mapping compared to task-space. (1) Fine manipulation often requires operating near singularities of the robot, which in our case has 6 degrees of freedom and no redundancy. Off-the-shelf inverse kinematics (IK) fails frequently in this setting. Joint space mapping, on the other hand, guarantees high-bandwidth control within the joint limits, while also requiring less computation and reducing latency. <ref type="bibr" target="#b1">(2)</ref> The weight of the leader robot prevents the user from moving too fast, and also dampens small vibrations. We notice better performance on precise tasks with jointspace mapping rather than holding a VR controller. To further improve the teleoperation experience, we design a 3D-printed "handle and scissor" mechanism that can be retrofitted to the leader robot (Fig <ref type="figure" target="#fig_0">3</ref>). It reduces the force required from the operator to backdrive the motor, and allows for continuous control of the gripper, instead of binary opening or closing. We also design a rubber band load balancing mechanism that partially counteracts the gravity on the leader side. It reduces the effort needed from the operator and makes longer teleoperation sessions (e.g. &gt;30 minutes) possible. We include more details about the setup in the project website.</p><p>The rest of the setup includes a robot cage with 20×20mm aluminum extrusions, reinforced by crossing steel cables. There is a total of four Logitech C922x webcams, each streaming 480×640 RGB images. Two of the webcams are mounted on the wrist of the follower robots, allowing for a close-up view of the grippers. The remaining two cameras are mounted on the front and at the top respectively (Fig <ref type="figure" target="#fig_0">3</ref>). Both the teleoperation and data recording happen at 50Hz.</p><p>With the design considerations above, we build the bimanual teleoperation setup ALOHA within a 20k USD budget, compa- rable to a single research arm such as Franka Emika Panda.</p><p>ALOHA enables the teleoperation of:</p><p>• Precise tasks such as threading zip cable ties, picking credit cards out of wallets, and opening or closing ziploc bags. • Contact-rich tasks such as inserting 288-pin RAM into a computer motherboard, turning pages of a book, and assembling the chains and belts in the NIST board #2 <ref type="bibr" target="#b3">[4]</ref> • Dynamic tasks such as juggling a ping pong ball with a real ping pong paddle, balancing the ball without it falling off, and swinging open plastic bags in the air. Skills such as threading a zip tie, inserting RAM, and juggling ping pong ball, to our knowledge, are not available for existing teleoperation systems with 5-10x the budget <ref type="bibr" target="#b20">[21,</ref><ref type="bibr" target="#b4">5]</ref>. We include a more detailed price &amp; capability comparison in Appendix A, as well as more skills that ALOHA is capable of in Figure <ref type="figure" target="#fig_5">9</ref>. To make ALOHA more accessible, we open-source all software and hardware with a detailed tutorial covering 3D printing, assembling the frame to software installations. You can find the tutorial on the project website.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. ACTION CHUNKING WITH TRANSFORMERS</head><p>As we will see in Section V, existing imitation learning algorithms perform poorly on fine-grained tasks that require high-frequency control and closed-loop feedback. We therefore develop a novel algorithm, Action Chunking with Transformers (ACT), to leverage the data collected by ALOHA. We first summarize the pipeline of training ACT, then dive into each of the design choices.</p><p>To train ACT on a new task, we first collect human demonstrations using ALOHA. We record the joint positions of the leader robots (i.e. input from the human operator) and use them as actions. It is important to use the leader joint positions instead of the follower's, because the amount of force applied is implicitly defined by the difference between them, through the low-level PID controller. The observations are composed of the current joint positions of follower robots and the image feed from 4 cameras. Next, we train ACT to predict the sequence of future actions given the current observations. An action here corresponds to the target joint positions for both arms in the next time step. Intuitively, ACT tries to imitate what a human operator would do in the following time steps given current observations. These target joint positions are then tracked by the low-level, high-frequency PID controller inside Dynamixel motors. At test time, we load the policy that achieves the lowest validation loss and roll it out in the environment. The main challenge that arises is compounding errors, where errors from previous actions lead to states that are outside of training distribution.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Action Chunking and Temporal Ensemble</head><p>To combat the compounding errors of imitation learning in a way that is compatible with pixel-to-action policies (Figure II), we seek to reduce the effective horizon of long trajectories collected at high frequency. We are inspired by action chunking, a neuroscience concept where individual actions are grouped together and executed as one unit, making them more efficient to store and execute <ref type="bibr" target="#b34">[35]</ref>. Intuitively, a chunk of actions could correspond to grasping a corner of the candy wrapper or inserting a battery into the slot. In our implementation, we fix the chunk size to be k: every k steps, the agent receives an observation, generates the next k actions, and executes the actions in sequence (Figure <ref type="figure">5</ref>). This implies a k-fold reduction in the effective horizon of the task. Concretely, the policy models π θ (a t:t+k |s t ) instead of π θ (a t |s t ). Chunking can also help model non-Markovian behavior in human demonstrations. Specifically, a single-step policy would struggle with temporally correlated confounders, such as pauses in the middle of a demonstration <ref type="bibr" target="#b60">[61]</ref>, since the behavior not only depends on the state, but also the timestep. Action chunking can mitigate  Sample z from q φ (z|a t:t+k , ōt)</p><formula xml:id="formula_0">8:</formula><p>Predict ât:t+k from π θ (â t:t+k |ot, z)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>9:</head><p>Lreconst = MSE (â t:t+k , a t:t+k ) 10:</p><p>Lreg = DKL(q φ (z|a t:t+k , ōt) N (0, I )) Apply at = i wiAt[i]/ i wi, with wi = exp(-m * i) this issue when the confounder is within a chunk, without introducing the causal confusion issue for history-conditioned policies <ref type="bibr" target="#b11">[12]</ref>.</p><p>A naïve implementation of action chunking can be suboptimal: a new environment observation is incorporated abruptly every k steps and can result in jerky robot motion. To improve smoothness and avoid discrete switching between executing and observing, we query the policy at every timestep. This makes different action chunks overlap with each other, and at a given timestep there will be more than one predicted action. We illustrate this in Figure <ref type="figure">5</ref> and propose a temporal ensemble to combine these predictions. Our temporal ensemble performs a weighted average over these predictions with an exponential weighting scheme w i = exp(-m * i), where w 0 is the weight for the oldest action. The speed for incorporating new observation is governed by m, where a smaller m means faster incorporation. We note that unlike typical smoothing, where the current action is aggregated with actions in adjacent timesteps, which leads to bias, we aggregate actions predicted for the same timestep. This procedure also incurs no additional training cost, only extra inference-time computation. In practice, we find both action chunking and temporal ensembling to be important for the success of ACT, which produces precise and smooth motion. We discuss these components in more detail in the ablation studies in Subsection VI-A.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Modeling human data</head><p>Another challenge that arises is learning from noisy human demonstrations. Given the same observation, a human can use different trajectories to solve the task. Humans will also be more stochastic in regions where precision matters less <ref type="bibr" target="#b37">[38]</ref>. Thus, it is important for the policy to focus on regions where high precision matters. We tackle this problem by training our action chunking policy as a generative model. Specifically, we train the policy as a conditional variational autoencoder (CVAE) <ref type="bibr" target="#b54">[55]</ref>, to generate an action sequence conditioned on current observations. The CVAE has two components: a CVAE encoder and a CVAE decoder, illustrated on the left and right side of Figure <ref type="figure">4</ref> respectively. The CVAE encoder only serves to train the CVAE decoder (the policy) and is discarded at test time. Specifically, the CVAE encoder predicts the mean and variance of the style variable z's distribution, which is parameterized as a diagonal Gaussian, given the current observation and action sequence as inputs. For faster training in practice, we leave out the image observations and only condition on the proprioceptive observation and the action sequence. The CVAE decoder, i.e. the policy, conditions on both z and the current observations (images + joint positions) to predict the action sequence. At test time, we set z to be the mean of the prior distribution i.e. zero to deterministically decode. The whole model is trained to maximize the log-likelihood of demonstration action chunks, i.e. min θst,a t:t+k ∈D log π θ (a t:t+k |s t ), with the standard VAE objective which has two terms: a reconstruction loss and a term that regularizes the encoder to a Gaussian prior. Following <ref type="bibr" target="#b22">[23]</ref>, we weight the second term with a hyperparameter β. Intuitively, higher β will result in less information transmitted in z <ref type="bibr" target="#b61">[62]</ref>. Overall, we found the CVAE objective to be essential in learning precise tasks from human demonstrations. We include a more detailed discussion in Subsection VI-B.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Implementing ACT</head><p>We implement the CVAE encoder and decoder with transformers, as transformers are designed for both synthesizing information across a sequence and generating new sequences. The CVAE encoder is implemented with a BERT-like transformer encoder <ref type="bibr" target="#b12">[13]</ref>. The inputs to the encoder are the current joint positions and the target action sequence of length k from the demonstration dataset, prepended by a learned "[CLS]" token similar to BERT. This forms a k +2 length input (Figure <ref type="figure">4</ref> </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>left).</head><p>After passing through the transformer, the feature corresponding to "[CLS]" is used to predict the mean and variance of the "style variable" z, which is then used as input to the decoder. The CVAE decoder (i.e. the policy) takes the current observations and z as the input, and predicts the next k actions (Figure <ref type="figure">4</ref> right). We use ResNet image encoders, a transformer encoder, and a transformer decoder to implement the CVAE decoder. Intuitively, the transformer encoder synthesizes information from different camera viewpoints, the joint positions, and the style variable, and the transformer decoder generates a coherent action sequence. The observation includes 4 RGB images, each at 480 × 640 resolution, and joint positions for two robot arms (7+7=14 DoF in total). The action space is the absolute joint positions for two robots, a 14-dimensional vector. Thus with action chunking, the policy outputs a k × 14 tensor given the current observation. The policy first process the images with ResNet18 backbones <ref type="bibr" target="#b21">[22]</ref>, which convert 480 × 640 × 3 RGB images into 15 × 20 × 512 feature maps. We then flatten along the spatial dimension to obtain a sequence of 300 × 512. To preserve the spatial information, we add a 2D sinusoidal position embedding to the feature sequence <ref type="bibr" target="#b7">[8]</ref>. Repeating this for all 4 images gives a feature sequence of 1200 × 512 in dimension. We then append two more features: the current joint positions and the "style variable" z. They are projected from their original dimensions to 512 through linear layers respectively. Thus, the input to the transformer encoder is 1202×512. The transformer decoder conditions on the encoder output through cross-attention, where the input sequence is a fixed position embedding, with dimensions k × 512, and the keys and values are coming from the encoder. This gives the transformer decoder an output dimension of k × 512, which is then down-projected with an MLP into k × 14, corresponding to the predicted target joint positions for the next k steps. We use L1 loss for reconstruction instead of the more common L2 loss: we noted that L1 loss leads to more precise modeling of the action sequence. We also noted degraded performance when using delta joint positions as actions instead of target joint positions. We include a detailed architecture diagram in Appendix C.</p><p>We summarize the training and inference of ACT in Algorithms 1 and 2. The model has around 80M parameters, and we train from scratch for each task. The training takes around 5 hours on a single 11G RTX 2080 Ti GPU, and the inference time is around 0.01 seconds on the same machine.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. EXPERIMENTS</head><p>We present experiments to evaluate ACT's performance on fine manipulation tasks. For ease of reproducibility, we build two simulated fine manipulation tasks in MuJoCo <ref type="bibr" target="#b62">[63]</ref>, in addition to 6 real-world tasks with ALOHA. We provide videos for each task on the project website.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Tasks</head><p>All 8 tasks require fine-grained, bimanual manipulation, and are illustrated in Figure <ref type="figure">6</ref>. For Slide Ziploc, the right gripper needs to accurately grasp the slider of the ziploc bag and open it, with the left gripper securing the body of the bag. For Slot Battery, the right gripper needs to first place the battery into the slot of the remote controller, then using the tip of fingers to delicately push in the edge of the battery, until it is fully inserted. Because the spring inside the battery slot causes the remote controller to move in the opposite direction during insertion, the left gripper pushes down on the remote to keep it in place. For Open Cup, the goal is to open the lid of a small condiment cup. Because of the cup's small size, the grippers cannot grasp the body of the cup by just approaching it from the side. Therefore we leverage both grippers: the right fingers first lightly tap near the edge of the cup to tip it over, and then nudge it into the open left gripper. This nudging step requires high precision and closing the loop on visual perception. The left gripper then closes gently and lifts the cup off the table, followed by the right finger prying open the lid, which also requires precision to not miss the lid or damage the cup. The goal of Thread Velcro is to insert one end of a velcro cable tie into the small loop attached to other end. The left gripper needs to first pick up the velcro tie from the table, followed by the right gripper pinching the tail of the tie in mid-air. Then, both arms coordinate to insert one end of the velcro tie into the other in mid-air. The loop measures 3mm x 25mm, while the velcro tie measures 2mm x 10-25mm depending on the position. For this task to be successful, the robot must use visual feedback to correct for perturbations with each grasp, as even a few millimeters of error during the first grasp will compound in the second grasp mid-air, giving more than a 10mm deviation in the insertion phase. For Prep Tape, the goal is to hang a small segment of the tape on the edge of a cardboard box. The right gripper first grasps the tape and cuts it with the tape dispenser's blade, and then hands the tape segment to the left gripper mid-air. Next, both arms approach the box, the left arm gently lays the tape segment on the box surface, and the right fingers push down on the tape to prevent slipping, followed by the left arm opening its gripper to release the tape. Similar to Thread Velcro, this task requires multiple steps of delicate coordination between the two arms. For Put On Shoe, the goal is to put the shoe on a fixed manniquin foot, and secure it with the shoe's velcro strap. The arms would first need to grasp the tongue and collar of the shoe respectively, lift it up and approach the foot. Putting the shoe on is challenging because of the tight fitting: the arms would need to coordinate carefully to nudge the foot in, and both grasps need to be robust enough to counteract the friction between the sock and shoe. Then, the left arm goes around to the bottom of the shoe to support it from dropping, followed by the right arm flipping the velcro strap and pressing it against the shoe to secure. The task is only considered successful if the shoe clings to the foot after both arms releases. For the simulated task Transfer Cube, the right arm needs to first pick up the red cube lying on the table, then place it inside the gripper of the other arm. Due to the small clearance between the cube and the left gripper (around 1cm), small errors could result in collisions and task failure. For the simulated task Bimanual Insertion, the left and right arms need to pick up the socket and peg respectively, and then insert in mid-air so the peg touches the "pins" inside the socket. The clearance is around 5mm in the insertion phase. For all 8 tasks, the initial placement of the objects is either varied randomly along the 15cm white reference line (real-world tasks), or uniformly in 2D regions (simulated tasks). We provide illustrations of both the initial positions and the subtasks in Figure <ref type="figure">6</ref> and<ref type="figure">7</ref>. Our evaluation will additionally report the performance for each of these subtasks.</p><p>In addition to the delicate bimanual control required to solve these tasks, the objects we use also present a significant perception challenge. For example, the ziploc bag is largely transparent, with a thin blue sealing line. Both the wrinkles on the bag and the reflective candy wrappers inside can vary during the randomization, and distract the perception system. Other transparent or translucent objects include the tape and both the lid and body of the condiment cup, making them hard to perceive precisely and ill-suited for depth cameras. The black table top also creates a low-contrast against many objects of interest, such as the black velcro cable tie and the black Slide Ziploc: Open the ziploc bag that is standing upright on the table. The bag is randomized along the 15cm white line. It is dropped from ~5cm above the table to randomize the deformation, which affects the height and appearance of the bag. The left arm first grasps the bag body (Subtask#1 Grasp) followed by the right arm pinching the slider (Subtask #2 Pinch). Then the right arm moves right to unzip the bag (Subtask #3 Open).</p><p>Slot Battery: Insert the battery into the remote controller. The controller is randomized along the 15cm white line. The battery is initialized in roughly the same position with different rotations. The right arm first grasps the battery (Subtask#1 Grasp) then places it into the slot (Subtask#2 Place). The left arm presses onto the remote to prevent it from sliding, while the right arm pushes in the battery (Subtask#3 Insert).</p><p>Open Cup: Pick up and open the lid of a translucent condiment cup. The cup is randomized along the 15cm white line. Both arms approach the cup, and the right gripper gently tips over the cup (Subtask#1 Tip Over) and pushes it into the gripper of the left arm. The left arm then gently closes its gripper and lifts the cup off the table (Subtask#2 Grasp). Next, the right gripper approaches the cup lid from below and prys open the lid.</p><p>Thread Velcro: Pick up the velcro cable tie and insert one end into the small loop on the other end. The velcro tie is randomized along the 15cm white line. The left arm first picks up the velcro tie by pinching near the plastic loop (Subtask#1 Lift). The right arm grasps the tail of the velcro tie mid-air (Subtask#2 Grasp). Next, both arms coordinate to deform the velcro tie and insert one end of it into the plastic loop on the other end.</p><p>Prep Tape: Hang a short segment of tape on the edge of the box. The tape dispenser is randomized along the 15cm white line. First, the right gripper grasps the tape from the side (Subtask#1 Grasp). It then lifts the tape and pulls to unroll it, followed by cutting it with the dispenser blade (Subtask#2 Cut). Next, the right gripper hands the tape segment to the left gripper in mid-air (Subtask#3 Handover), and both arms move toward the corner of the stationery cardboard box. The left arm then lays the tape segment flat on the surface of the box while the right gripper pushes down on the tape to prevent slipping. The left arm then opens its gripper to release the tape (Subtask#4 Hang).</p><formula xml:id="formula_1">#1 #2 #3 init. #1 #2 #3 init. #1 #2 #3 init. #1 #2 #3 init. #1 #2 #3 init. #<label>4</label></formula><p>Real-World Task Definitions</p><p>Put On Shoe: Put a velcro-strap shoe on a fixed manniquin foot. The shoe pose is randomized along the 15cm white line. First, both left and right grippers pick up the shoe (Subtask#1 Lift). Then both arms coordinate to put it on, with the heel touching the heel counter (Subtask#2 Insert). Next, the left arm moves to support the shoe (Subtask#3 Support), followed by the right arm securing the velcro strap (Subtask#4 Secure).</p><formula xml:id="formula_2">#1 #2 #3 init. #<label>4</label></formula><p>Fig. <ref type="figure">6</ref>: Real-World Task Definitions. For each of the 6 real-world tasks, we illustrate the initializations and the subtasks.</p><p>TABLE II: Success rate (%) for the remaining 3 real-world tasks. We only compare with the best performing baseline BeT.</p><p>tape dispenser. Especially from the top view, it is challenging to localize the velcro tie because of the small projected area.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Data Collection</head><p>For all 6 real-world tasks, we collect demonstrations using ALOHA teleoperation. Each episode takes 8-14 seconds for the human operator to perform depending on the complexity of the task, which translates to 400-700 time steps given the control frequency of 50Hz. We record 50 demonstrations for each task, except for Thread Velcro which has 100. The total amount for demonstrations is thus around 10-20 minutes of data for each task, and 30-60 minutes in wall-clock time because of resets and teleoperator mistakes. For the two simulated tasks, we collect two types of demonstrations: one type with a scripted policy and one with human demonstrations. To teleoperate in simulation, we use the "leader robots" of ALOHA to control the simulated robot, with the operator looking at the real-time renderings of the environment on the monitor. In both cases, we record 50 successful demonstrations.</p><p>We emphasize that all human demonstrations are inherently stochastic, even though a single person collects all of the demonstrations. Take the mid-air hand handover of the tape segment as an example: the exact position of the handover is different across each episode. The human has no visual or haptic reference to perform it in the same position. Thus to successfully perform the task, the policy will need to learn that the two grippers should never collide with each other during the handover, and the left gripper should always move to a position that can grasp the tape, instead of trying to memorize where exactly the handover happens, which can vary across demonstrations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Experiment Results</head><p>We compare ACT with four prior imitation learning methods. BC-ConvMLP is the simplest yet most widely used baseline <ref type="bibr" target="#b68">[69,</ref><ref type="bibr" target="#b25">26]</ref>, which processes the current image observations with a convolutional network, whose output features are concatenated with the joint positions to predict the action. BeT <ref type="bibr" target="#b48">[49]</ref> also leverages Transformers as the architecture, but with key differences: (1) no action chunking: the model predicts one action given the history of observations; and (2) the image observations are pre-processed by a separately trained frozen visual encoder. That is, the perception and control networks are not jointly optimized. RT-1 <ref type="bibr" target="#b6">[7]</ref> is another Transformerbased architecture that predicts one action from a fixed-length history of past observations. Both BeT and RT-1 discretize the action space: the output is a categorical distribution over discrete bins, but with an added continuous offset from the bincenter in the case of BeT. Our method, ACT, instead directly predicts continuous actions, motivated by the precision required in fine manipulation. Lastly, VINN <ref type="bibr" target="#b41">[42]</ref> is a non-parametric method that assumes access to the demonstrations at test time. Given a new observation, it retrieves the k observations with the most similar visual features, and returns an action using weighted k-nearest-neighbors. The visual feature extractor is a pretrained ResNet finetuned on demonstration data with unsupervised learning. We carefully tune the hyperparameters of these four prior methods using cube transfer. Details of the hyperparameters are provided in Appendix D.</p><p>As a detailed comparison with prior methods, we report the average success rate in Table I for two simulated and two real tasks. For simulated tasks, we average performance across 3 random seeds with 50 trials each. We report the success rate on both scripted data (left of separation bar) and human data (right of separation bar). For real-world tasks, we run one seed and evaluate with 25 trials. ACT achieves the highest success rate compared to all prior methods, outperforming the second best algorithm by a large margin on each task. For the two simulated tasks with scripted or human data, ACT outperforms the best previous method in success rate by 59%, 49%, 29%, and 20%. While previous methods are able to make progress in the first two subtasks, the final success rate remains low, below 30%. For the two real-world tasks Slide Ziploc and Slot Battery, ACT achieves 88% and 96% final success rates respectively, with other methods making no progress past the first stage. We attribute the poor performance of prior methods to compounding errors and non-Markovian behavior in the data: the behavior degrades significantly towards the end of an episode, and the robot can pause indefinitely for certain states. ACT mitigates both issues with action chunking. Our ablations in Subsection VI-A also shows that chunking can significantly improve these prior methods when incorporated. In addition, we notice a drop in performance for all methods when switching from scripted data to human data in simulated tasks: the stochasticity and multi-modality of human demonstrations make imitation learning a lot harder.</p><p>We report the success rate of the 3 remaining real-world tasks in Table <ref type="table">II</ref>. For these tasks, we only compare with BeT, which has the highest task success rate so far. Our method ACT reaches 84% success for Cup Open, 20% for Thread Velcro, 64% for Prep Tape and 92% for Put On Shoe, again outperforming BeT, which achieve zero final success on these challenging tasks. We observe relatively low success of ACT in Thread Velcro, where the success rate decreased by roughly half at every stage, from 92% success at the first stage to 20% final success. The failure modes we observe are 1) at stage 2, the right arm closes its gripper too early and fails to grasp the tail of the cable tie mid-air, and 2) in stage 3, the insertion is not precise enough and misses the loop. In both cases, it is hard to determine the exact position of the cable tie from image observations: the contrast is low between the black cable tie and the background, and the cable tie only occupies a small fraction of the image. We include examples of image observations in Appendix B.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. ABLATIONS</head><p>ACT employs action chunking and temporal ensembling to mitigate compounding errors and better handle non-Markovian demonstrations. It also trains the policy as a conditional VAE to model the noisy human demonstrations. In this section, we ablate each of these components, together with a user study that highlights the necessity of high-frequency control in ALOHA. We report results across a total of four settings: two simulated tasks with scripted or human demonstration.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Action Chunking and Temporal Ensembling</head><p>In Subsection V-C, we observed that ACT significantly outperforms previous methods that only predict single-step actions, with the hypothesis that action chunking is the key design choice. Since k dictates how long the sequence in each "chunk" is, we can analyze this hypothesis by varying k. k = 1 corresponds to no action chunking, and k = episode_length corresponds to fully open-loop control, where the robot outputs the entire episode's action sequence based on the first observation. We disable temporal ensembling in these experiments to only measure the effect of chunking, and trained separate policies for each k. In Figure <ref type="figure" target="#fig_4">8</ref> (a), we plot the success rate averaged across 4 settings, corresponding to 2 simulated tasks with either human or scripted data, with the blue line representing ACT without the temporal ensemble. We observe that performance improves drastically from 1% at k = 1 to 44% at k = 100, then slightly tapers down with higher k. This illustrates that more chunking and a lower effective horizon generally improve performance. We attribute the slight dip at k = 200, 400 (i.e., close to open-loop control) to the lack of reactive behavior and the difficulty in modeling long action sequences. To further evaluate the effectiveness and generality of action chunking, we augment two baseline methods with action chunking. For BC-ConvMLP, we simply increase the output dimension to k * action_dim, and for VINN, we retrieve the next k actions. We visualize their performance in Figure <ref type="figure" target="#fig_4">8</ref> (a) with different k, showing trends consistent with ACT, where more action chunking improves performance. While ACT still outperforms both augmented baselines with sizable gains, these results suggest that action chunking is generally beneficial for imitation learning in these settings.</p><p>We then ablate the temporal ensemble by comparing the highest success rate with or without it, again across the 4 aforementioned tasks and different k. We note that experiments with and without the temporal ensemble are separately tuned: hyperparameters that work best for no temporal ensemble may not be optimal with a temporal ensemble. In Figure <ref type="figure" target="#fig_4">8 (b)</ref>, we show that BC-ConvMLP benefits from temporal ensembling the most with a 4% gain, followed by a 3.3% gain for our method. We notice a performance drop for VINN, a non-parametric method. We hypothesize that a temporal ensemble mostly benefits parametric methods by smoothing out the modeling errors. In contrast, VINN retrieves ground-truth actions from the dataset and does not suffer from this issue.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Training with CVAE</head><p>We train ACT with CVAE objective to model human demonstrations, which can be noisy and contain multi-modal behavior. In this section, we compare with ACT without the CVAE objective, which simply predicts a sequence of actions given current observation, and trained with L1 loss. In Figure <ref type="figure" target="#fig_4">8</ref>  (c), we visualize the success rate aggregated across 2 simulated tasks, and separately plot training with scripted data and with human data. We can see that when training on scripted data, the removal of CVAE objective makes almost no difference in performance, because dataset is fully deterministic. While for human data, there is a significant drop from 35.3% to 2%. This illustrates that the CVAE objective is crucial when learning from human demonstrations.</p><p>C. Is High-Frequency Necessary?</p><p>Lastly, we conduct a user study to illustrate the necessity of high-frequency teleoperation for fine manipulation. With the same hardware setup, we lower the frequency from 50Hz to 5Hz, a control frequency that is similar to recent works that use high-capacity deep networks for imitation learning <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b69">70]</ref>. We pick two fine-grained tasks: threading a zip cable tie and un-stacking two plastic cups. Both require millimeterlevel precision and closed-loop visual feedback. We perform the study with 6 participants who have varying levels of experience with teleoperation, though none had used ALOHA before. The participants were recruited from among computer science graduate students, with 4 men and 2 women aged 22-25 The order of tasks and frequencies are randomized for each participant, and each participant was provided with a 2 minutes practice period before each trial. We recorded the time it took to perform the task for 3 trials, and visualize the data in Figure <ref type="figure" target="#fig_4">8  (d)</ref>. On average, it took 33s for participants to thread the zip tie at 5Hz, which is lowered to 20s at 50Hz. For separating plastic cups, increasing the control frequency lowered the task duration from 16s to 10s. Overall, our setup (i.e. 50Hz) allows the participants to perform highly dexterous and precise tasks in a short amount of time. However, reducing the frequency from 50Hz to 5Hz results in a 62% increase in teleoperation time. We then use "Repeated Measures Designs", a statistical procedure, to formally verify that 50Hz teleoperation outperforms 5Hz with p-value &lt;0.001. We include more details about the study in Appendix E.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VII. LIMITATIONS AND CONCLUSION</head><p>We present a low-cost system for fine manipulation, comprising a teleoperation system ALOHA and a novel imitation learning algorithm ACT. The synergy between these two parts allows us to learn fine manipulation skills directly in the realworld, such as opening a translucent condiment cup and slotting a battery with a 80-90% success rate and around 10 min of demonstrations. While the system is quite capable, there exist tasks that are beyond the capability of either the robots or the learning algorithm, such as buttoning up a dress shirt. We include a more detailed discussion about limitations in Appendix F. Overall, we hope that this low-cost open-source system represents an important step and accessible resource towards advancing fine-grained robotic manipulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Comparing ALOHA with Prior Teleoperation Setups</head><p>In Figure <ref type="figure" target="#fig_5">9</ref>, we include more teleoperated tasks that ALOHA is capable of. We stress that all objects are taken directly from the real world without any modification, to demonstrate ALOHA's generality in real life settings.</p><p>ALOHA exploits the kinesthetic similarity between leader and follower robots by using joint-space mapping for teleoperation. A leader-follower design choice dates back to at least as far as 1953, when Central Research Laboratories built teleoperation systems for handling hazardous material <ref type="bibr" target="#b26">[27]</ref>. More recently, companies like RE2 <ref type="bibr" target="#b2">[3]</ref> also built highly dexterous teleoperation systems with joint-space mapping. ALOHA is similar to these previous systems, while benefiting significantly from recent advances of low-cost actuators and robot arms. It allows us to achieve similar levels of dexterity with much lower cost, and also without specialized hardware or expert assembly.</p><p>Next, we compare the cost of ALOHA to recent teleoperation systems. DexPilot <ref type="bibr" target="#b20">[21]</ref> controls a dexterous hand using image streams of a human hand. It has 4 calibrated Intel Realsense to capture the point cloud of a human hand, and retarget the pose to an Allegro hand. The Allegro hand is then mounted to a KUKA LBR iiwa7 R800. DexPilot allows for impressive tasks such as extracting money from a wallet, opening a penut jar, and insertion tasks in NIST board #1. We estimate the system cost to be around $100k with one arm+hand. More recent works such as Robotic Telekinesis <ref type="bibr" target="#b52">[53,</ref><ref type="bibr" target="#b5">6,</ref><ref type="bibr" target="#b44">45]</ref> seek to reduce the cost of DexPilot by using a single RGB camera to detect hand pose, and retarget using learning techniques. While sensing cost is greatly reduced, the cost for robot hand and arm remains high: a dexterous hand has more degrees of freedom and is naturally pricier. Moving the hand around would also require an industrial arm with at least 2kg payload, increasing the price further. We estimate the cost of these systems to be around $18k with one arm+hand. Lastly, the Shadow Teleoperation System is a bimanual system for teleoperating two dexterous hands. Both hands are mounted to a UR10 robot, and the hand pose is obtained by either a tracking glove or a haptic glove. This system is the most capable among all aforementioned works, benefitted from its bimanual design. However, it also costs the most, at at least $400k. ALOHA, on the other hand, is a bimanual setup that costs $18k ($20k after adding optional add-ons such as cameras). Reducing dexterous hands to parallel jaw grippers allows us to use light-weight and low-cost robots, which can be more nimble and require less service.</p><p>Finally, we compare the capabilities of ALOHA with previous systems. We choose the most capable system as reference: the Shadow Teleoperation System <ref type="bibr" target="#b4">[5]</ref>, which costs more than 10x of ALOHA. Specifically, we found three demonstration videos <ref type="bibr" target="#b55">[56,</ref><ref type="bibr" target="#b56">57,</ref><ref type="bibr" target="#b57">58]</ref> that contain 15 example use cases of the Shadow Teleoperation System, and seek to recreate them using ALOHA. The tasks include playing "beer pong", "jenga," and a rubik's cube, using a dustpan and brush, twisting open a water bottle, pouring liquid out, untying velcro cable tie, picking up an egg and a light bulb, inserting and unplugging USB, RJ45, using a pipette, writing, twisting open an aluminum case, and in-hand rotation of Baoding balls. We are able to recreate 14 out of the 15 tasks with similar objects and comparable amount of time. We cannot recreate the Baoding ball in-hand rotation task, as our setup does not have a hand.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Example Image Observations</head><p>We include example image observations taken during policy execution time in Figure <ref type="figure" target="#fig_6">10</ref>, for each of the 6 real tasks. From left to right, the 4 images are from top camera, front camera, left wrist, and right wrist respectively. The top and front cameras are static, while the wrist cameras move with the robots and give detailed views of the gripper. We also rotate the front camera by 90 degrees to capture more vertical space. For all cameras, the focal length is fixed with auto-exposure on to adjust for changing lighting conditions. All cameras steam at 480 × 640 and 30fps.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Detailed Architecture Diagram</head><p>We include a more detailed architecture diagram in Figure <ref type="figure" target="#fig_8">11</ref>.</p><p>At training time, we first sample tuples of RGB images and joint positions, together with the corresponding action sequence as prediction target (Step 1: sample data). We then infer style variable z using CVAE encoder shown in yellow (Step 2: infer z). The input to the encoder are 1) the [CLS] token, which consists of learned weights that are randomly initialized, 2) embedded joint positions, which are joint positions projected to the embedding dimension using a linear layer, 3) embedded action sequence, which is the action sequence projected to the embedding dimension using another linear layer. These inputs form a sequence of (k + 2) × embedding_dimension, and is processed with the transformer encoder. We only take the first output, which corresponds to the [CLS] token, and use another linear network to predict the mean and variance of z's distribution, parameterizing it as a diagonal Gaussian. A sample of z is obtained using reparameterization, a standard way to allow back-propagating through the sampling process so the encoder and decoder can be jointly optimized <ref type="bibr" target="#b32">[33]</ref>.</p><p>Next, we try to obtain the predicted action from CVAE decoder i.e. the policy (Step 3: predict action sequence). For each of the image observations, it is first processed by a ResNet18 to obtain a feature map, and then flattened to get a sequence of features. These features are projected to the embedding dimension with a linear layer, and we add a 2D sinusoidal position embedding to perserve the spatial information. The feature sequence from each camera is then concatenated to be used as input to the transformer encoder. Two additional inputs are joint positions and z, which are also projected to the embedding dimension with two linear layers respectively. The output of the transformer encoder are then used as both "keys" and "values" in cross attention layers of the transformer decoder, which predicts action sequence given encoder output. The "queries" are fixed sinusoidal embeddings for the first layer.</p><p>At test time, the CVAE encoder (shown in yellow) is discarded and the CVAE decoder is used as the policy. The incoming observations (images and joints) are fed into the model in the same way as during training. The only difference is in z, which represents the "style" of the action sequence we want to elicit from the policy. We simply set z to a zero vector, which is the mean of the unit Gaussian prior used during training. Thus given an observation, the output of the policy is always deterministic, benefiting policy evaluation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Experiment Details and Hyperparameters</head><p>We carefully tune the baselines and include the hyperparameters used in Table <ref type="table">III</ref>, IV, V, VI, VII. For BeT, we found that increasing history length from 10 (as in original paper) to 100 greatly improves the performance. Large hidden dimension also generally helps. For VINN, the k used when retrieving nearest neighbor is adaptively chosen with the lowest validation loss, same as the original paper. We also found that using joint position differences in addition to visual feature similarity improves performance when there is no action chunking, in which case we have state weight = 10 when retrieving actions. However, we found this to hurt performance with action chunking and thus set state weight to 0 for action chunking experiments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. User Study Details</head><p>We conduct the user study with 6 participants, recruited from computer science graduate students, with 4 men and 2 women aged 22-25. 3 of the participants had experience teleoperating robots with a VR controller, and the other 3 has no prior experience teleoperating. None of the participants used ALOHA before. To implement the 5Hz version of ALOHA, we read from the leader robot at 5Hz, interpolate in the joint space, and send the interpolated positions to the robot at 50Hz. We choose tasks that emphasizes high-precision and close-loop visual feedback. We include images of the objects used in Figure <ref type="figure" target="#fig_9">12</ref>. For threading zip cable tie, the hole measures 4mm x 1.5mm, and the cable tie measures 0.8mm x 3.5mm with a pointy tip. It is initially lying flat on the table, and the operator needs to pick it up with one gripper, grasp the other end midair, then coordinate both hands to insert one end of the cable tie into the hole on the other end. For unstacking cup, we use two single-use plastic cups that has 2.5mm clearance between them when stacked. The teleoperator need to grasp the edge of upper cup, then either shake to separate or use the help from the other gripper. During the user study, we randomize the order in which operators attempt each task, and whether they use 50Hz or 5Hz controller first. We also randomize the initial position of the object randomly around the table center. For each setting, the operator has 2 minutes to adapt, followed by 3 consecutive attempts of the task with duration recorded.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Limitations</head><p>We now discuss limitations of the ALOHA hardware and the policy learning with ACT. Hardware Limitations. On the hardware front, ALOHA struggles with tasks that require multiple fingers from both hands, for example opening child-proof pill bottles with a push tab. To open the bottle, one hand needs to hold the bottle and pushes down on the push tab, with the other hand twisting the lid open. ALOHA also struggles with tasks that require high amount of forces, for example lifting heavy objects, twisting open a sealed bottle of water, or opening markers caps that are tightly pressed together. This is because the low-cost motors cannot generate enough torque to support these manipulations. Tasks that requires finger nails are also difficult for ALOHA, even though we design the grippers to be thin on the edge. For example, we are not able to lift the edge of packing tape when it is taped onto itself, or opening aluminum soda cans.</p><p>Policy Learning Limitations. On the software front, we report all 2 tasks that we attempted where ACT failed to learn the behavior. The first one is unwrapping candies. The steps involves picking up the candy from the table, pull on both ends of it, and pry open the wrapper to expose the candy. We collected 50 demonstrations to train the ACT policy. In our preliminary evaluation with 10 trials, the policy picks up the candy 10/10, pulls on both ends 8/10, while unwraps the candy 0/10. We attribute the failure to the difficulty of perception and lack of data. Specifically, after pulling the candy on both sides, the seam for prying open the candy wrapper could appear anywhere around the candy. During demonstration collection, it is difficult even for human to discern. The operator needs to judge by looking at the graphics printed on the wrapper and find the discontinuity. We constantly observe the policy trying to peel at places where the seam does not exist. To better track the progress, we attempted another evaluation where we give 10 trials for each candy, and repeat this for 5 candies. For this protocol, our policy successfully unwraps 3/5 candies.</p><p>Another task that ACT struggles with is opening a small ziploc bag laying flat on the table. The right gripper needs to first pick it up, adjust it so that the left gripper can grasp firmly on the pulling region, followed by the right hand grasping the other side of the pulling region, and pull it open. Our policy trained with 50 demonstrations can consistently pick up the bag, while having difficulties performing the following 3 mid-air manipulation steps. We hypothesize that the bag is hard to perceive, and in addition, small differences in the pick up position can affect how the bag deforms, and result in large differences in where the pulling region ends up. We believe that pretraining, more data, and better perception are promising directions to tackle these extremely difficult tasks.   </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Left: Camera viewpoints of the front, top, and two wrist cameras, together with an illustration of the bimanual workspace of ALOHA.</figDesc><graphic coords="3,257.17,85.26,147.75,98.62" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 4 :Fig. 5 :</head><label>45</label><figDesc>Fig. 4: Architecture of Action Chunking with Transformers (ACT). We train ACT as a Conditional VAE (CVAE), which has an encoder and a decoder. Left: The encoder of the CVAE compresses action sequence and joint observation into z, the style variable. The encoder is discarded at test time. Right: The decoder or policy of ACT synthesizes images from multiple viewpoints, joint positions, and z with a transformer encoder, and predicts a sequence of actions with a transformer decoder. z is simply set to the mean of the prior (i.e. zero) at test time.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Algorithm 1</head><label>1</label><figDesc>ACT Training 1: Given: Demo dataset D, chunk size k, weight β.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>11 : 5 :</head><label>115</label><figDesc>Update θ, φ with ADAM and L = Lreconst + βLreg Algorithm 2 ACT Inference 1: Given: trained π θ , episode length T , weight m. 2: Initialize FIFO buffers B[0 : T ], where B[t] stores actions predicted for timestep t. 3: for timestep t = 1, 2, ...T do 4: Predict ât:t+k with π θ (â t:t+k |ot, z) where z = 0 Add ât:t+k to buffers B[t : t + k] respectively 6: Obtain current step actions At = B[t] 7:</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 8 :</head><label>8</label><figDesc>Fig. 8: (a) We augment two baselines with action chunking, with different values of chunk size k on the x-axis, and success rate on the y-axis. Both methods significantly benefit from action chunking, suggesting that it is a generally useful technique. (b) Temporal Ensemble (TE) improves our method and BC-ConvMLP, while hurting VINN. (c) We compare with and without the CVAE training, showing that it is crucial when learning from human data. (d) We plot the distribution of task completion time in our user study, where we task participants to perform two tasks, at 5Hz or 50Hz teleoperation frequency. Lowering the frequency results in a 62% slowdown in completion time.</figDesc><graphic coords="10,491.63,61.90,57.03,101.01" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 9 :</head><label>9</label><figDesc>Fig. 9: Teleoperation task examples with ALOHA. We include videos on the project website.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 10 :</head><label>10</label><figDesc>Fig. 10: Image observation examples for 5 real-world tasks. The 4 columns are [top camera, front camera, left wrist camera, right wrist camera] respectively. We rotate the front camera by 90 degree to capture more vertical space.</figDesc><graphic coords="16,100.37,54.00,411.27,411.27" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Fig. 11 :</head><label>11</label><figDesc>Fig. 11: Detail architecture of Action Chunking with Transformers (ACT).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 12 :</head><label>12</label><figDesc>Fig. 12: The cable tie and cups for user study.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="1,47.50,158.30,516.00,387.00" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head></head><label></label><figDesc>2: Let at, ot represent action and observation at timestep t, ōt represent ot without image observations. 3: Initialize encoder q φ (z|a t:t+k , ōt) 4: Initialize decoder π θ (â t:t+k |ot, z) 5: for iteration n = 1, 2, ... do</figDesc><table><row><cell>6:</cell><cell>Sample ot, a t:t+k from D</cell></row></table><note><p>7:</p></note></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGEMENT</head><p>We thank members of the <rs type="institution">IRIS lab at Stanford</rs> for their support and feedback. We also thank <rs type="person">Siddharth Karamcheti</rs>, <rs type="person">Toki Migimatsu</rs>, <rs type="person">Staven Cao</rs>, <rs type="person">Huihan Liu</rs>, <rs type="person">Mandi Zhao</rs>, <rs type="person">Pete Florence</rs> and <rs type="person">Corey Lynch</rs> for helpful discussions. <rs type="person">Tony Zhao</rs> is supported by <rs type="funder">Stanford Robotics</rs> Fellowship sponsored by <rs type="funder">FANUC</rs>, in addition to <rs type="person">Schmidt Futures</rs> and <rs type="funder">ONR</rs> Grant <rs type="grantNumber">N00014-21-1-2685</rs>.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_eTcBbEc">
+					<idno type="grant-number">N00014-21-1-2685</idno>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Left: Cube Transfer. Transfer the red cube to the other arm. The right arm touches (#1) and grasps (#2) the red cube, then hands it to the left arm. Right: Bimanual Insertion. Insert the red peg into the blue socket. Both arms grasp (#1), let socket and peg make contact (#2) and insertion.        </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<ptr target="https://www.trossenrobotics.com/viperx-300-robot-arm-6dof.aspx" />
+		<title level="m">Viperx 300 robot arm 6dof</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<ptr target="https://www.trossenrobotics.com/widowx-250-robot-arm-6dof.aspx" />
+		<title level="m">Widowx 250 robot arm 6dof</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Highly dexterous manipulation system -capabilities -part 1</title>
+		<ptr target="https://www.youtube.com/watch?v=TearcKVj0iY" />
+		<imprint>
+			<date type="published" when="2014-11">Nov 2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Assembly performance metrics and test methods</title>
+		<ptr target="https://www.nist.gov/el/intelligent-systems-division-73500/robotic-grasping-and-manipulation-assembly/assembly" />
+		<imprint>
+			<date type="published" when="2022-04">Apr 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Teleoperated robots -shadow teleoperation system</title>
+		<ptr target="https://www.shadowrobot.com/teleoperation/" />
+		<imprint>
+			<date type="published" when="2022-11">Nov 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<author>
+			<persName><forename type="first">Irmak</forename><surname>Sridhar Pandian Arunachalam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumith</forename><surname>Güzey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2210.06463</idno>
+		<title level="m">Holo-dex: Teaching dexterity with immersive mixed reality</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Anthony</forename><surname>Brohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noah</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justice</forename><surname>Carbajal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yevgen</forename><surname>Chebotar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Dabis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Keerthana</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karol</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jasmine</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julian</forename><surname>Ibarz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brian</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tomas</forename><surname>Jackson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sally</forename><surname>Jesmonth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Nikhil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ryan</forename><forename type="middle">C</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dmitry</forename><surname>Julian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuheng</forename><surname>Kalashnikov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Isabel</forename><surname>Kuang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kuang-Huei</forename><surname>Leal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yao</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Utsav</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deeksha</forename><surname>Malla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Igor</forename><surname>Manjunath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ofir</forename><surname>Mordatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carolina</forename><surname>Nachum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jodilyn</forename><surname>Parada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Emily</forename><surname>Peralta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Perez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jornell</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kanishka</forename><surname>Quiambao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><forename type="middle">S</forename><surname>Rao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Grecia</forename><surname>Ryoo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pannag</forename><forename type="middle">R</forename><surname>Salazar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Sanketi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jaspiar</forename><surname>Sayed</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anand</forename><surname>Sumedh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Austin</forename><surname>Sontakke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Clayton</forename><surname>Stone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huong</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steve</forename><surname>Vanhoucke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quan</forename><surname>Vega</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ho Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ted</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peng</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sichun</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tianhe</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brianna</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zitkovich</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2212.06817</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note>Rt-1: Robotics transformer for real-world control at scale</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">End-to-end object detection with transformers</title>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Carion</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francisco</forename><surname>Massa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gabriel</forename><surname>Synnaeve</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Usunier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Kirillov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Zagoruyko</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2005.12872</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Towards human-level bimanual dexterous manipulation with reinforcement learning</title>
+		<author>
+			<persName><forename type="first">Yuanpei</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yaodong</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tianhao</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shengjie</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xidong</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiechuan</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>Mcaleer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zongqing</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Song-Chun</forename><surname>Zhu</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2206.08686</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Efficient bimanual manipulation using learned task schemas</title>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Chitnis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shubham</forename><surname>Tulsiani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saurabh</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhinav</forename><forename type="middle">Kumar</forename><surname>Gupta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="1149" to="1155" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Transformers for one-shot visual imitation</title>
+		<author>
+			<persName><forename type="first">Sudeep</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhinav</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gupta</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Causal confusion in imitation learning</title>
+		<author>
+			<persName><forename type="first">Dinesh</forename><surname>Pim De Haan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Bert: Pre-training of deep bidirectional transformers for language understanding</title>
+		<author>
+			<persName><forename type="first">Jacob</forename><surname>Devlin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ming-Wei</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenton</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kristina</forename><surname>Toutanova</surname></persName>
+		</author>
+		<idno>ArXiv, abs/1810.04805</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">One-shot imitation learning</title>
+		<author>
+			<persName><forename type="first">Yan</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marcin</forename><surname>Andrychowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bradly</forename><forename type="middle">C</forename><surname>Stadie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonas</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ilya</forename><surname>Sutskever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wojciech</forename><surname>Zaremba</surname></persName>
+		</author>
+		<idno>ArXiv, abs/1703.07326</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Bridge data: Boosting generalization of robotic skills with cross-domain datasets</title>
+		<author>
+			<persName><forename type="first">Frederik</forename><surname>Ebert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yanlai</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Schmeckpeper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bernadette</forename><surname>Bucher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Georgakis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kostas</forename><surname>Daniilidis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2109.13396</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Selfsupervised correspondence in visuomotor policy learning</title>
+		<author>
+			<persName><forename type="first">Peter</forename><forename type="middle">R</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lucas</forename><surname>Manuelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page" from="492" to="499" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">Peter</forename><forename type="middle">R</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Corey</forename><surname>Lynch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Oscar</forename><surname>Ramirez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ayzaan</forename><surname>Wahid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Laura</forename><surname>Downs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adrian</forename><forename type="middle">S</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Johnny</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Igor</forename><surname>Mordatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Tompson</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2109.00137</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Implicit behavioral cloning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Learning dense visual correspondences in simulation to smooth and fold real fabrics</title>
+		<author>
+			<persName><forename type="first">Aditya</forename><surname>Ganapathi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Priya</forename><surname>Sundaresan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brijen</forename><surname>Thananjeyan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Seita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jennifer</forename><surname>Grannen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minho</forename><surname>Hwang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ryan</forename><surname>Hoque</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Gonzalez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nawid</forename><surname>Jamali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Katsu</forename><surname>Yamane</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soshi</forename><surname>Iba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="11515" to="11522" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Untangling dense knots by learning task-relevant keypoints</title>
+		<author>
+			<persName><forename type="first">Jennifer</forename><surname>Grannen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Priya</forename><surname>Sundaresan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brijen</forename><surname>Thananjeyan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minho</forename><surname>Hwang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vainavi</forename><surname>Viswanath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Laskey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Gonzalez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Flingbot: The unreasonable effectiveness of dynamic manipulation for cloth unfolding</title>
+		<author>
+			<persName><forename type="first">Huy</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2105.03655</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Dexpilot: Vision-based teleoperation of dexterous robotic hand-arm system</title>
+		<author>
+			<persName><forename type="first">Ankur</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jacky</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Wei</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qian</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stan</forename><surname>Birchfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nathan</forename><forename type="middle">D</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="9164" to="9170" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Deep residual learning for image recognition</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Kaiming He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shaoqing</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jian</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</title>
+		<imprint>
+			<date type="published" when="2015">2016. 2015</date>
+			<biblScope unit="page" from="770" to="778" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">beta-vae: Learning basic visual concepts with a constrained variational framework</title>
+		<author>
+			<persName><forename type="first">Irina</forename><surname>Higgins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Loïc</forename><surname>Matthey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arka</forename><surname>Pal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><forename type="middle">P</forename><surname>Burgess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xavier</forename><surname>Glorot</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><forename type="middle">M</forename><surname>Botvinick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shakir</forename><surname>Mohamed</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Lerchner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Thriftydagger: Budget-aware novelty and risk gating for interactive imitation learning</title>
+		<author>
+			<persName><forename type="first">Ryan</forename><surname>Hoque</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ellen</forename><forename type="middle">R</forename><surname>Novoseller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Albert</forename><surname>Wilcox</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><forename type="middle">S</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Task-embedded control networks for few-shot imitation learning</title>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>James</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Bloesch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><forename type="middle">J</forename><surname>Davison</surname></persName>
+		</author>
+		<idno>ArXiv, abs/1810.03237</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Bc-z: Zero-shot task generalization with robotic imitation learning</title>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Jang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohi</forename><surname>Khansari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Kappler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Frederik</forename><surname>Ebert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Corey</forename><surname>Lynch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Master-slave manipulators and remote maintenance at the oak ridge national laboratory</title>
+		<author>
+			<persName><forename type="first">R G</forename><surname>Jenness</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C D</forename><surname>Wicker</surname></persName>
+		</author>
+		<ptr target="https://www.osti.gov/biblio/4179544" />
+		<imprint>
+			<date type="published" when="1975-01">Jan 1975</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Coarse-to-fine imitation learning: Robot manipulation from a single demonstration</title>
+		<author>
+			<persName><forename type="first">Edward</forename><surname>Johns</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="4613" to="4619" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Grasping with chopsticks: Combating covariate shift in model-free imitation learning for fine manipulation</title>
+		<author>
+			<persName><forename type="first">Liyiming</forename><surname>Ke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingqiang</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tapomayukh</forename><surname>Bhattacharjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Byron</forename><surname>Boots</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siddhartha</forename><surname>Srinivasa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<biblScope unit="page">2021</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Hg-dagger: Interactive imitation learning with human experts</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Kelly</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Sidrane</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Driggs-Campbell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mykel</forename><forename type="middle">J</forename><surname>Kochenderfer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2018">2019. 2018</date>
+			<biblScope unit="page" from="8077" to="8083" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Gaze-based dual resolution deep imitation learning for high-precision dexterous robot manipulation</title>
+		<author>
+			<persName><forename type="first">Heecheol</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yoshiyuki</forename><surname>Ohmura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yasuo</forename><surname>Kuniyoshi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="page" from="1630" to="1637" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">Robot peels banana with goal-conditioned dual-action deep imitation learning</title>
+		<author>
+			<persName><forename type="first">Heecheol</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yoshiyuki</forename><surname>Ohmura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yasuo</forename><surname>Kuniyoshi</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2203.09749</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">Auto-encoding variational bayes</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Diederik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Max</forename><surname>Kingma</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Welling</surname></persName>
+		</author>
+		<idno>CoRR, abs/1312.6114</idno>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Towards learning hierarchical skills for multi-phase manipulation tasks</title>
+		<author>
+			<persName><forename type="first">Oliver</forename><surname>Kroemer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christian</forename><surname>Daniel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gerhard</forename><surname>Neumann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Herke</forename><surname>Van Hoof</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan</forename><surname>Peters</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2015">2015. 2015</date>
+			<biblScope unit="page" from="1503" to="1510" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<title level="m" type="main">Action chunking as policy compression</title>
+		<author>
+			<persName><forename type="first">Lucy</forename><surname>Lai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ann</forename><forename type="middle">Z</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Samuel</forename><forename type="middle">J</forename><surname>Gershman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2022-09">Sep 2022</date>
+			<biblScope unit="page">8</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Dart: Noise injection for robust imitation learning</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Laskey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Roy</forename><surname>Fox</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anca</forename><forename type="middle">D</forename><surname>Dragan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Learning force-based manipulation of deformable objects from multiple demonstrations</title>
+		<author>
+			<persName><forename type="first">Alex</forename><forename type="middle">X</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Henry</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhishek</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2015">2015. 2015</date>
+			<biblScope unit="page" from="177" to="184" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<title level="m" type="main">Optimal control for biological movement systems</title>
+		<author>
+			<persName><forename type="first">Weiwei</forename><surname>Li</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">in-Mart&apos;in. What matters in learning from offline human demonstrations for robot manipulation</title>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danfei</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soroush</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohun</forename><surname>Kulkarni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Silvio</forename><surname>Savarese</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuke</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Roberto</forename><surname>Mart</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Ensembledagger: A bayesian approach to safe imitation learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Kunal Menda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mykel</forename><forename type="middle">J</forename><surname>Driggs-Campbell</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kochenderfer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2018">2019. 2018</date>
+			<biblScope unit="page" from="5041" to="5048" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Intermittent visual servoing: Efficiently learning policies robust to instrument changes for high-precision surgical manipulation</title>
+		<author>
+			<persName><forename type="first">Samuel</forename><surname>Paradis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minho</forename><surname>Hwang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brijen</forename><surname>Thananjeyan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Seita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danyal</forename><surname>Fer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Low</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Gonzalez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2021. 2020</date>
+			<biblScope unit="page" from="7166" to="7173" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m" type="main">The surprising effectiveness of representation learning for visual imitation</title>
+		<author>
+			<persName><forename type="first">Jyothish</forename><surname>Pari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nur</forename><surname>Muhammad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Sridhar Pandian Arunachalam</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2112.01511</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Learning and generalization of motor skills by learning from demonstration</title>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Pastor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Heiko</forename><surname>Hoffmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tamim</forename><surname>Asfour</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Schaal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2009">2009. 2009</date>
+			<biblScope unit="page" from="763" to="768" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Alvinn: An autonomous land vehicle in a neural network</title>
+		<author>
+			<persName><forename type="first">Dean</forename><forename type="middle">A</forename><surname>Pomerleau</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NIPS</title>
+		<imprint>
+			<date type="published" when="1988">1988</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">From one hand to multiple hands: Imitation learning for dexterous manipulation from single-camera teleoperation</title>
+		<author>
+			<persName><forename type="first">Yuzhe</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page" from="10873" to="10881" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Vision-based multi-task manipulation for inexpensive robots using end-to-end learning from demonstration</title>
+		<author>
+			<persName><forename type="first">Rouhollah</forename><surname>Rahmatizadeh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pooya</forename><surname>Abolghasemi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ladislau</forename><surname>Bölöni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2017">2018. 2017</date>
+			<biblScope unit="page" from="3758" to="3765" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">A reduction of imitation learning and structured prediction to no-regret online learning</title>
+		<author>
+			<persName><forename type="first">Stéphane</forename><surname>Ross</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Geoffrey</forename><forename type="middle">J</forename><surname>Gordon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">Andrew</forename><surname>Bagnell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Artificial Intelligence and Statistics</title>
+		<imprint>
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">A unified framework for coordinated multi-arm motion planning</title>
+		<author>
+			<persName><forename type="first">Seyed</forename><surname>Sina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mirrazavi</forename><surname>Salehian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nadia</forename><surname>Figueroa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Billard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="1205" to="1232" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Behavior transformers: Cloning k modes with one stone</title>
+		<author>
+			<persName><forename type="first">Nur</forename><surname>Muhammad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">(</forename><surname>Mahi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">)</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeff</forename><surname>Zichen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ariuntuya</forename><surname>Cui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Altanzaya</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pinto</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2206.11251</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title level="m" type="main">Sgtm 2.0: Autonomously untangling long cables using interactive perception</title>
+		<author>
+			<persName><forename type="first">Kaushik</forename><surname>Shivakumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vainavi</forename><surname>Viswanath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anrui</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yahav</forename><surname>Avigal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Kerr</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Kollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2209.13706</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">Cliport: What and where pathways for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Mohit</forename><surname>Shridhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lucas</forename><surname>Manuelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2109.12098</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<monogr>
+		<title level="m" type="main">Perceiver-actor: A multi-task transformer for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Mohit</forename><surname>Shridhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lucas</forename><surname>Manuelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2209.05451</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Robotic telekinesis: Learning a robotic hand imitator by watching humans on youtube</title>
+		<author>
+			<persName><forename type="first">Aravind</forename><surname>Sivakumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RSS</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Dual arm manipulation -a survey</title>
+		<author>
+			<persName><forename type="first">Christian</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiannis</forename><surname>Karayiannidis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lazaros</forename><surname>Nalpantidis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xavi</forename><surname>Gratal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peng</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dimos</forename><forename type="middle">V</forename><surname>Dimarogonas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danica</forename><surname>Kragic</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics Auton. Syst</title>
+		<imprint>
+			<biblScope unit="volume">60</biblScope>
+			<biblScope unit="page" from="1340" to="1353" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">Learning structured output representation using deep conditional generative models</title>
+		<author>
+			<persName><forename type="first">Kihyuk</forename><surname>Sohn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Honglak</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinchen</forename><surname>Yan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NIPS</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<title level="m" type="main">Shadow teleoperation system plays jenga</title>
+		<ptr target="https://www.youtube.com/" />
+		<imprint>
+			<date type="published" when="2021-03">Mar 2021</date>
+		</imprint>
+	</monogr>
+	<note>watch?v= 7K9brH27jvM</note>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<title level="m" type="main">How researchers are using shadow robot&apos;s technology</title>
+		<ptr target="https://www.youtube.com/" />
+		<imprint>
+			<date type="published" when="2022-06">Jun 2022</date>
+		</imprint>
+	</monogr>
+	<note>watch?v=p36fYIoTD8M</note>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<monogr>
+		<title level="m" type="main">Shadow teleoperation system</title>
+		<ptr target="https://www.youtube.com/watch?v=cx8eznfDUJA" />
+		<imprint>
+			<date type="published" when="2022-06">Jun 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main">A system for imitation learning of contact-rich bimanual manipulation policies</title>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Stepputtis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maryam</forename><surname>Bandari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Schaal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Heni</forename><surname>Ben</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Amor</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2022">2022. 2022</date>
+			<biblScope unit="page" from="11810" to="11817" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<title level="m" type="main">Untangling dense non-planar knots by learning manipulation features and recovery policies</title>
+		<author>
+			<persName><forename type="first">Priya</forename><surname>Sundaresan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jennifer</forename><surname>Grannen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brijen</forename><surname>Thananjeyan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ellen</forename><forename type="middle">R</forename><surname>Novoseller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minho</forename><surname>Hwang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Laskey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Gonzalez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2107.08942</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main">Causal imitation learning under temporally correlated noise</title>
+		<author>
+			<persName><forename type="first">Gokul</forename><surname>Swamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sanjiban</forename><surname>Choudhury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">Andrew</forename><surname>Bagnell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiwei</forename><forename type="middle">Steven</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<analytic>
+		<title level="a" type="main">Deep learning and the information bottleneck principle</title>
+		<author>
+			<persName><forename type="first">Naftali</forename><surname>Tishby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noga</forename><surname>Zaslavsky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Information Theory Workshop (ITW)</title>
+		<imprint>
+			<date type="published" when="2015">2015. 2015</date>
+			<biblScope unit="page" from="1" to="5" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<analytic>
+		<title level="a" type="main">Mujoco: A physics engine for model-based control</title>
+		<author>
+			<persName><forename type="first">Emanuel</forename><surname>Todorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuval</forename><surname>Tassa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2012">2012. 2012</date>
+			<biblScope unit="page" from="5026" to="5033" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b63">
+	<analytic>
+		<title level="a" type="main">On the sample complexity of stability constrained imitation learning</title>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>Tu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Robey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tingnan</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Matni</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Learning for Dynamics &amp; Control</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b64">
+	<monogr>
+		<title level="m" type="main">Attention is all you need</title>
+		<author>
+			<persName><forename type="first">Ashish</forename><surname>Vaswani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noam</forename><forename type="middle">M</forename><surname>Shazeer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niki</forename><surname>Parmar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jakob</forename><surname>Uszkoreit</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Llion</forename><surname>Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aidan</forename><forename type="middle">N</forename><surname>Gomez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lukasz</forename><surname>Kaiser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Illia</forename><surname>Polosukhin</surname></persName>
+		</author>
+		<idno>ArXiv, abs/1706.03762</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b65">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Solomon</forename><surname>Wiznitzer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luke</forename><surname>Schmitt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matt</forename><surname>Trossen</surname></persName>
+		</author>
+		<ptr target="https://github.com/Interbotix/interbotix_ros_manipulators" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b66">
+	<monogr>
+		<title level="m" type="main">Deep imitation learning for bimanual robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Fan</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Masum Bulbul Chowdhury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Clara</forename><surname>De Paolis Kaluza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linfeng</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">S</forename><surname>Lawson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rose</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Yu</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2010.05134</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b67">
+	<analytic>
+		<title level="a" type="main">Transporter networks: Rearranging the visual world for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><forename type="middle">R</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Tompson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Welker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Chien</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maria</forename><surname>Attarian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Travis</forename><surname>Armstrong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ivan</forename><surname>Krasin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Duong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vikas</forename><surname>Sindhwani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Johnny</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b68">
+	<analytic>
+		<title level="a" type="main">Deep imitation learning for complex manipulation tasks from virtual reality teleoperation</title>
+		<author>
+			<persName><forename type="first">Tianhao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zoe</forename><surname>Mccarthy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Owen</forename><surname>Jow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dennis</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2017">2018. 2017</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b69">
+	<monogr>
+		<title level="m" type="main">Nerf in the palm of your hand: Corrective augmentation for robotics via novel-view synthesis</title>
+		<author>
+			<persName><forename type="first">Allan</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jin</forename><surname>Moo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lirui</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><forename type="middle">R</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Finn</surname></persName>
+		</author>
+		<idno>ArXiv, abs/2301.08556</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b70">
+	<analytic>
+		<title level="a" type="main">The measurement of proprioceptive accuracy: A systematic literature review</title>
+		<author>
+			<persName><forename type="first">Áron</forename><surname>Horváth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eszter</forename><surname>Ferentzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kristóf</forename><surname>Schwartz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nina</forename><surname>Jacobs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Meyns</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ferenc</forename><surname>Köteles</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.jshs.2022.04</idno>
+		<ptr target="https://doi.org/10.1016/j.jshs.2022.04" />
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Sport and Health Science</title>
+		<idno type="ISSN">2095-2546</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b71">
+	<monogr>
+		<ptr target="https://www.sciencedirect.com/science/article/pii/S2095254622000473" />
+		<title level="m">URL</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">DigiTac: A DIGIT-TacTip Hybrid Tactile Sensor for Comparing Low-Cost High-Resolution Robot Touch</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2022-07-18">18 Jul 2022</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Nathan</forename><forename type="middle">F</forename><surname>Lepora</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Yijiong</forename><surname>Lin</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Ben</forename><surname>Money-Coomes</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">John</forename><surname>Lloyd</surname></persName>
+						</author>
+						<title level="a" type="main">DigiTac: A DIGIT-TacTip Hybrid Tactile Sensor for Comparing Low-Cost High-Resolution Robot Touch</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2022-07-18">18 Jul 2022</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">CE8110B627D978D73573ACB4B2069AF8</idno>
+					<idno type="DOI">10.5523/bris.110f0tkyy28pa2joru2pxxbrxd</idno>
+					<idno type="arXiv">arXiv:2206.13657v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>Force and Tactile Sensing, Open-source Robotics</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Deep learning combined with high-resolution tactile sensing could lead to highly capable dexterous robots. However, progress is slow because of the specialist equipment and expertise. The DIGIT tactile sensor offers low-cost entry to high-resolution touch using GelSight-type sensors. Here we customize the DIGIT to have a 3D-printed sensing surface based on the TacTip family of soft biomimetic optical tactile sensors. The DIGIT-TacTip (DigiTac) enables direct comparison between these distinct tactile sensor types. For this comparison, we introduce a tactile robot system comprising a desktop arm, mounts and 3D-printed test objects. We use tactile servo control with a PoseNet deep learning model to compare the DIGIT, DigiTac and TacTip for edge-and surface-following over 3D-shapes. All three sensors performed similarly at pose prediction, but their constructions led to differing performances at servo control, offering guidance for researchers selecting or innovating tactile sensors. All hardware and software for reproducing this study will be openly released.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Advances in deep learning combined with innovation in high-resolution tactile sensing give a plausible route to robots with the dexterous capabilities of the human hand. Consider, for example, the revolution in computer vision where 1000s of researchers have ready access to deep learning infrastructure and vast amounts of openly-shared visual data. In contrast, research on robot touch for dexterity requires access to specialist equipment such as industrial arms integrated with tactile sensing hardware. This need for specialised equipment and expertise is a barrier to entering the field and reproducing research findings. Consequently, progress is slow and narrow in scope from just a few research laboratories.</p><p>Researchers in Meta AI have developed the DIGIT as a low-cost high-resolution tactile sensor <ref type="bibr" target="#b0">[1]</ref>. They have opensourced the sensor design and in partnership with the company GelSight commercially manufacture the sensor <ref type="bibr" target="#b1">[2]</ref>. To lower the barrier of entry to using machine learning (ML) with tactile sensors like the DIGIT, an accompanying library of ML models and functionality (PyTouch) was also released <ref type="bibr" target="#b2">[3]</ref> alongside a simulation environment (TACTO) <ref type="bibr" target="#b3">[4]</ref>. The overall concept is to provide a complete ecosystem for teaching robots to perceive, understand and interact through touch <ref type="bibr" target="#b4">[5]</ref>.</p><p>For low-cost high-resolution robot touch to progress, there needs to be a comparison of tactile sensing technologies and NL and JL were supported by a Leadership Award from the Leverhulme Trust on 'A biomimetic forebrain for robot touch' <ref type="bibr">(RL-2016-39)</ref>.</p><p>All authors are with the Department of Engineering Mathematics and Bristol Robotics Laboratory, University of Bristol, Bristol, U.K.</p><p>Corresponding author: n.lepora@bristol.ac.uk Project website: www.lepora.com/digitac Project repository: www.github.com/nlepora/digitac-design Shared data: www.doi.org/10.5523/bris.110f0tkyy28pa2joru2pxxbrxd</p><p>Test System: Low-Cost Tactile Sensor on Desktop Arm a greater diversity of tactile sensing hardware, ML models and test scenarios. The TacTip is a distinct high-resolution optical tactile sensor with a 3D-printed biomimetic structure of papillae that amplify the movement of markers on their tips <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>, which also has body of research on using ML models for tactile perception and control. In this paper, we customize the DIGIT to have a TacTip skin to make the first direct comparison between the GelSight and TacTip families of tactile sensors using common software and hardware. For this comparison, we make use of recent progress in pose-based servo control using ML models on tactile images <ref type="bibr" target="#b7">[8]</ref>- <ref type="bibr" target="#b9">[10]</ref>.</p><p>Our main contributions are: 1) We introduce the DIGIT-TacTip (DigiTac) that combines the DIGIT base (lighting, camera board, housing) with a TacTip sensing module (3D-printed skin/mount, window, soft gel). This raises challenges in adapting a design intended for GelSight-type sensors to the TacTip sensing mechanism. In particular, the DIGIT is designed for lateral illumination of a flat sensing surface, whereas the TacTip works best with a curved skin under direct lighting.</p><p>2) We apply recent developments in pose-based tactile servo control <ref type="bibr" target="#b8">[9]</ref>, <ref type="bibr" target="#b9">[10]</ref> to compare the sensors on a common affordable desktop robot system (Fig. <ref type="figure" target="#fig_0">1</ref>), by learning to slide over the edges and surfaces of unknown 3D objects while maintaining safe, delicate contact. This raises several challenges, including how to apply methods developed with industrial robots to lower-capability desktop robots, how to use and compare distinct high-resolution optical tactile sensors with the same hardware/software infrastructure, and how to conduct the experiments in a manner that facilitates reproducible research.</p><p>All hardware and software components including 3Dprintable designs for the DigiTac will be openly released. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. BACKGROUND AND RELATED WORK</head><p>A benefit and constraint of the DIGIT-TACTO-PyTouch ecosystem is the focus on one type of high-resolution optical tactile sensor: the GelSight <ref type="bibr" target="#b11">[12]</ref>, <ref type="bibr" target="#b12">[13]</ref>. The GelSight images indentation of an elastomer from the surface shading on a reflective coating illuminated by multiple internal light sources. This design concept has diversified into a family of reflectionbased optical tactile sensors <ref type="bibr" target="#b13">[14]</ref>- <ref type="bibr" target="#b16">[17]</ref> including the DIGIT <ref type="bibr" target="#b0">[1]</ref>. The first application of deep learning to optical tactile sensing used the GelSight <ref type="bibr" target="#b17">[18]</ref>, since leading to many ML models including progress in integrating vision and touch <ref type="bibr" target="#b18">[19]</ref>.</p><p>Another type of high-resolution optical tactile sensor uses the morphology of the skin to transduce contact into the motion of markers <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>. The TacTip is unique in using an array of 3D-printed biomimetic internal pins to amplify the contact due to surface indentation and shear <ref type="bibr" target="#b6">[7]</ref>. The design is based on human skin that is structured around dermal papillae whose motion is signalled by nearby mechanoreceptors <ref type="bibr" target="#b19">[20]</ref>, with neural signals found recently to match the TacTip output <ref type="bibr" target="#b20">[21]</ref>. The tactile images from the TacTip are well-suited to ML models, leading to applications including tactile servo control <ref type="bibr" target="#b7">[8]</ref>, <ref type="bibr" target="#b9">[10]</ref>, pushing manipulation <ref type="bibr" target="#b21">[22]</ref> and sim-to-real transfer of tactile pushing, rolling and servoing <ref type="bibr" target="#b22">[23]</ref>. A review of these capabilities was published recently <ref type="bibr" target="#b6">[7]</ref>.</p><p>More broadly, there have been many tactile sensor designs utilizing markers <ref type="bibr" target="#b23">[24]</ref>, with recent innovation in embedding markers within and underneath the tactile skin, e.g. <ref type="bibr" target="#b24">[25]</ref>- <ref type="bibr" target="#b27">[28]</ref>. Some GelSight-type sensors also use markers on the reflective coating <ref type="bibr" target="#b12">[13]</ref>, <ref type="bibr" target="#b16">[17]</ref> to enable sensitivity to shear contact that is not apparent from imaging reflection alone.</p><p>All tactile sensors have their pros and cons. The GelSight and TacTip have a common reliance on imaging an internallyilluminated skin. However, there are differences in their elas- ticity, robustness, friction and sensitivity to contact features that may make their operation in practise rather different. Our work here aims to bring together knowledge across the field to make it possible to trade-off aspects of these distinct tactile sensors to progress towards tactile-enabled robot dexterity.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. TACTILE SENSORS</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Tactile Sensor Comparison</head><p>The aim of this paper is to compare low-cost high-resolution tactile sensors from the GelSight and TacTip families. For a GelSight-type sensor, we use the DIGIT (Fig. <ref type="figure" target="#fig_1">2d</ref>), which has a flat sensing surface of 25×19 mm and VGA camera. We compare this with a domed TacTip (Fig. <ref type="figure" target="#fig_1">2a</ref>) of 40 mm diameter and full-HD camera (ELP 1080p USB module). Table <ref type="table" target="#tab_0">I</ref> compares the hardware properties of the sensors.</p><p>However, there is an issue with comparing the sensing capabilities of the DIGIT and TacTip. Any differences in performance may be attributable to the cameras or sensor shapes, rather than the tactile sensing. Therefore, it is important to standardize the hardware and software methods as far as possible to isolate differences due to the sensing mechanism.</p><p>How can two distinct sensors be standardized? Although the TacTip and GelSight-type sensors are superficially similar in both relying on internal cameras, they use different internal illumination. The DIGIT/GelSight has lateral lighting into a thick acrylic window that acts as a light-guide to accentuate shading from the surface indentation. The TacTip has forwardfacing lighting situated to both contrast the reflective markers against a black skin and reduce glare on a thin internal window that holds a soft optically-clear gel below the 3D-printed skin.</p><p>Investigations indicated that the DIGIT could be customized into a TacTip by moving the acrylic window back from the light-source and having a rounded sensing surface. The details of this DIGIT-TacTip customization are described next.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. DigiTac Design and Fabrication</head><p>The design of the DIGIT optical tactile sensor is based on <ref type="bibr" target="#b0">[1]</ref>: (i) being sufficiently compact to fit as an array of end effectors/fingertips on multi-fingered robot hands or arms; (ii) having a sensing surface (gel) that is robust and easily interchanged; and (iii) easing the fabrication process by using off-the-shelf components and a snap-fit assembly.  Here we adapt the DIGIT sensing surface into a TacTip sensing surface by: (D1) The plastic snap-fit holder is redesigned to support a curved compliant skin on the underside of which are 140 2 mm-papillae tipped by markers (Fig <ref type="figure" target="#fig_3">4</ref>). The entire piece is fabricated on a multi-material 3D-printer (Stratasys J826), using a rubber polymer (Agilus30, black) for the skin/papillae and acrylic resin (VeroWhite) for the holder/markers. (D2) The acrylic window is narrowed to 1 mm thick and moved above the light source to just below the complient skin. The original window acted as a light guide for lateral illumination of the GelSight-type sensing surface. However, the main function of the window for the TacTip is to contain a compliant gel (see D3 below). A thinner window allows more direct marker illumination for a sufficiently curved skin, while also avoiding spurious reflections and saving weight. (D3) The enclosure between the skin and window is filled with a soft optically-clear gel as in other TacTip sensors <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>.</p><p>Here we used a silicone gel (Techsil, Shore A Hardness 15), which was injected through a small (1.5 mm-dia.) filling hole near the retaining screw on the front of the sensing surface. To stop the gel leaking, the filling hole is then sealed with a small plug, which is also made by 3D-printing. The DigiTac sensing surface is assembled in a similar way as other TacTip sensors (see the Soft Robotics Toolkit for a step-by-step guide). The use of multi-material 3D-printing will ease future customization of the design, having already led to a wide range of TacTip form-factors and integrated robotic systems (Fig 2 ; see also <ref type="bibr" target="#b6">[7,</ref><ref type="bibr">Fig. 4]</ref>). There is a competitive online marketplace for 3D-printing, making it easy to obtain the DigiTac sensing surface from the open-sourced designs.</p><p>The DigiTac differs from the DIGIT sensor by having a thicker, curved sensing surface (Fig. <ref type="figure" target="#fig_1">2</ref> and<ref type="figure">Table I</ref>), which we will see later is far softer than the original elastomer. The DIGIT and DigiTac are sufficently small and light to be compatible with some grippers (e.g. the Allegro hand shown in <ref type="bibr" target="#b0">[1]</ref>). However, they are too bulky for anthropomorphic robot hands, where a custom TacTip (Fig. <ref type="figure" target="#fig_1">2E</ref>) is currently the only integrated high-resolution optical tactile sensor.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS A. Task: Tactile Servo Control on a Contour and Surface</head><p>Here we use servo control around a contour and over a surface to test and compare the various tactile sensors. Tactile servo control is analogous to visual servo control, with tactile data used in a feedback loop to control the robot motion. In pose-based tactile servo control <ref type="bibr" target="#b9">[10]</ref>, the pose error S E R between the sensor pose F P S and a reference pose F P R (in a local feature frame F ) drives the feedback loop (Fig. <ref type="figure" target="#fig_4">5</ref> </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>top).</head><p>For high-resolution optical tactile sensors, the sensor pose F P S in the feature frame (here of an edge or surface) can be predicted using a suitably-trained 'PoseNet' convolutional neural network on a tactile image <ref type="bibr" target="#b8">[9]</ref> (Fig. <ref type="figure" target="#fig_4">5</ref>). For robust pose predictions while interacting with the object, it is necessary to train the model to be insensitive to contact shear motion by sliding the sensor along the object to its labelled pose <ref type="bibr" target="#b7">[8]</ref>- <ref type="bibr" target="#b9">[10]</ref>.</p><p>Here we use two tactile servo control tasks adapted from the fully 3D-tasks reported in earlier work <ref type="bibr" target="#b9">[10]</ref> to 2D-tasks implementable on lower-capability desktop robot arms: Task 1: Edge-following is around horizontal flat shapes (here we use circle, square and circular-wave objects described in <ref type="bibr" target="#b9">[10]</ref>). The PoseNet model is trained on a straight edge of the square block. During training, the sensor pose is varied in its perpendicular distance from the edge and across a range of orientations, using a horizontal sliding motion to move it into position (Table <ref type="table" target="#tab_0">II</ref>). Unlabelled variations in contact depth (z) are introduced to train the model to be insensitive to sub-mm variations in object height due to imperfect levelling of the robot (which is very difficult to avoid in practise). Task 2: Surface-following is carried out around the walls of the shapes described above with the tactile sensor oriented so the sensing surface is vertical. The PoseNet model is trained on a straight vertical wall of the square block. The labelled pose is varied in distance, normal to the surface, and over a range of surface angles, following a 2D sliding motion tangential to the surface (Table <ref type="table" target="#tab_0">II</ref>). A subtlety for servoing over surfaces, is that the tool centre point (TCP) needs adjusting so the z-axis of the end-effector frame coincides with the tip of the sensor.</p><p>The PoseNet models are trained on 75% of 5000 random poses (uniformly distributed), with test accuracies reported on the remaining 25%. Network hyperparameters are from ref. <ref type="bibr" target="#b9">[10,</ref><ref type="bibr">Table II]</ref> without further tuning, except the input layers were changed to correspond to 160×120 pixel subsampled tactile images for the DIGIT and DigiTac and 128×128 pixels for the TacTip, with the latter two binarized using adaptive thresholding. Networks were trained over 100 epochs (∼30 minutes on a standard PC with 6Gb GPU).</p><p>The tactile sensors are compared using the model performance on the edge and surface test data and the deviation of the controlled trajectories from the known object perimeters. These tests also probe the model generalization for each sensor to curved edges and surfaces not experienced in training.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Low-cost test platform</head><p>To aid in making the robot test platform accessible to other laboratories, we use a low-cost desktop robot along with lasercut and 3D-printed accessories for all comparison experiments.</p><p>To give some context, typically the hardware and software infrastructure required for researching robot touch has been: (I1) Robot manipulators, such as ABB and Universal Robotics industrial robot arms. These are highly capable and accurate (e.g. ABB-IRB120 repeatability ±0.01 mm), but are large, expensive items of equipment that must be installed and operated safely in a laboratory or industrial setting. (I2) Software libraries for capturing tactile data, processing with ML models and controlling the robots in real-time. Different laboratories have various solutions. In Bristol Robotics Laboratory, we have developed Python libraries, VSP (Visual Stream Processor) and CRI (Common Robot Interface) for asynchronous tactile image capture and interfacing with proprietary robot APIs, available on GitHub. Here we introduce a test platform to ease the setup and repeatability of tactile experiments using a low-cost safe alternative to industrial robot arms (Fig. <ref type="figure" target="#fig_5">6</ref>): (P1) Desktop robot arm, for which we use a Dobot MG400 4-axis arm designed for affordable automation. The base and control unit has footprint 190 mm×190 mm, payload 750 g, maximum reach 440 mm and repeatability ±0.05 mm. As we describe later, the accuracy of tactile models trained using this arm is similar to larger industrial robot arms. The main constraint is that only the (x, y, z)-position and rotation around the z-axis of the end effector are actuated. (P2) Base plate with a mounting plate for the desktop robot and a grid of holes for mounting stimuli in precise locations relative to the robot. The base plate was laser cut from an acrylic sheet of size 600×400×10 mm, with 25 mm gridspacing. The robot mounting plate was also laser cut from 10 mm-thick acrylic then screwed to the base plate. (P3) Normal and right-angle mounts for the DIGIT and TacTip sensors so they can be used as end effectors. These were 3Dprinted from designs adapted from an end-flange supplied with the MG400. A choice of mounts allows the tactile sensing surface to be oriented in a horizontal or vertical plane, as the end effector can rotate only around a vertical axis. (P4) Test stimuli with mounts to attach to the base plate. Here we use circular, square and circular-wave shapes of ∼100 mm diameter with 30 mm walls, 3D-printed in ABS.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. RESULTS</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Appraisal of DIGIT, DigiTac and TacTip</head><p>For an initial qualitative comparison of the three optical tactile sensors, we pressed them against a 3D-printed straight edge and captured the tactile images (Fig. <ref type="figure" target="#fig_7">7</ref>).</p><p>From the external appearance of the deformation, the Digi-Tac and TacTip (Figs <ref type="figure" target="#fig_7">7b,</ref><ref type="figure">c</ref>) are much softer than the DIGIT (Fig. <ref type="figure" target="#fig_7">7a</ref>), with a large compression of several millimeters over the contact region and a corresponding bulging of part of the sensing surface not in contact. In contrast, the DIGIT sensing surface is fairly stiff with sub-mm deformation. The maximum  compression of the DigiTac or TacTip is about 6-8 mm before damage will occur and for the DIGIT about 1-2 mm. Another difference is that the DIGIT sensing surface has higher friction than the DigiTac. It is fairly easy to slide a DigiTac or TacTip over a 3D-printed flat surface with slight texture, whereas the DIGIT tends to stick then slip.</p><p>From the tactile images, the edge is clearly visible with the DIGIT as a shaded line at the point of contact (Fig. <ref type="figure" target="#fig_7">7d</ref>). For the DigiTac and TacTip, the edge can be located by where the markers are more widely spaced (Figs <ref type="figure" target="#fig_7">7e,</ref><ref type="figure">f</ref>). Thus, it is more difficult to see edge location by eye; however, we will see later that the edge can be precisely localized by using a convolutional neural network on the entire tactile image.</p><p>The DIGIT is sensitive enough for the texture of the 3Dprint to be just visible (Fig 7d, right of edge). This information is absent from static touch with the DigiTac/TacTip. In this respect, the DIGIT is superior to the human sense of touch, which does not have the sensitivity to feel that the 3D-print is textured by statically holding a fingertip on the surface.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Sensor Comparison using Edge Following</head><p>Next, we compare the tactile sensors on predicting edge position and angle during sliding contacts, then use this pose model for tactile servo control around the edges of three test objects: a circular disk, square block and circular-wave.</p><p>For offline edge-pose prediction on the test data, both the DigiTac and TacTip are similarly accurate with edge position error 0.16 mm and angle error ∼1.6 • (Table <ref type="table" target="#tab_1">III</ref>). These errors are ∼1.5% of the ranges (10 mm and 90 • ), with little scatter when the predictions are plotted against ground truths (Fig. <ref type="figure" target="#fig_8">8</ref>). It appears the smaller size of the DigiTac and fewer markers (Table <ref type="table" target="#tab_0">I</ref>) does not affect its capability for predicting edge pose.</p><p>In comparison, the DIGIT has similar edge position error (0.19 mm vs 0.16 mm) and angle (1.82 • vs ∼1.6 • ) compared with the DigiTac. To isolate the effects of sensor surface material and geometry from subsequent processing, we used the same neural network architectures and hyperparameters with binary tactile images for the DigiTac and shaded images for the DIGIT. While these results could change with a DigiTac: Edge pose -displacement and contact angle DigiTac: Surface pose -depth and contact angle  <ref type="table" target="#tab_0">II</ref>). When applied to edge following on the three test shapes, the DIGIT, DigiTac and TacTip all accurately traced around the shapes to sub-mm accuracy (Fig. <ref type="figure" target="#fig_10">9</ref>, two left columns). For all three sensors and all three shapes, the mean absolute position errors were mainly sub-millimeter (Table <ref type="table" target="#tab_2">IV</ref>, edge stimuli), with the TacTip the most accurate (0.4-0.5 mm), followed by both the DIGIT and DigiTac (0.6-1.2 mm). Overall, the circular wave is most demanding, followed by the square (because of the corners) and the circle is the easiest. All position errors are larger than the test predictions (∼ 0.15 mm), as expected because the servo control task introduces factors such as the corners on the square and curves of the circular-wave that differ from the straight edges used in training.</p><p>The angle prediction performance showed more variability in how accurately the sensor maintains normality to the edge during servoing (Fig. <ref type="figure" target="#fig_10">9</ref>; Table <ref type="table" target="#tab_2">IV</ref>). For just the circle and square, the TacTip has the lowest angle error ( 5 • ), followed by both the DIGIT and DigiTac (10-15 • ), which we attribute to the larger domed TacTip behaving better under shear. All sensors were inaccurate on the circular-wave (20-30 • ), because of the difficulty of contour following around the shape.   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Sensor Comparison using Surface Following</head><p>The final comparison of the tactile sensors is on predicting surface angle and contact depth during sliding contacts, which is then used for tactile servo control around the vertical walls of the same three test objects used above.</p><p>For offline surface-pose prediction on the test data, both the DigiTac and TacTip accurately predict surface pose, with the DigiTac giving the best contact depth error (0.06 mm) and angle error (0.5 • ) (Table <ref type="table" target="#tab_1">III</ref>). These correspond to 1.5% and ∼1% of the ranges (4 mm and 60 • ), with little scatter on the prediction vs ground truth plots (Fig. <ref type="figure" target="#fig_8">8</ref>). The accuracy in contact depth is similar to the repeatability (0.05 mm) of the desktop robot, which may be a limiting factor.</p><p>For the DIGIT, the angle error (2.47 • ) and contact depth error (0.22 mm) are high compared to those for DigiTac and TacTip (Table <ref type="table" target="#tab_1">III</ref>). It was not possible to successfully follow a surface with this model. We attribute this difficulty as due to the much stiffer sensing surface, which allowed only a narrow (1 mm) range of training depths and during surface following left little tolerance to errors during the servo control.</p><p>When applied to surface following on the three test shapes, both the DigiTac and TacTip had similar accuracy (0.6-1.5 mm), with the circle the most accurately traced at ∼0.5 mm error (Fig. <ref type="figure" target="#fig_10">9</ref>, Table <ref type="table" target="#tab_2">IV</ref>). Both sensors struggled to turn the corners of the square, and for the DigiTac we needed to advance the angular set point to 5 • for the task to complete. Like edge-following, the circular-wave was the most demanding shape to accurately trace. The angle errors were similar for the DigiTac/TacTip, being least for the circle and square (10 • -15 • ) and largest on the circular-disk (∼25 • ).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. DISCUSSION</head><p>In this paper, we compared low-cost high-resolution tactile sensors from the GelSight and TacTip families, by adapting the DIGIT (GelSight) to have a TacTip sensing surface, The DIGIT-TacTip, or DigiTac allowed comparison of these two tactile sensor types with the same hardware and software.</p><p>Overall, the TacTip, DigiTac and DIGIT optical tactile sensors all performed well at pose prediction and posebased tactile servo control, with pose-prediction accuracy of ∼ 0.1 mm and ∼1-2 • , and servo control accuracy typically better than 1 mm. There was some biasing of contact angle during the servo control tasks, mainly for the DIGIT and DigiTac. However, they still performed accurately at edge and surface following, except the DIGIT was not suited for sliding over surfaces because of its relatively flat and stiff elastomer.</p><p>The most significant difference between the sensors is their material properties and construction. The DIGIT sensing surface is flat and fairly inelastic compared to the soft curved sensing surface of the TacTip. GelSight-type sensors have flat sensing surfaces comprised of a molded elastomer illuminated laterally, which are highly effective at imaging fine surface detail. In contrast, TacTip-type sensors come in various shapes and sizes (Fig. <ref type="figure" target="#fig_1">2</ref>) with a flexible 3D-printed skin and compliance from a soft gel. For the servo control tasks considered here, a soft curved tactile sensor was more practical to fit into curved surface and had greater tolerance for safe contact.</p><p>The robustness of the sensors also depends on their material properties and construction, which is important because touch involves contact with the potential for damage. Our tests were demanding because: (i) thousands of sliding contacts were needed to train the pose-prediction models; (ii) surface and edge following shears the sensor surface as it rubs against the object; (iii) surface following can also lead to collisions with the test object. During the tests, we broke one DigiTac by ripping the skin where it joins the housing and one DIGIT by shearing off the elastomer from a collision.</p><p>Because our aim in comparing tactile sensor technologies is to encourage innovation in the field, we will open-source the DigiTac sensing surface and software infrastructure including the robot interface and libraries for the experiments. We will also release all data and models used in this paper. As a final comment, we encourage others to adopt a similarly open perspective, and look forward to seeing further comparison and open release of other low-cost optical tactile sensors.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Left: the DIGIT-TacTip (DigiTac) mounted on an affordable desktop robot arm (Dobot MG400, ∼£2k). Right: close-up of sensor and a captured high-resolution tactile image.</figDesc><graphic coords="1,311.98,163.67,251.06,138.36" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Comparative form factors of (a) TacTip (round tip), (b) TacTip (flat tip), (c) DigiTac (curved TacTip skin); (d) DIGIT (flat GelSight skin) and (e) fingertip-sized TacTip [11]. The background grid spacing is 10 mm.</figDesc><graphic coords="2,-56.31,44.63,336.89,189.50" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: TacTip sensing surface integrated with DIGIT base. A) 3D-printed TacTip, B) acrylic window, C) lighting PCB, D) plastic housing, E) camera PCB, F) back housing.</figDesc><graphic coords="3,271.37,-10.39,354.43,199.37" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: 3D-printable design and fabricated DigiTac sensing surface with press-fit housing.</figDesc><graphic coords="3,48.96,211.94,251.06,95.49" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Pose-based tactile servo control with PoseNet convolutional neural network model [10, Fig. 2][9, Fig. 4]. Table II. Tactile image data collection for sliding contacts: top: pose parameter ranges; bottom: slide ranges to pose. 5000 uniformly-random samples are collected per stimulus. pose parameter ranges stimulus x-position y-position z-position angle edge 0 mm [-5,+5] mm [-1,+1] mm [-45 • ,+45 • ] surface 0 mm [-5,-1] mm 0 mm [-30 • ,+30 • ] slide parameter ranges stimulus x-position y-position z-position angle edge [-5,+5] mm [-5,+5] mm 0 mm [-5 • ,+5 • ] surface [-5,+5] mm 0 mm 0 mm [-5 • ,+5 • ]</figDesc><graphic coords="3,232.18,52.96,373.67,210.19" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Schematic of test platform: A) desktop robot arm; B) tactile sensor on mount; C) 3D-printed stimulus on mount; D) robot mounting plate; E) base plate with mounting grid.</figDesc><graphic coords="4,305.40,52.78,260.92,177.07" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Top: views of the DIGIT, DigiTac and TacTip (round) pressing on an edge. Bottom: corresponding tactile images.</figDesc><graphic coords="5,302.78,173.74,198.74,99.37" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Pose prediction with the DigiTac. Top: edge displacement and angle. Bottom: surface depth and angle. Predictions are under random unknown sliding contacts (TableII).</figDesc><graphic coords="5,451.06,164.08,206.58,116.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Edge and surface following with the DIGIT, DigiTac and TacTip for the disk, square and circular-wave shapes.</figDesc><graphic coords="6,39.29,612.72,145.14,108.81" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table I .</head><label>I</label><figDesc>Comparison of DIGIT, DigiTac and TacTip low-cost high-resolution tactile sensors (each is less than £100 to make).</figDesc><table><row><cell></cell><cell>DIGIT</cell><cell>DigiTac</cell><cell>TacTip</cell></row><row><cell>size l × w × h [mm]</cell><cell cols="2">36×26×33 36×26×39</cell><cell>48 dia.×55</cell></row><row><cell>weight [g]</cell><cell>20</cell><cell>20</cell><cell>65</cell></row><row><cell>sensing field [mm]</cell><cell>25×19</cell><cell>25×19</cell><cell>40 dia.</cell></row><row><cell>resolution [pix]</cell><cell>640×480</cell><cell>640×480</cell><cell>1920×1080</cell></row><row><cell>frame rate [per sec]</cell><cell>60</cell><cell>60</cell><cell>120</cell></row><row><cell>biomimetic markers</cell><cell>-</cell><cell>140</cell><cell>331</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table III .</head><label>III</label><figDesc>Accuracy (MAE) of pose estimation for the DIGIT, DigiTac and TacTip on the straight edge and flat surface. Predictions are under random sliding contacts (TableII).</figDesc><table><row><cell>sensor</cell><cell>stimulus</cell><cell>position y</cell><cell>angle</cell></row><row><cell></cell><cell></cell><cell>MAE / range</cell><cell>MAE / range</cell></row><row><cell>DIGIT</cell><cell>edge</cell><cell>0.19 mm / 10 mm</cell><cell>1.83 • / 90 •</cell></row><row><cell></cell><cell>surface</cell><cell>0.22 mm / 1 mm</cell><cell>2.47 • / 60 •</cell></row><row><cell>DigiTac</cell><cell>edge</cell><cell>0.16 mm / 10 mm</cell><cell>1.64 • / 90 •</cell></row><row><cell></cell><cell>surface</cell><cell>0.06 mm / 4 mm</cell><cell>0.51 • / 60 •</cell></row><row><cell>TacTip</cell><cell>edge</cell><cell>0.16 mm / 10 mm</cell><cell>1.66 • / 90 •</cell></row><row><cell></cell><cell>surface</cell><cell>0.11 mm / 4 mm</cell><cell>0.73 • / 60 •</cell></row><row><cell cols="4">different choices of neural networks, all accuracies are sub-</cell></row><row><cell cols="4">mm and around 1-2 degrees, which are appropriate for the</cell></row><row><cell cols="4">contour-following experiments reported below.</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table IV .</head><label>IV</label><figDesc>Accuracy of edge and surface following for the DIGIT, DigiTac and TacTip.</figDesc><table><row><cell>sensor</cell><cell>stimulus</cell><cell>shape</cell><cell cols="2">position MAE angle MAE</cell></row><row><cell>DIGIT</cell><cell>edge</cell><cell>circle</cell><cell>0.6 mm</cell><cell>10.7 •</cell></row><row><cell></cell><cell>edge</cell><cell>square</cell><cell>0.9 mm</cell><cell>12.7 •</cell></row><row><cell></cell><cell>edge</cell><cell>circular-wave</cell><cell>1.2 mm</cell><cell>29.7 •</cell></row><row><cell>DigiTac</cell><cell>edge</cell><cell>circle</cell><cell>0.6 mm</cell><cell>15.1 •</cell></row><row><cell></cell><cell>edge</cell><cell>square</cell><cell>1.0 mm</cell><cell>15.0 •</cell></row><row><cell></cell><cell>edge</cell><cell>circular-wave</cell><cell>1.1 mm</cell><cell>26.2 •</cell></row><row><cell></cell><cell>surface</cell><cell>circle</cell><cell>0.7 mm</cell><cell>12.9 •</cell></row><row><cell></cell><cell>surface</cell><cell>square</cell><cell>1.5 mm</cell><cell>10.2 •</cell></row><row><cell></cell><cell>surface</cell><cell>circular-wave</cell><cell>1.0 mm</cell><cell>27.9 •</cell></row><row><cell>TacTip</cell><cell>edge</cell><cell>circle</cell><cell>0.4 mm</cell><cell>1.6 •</cell></row><row><cell></cell><cell>edge</cell><cell>square</cell><cell>0.5 mm</cell><cell>4.6 •</cell></row><row><cell></cell><cell>edge</cell><cell>circular-wave</cell><cell>0.4 mm</cell><cell>19.6 •</cell></row><row><cell></cell><cell>surface</cell><cell>circle</cell><cell>0.6 mm</cell><cell>15.4 •</cell></row><row><cell></cell><cell>surface</cell><cell>square</cell><cell>1.5 mm</cell><cell>14.7 •</cell></row><row><cell></cell><cell>surface</cell><cell>circular-wave</cell><cell>1.6 mm</cell><cell>23.0 •</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><p>Acknowledgements: We thank <rs type="person">Mike Lambeta</rs> and <rs type="person">Roberto Calandra</rs> for donating the DIGIT sensors, and <rs type="person">Stephen Redmond</rs> for discussions including suggesting the name 'DigiTac'.</p></div>
+			</div>			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">DIGIT: A Novel Design for a Low-Cost Compact High-Resolution Tactile Sensor With Application to In-Hand Manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Chou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Maloon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Most</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Stroud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Santos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Byagowi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Kammerer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="3838" to="3845" />
+			<date type="published" when="2020-07">July 2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<ptr target="http://www.digit.ml/" />
+		<title level="m">DIGIT</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">PyTouch: A Machine Learning Library for Touch Processing</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Chou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Darrell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>Xi&apos;an, China</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2021-05">May 2021</date>
+			<biblScope unit="page" from="13208" to="13214" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">TACTO: A Fast, Flexible, and Open-Source Simulator for High-Resolution Vision-Based Tactile Sensors</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Chou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="3930" to="3937" />
+			<date type="published" when="2022-04">April 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<ptr target="https://ai.facebook.com/blog/teaching-robots-to-perceive-understand-and-interact-through-touch/" />
+		<title level="m">Teaching robots to perceive, understand, and interact through touch</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ward-Cherrier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Pestell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Cramphorn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Winstone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">E</forename><surname>Giannaccini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rossiter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The TacTip Family: Soft Optical Tactile Sensors with 3D-Printed Biomimetic Morphologies</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page" from="216" to="227" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Soft Biomimetic Optical Tactile Sensing With the TacTip: A Review</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors Journal</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">19</biblScope>
+			<biblScope unit="page" from="21131" to="21143" />
+			<date type="published" when="2021-10">October 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">From Pixels to Percepts: Highly Robust Edge Perception and Contour Following Using Deep Learning and an Optical Biomimetic Tactile Sensor</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Church</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>De Kerckhove</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hadsell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lloyd</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="2101" to="2107" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Optimal Deep Learning for Robot Touch: Training Accurate Pose Models of 3D Surfaces and Edges</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lloyd</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">27</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="66" to="77" />
+			<date type="published" when="2020-06">June 2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Pose-Based Tactile Servoing: Controlled Soft Touch Using Deep Learning</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lloyd</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="43" to="55" />
+			<date type="published" when="2021-12">December 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Towards integrated tactile sensorimotor control in anthropomorphic soft robotic hands</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Stinchcombe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Ford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lloyd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Catalano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bianchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ward-Cherrier</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>Xi&apos;an China</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2021-05">May 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Retrographic sensing for the measurement of surface texture and shape</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">K</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="1070" to="1077" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">GelSight: High-Resolution Robot Tactile Sensors for Estimating Geometry and Force</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page">2762</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">GelTip: A Finger-shaped Optical Tactile Sensor for Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Gomes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Luo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<meeting><address><addrLine>Las Vegas, NV, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2020-10">October 2020</date>
+			<biblScope unit="page" from="9903" to="9909" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Soft, Round, High Resolution Tactile Fingertip Sensors for Dexterous Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Veiga</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>Paris, France</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2020-05">May 2020</date>
+			<biblScope unit="page" from="4796" to="4802" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">OmniTact: A Multi-Directional High-Resolution Touch Sensor</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Padmanabha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ebert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>Paris, France</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2020-05">May 2020</date>
+			<biblScope unit="page" from="618" to="624" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">GelSlim3.0: High-Resolution Measurement of Shape, Force and Slip in a Compact Tactile-Sensing Finger</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>Philadelphia, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2022-05">May 2022</date>
+			<biblScope unit="page" from="10781" to="10787" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Shapeindependent hardness estimation using deep learning and a GelSight tactile sensor</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Owens</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Srinivasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>Singapore, Singapore</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2017-05">May 2017</date>
+			<biblScope unit="page" from="951" to="958" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Editorial: ViTac: Integrating Vision and Touch for Multimodal and Cross-Modal Perception</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Martinez-Hernandez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joao</forename><surname>Bimbo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Robotics and AI</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Development of a tactile sensor based on biologically inspired edge encoding</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chorley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Melhuish</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Pipe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rossiter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Advanced Robotics</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="1" to="6" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Artificial SA-I and RA-I afferents for tactile sensing of ridges and gratings</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Pestell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Griffith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of The Royal Society Interface</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">189</biblScope>
+			<biblScope unit="page">20210822</biblScope>
+			<date type="published" when="2022-04">April 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Goal-Driven Robotic Pushing Using Tactile and Proprioceptive Feedback</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lloyd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1201" to="1212" />
+			<date type="published" when="2022-04">April 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Tactile Sim-to-Real Policy Transfer via Real-to-Sim Image Translation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Church</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lloyd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hadsell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Lepora</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 5th Conference on Robot Learning</title>
+		<meeting>the 5th Conference on Robot Learning</meeting>
+		<imprint>
+			<date type="published" when="2021-10">October 2021</date>
+			<biblScope unit="page" from="1645" to="1654" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Evaluation of a vision-based tactile sensor</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Kamiyama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Kajimoto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Naoki</forename><surname>Kawakami</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Susumu</forename><surname>Tachi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>New Orleans, LA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004">2004</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="1542" to="1547" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2202.02179</idno>
+		<title level="m">DelTact: A Vision-based Tactile Sensor Using Dense Color Pattern</title>
+		<imprint>
+			<date type="published" when="2022-02">February 2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Sensing the Frictional State of a Robotic Skin via Subtractive Color Mixing</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wiertlewski</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="2386" to="2392" />
+			<date type="published" when="2019-07">July 2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">An Elastomer-based Flexible Optical Force and Tactile Sensor</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Konstantinova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Noh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alomainy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Althoefer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 2nd IEEE International Conference on Soft Robotics (RoboSoft)</title>
+		<meeting><address><addrLine>Seoul, Korea (South)</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2019-04">April 2019</date>
+			<biblScope unit="page" from="361" to="366" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Motivation and Evaluation of a Full-Resolution Optical Tactile Sensor</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Sferrazza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>D'andrea</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Design</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">928</biblScope>
+			<date type="published" when="2019-02">February 2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

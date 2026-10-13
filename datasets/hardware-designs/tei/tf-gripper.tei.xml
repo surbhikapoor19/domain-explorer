@@ -1,0 +1,1058 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Learning Force-Regulated Robotic Manipulation with a Low-Cost Tactile-Force-Controlled Gripper</title>
+				<funder>
+					<orgName type="full">Delta Electronics Inc.</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2026-10-06">6 Oct 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Xuhui</forename><surname>Kang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Virginia</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Tongxuan</forename><surname>Tian</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Virginia</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sung-Wook</forename><surname>Lee</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Virginia</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Binghao</forename><surname>Huang</surname></persName>
+							<email>binghao.huang@columbia.edu</email>
+							<affiliation key="aff1">
+								<orgName type="institution">Columbia University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yunzhu</forename><surname>Li</surname></persName>
+							<email>yunzhu.li@columbia.edu</email>
+							<affiliation key="aff1">
+								<orgName type="institution">Columbia University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yen-Ling</forename><surname>Kuo</surname></persName>
+							<email>ylkuo@virginia.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Virginia</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Learning Force-Regulated Robotic Manipulation with a Low-Cost Tactile-Force-Controlled Gripper</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-10-06">6 Oct 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">478907796C459E9BC6F3557833F85008</idno>
+					<idno type="arXiv">arXiv:2602.10013v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Successfully manipulating many everyday objects, such as potato chips, requires precise force regulation. Failure to modulate force can lead to task failure or irreversible damage to the objects. Humans can precisely achieve this by adapting force from tactile feedback, even within a short period of physical contact. We aim to give robots this capability. However, commercial grippers exhibit high cost or high minimum force, making them unsuitable for studying force-controlled policy learning with everyday force-sensitive objects. We introduce TF-Gripper, a low-cost (˜$150) force-controlled parallel-jaw gripper that integrates tactile sensing as feedback. It has an effective force range of 0.45-45 N and is compatible with different robot arms. Additionally, we designed a teleoperation device paired with TF-Gripper to record human-applied grasping forces. The gripper hardware and teleoperation system serve as enabling tools for controlled force-regulated manipulation studies. While we can train standard low-frequency policies with the collected force data, achieving reliable performance remains challenging due to the reactive and contact-dependent nature of forceregulated manipulation. To overcome this, we propose RETAF (REactive Tactile Adaptation of Force), a framework that decouples grasping force control from arm pose prediction. RETAF regulates force at high frequency using wrist images and tactile feedback, while a base policy predicts end-effector pose and gripper open/close action. Our experiments show that, compared to position control, direct force control with TF-Gripper improves grasp stability and overall task performance across six real-world tasks. We further show that tactile feedback is essential for force regulation, and that RETAF consistently outperforms baselines and can be integrated with various base policies. We hope this work opens a path for scaling the learning of force-controlled policies in robotic manipulation.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Humans have demonstrated strong capability in manipulating objects that require precise force regulation, such as picking up potato chips or squeezing ketchup from bottles. We achieve this by adjusting forces from tactile feedback even within a brief moment of contact <ref type="bibr" target="#b0">[1]</ref>, see Fig. <ref type="figure">1(a)</ref>. With insufficient force, the task could not proceed, but excessive force could lead to irreversible object damage. However, existing works on robotic systems, with or without tactile feedback <ref type="bibr">[2]</ref>- <ref type="bibr" target="#b3">[4]</ref>, mostly simplify gripper control to binary open/close actions or gripper position/width prediction <ref type="bibr" target="#b4">[5]</ref>- <ref type="bibr" target="#b10">[11]</ref>. Such position control can be viewed as an indirect proxy for force control, as the manipulation goal is ultimately to apply an appropriate contact force. However, using position control to generate appropriate force is highly Fig. <ref type="figure">1</ref>: To mimic the human ability to regulate force through tactile feedback to manipulate everyday objects, we develop a force-controlled gripper with tactile sensing for learning reactive and gentle manipulation policies.</p><p>object-and task-dependent. For example, in Fig. <ref type="figure" target="#fig_1">2</ref>(a), a small variation in sizes can yield significant differences in stable grasping width range, whereas the stable grasping force range remains similar and can lead to more robust policies. In Fig. <ref type="figure" target="#fig_1">2</ref>(b), on the other hand, the appearance of cherry tomatoes is almost identical, but it requires a different width range to generate sufficient friction for a stable grasp.</p><p>To successfully pick up the cherry tomato, the force control can adjust the force range from the tactile feedback, whereas position control will need to integrate information about the perceived tomato size and tactile input to infer the gripper width, which is harder to learn.</p><p>To study how the robot can effectively learn the human- like tactile-force capability, we need a gripper that supports force control. Many commercial grippers provide force control, but they are often expensive, difficult to adapt across different robots, and offer a high minimum force that is not well suited for delicate, soft, and fragile everyday objects, as summarized in Table <ref type="table" target="#tab_0">I</ref>. To enable more research in learning force-regulated manipulation, we develop and open-source TF-Gripper (Tactile-Force-Controlled Gripper), a universal and low-cost robotic gripper that provides fine-grained force regulation with tactile sensing, see Fig. <ref type="figure">1(b</ref>). The TF-Gripper includes a teleoperation device that captures the force applied by a human operator through a spring-like actuator, which provides local kinesthetic feedback while estimating the applied force via motor current, and maps this signal to the gripper mounted on the robot during human demonstrations. This setting is sufficient to collect high-quality force control data, as the compliant interaction reduces variability while preserving fine-grained force modulation for learning forceregulated manipulation. It is possible to train a force control policy using the existing model architecture like diffusion policy (DP) <ref type="bibr" target="#b18">[18]</ref> or vision-language-action (VLA) models <ref type="bibr" target="#b19">[19,</ref><ref type="bibr" target="#b20">20]</ref>. These models jointly predict the robot arm pose and gripper command (mostly, gripper width in prior works) at a relatively low frequency (e.g., 1-10 Hz). However, force control introduces a fundamentally different control objective from position control. Rather than reaching a gripper position, the gripper closes by continuously applying a specified force, and success depends on how that force is regulated during a short, contact-rich interaction phase. A low-frequency policy is insufficient to capture fine-grained contact dynamics and thus struggles to support force-regulated manipulation which requires fast, contact-driven adaptation. Moreover, directly fusing tactile inputs with global visual observations can confuse the policy and often leads to unstable learning <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b21">21]</ref>.</p><note type="other">Slip Break</note><p>To address these issues, we propose RETAF (REactive Tactile Adaptation of Force), a policy design that explicitly decouples arm pose prediction from grasping force prediction. RETAF employs a force adaptation policy to reactively predict force at a high frequency (&gt;30 Hz) based on wristview images and tactile feedback, while a base policy predicts end-effector pose and gripper open/close actions. This design enables rapid force adaptation during contact and only considers tactile information when needed. We evaluate TF-Gripper and RETAF with six real-world manipulation tasks that require precise force regulation to complete. We collected 50 human demonstrations for each task using the TF-Gripper. Experimental results show that RETAF can be integrated with different pose prediction policies and consistently improves grasp stability, pose execution quality, and overall task success in force-regulated manipulation.</p><p>In summary, our work makes the following contributions: 1) We introduce TF-Gripper, a low-cost (˜$150) tactileforce-controlled gripper paired with a force-aware teleoperation device for learning force-regulated manipulation. 2) We propose RETAF, a policy framework that decouples force control from end-effector pose prediction and can be integrated with any existing pose-prediction policies. 3) We evaluate RETAF on force-regulated manipulation tasks, showing improved reactive force regulation over position control.</p><p>II. RELATED WORK Force-Controlled Grippers. Force-controlled grippers support compliant manipulation, typically through open-loop current/torque estimates, as in Robotiq 2F-85 <ref type="bibr" target="#b13">[13]</ref>, WSG-50 <ref type="bibr" target="#b15">[15]</ref>, and MAGPIE <ref type="bibr" target="#b22">[22]</ref>, or closed-loop force/contact feedback, such as fingertip torque sensing in WSG-50 and ECHO <ref type="bibr" target="#b23">[23]</ref> and tactile force estimation in FARM <ref type="bibr" target="#b24">[24]</ref>. Open-loop designs can suffer from backlash and positiondependent moment arms, while closed-loop designs often require extra sensors or specialized fingertips that reduce compatibility with general-purpose <ref type="bibr" target="#b25">[25]</ref> or task-customized fingertips <ref type="bibr" target="#b26">[26]</ref>. Our gripper instead uses a timing-belt transmission to reduce backlash and maintain a consistent moment arm, enabling low-cost <ref type="bibr" target="#b27">[27]</ref> open-loop force regulation with tactile feedback for learning-based adaptation. Force-Aware Teleoperation and Data Collection. Learning force-regulated manipulation requires demonstrations with grasping force, but existing teleoperation frameworks <ref type="bibr">[28,</ref>  29] and data collection systems <ref type="bibr" target="#b25">[25]</ref> mainly record pose and gripper open/close or width. Recent methods infer force from joystick and motor feedback <ref type="bibr" target="#b23">[23]</ref> or tactile observations <ref type="bibr" target="#b24">[24]</ref>; FTF <ref type="bibr" target="#b30">[30]</ref> measures 3D contact forces with a tactile glove, and UMI-FT <ref type="bibr" target="#b31">[31]</ref> augments a gripper with a force sensor. In contrast, our teleoperation device directly measures the operator's force, maps it to the robot gripper in real time, and pairs with VR controllers or other pose input devices without proxy inference or post-hoc estimation.</p><p>Learning with Force and Tactile. Early work regulates grip force from tactile signals with hand-designed controllers, e.g., by detecting slip <ref type="bibr" target="#b32">[32,</ref><ref type="bibr" target="#b33">33]</ref>, and learns from vision and touch to predict grasp outcomes and adjust grasps <ref type="bibr" target="#b34">[34]</ref>.</p><p>Tactile sensing improves contact awareness and robustness in learning-based manipulation, with prior work on tactile encoding and policy integration for contact-rich interactions <ref type="bibr" target="#b35">[35,</ref><ref type="bibr" target="#b36">36]</ref>, reactive control <ref type="bibr" target="#b21">[21,</ref><ref type="bibr" target="#b37">37,</ref><ref type="bibr" target="#b38">38]</ref>, grasping of deformable objects <ref type="bibr" target="#b39">[39]</ref>, sim-to-real refinement <ref type="bibr" target="#b40">[40]</ref>, and tactile and multimodal representation learning <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b41">41,</ref><ref type="bibr" target="#b42">42]</ref>.</p><p>Recent force-aware methods estimate contact force distributions from tactile observations in FARM <ref type="bibr" target="#b24">[24]</ref> or learn slipaware force control with a physics-informed energy-based abstraction <ref type="bibr" target="#b43">[43]</ref>, but they largely use tactile feedback as an auxiliary observation or focus on force estimation. In contrast, RETAF decouples force regulation from pose prediction and uses high-frequency tactile feedback for reactive force adaptation during contact.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. TF-GRIPPER HARDWARE SYSTEM DESIGN</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Gripper Design</head><p>To enable precise, low-cost force control for forceregulated manipulation, we develop TF-Gripper, a parallel-jaw tactile-force-controlled gripper driven by two Dynamixel XL430-W250-T <ref type="bibr" target="#b44">[44]</ref> actuators. As shown in Fig. <ref type="figure" target="#fig_2">3</ref>, each motor drives a pulley with timing-belt transmission to actuate one fingertip; the pulley radius defines the effective moment arm, providing a repeatable mapping from motor torque to fingertip force while maintaining mechanical robustness. The main gripper frame is fully 3D printed. Each fingertip is mounted on a linear slider that moves along a low-friction linear rail, ensuring stable and smooth parallel motion during grasping (Fig. <ref type="figure" target="#fig_2">3</ref> (iii)). On the passive side, the timing belt is routed through an idler pulley composed of a cylindrical shaft and two flanged bearings, which reduces friction and improves motion consistency (Fig. <ref type="figure" target="#fig_2">3</ref> (iv)). To support compliant contact with objects, the fingertips are equipped with soft fingertip pads from UMI <ref type="bibr" target="#b25">[25]</ref> (Fig. <ref type="figure" target="#fig_2">3</ref> (vi)). To further enable reliable tactile perception at low cost, we integrate thin and soft piezo-resistive tactile sensors, FlexiTac <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b5">6]</ref>, which capture both contact area geometry and force-related information while maintaining mechanical softness. The gripper is mounted on the robot via an interchangeable adapter. For the Franka Research 3 and UR5, we provide an ISO 9409-1-A50 adapter (Fig. <ref type="figure" target="#fig_2">3</ref> (ii)).</p><p>The Dynamixel actuators exhibit a near-linear current-toforce relationship when evaluated 1 cm from the end of the fingertip. This enables accurate and stable force control over a range of approximately 0.45-45 N, with a command resolution of about 0. full actuation chain from the PWM to motor torque and then to fingertip contact force, together with the measured PWM-force calibration at the fingertip. We further evaluate force stability under temperature variations. After running the actuator at 20% current for 20 minutes at 25 • C, we observe an average force drift of about 9%. Using the motor's builtin temperature sensor for compensation reduces this error to below 4%, indicating stable force control.</p><p>The PWM-force mapping is calibrated directly with a force gauge at the fingertip, so static friction is already included and no motor-current-based force estimate is in-volved. To quantify the remaining nonlinearity, belt hysteresis, we measure the fingertip force with the force gauge at commanded forces of 1, 5, and 10 N during loading and unloading, with 10 repetitions each. With a loading-only calibration, unloading shows a hysteresis error of up to 1.0 N (19%) at 5 N. We therefore calibrate both directions with the force gauge, after which the mean error is within 7% at all setpoints, on par with the ±10% force repeatability specified for the Robotiq 2F-85 <ref type="bibr" target="#b13">[13]</ref> (Appendix A). The lower bound of the force range (about 0.45 N) is the deadband visible in the calibration, below which the motor torque cannot overcome the transmission friction (Fig. <ref type="figure" target="#fig_3">4</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Teleoperation Device</head><p>Most teleoperation methods, such as VR controllers, SpaceMouse devices, or kinesthetic teaching, focus on joint or end-effector pose control and limit gripper commands to open/close or width control, making human-applied grasping force difficult to capture. To collect demonstrations with explicit force control, we design a low-cost teleoperation interface (&lt;$100) that mirrors the gripper's actuation mechanism. As shown in Fig. <ref type="figure" target="#fig_4">5</ref>, the device uses a VR controller for end-effector pose and two finger rings connected to the same Dynamixel actuator as the gripper for force input. The actuator provides spring-like resistance for local kinesthetic feedback while measuring the operator's force via motor current; this calibrated signal is mapped to the robot gripper current command in real time.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. RETAF: REACTIVE TACTILE ADAPTATION OF FORCE A. Problem Formulation</head><p>We formulate a robotic manipulation task as a sensorimotor problem. At time t, the observation is o t = {V t , T t }, where V t denotes non-tactile observations (e.g., RGB images, proprioception) and T t tactile readings. A policy π maps these observations to an action a t = [a pose t , a grip t ] ∼ π(V t , T t ), consisting of the arm command a pose t (e.g., end-effector pose) and the gripper command a grip t (typically position). This coupled formulation has two mismatches for force-regulated manipulation. 1) Frequency mismatch. Stable force regulation must react to transient tactile events (e.g., slip) within a short time (τ react ≤ 50 ms), whereas pose prediction uses large backbones with a latency of 100-1000 ms. A coupled policy is bottlenecked by this slow inference (τ lat ≫ τ react ).</p><p>2) Learning with tactile input. Tactile signals are sparse and contact-dependent, whereas visual observations are dense. Fusing them directly often causes unstable learning, as the policy must weigh the transient tactile signal against the dominant visual context <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b21">21]</ref>.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. The RETAF Framework</head><p>To address these challenges, we decouple the policy into a Base Policy π base for trajectory generation and a Force Adaptation Policy π force for contact regulation (Fig. <ref type="figure" target="#fig_5">6</ref>). The force policy is activated by a discrete gripper action k t ∈ {open, close} predicted by the base policy (Appendix E studies a variant without this prediction). Base Policy (π base ). We use existing visuomotor policy architectures without modification. Operating at low frequency, π base predicts the arm pose and the discrete gripper open/close from non-tactile observations, (a pose t , k t ) = π base (V t ), and is trained via behavior cloning on expert actions a * t = (a pose * t , k * t ) with the architecture-specific loss (e.g., the noise-prediction loss of Diffusion Policy). Force Adaptation Policy (π force ). The gripper action is gated by k t : π force is activated only when the base policy signals a grasp (k t = close):</p><formula xml:id="formula_0">a grip t = π force (I wrist t , T t ) if k t = close ∅ (Open) if k t = open (1)</formula><p>When activated, π force predicts the continuous target force f t at high frequency (&gt;30 Hz). Since it only needs to reason about grasping force, it attends exclusively to the wrist view I wrist t and tactile sensing T t through a joint-attention layer <ref type="bibr" target="#b45">[45]</ref>. The wrist view provides compact, object-centric visual information (object category, shape, and surface appearance), while tactile sensing captures local contact signals such as deformation and incipient slip. Attending to these two modalities lets RETAF regulate force precisely without being distracted by the global scene. We train π force by regressing the demonstrator's force f * t with the MSE loss L force = E ∥π force (I wrist t , T t )-f * t ∥ 2 . This lightweight design runs at 80 Hz+ on a single RTX 5070 Ti.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. EXPERIMENTAL SETUP</head><p>We conduct real-world experiments on tasks that require precise force-regulation to evaluate TF-Gripper and RETAF.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Hardware and Data Collection</head><p>Hardware Setup. Our platform is a Franka Research 3 robot equipped with our TF-Gripper and two RealSense D435i cameras: one third-person view for the global scene and one on the gripper for the wrist view. All experiments are conducted on a tabletop with everyday objects such as a plate, a bowl, a pan, a cup, and a dropper (Fig. <ref type="figure">7</ref>).</p><p>Data Collection. Data is collected with our teleoperation device (Fig. <ref type="figure" target="#fig_4">5</ref>) using a Meta Quest 1 as the VR controller. We record the full trajectory at 15 Hz, including end-effector pose, gripper force, gripper position, and visual and tactile observations. For each task, we collect 50 demonstrations of 4 to 10 seconds each (examples in Appendix C). This is on par with prior work in imitation learning and visuo-tactile manipulation <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b18">18]</ref>. Since the demonstrations explicitly encode force changes, we can compare position control and force control under identical task conditions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Baselines</head><p>We compare RETAF against two learning-based baselines. Diffusion Policy <ref type="bibr" target="#b18">[18]</ref> (DP) is one of the most widely adopted manipulation policies and predicts action sequences by iterative denoising. We evaluate DP variants with and without tactile input, and with gripper actions represented as either gripper position or grasping force. Since all policies run on the same TF-Gripper with the same demonstrations and observation space, comparing RETAF with DP w/ Force isolates the algorithmic contribution from the hardware.</p><p>ViTac-MAE <ref type="bibr" target="#b5">[6]</ref> extends DP with a tactile encoder pretrained by masked autoencoding. Comparing it with DP under identical settings tests whether a stronger tactile representation alone is sufficient for precise force control.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Implementation Details</head><p>Across all methods, the action space consists of the absolute end-effector position and rotation represented using a 6D rotation representation <ref type="bibr" target="#b46">[46]</ref>, and a gripper action. Depending on the method, the gripper action can be either open/close, continuous gripper position, or continuous grasping force. For visual observations, RGB images are encoded using the image encoder from CLIP <ref type="bibr" target="#b47">[47]</ref>. The tactile input is the raw tactile image represented as a 12 × 32 matrix. We encode the tactile observations using a two-layer convolutional neural network. All DP and ViTac-MAE variants use a 1D U-Net as the diffusion backbone. For RETAF, the base policy Fig. <ref type="figure">7</ref>: Overview of the evaluation environment and tasks.</p><p>adopts the same DP architecture to predict only end-effector pose and a binary gripper open/close action using visual observations. When the gripper closes, the force adaptation policy is activated and predicts the target grasping force from wrist-view images and tactile feedback. In positionbased control experiments, the same force adaptation policy architecture is employed to predict gripper position.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Tasks Setup</head><p>We designed six manipulation tasks (see Fig. <ref type="figure">7</ref>) that require continuous and precise grasping force control. In all tasks, excessive force or overly small gripper width risks breaking objects, while insufficient force or overly wide gripper width leads to slippage. Table <ref type="table" target="#tab_2">II</ref> summarizes the force range and stable-grasp criterion for each task. For Tofu Pick and Cherry Tomato Pick, deformation is computed from the tactile-contact gripper width and the final stable-grasp width as (w contact -w stable )/w contact . Based on measurements of the samples in our experiments, we set the deformation thresholds to 18% for tofu and 23% for cherry tomatoes. Damage and spilling are judged by visual inspection: any visible crack, fracture, irreversible deformation, liquid spill, or dropped object is counted as a failure. These criteria were applied consistently across all rollouts and methods. For example, a chip counts as broken only when visible fragments detach from it, while powder shedding at the edges does not. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Evaluation Metrics</head><p>We evaluate each policy with 10 rollouts per task, and repeat the rollouts three times with different random seeds. To better understand why a policy fails, we do not rely on the overall task success rate. Instead, we decompose each task into three stages to report the average success rate. Reach measures whether the robot can successfully move to the target object and make contact with it. This stage is a prerequisite for manipulating objects.</p><p>Stable Grasp evaluates whether the object remains stable after grasping, without slipping, dropping, excessive deformation, or damage.</p><p>Task Success measures whether the robot can complete the full task such as placing, transferring, or releasing the object as required.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. EXPERIMENT RESULTS</head><p>We investigate five key research questions: 1) RQ1. Does direct force control improve force-sensitive tasks compared to position control? 2) RQ2. Is tactile sensing necessary for precise and effective force control? 3) RQ3. Does RETAF improve force-sensitive tasks compared to non-reactive baselines? 4) RQ4. How do RETAF's modules affect performance? 5) RQ5. How does RETAF generalize to unseen objects and a different robotic platform?</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Force Control vs. Position Control (RQ1)</head><p>We compare force-based and position-based gripper control across all six tasks. Fig. <ref type="figure" target="#fig_6">8</ref> shows that force control consistently achieves higher stable grasp rates than position control across different policies, while keeping the performance of the reach stage similar or only slightly lower. For DP and ViTac-MAE baselines, switching from position to force control also leads to improvements in grasp stability. For example, DP w/ Tac improves its average stable grasp rate from 17.2% to 30.0%, and ViTac-MAE from 27.2% to 32.8%. This trend becomes more pronounced when combined with RETAF. RETAF with force control achieves an average stable grasp rate of 59.4%, compared to 36.1% under position control. These results indicate that the advantage of force control arises during physical contact rather than object reaching.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. The Role of Tactile Sensing (RQ2)</head><p>As shown in Fig. <ref type="figure" target="#fig_6">8</ref>, adding tactile input to DP leads to only small improvements in stable grasp rates compared to the DP without tactile sensing, indicating that directly fusing tactile observations is not sufficient for effective force regulation. ViTac-MAE achieves better performance by learning stronger tactile representations, resulting in higher grasp stability and task success rate, but its overall improvement remains limited. In contrast, RETAF explicitly leverages tactile feedback for reactive force adjustment and achieves consistent improvements on average across all stages over all baselines.</p><p>Fig. <ref type="figure">10</ref> provides an example of a validation human demonstration, comparing force predictions from DP and RETAF against the ground-truth human-applied force. After reaching the target pose, the human applies a larger force to close the gripper, and then adjusts the force upon contact based on tactile and visual feedback. Notably, the visual appearance before and after contact changes only subtly, making it difficult to infer the required grasping force from vision alone. Together, these results show that tactile sensing is essential for force-regulated manipulation, and that the way tactile information is used plays a critical role in performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Ablation of RETAF Modules (RQ3 and RQ4)</head><p>Fig. <ref type="figure">9</ref> shows how RETAF's module designs affect performance. Using only an integrated tactile value lowers the average grasp rate by 23.3%. Using contact-distribution features also reduces performance because these compact representations discard object-specific contact information, e.g., contact shape and spatial tactile values. Using a pretrained ViTac-MAE tactile encoder gives a small grasping improvement on Liquid Transfer, likely because this task appears in ViTac-MAE pretraining, but does not yield consistent gains on Chip Pick or Cherry Tomato Pick. Removing the tactile input lowers the average grasp rate by <ref type="bibr" target="#b23">23</ref>  showing that tactile and visual features must be jointly modeled for accurate force prediction. Reducing RETAF to 5 Hz causes the largest drop, highlighting the importance of decoupling high-frequency reactive force adaptation from the base policy. RETAF also benefits a VLA base policy: with π 0.5 <ref type="bibr" target="#b48">[48]</ref>, it raises task success from 20% to 90% on Cherry Tomato Pick and from 20% to 50% on Liquid Transfer (Appendix D).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Generalization Studies (RQ5)</head><p>To assess object-level generalization, we evaluate Chip Pick on six chip variants: four seen in training (A-D) and two held-out out-of-distribution (OOD) variants (E-F) with unseen shapes, sizes, and surface properties. We collect 20 demonstrations per seen variant and compare RETAF with DP w/ Tactile, both using grasping force as the action space, with 10 rollouts per chip over three seeds (Fig. <ref type="figure" target="#fig_10">12</ref>).</p><p>RETAF outperforms DP w/ Tactile on both seen and OOD chips. On OOD chips, DP w/ Tactile almost never succeeds (1.7%), while RETAF still reaches 36.7%. This suggests that reactive tactile-force adaptation improves robustness to unseen chip geometries and surface properties within the chip-picking setting. Since this evaluation covers one task category and two held-out chip variants, we interpret it as evidence of object-level generalization.</p><p>We further evaluate cross-robot transfer of the forceadaptation policy by mounting the same TF-Gripper module on a SO-ARM101 <ref type="bibr" target="#b49">[49]</ref> arm. The arm motion is teleoperated, while the gripper force is predicted by the same RETAF force  policy trained on the Franka chip-picking setup. Because the arm motion is teleoperated, this experiment isolates the local force-adaptation policy. Across 20 trials, the transferred system achieves a 55% grasp success rate, comparable to the Franka setup, suggesting that the local force-adaptation policy transfers across arms when the gripper, tactile sensor, and wrist camera are kept as a common end-effector module. In a cross-gripper test on the Franka Hand under position control (supported by both grippers), RETAF improves over </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Rigid-Object Contact-Rich Tasks</head><p>To examine whether TF-Gripper is confined to delicate objects, we also include two rigid-object contact-rich tasks, Peg Insertion and Block Insertion (inserting a cube into a matching recess), with 50 force-control demonstrations each (Fig. <ref type="figure" target="#fig_11">13</ref>). RETAF and DP w/ Force reach similar success rates over 30 rollouts, since a rigid object tolerates a wide range of grasping forces and success depends mainly on the pose precision of the insertion. While such arm-level contactrich manipulation <ref type="bibr" target="#b21">[21,</ref><ref type="bibr" target="#b50">50]</ref> is not the target of RETAF, these tasks, together with everyday tasks without force regulation (Appendix F), show that the TF-Gripper itself can apply to diverse tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Data-Scaling Analysis</head><p>We train RETAF with 10, 25, 50, and 100 demonstrations on Cherry Tomato Pick and Peg Insertion, with 30 rollouts per setting (Table <ref type="table" target="#tab_4">III</ref>). These are independent runs from the main experiments in Fig. <ref type="figure" target="#fig_6">8</ref>. On Cherry Tomato Pick, the model reaches reasonable performance with 50 demonstrations (73.3% success), and 100 demonstrations improve it  only slowly (+6.7%). On Peg Insertion, the grasp rate is already 83.3% at 50 demonstrations, so the remaining failures mainly come from the insertion, which needs precise pose prediction from the base policy; since more demonstrations mainly improve pose prediction, task success keeps rising (33.3% to 46.7%) while the grasp rate changes little. In some cases, the grasp succeeds, but the task still fails due to incorrect pose predictions by DP. During grasping, we observe that DP predicting position tends to result in insufficient contact and slipping, consistent with our earlier analysis that position control is less robust to small variations in object width and can cause the policy to assume contact falsely. In contrast, DP with direct force prediction tends to output excessive forces. Force control can tolerate slightly smaller forces while still achieving task success, consistent with our earlier analysis of its robustness. However, without timely reactions to tactile feedback, DP often overestimates the required force. Overall, RETAF predicts more accurate and wellregulated grasping forces.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>G. Qualitative Examples</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VII. CONCLUSION AND FUTURE WORK</head><p>In this work, we investigate how explicit force control with tactile feedback benefits learning-based manipulation. We develop TF-Gripper with a force-aware teleoperation device for data collection, and RETAF, a policy framework that decouples force regulation from pose prediction. Across six real-world tasks, force control consistently outperforms position control in grasp stability, and RETAF further improves task performance across base policies. Our evaluation is empirical and limited to the selected tasks. Future work includes analyzing force-versus position-based control theoretically, extending the evaluation to new task categories for task-level generalization, and scaling force-regulated manipulation with large-scale force and tactile data.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Force-Control Accuracy of TF-Gripper</head><p>Low-force accuracy and hysteresis. The PWM-force mapping of TF-Gripper is calibrated with a force gauge at the fingertip (Fig. <ref type="figure" target="#fig_3">4</ref>), so static friction in the transmission is already included in the calibration. The remaining nonlinearity is the direction-dependent hysteresis of the transmission. To quantify it, we measure the fingertip force with the force gauge at commanded forces of 1, 5, and 10 N, during loading (1→5→10 N) and during unloading from 10 N (10→5→1 N), with 10 repetitions each. Table <ref type="table" target="#tab_5">IV</ref> shows the results. During loading, the measured force is within 5% of the command at all three setpoints. With only the loading-direction calibration, unloading shows the hysteresis: the measured force at a commanded 5 N drops to 4.06 N, an error of about 1 N (19%). We therefore calibrate the loading and unloading directions separately. With this bidirectional calibration, the mean error is within 7% at all setpoints, which is on par with the ±10% force repeatability specified for the Robotiq 2F-85 <ref type="bibr" target="#b13">[13]</ref>. Comparison with the Franka Hand at high forces. The Franka Hand cannot apply forces below 30 N <ref type="bibr" target="#b11">[12]</ref>, so it cannot be compared with TF-Gripper in the force range of our tasks (0.5-7 N, Table <ref type="table" target="#tab_2">II</ref>). Its force range overlaps with that of TF-Gripper (0.45-45 N) above 30 N, so we compare the two grippers in this overlapping range. We command 32 N and 35 N on each gripper and measure the fingertip force with the same force gauge, with 10 repetitions per setting (Table <ref type="table" target="#tab_6">V</ref>). The Franka Hand has a larger mean bias (about 1 N below the command) and a smaller standard deviation. TF-Gripper has a smaller mean bias (within 0.4 N) and a larger standard deviation. In this range, the force accuracy of the two grippers is comparable.</p><p>Belt load. The transmission is a toothed HTD-3M timing belt that engages toothed pulleys. The grasping force is transmitted through tooth meshing, not through belt friction. The admissible working tension is approximately 100 N for the 10 mm-wide belt used in TF-Gripper <ref type="bibr" target="#b51">[51]</ref>. The forces in our tasks are at most 10% of this value, and the 45 N maximum output of the gripper stays below half of it. The belt therefore works in a small part of its rated range. We We analyze how the force command changes with the tactile signal around the first contact on Cherry Tomato Pick. At this moment, the gripper goes from free motion to physical interaction, and the force must be adjusted quickly. Fig. <ref type="figure" target="#fig_3">14</ref> shows the force commands aligned with the tactile feedback in human demonstrations and in policy rollouts. In human demonstrations, the force is adjusted right after the tactile signal rises. In rollouts, DP follows the overall trend, but its predictions are noisier. The force predicted by RETAF follows the pattern of the human demonstrations more closely.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Data Diversity in Training and Rollouts</head><p>Fig. <ref type="figure" target="#fig_13">15</ref> shows randomly sampled wrist-view images captured before grasping, from the training data and from the evaluation rollouts. The rollouts cover a similar distribution of object poses and appearances as the training data. The comparison between RETAF and the baselines in the main experiments is therefore made under in-distribution conditions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. RETAF with a VLA Base Policy</head><p>Table VI gives the per-stage results of pairing RETAF with π 0.5 <ref type="bibr" target="#b48">[48]</ref> as the base policy. Each setting is evaluated with 10 rollouts. Without RETAF, π 0.5 reaches the object in most rollouts but often fails to grasp it stably. With RETAF, the stable grasp rate and the task success rate increase on both tasks.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Evaluation Training</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Can RETAF Replace Gripper Action Prediction in the Base Policy?</head><p>We study whether the Force Adaptation Policy can also decide when to grasp. We compare the standard RETAF setting with a variant in which the base policy predicts only the arm pose, and the Force Adaptation Policy predicts both the open/close action and the force. As shown in Table <ref type="table" target="#tab_9">VII</ref>, removing the open/close prediction from the base policy leads to a large performance drop. Without the global view, the Force Adaptation Policy sees only the wrist image and the tactile feedback, and it struggles to infer the task progress and to decide when to grasp. These results suggest that deciding TABLE VI: RETAF with π 0.5 as the base policy. Tasks are evaluated in three stages: Reach (R), Stable Grasp (G), and Task Success (S), with 10 rollouts per setting.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Rigid-Object and Everyday Tasks</head><p>Table <ref type="table" target="#tab_10">VIII</ref> gives the success counts behind Fig. <ref type="figure" target="#fig_11">13</ref>(b). For each task, we collect 50 force-control demonstrations and evaluate each policy with 30 rollouts. Both policies complete the two tasks, and their success rates are similar. A rigid object can be grasped with a wide range of forces, so success depends mainly on the pose precision of the insertion. The absolute success rates are modest because both tasks have tight insertion tolerances. TF-Gripper also works for everyday tasks that do not require force regulation. Fig. <ref type="figure" target="#fig_14">16</ref> shows four examples: putting toys in a basket, putting bread in a toaster, inserting a pen into a holder, and removing a pot lid. These tasks are run with a fixed gripper position or a fixed grasping force, without tactile feedback.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>G. Cross-Gripper Comparison with the Franka Hand</head><p>We test whether the gain of RETAF depends on our hardware by running the same policies on the Franka Hand. A different gripper requires new demonstrations, so a perfectly controlled comparison is not possible. We reduce the other differences as much as we can. Both grippers are mounted on the same Franka arm with the same tool center point, the same wrist camera, and the same fingertips with tactile sensors, so the wrist views are nearly identical (Fig. <ref type="figure" target="#fig_15">17</ref>). Since the Franka Hand cannot regulate small forces, both   Table <ref type="table" target="#tab_11">IX</ref> shows the results on Cherry Tomato Pick with 20 trials per setting. RETAF improves over DP on both grippers, from 7/20 to 13/20 on TF-Gripper and from 4/20 to 11/20 on the Franka Hand. This suggests that the gain of RETAF is not tied to our hardware. TF-Gripper is slightly better than the Franka Hand for both policies. The most noticeable difference between the two grippers in these experiments is the lower actuation latency of TF-Gripper (about 50 ms vs. 70-100 ms for the Franka Hand), which may explain this gap. We also run DP on Block Insertion with position control on both grippers. DP succeeds in 11/20 trials on TF-Gripper and in 9/20 trials on the Franka Hand.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: Gripper position vs. force control on objects with similar appearance but different physical properties. (a) The same type of potato chips but with a small variation in size. (b) The same cherry tomato after two days of softening.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Hardware design of the TF-Gripper. (a) An adapter connects the gripper to a robot and two motors actuate the fingertips along linear rails by pulling a timing belt. (b) The overall TF-Gripper setup. (c) A camera provides a wrist view, with soft fingertips integrated with tactile sensors.</figDesc><graphic coords="3,54.94,119.24,150.05,144.65" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: PWM-force actuation of the TF-Gripper. Left: the PWM command controls the motor rotational torque, which drives the fingertip through the pulley and timing-belt transmission to regulate the applied contact force. Right: the measured PWM-force relationship at the fingertip contact surface, showing the effective grasping force.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Design of the teleoperation device. A VR controller controls the robot's end-effector pose. Two finger rings are connected to the motors; they detect the force applied by the human operator to drive the TF-Gripper.</figDesc><graphic coords="4,158.91,313.64,214.91,118.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: Overview of the RETAF framework. The base policy predicts end-effector pose and gripper open/close from visual and proprioceptive observations at a low frequency. When the gripper closes, the force adaptation policy is activated to predict grasping force at a high frequency using joint attention over wrist-view and tactile inputs.</figDesc><graphic coords="4,71.63,321.79,212.25,97.73" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 8 :</head><label>8</label><figDesc>Fig. 8: Performance of six manipulation tasks measured in three stages: Reach, Stable Grasp, and Task Success. Bars show the mean ± standard error over three seeds. Hatched bars use position control and solid bars use force control.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 9 :Fig. 10 :</head><label>910</label><figDesc>Fig. 9: Ablation study. Left: per-task Grasp/Success rates (mean ± standard error over three seeds, 10 rollouts each). Right: averages over the 3 tasks (arrows: absolute change vs. RETAF). † ViTac-MAE: pretrained tactile encoder added to RETAF.</figDesc><graphic coords="7,485.35,208.30,68.89,71.07" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 11 :</head><label>11</label><figDesc>Fig. 11: (a) Two successful rollouts, where RETAF correctly predicts appropriate forces and achieves stable grasps. (b) Failure cases: (i) When DP predicts force or position, it shows a higher failure rate during the reach-to-target stage than DP predicting open/close actions. (ii) Regardless of the gripper action type, DP often fails to predict accurate end-effector poses. (iii) We observe that DP-position tends to open too wide, causing slip, while (iv) DP-force tends to predict excessive force, leading to object breakage. In contrast, (v) RETAF predicts more appropriate grasping forces.</figDesc><graphic coords="7,416.09,390.81,76.19,78.61" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Fig. 12 :</head><label>12</label><figDesc>Fig. 12: Generalization test on the Chip Pick task. Left: in-distribution chips (A-D). Right: out-of-distribution chips (E-F). Bars show mean ± standard error of Grasp (G) and Success (S) rates over three seeds, with 10 trials per seed.</figDesc><graphic coords="8,54.00,50.06,244.75,165.47" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Fig. 13 :</head><label>13</label><figDesc>Fig. 13: Rigid-object contact-rich tasks. (a) Block Insertion and Peg Insertion. (b) Success rates over 30 rollouts per task.</figDesc><graphic coords="8,89.30,510.49,135.36,240.67" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Fig. 11 (</head><label>11</label><figDesc>Fig. 11(a) provides two qualitative rollout examples of RETAF, where RETAF correctly predicts appropriate forces and achieves stable grasps. Fig. 11(b) illustrates common failure cases. During the reach-to-target stage, DP that predicts positions or forces exhibits a higher failure rate than DP predicting open/close actions; however, predicting open/close does not eliminate failures.In some cases, the grasp succeeds, but the task still fails due to incorrect pose predictions by DP. During grasping, we observe that DP predicting position tends to result in insufficient contact and slipping, consistent with our earlier analysis that position control is less robust to small variations in object width and can cause the policy to assume contact falsely. In contrast, DP with direct force prediction tends to output excessive forces. Force control can tolerate slightly smaller forces while still achieving task success, consistent with our earlier analysis of its robustness. However, without timely reactions to tactile feedback, DP often overestimates the required force. Overall, RETAF predicts more accurate and wellregulated grasping forces.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Fig. 15 :</head><label>15</label><figDesc>Fig. 15: Randomly selected wrist-view images captured before grasping, for four tasks. For each task, we show 15 training samples and 6 rollout frames. Liquid Transfer is not shown because the cup and the tube are mounted on a fixed rig, and its wrist views are largely identical.</figDesc><graphic coords="11,59.37,409.45,225.50,95.41" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_14"><head>Fig. 16 :</head><label>16</label><figDesc>Fig. 16: Everyday tasks performed with TF-Gripper.</figDesc><graphic coords="12,78.48,50.08,195.82,220.52" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_15"><head>Fig. 17 :</head><label>17</label><figDesc>Fig. 17: Cross-gripper setup, shown with the Block Insertion task. TF-Gripper (left) and the Franka Hand (right) are mounted on the same Franka arm with the same tool center point, wrist camera, and tactile fingertips. The insets show the wrist-camera views.</figDesc><graphic coords="12,54.00,343.39,244.78,117.19" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I :</head><label>I</label><figDesc>Mainstream Grippers with Force Control</figDesc><table><row><cell>Gripper</cell><cell>Cross-Robot Compatibility</cell><cell>Force Range (N)</cell><cell>Travel Range (mm)</cell><cell>Price</cell></row><row><cell>Franka Hand [12]</cell><cell>No</cell><cell>30-70</cell><cell>80</cell><cell>˜$2,000</cell></row><row><cell>Robotiq 2F-85 [13]</cell><cell>Yes</cell><cell>20-235</cell><cell>85</cell><cell>˜$5,000</cell></row><row><cell>xArm Gripper G2 [14]</cell><cell>No</cell><cell>10-50</cell><cell>84</cell><cell>˜$2,200</cell></row><row><cell>WSG-50 [15]</cell><cell>Yes</cell><cell>5-80</cell><cell>110</cell><cell>˜$5,600</cell></row><row><cell>OnRobot RG2 [16]</cell><cell>Yes</cell><cell>3-40</cell><cell>110</cell><cell>˜$5,500</cell></row><row><cell>Flexiv Grav [17]</cell><cell>No</cell><cell>1-100</cell><cell>100</cell><cell>˜$6,000</cell></row><row><cell>TF-Gripper (Ours)</cell><cell>Yes</cell><cell>0.45-45</cell><cell>95</cell><cell>˜$150</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE II :</head><label>II</label><figDesc>Task setup and stable-grasp criteria.</figDesc><table><row><cell>Task</cell><cell cols="2">Force (N) Stable-Grasp Criterion</cell></row><row><cell>Tofu Pick</cell><cell>2.0-5.0</cell><cell>No slip/breakage; deformation &lt; 18%.</cell></row><row><cell>Chip Pick</cell><cell>0.9-1.8</cell><cell>No slip/crack.</cell></row><row><cell>Milk Bag Pick</cell><cell>1.0-3.0</cell><cell>No slip/leakage.</cell></row><row><cell>Cherry Tomato Pick</cell><cell>0.5-7.0</cell><cell>No slip/damage; deformation &lt; 23%.</cell></row><row><cell>Liquid Transfer</cell><cell>0.8-3.0</cell><cell>No slip/drop/spill.</cell></row><row><cell>Cherry Tomato Harvest</cell><cell>2.0-5.0</cell><cell>No slip/damage; deformation &lt; 23%.</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head></head><label></label><figDesc>.3%. Removing joint attention lowers the average grasp rate by 18.9%,</figDesc><table><row><cell></cell><cell></cell><cell cols="2">Cherry Tomato Pick</cell><cell cols="2">Liquid Transfer</cell><cell>Chip Pick</cell><cell></cell><cell></cell><cell></cell></row><row><cell>Success Rate (%)</cell><cell>40 60 80 100 20</cell><cell>★</cell><cell>★</cell><cell>★</cell><cell>★</cell><cell>★</cell><cell>★</cell><cell>Method w/o Joints-Attention w/o Tactile Downgrade to 5 Hz Tactile Integrated Value Tactile Contact Distribution</cell><cell cols="2">Grasp (%) Success (%) 41.1 ↓18.9 27.8 ↓26.6 36.7 ↓23.3 20.0 ↓34.4 26.7 ↓33.3 15.6 ↓38.8 36.7 ↓23.3 25.6 ↓28.8 51.1 ↓8.9 38.9 ↓15.5</cell></row><row><cell></cell><cell>0</cell><cell>Grasp</cell><cell>Success</cell><cell>Grasp</cell><cell>Success</cell><cell>Grasp</cell><cell>Success</cell><cell>RETAF (Ours)</cell><cell>60.0</cell><cell>54.4</cell></row><row><cell></cell><cell></cell><cell cols="2">w/o Joints-Attention</cell><cell>Downgrade to 5Hz</cell><cell>Tactile Contact Distribution</cell><cell>w/ ViTac-MAE Encoder  †</cell><cell></cell><cell>w/ ViTac-MAE Encoder  †</cell><cell>61.1 ↑1.1</cell><cell>53.3 ↓1.1</cell></row><row><cell></cell><cell></cell><cell>w/o Tactile</cell><cell></cell><cell>Tactile Integrated Value</cell><cell>RETAF (Ours)</cell><cell>★ = Best in group</cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>TABLE III :</head><label>III</label><figDesc>Data scaling of RETAF: Grasp / Success rates (%) vs. number of demonstrations, 30 rollouts per setting. Task 10 demos 25 demos 50 demos 100 demos Cherry Tomato Pick 30.0 / 6.7 73.3 / 36.7 83.3 / 73.3 90.0 / 80.0 Peg Insertion 36.7 / 6.7 66.7 / 16.7 83.3 / 33.3 96.7 / 46.7</figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>TABLE IV :</head><label>IV</label><figDesc>Measured fingertip force of TF-Gripper (mean ± std over 10 repetitions). The middle group uses only the loading-direction calibration to show the hysteresis. The bottom group uses the bidirectional calibration that TF-Gripper uses in all experiments.</figDesc><table><row><cell>Condition</cell><cell cols="2">Commanded (N) Measured (N)</cell></row><row><cell>Loading (1→5→10 N)</cell><cell>1</cell><cell>0.95 ± 0.06</cell></row><row><cell></cell><cell>5</cell><cell>5.06 ± 0.47</cell></row><row><cell></cell><cell>10</cell><cell>10.22 ± 0.88</cell></row><row><cell>Unloading (10→5→1 N),</cell><cell>5</cell><cell>4.06 ± 0.92</cell></row><row><cell>loading-only calibration</cell><cell>1</cell><cell>0.81 ± 0.19</cell></row><row><cell>Unloading (10→5→1 N),</cell><cell>5</cell><cell>4.98 ± 0.65</cell></row><row><cell>bidirectional calibration</cell><cell>1</cell><cell>1.07 ± 0.08</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>TABLE V :</head><label>V</label><figDesc>Measured fingertip force (mean ± std over 10 repetitions) of TF-Gripper and the Franka Hand at commanded forces in their overlapping range.</figDesc><table><row><cell cols="3">Commanded (N) TF-Gripper (N) Franka Hand (N)</cell></row><row><cell>32</cell><cell>32.36 ± 1.07</cell><cell>31.15 ± 0.55</cell></row><row><cell>35</cell><cell>35.12 ± 1.14</cell><cell>33.94 ± 0.68</cell></row><row><cell cols="3">expect the residual friction and hysteresis to come mainly</cell></row><row><cell cols="3">from the gear train of the actuators and the linear guides,</cell></row><row><cell cols="3">which is what the measurements in Table IV quantify.</cell></row><row><cell cols="3">B. Force and Tactile Dynamics Around Contact</cell></row><row><cell>Contact Start</cell><cell></cell><cell>Contact Start</cell></row></table><note><p>Fig. 14: Force and tactile signals before and after contact in human demonstrations (left) and in rollouts (right), for 10 randomly selected trajectories of Cherry Tomato Pick. The tactile sum is min-max scaled to [0, 1]. The force is scaled to [-1, 1], where values above 0 give the magnitude of the grasping force.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head>Cherry Tomato Pick Chip Pick Cherry Tomato Harvest Tofu Pick</head><label></label><figDesc></figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8"><head></head><label></label><figDesc>+ RETAF 100% 90% 90% 70% 60% 50% when to grasp and regulating the force during contact are two different roles. The first needs the global task context of the base policy, and the second needs fast local feedback.</figDesc><table><row><cell></cell><cell cols="3">Cherry Tomato Pick</cell><cell cols="3">Liquid Transfer</cell></row><row><cell>Method</cell><cell>R</cell><cell>G</cell><cell>S</cell><cell>R</cell><cell>G</cell><cell>S</cell></row><row><cell>π0.5</cell><cell cols="6">80% 30% 20% 60% 20% 20%</cell></row><row><cell>π0.5</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_9"><head>TABLE VII :</head><label>VII</label><figDesc>Ablation on removing the open/close prediction from the base policy, with 10 rollouts per setting. These single-run results are not directly comparable to the threeseed results in Fig.8.</figDesc><table><row><cell></cell><cell></cell><cell>RETAF</cell><cell></cell><cell cols="3">RETAF w/o open/close in base policy</cell></row><row><cell>Task</cell><cell>Reach</cell><cell>Stable Grasp</cell><cell>Task Success</cell><cell>Reach</cell><cell>Stable Grasp</cell><cell>Task Success</cell></row><row><cell>Cherry Tomato Pick</cell><cell>100%</cell><cell>90%</cell><cell>80%</cell><cell>100%</cell><cell>20%</cell><cell>0%</cell></row><row><cell>Liquid Transfer</cell><cell>70%</cell><cell>60%</cell><cell>60%</cell><cell>80%</cell><cell>0%</cell><cell>0%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_10"><head>TABLE VIII :</head><label>VIII</label><figDesc>Task success on the two rigid-object tasks with TF-Gripper, over 30 rollouts per task.</figDesc><table><row><cell>Method</cell><cell>Peg Insertion</cell><cell>Block Insertion</cell></row><row><cell>DP w/ Force</cell><cell>8/30 (26.7%)</cell><cell>11/30 (36.7%)</cell></row><row><cell>RETAF</cell><cell>10/30 (33.3%)</cell><cell>13/30 (43.3%)</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_11"><head>TABLE IX :</head><label>IX</label><figDesc>Cross-gripper comparison on Cherry Tomato Pick under position control, which both grippers support. Values are task success over 20 trials per setting.</figDesc><table><row><cell>Method</cell><cell>TF-Gripper</cell><cell>Franka Hand</cell></row><row><cell>DP</cell><cell>7/20 (35.0%)</cell><cell>4/20 (20.0%)</cell></row><row><cell cols="3">RETAF 13/20 (65.0%) 11/20 (55.0%)</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENTS</head><p>This work was partly supported by <rs type="funder">Delta Electronics Inc.</rs> We acknowledge <rs type="person">Research Computing</rs> at the <rs type="institution">University of Virginia</rs> for providing the computational resources that made the results in this work possible.</p></div>
+			</div>
+			<listOrg type="funding">
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Coding and use of tactile signals from the fingertips in object manipulation tasks</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">S</forename><surname>Johansson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R</forename><surname>Flanagan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nat. Rev. Neurosci</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="345" to="359" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">GelSight: High-resolution robot tactile sensors for estimating geometry and force</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page">2762</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">GelSight Mini</title>
+		<author>
+			<persName><forename type="first">Inc</forename><surname>Gelsight</surname></persName>
+		</author>
+		<ptr target="https://www.gelsight.com/wp-content/uploads/2022/09/GelSightDatasheetGSMini9.20.22b.pdf" />
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">3D ViTac: Learning fine-grained manipulation with visuo-tactile sensing</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Open X-Embodiment: Robotic learning datasets and RT-X models</title>
+		<author>
+			<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Int. Conf. on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Touch in the wild: Learning fine-grained manipulation with a portable visuo-tactile gripper</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Adv. Neural Inf. Process. Syst</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">exUMI: Extensible robot teaching system with action-aware task-agnostic tactile representation</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">ViTaMIn: Learning contact-rich tasks through robot-free visuo-tactile manipulation interface</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.06156</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">CALVIN: A benchmark for languageconditioned policy learning for long-horizon robot manipulation tasks</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Mees</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Hermann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robot. Autom. Lett</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">FreeTacMan: Robot-free visuo-tactile data collection system for contact-rich manipulation</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Yu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2506.01941</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">O3Afford: One-shot 3D object-to-object affordance grounding for generalizable robotic manipulation</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Kang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Product manual: Franka Hand</title>
+		<author>
+			<persName><forename type="first">Franka</forename><surname>Emika</surname></persName>
+		</author>
+		<ptr target="https://download.franka.de/documents/" />
+	</analytic>
+	<monogr>
+		<title level="m">220010 Product%20Manual Franka%20Hand</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>En</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pdf</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">2F-85 and 2F-140 instruction manual for e-series</title>
+		<author>
+			<persName><forename type="first">Robotiq</forename><surname>Inc</surname></persName>
+		</author>
+		<idno>01-20-2025</idno>
+		<ptr target="https://assets.robotiq.com/website-assets/supportdocuments/document/2F-852F-140" />
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note>Instruction Manual e-Series PDF 20190206.pdf</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">"</forename><surname>Ufactory</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Xarm Gripper</surname></persName>
+		</author>
+		<idno>27-12-2025</idno>
+		<ptr target="https://www.ufactory.us/product/ufactory-xarm-gripper" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">WSG-50</title>
+		<author>
+			<persName><surname>Weiss Robotics</surname></persName>
+		</author>
+		<idno>27-12-2025</idno>
+		<ptr target="https://weiss-robotics.com/servo-electric/wsg-series/product/wsg/" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">G</forename><surname>Onrobot</surname></persName>
+		</author>
+		<ptr target="https://onrobot.com/en/products/rg2-finger-gripper" />
+		<imprint>
+			<date type="published" when="2019">2 Adaptive Gripper, 2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Flexiv Grav</title>
+		<author>
+			<persName><surname>Flexiv</surname></persName>
+		</author>
+		<idno>Ac- cessed 27-12-2025</idno>
+		<ptr target="https://www.flexiv.com/products/grav" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robot.: Sci. Syst</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">OpenVLA: An open-source visionlanguage-action model</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">π0: A vision-language-action flow model for general robot control</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Brown</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.24164</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Reactive diffusion policy: Slow-fast visualtactile policy learning for contact-rich manipulation</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ren</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robot.: Sci. Syst</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">A versatile robotic hand with 3D perception, force sensing for autonomous manipulation</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kriegman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">RSS Workshop on Perception and Manipulation Challenges for Warehouse Automation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">ECHO: An open-source, low-cost teleoperation system with force feedback for dataset collection in robot learning</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bazhenov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Satsevich</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.07939</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Tactile-conditioned diffusion policy for force-aware robotic manipulation</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Helmut</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Funk</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2510.13324</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robot.: Sci. Syst</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Fit2Form: 3D generative model for robot gripper form design</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Agrawal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">ToddlerBot: Open-Source ML-Compatible Humanoid Platform for Loco-Manipulation</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2025-09">Sept. 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">OPEN TEACH: A versatile teleoperation system for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Peng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Mobile ALOHA: Learning bimanual mobile manipulation with low-cost whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">Feel the force: Contact-driven learning from humans</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Adeniji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2506.01944</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">In-the-wild compliant manipulation with UMI-FT</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hou</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2601.09988</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Human-inspired robotic grasp control with tactile sensing</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Romano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hsiao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Trans. Robot</title>
+		<imprint>
+			<biblScope unit="volume">27</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="1067" to="1079" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Maintaining grasps within slipping bounds by monitoring incipient slip</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ma</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Int. Conf. on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="3818" to="3824" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">More than a feeling: Learning to grasp and regrasp using vision and touch</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Owens</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robot. Autom. Lett</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="3300" to="3307" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<title level="m" type="main">Tactile-VLA: Unlocking vision-languageaction model&apos;s physical knowledge for tactile generalization</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2507.09160</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">ManiFeel: Benchmarking and understanding visuotactile manipulation policy learning</title>
+		<author>
+			<persName><forename type="first">Q</forename><forename type="middle">K</forename><surname>Luu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Zhou</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2505.18472</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Cable manipulation with a tactile-reactive gripper</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Int. J. Robot. Res</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="1385" to="1401" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">LeTac-MPC: Learning model predictive control for tactile-reactive grasping</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Trans. Robot</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="4376" to="4395" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Learning generalizable vision-tactile robotic grasping strategy for deformable objects via Transformer</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Yu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE/ASME Trans. Mechatronics</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="554" to="566" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">VT-Refine: Learning bimanual assembly with visuo-tactile feedback via simulation fine-tuning</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conf. on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Making sense of vision and touch: Selfsupervised learning of multimodal representations for contact-rich tasks</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Int. Conf. on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="8943" to="8950" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">UniT: Data efficient tactile representation with generalization to unseen objects</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Uppuluri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robot. Autom. Lett</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Tracing energy flow: Learning tactilebased grasping force control to reduce slippage in dynamic object interaction</title>
+		<author>
+			<persName><forename type="first">C.-Y</forename><surname>Kuo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Shin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robot. Autom. Lett</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<author>
+			<persName><surname>Robotis</surname></persName>
+		</author>
+		<idno>08-17-2025</idno>
+		<ptr target="https://emanual.robotis.com/docs/en/dxl/x/xl430-w250/" />
+		<title level="m">Dynamixel XL430-W250-T</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Attention is all you need</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Vaswani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Shazeer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Adv. Neural Inf. Process. Syst</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">On the continuity of rotation representations in neural networks</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Barnes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conf. on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Learning transferable visual models from natural language supervision</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Radford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Int. Conf. on Machine Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">A vision-language-action model with open-world generalization</title>
+		<author>
+			<persName><forename type="first">Physical</forename><surname>Intelligence</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.16054</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="volume">5</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title level="m" type="main">Standard Open SO-100 &amp; SO-101 Arms</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Knight</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Kooijmans</surname></persName>
+		</author>
+		<ptr target="https://github.com/TheRobotStudio/SO-ARM100" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">Adaptive compliance policy: Learning approximate compliance for diffusion guided control</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Liu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.09309</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">Open Length</title>
+		<author>
+			<persName><forename type="first">Mädler</forename><surname>Gmbh</surname></persName>
+		</author>
+		<idno>01-09-2026</idno>
+		<ptr target="https://maedlernorthamerica.com/partshop/neoprene-timing-belt-" />
+	</analytic>
+	<monogr>
+		<title level="m">htd-3m-width-9mm-3m-09-open-length-pn-17110000/, admissible pulling force 90 N</title>
+		<imprint/>
+	</monogr>
+	<note>Neoprene Timing Belt HTD 3M, Width 9 mm</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

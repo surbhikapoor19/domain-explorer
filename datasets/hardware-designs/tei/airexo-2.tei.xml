@@ -1,0 +1,2339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main"></title>
+				<funder ref="#_rfp66S6 #_pdrWM6s">
+					<orgName type="full">National Key Research and Development Project of China</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-08-25">25 Aug 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-08-25">25 Aug 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">922810D10C5704F3EDFE65789EEEE28A</idno>
+					<idno type="arXiv">arXiv:2503.03081v3[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Robotic Manipulation</term>
+					<term>Scalable Data Collection</term>
+					<term>Generalizable Imitation Policy</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Scaling up robotic imitation learning for real-world applications requires efficient and scalable demonstration collection methods. While teleoperation is effective, it depends on costly and inflexible robot platforms. In-the-wild demonstrations offer a promising alternative, but existing collection devices have key limitations: handheld setups offer limited observational coverage, and wholebody systems often require fine-tuning with robot data due to domain gaps. To address these challenges, we present AirExo-2, a low-cost exoskeleton system for large-scale in-the-wild data collection, along with several adaptors that transform collected data into pseudo-robot demonstrations suitable for policy learning. We further introduce RISE-2, a generalizable imitation learning policy that fuses 3D spatial and 2D semantic perception for robust manipulations. Experiments show that RISE-2 outperforms prior state-of-the-art methods on both in-domain and generalization evaluations. Trained solely on adapted in-the-wild data produced by AirExo-2, the RISE-2 policy achieves comparable performance to the policy trained with teleoperated data, highlighting the effectiveness and potential of AirExo-2 for scalable and generalizable imitation learning.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Scaling up generalizable robotic imitation learning in the real world is key to developing robust policies for practical applications <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b6">7]</ref>. While teleoperation is widely used for collecting demonstrations, it requires physical robots to record both observations and actions for robot-centric demonstrations, making it costly and difficult to scale. To address this, recent work explores alternative, low-cost data sources such as human videos <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b56">57,</ref><ref type="bibr" target="#b90">91,</ref><ref type="bibr" target="#b96">97,</ref><ref type="bibr" target="#b98">99,</ref><ref type="bibr" target="#b107">108,</ref><ref type="bibr" target="#b111">112]</ref> and in-the-wild demonstrations <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b28">29,</ref><ref type="bibr" target="#b87">88,</ref><ref type="bibr" target="#b99">100,</ref><ref type="bibr" target="#b114">115]</ref>. These human-centric demonstrations eliminate the need for a robot during collection, reducing costs and improving scalability. Human video approaches typically infer actions via hand or object pose estimation <ref type="bibr" target="#b35">[36,</ref><ref type="bibr" target="#b75">76,</ref><ref type="bibr" target="#b96">97,</ref><ref type="bibr" target="#b112">113]</ref>, while in-the-wild demonstrations use devices that interface human motion with robot-relevant data during task execution.</p><p>Current in-the-wild demonstration devices fall into two main categories: handheld <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b86">87,</ref><ref type="bibr" target="#b87">88,</ref><ref type="bibr" target="#b114">115]</ref> and whole-body devices <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b28">29,</ref><ref type="bibr" target="#b52">53,</ref><ref type="bibr" target="#b99">100]</ref>. Handheld devices are typically designed with endeffectors identical to those of the robot. By equipping both the handheld devices and the robot with in-hand cameras, these methods leverage in-hand observations to ensure visual consistency. However, they face two key issues: (1) reliance on visual SLAM for pose estimation leads to action inaccuracies ( §4.3); and (2) limited camera field of view hinders depth perception during interactions (Appendix C.3). On the contrary, whole-body devices offer more accurate action capture and flexible observations, but they typically require fine-tuning with teleoperated data <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b99">100]</ref>, as in-the-wild demonstrations still exhibit a domain gap compared to real robot data.</p><p>To address these challenges, we present the AirExo-2 system for large-scale in-the-wild demonstration collection and adaptation. As illustrated in Fig. <ref type="figure">1</ref> (left), we introduce demonstration adaptors that align both observations and actions from in-the-wild demonstrations with the robot domain, enabling direct use in imitation learning. On the hardware side, we build upon AirExo <ref type="bibr" target="#b28">[29]</ref> with a redesigned exoskeleton featuring a stronger mechanical structure and improved calibration, enhancing action precision and system robustness. We conduct comprehensive analyses to evaluate the system's efficiency and accuracy in demonstration collection.</p><p>Beyond scaling up in-the-wild demonstration collection, developing a robust policy is key to fully leveraging these demonstrations. We introduce RISE-2, a generalizable policy that fuses 2D and 3D perception, as illustrated in Fig. <ref type="figure">1</ref> (right). RISE-2 outperforms prior imitation policies in both in-domain and generalization settings. Notably, it matches the performance of teleoperated-datatrained policies using only in-the-wild demonstrations collected and adapted by AirExo-2 -without any robot data. Under equivalent data collection time, it even surpasses teleoperated baselines. These results highlight the strong potential of combining AirExo-2 and RISE-2 for scalable, generalizable imitation learning. The hardware and codebase are open-sourced at the project website.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Works</head><p>Scaling up Demonstration Collection. Demonstration data is fundamental to advancing generalizable imitation learning in robotic manipulation. Recent studies on data scaling laws <ref type="bibr" target="#b58">[59]</ref> reveal that imitation learning in robotics follows similar scaling trends observed in natural language processing <ref type="bibr" target="#b48">[49]</ref> and computer vision <ref type="bibr" target="#b34">[35,</ref><ref type="bibr" target="#b76">77]</ref> fields, highlighting the importance of scaling up demonstration collection. Teleoperation is the most direct and widely used approach for collecting real-world robot demonstrations, as it captures data in the robot's native observation domain and action space. However, scaling up teleoperated demonstration collection is challenging, primarily limited by the high cost and infrastructure demands of deploying more robots. Consequently, constructing large-scale teleoperated robotic datasets <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b9">10,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b26">27,</ref><ref type="bibr" target="#b44">45,</ref><ref type="bibr" target="#b51">52,</ref><ref type="bibr" target="#b97">98,</ref><ref type="bibr" target="#b109">110]</ref> requires substantial human labor and physical resources. Moreover, teleoperation is often less intuitive than natural human manipulation, resulting in higher user learning costs <ref type="bibr" target="#b64">[65]</ref> and lower demonstration quality <ref type="bibr" target="#b12">[13]</ref>.</p><p>To overcome these limitations, recent research explores generating <ref type="bibr" target="#b42">[43,</ref><ref type="bibr" target="#b71">72,</ref><ref type="bibr" target="#b104">105,</ref><ref type="bibr" target="#b106">107]</ref> or augmenting <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b39">40,</ref><ref type="bibr" target="#b47">48,</ref><ref type="bibr" target="#b69">70,</ref><ref type="bibr" target="#b102">103]</ref> demonstrations automatically in simulation, which facilitates demonstration collection but often necessitates sim-to-real adaptation for real-world deployment. Other approaches leverage internet-scale human videos for representation learning <ref type="bibr" target="#b1">[2,</ref><ref type="bibr" target="#b66">67,</ref><ref type="bibr" target="#b67">68,</ref><ref type="bibr" target="#b68">69,</ref><ref type="bibr" target="#b72">73,</ref><ref type="bibr" target="#b80">81,</ref><ref type="bibr" target="#b92">93,</ref><ref type="bibr" target="#b117">118]</ref> or policy pre-training <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b11">12,</ref><ref type="bibr" target="#b31">32,</ref><ref type="bibr" target="#b79">80,</ref><ref type="bibr" target="#b108">109,</ref><ref type="bibr" target="#b113">114]</ref>, yet accurately converting 2D human videos into robot demonstrations with 3D trajectories and robot states remains a challenge <ref type="bibr" target="#b70">[71]</ref>. Alternatively, in-thewild data collection uses specialized human-operated devices -such as hand-held grippers <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b86">87,</ref><ref type="bibr" target="#b87">88,</ref><ref type="bibr" target="#b114">115]</ref>, cameras <ref type="bibr" target="#b22">[23,</ref><ref type="bibr" target="#b103">104]</ref>, VR/AR systems <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b49">50,</ref><ref type="bibr" target="#b52">53]</ref>, motion-capture gloves <ref type="bibr" target="#b99">[100]</ref>, and exoskeletons <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b52">53]</ref> -to translate human motions into robot actions.</p><p>Learning from In-the-Wild Demonstrations. Despite promising in scalability, the kinematic gap and the visual gap pose obstacles in learning from in-the-wild demonstrations <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b52">53]</ref>. <ref type="bibr" target="#b0">(1)</ref> The kinematic gap refers to discrepancies in motion translation between humans and robots, which can lead to inaccuracies in action execution. This gap can be addressed through visual or mechanical methods. Visual approaches typically use off-the-shelf pose estimation frameworks from commercial devices <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b18">19,</ref><ref type="bibr" target="#b22">23,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b49">50,</ref><ref type="bibr" target="#b86">87,</ref><ref type="bibr" target="#b87">88,</ref><ref type="bibr" target="#b99">100,</ref><ref type="bibr" target="#b103">104]</ref> or structure-from-motion <ref type="bibr" target="#b85">[86,</ref><ref type="bibr" target="#b114">115]</ref> to extract robot poses from demonstrations. In contrast, mechanical approaches <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b52">53]</ref> employ kinematically isomorphic devices that capture robot poses through angle encoder readings. (2) The visual gap, on the other hand, arises from the presence of specialized devices and human hands in the captured visual data, whereas robot demonstrations must accurately reflect the robot itself. Hand-held devices <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b86">87,</ref><ref type="bibr" target="#b87">88,</ref><ref type="bibr" target="#b114">115]</ref> mitigate this by using in-hand cameras and the same end-effector during deployment to maintain visual consistency. Other methods address the visual gap by incorporating robot demonstrations for fine-tuning or co-training <ref type="bibr" target="#b22">[23,</ref><ref type="bibr" target="#b28">29,</ref><ref type="bibr" target="#b49">50,</ref><ref type="bibr" target="#b103">104]</ref>, or by employing human-in-the-loop strategies to collect corrective behaviors during policy deployment <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b99">100]</ref>.</p><p>Generalizable Manipulation Policy. Direct learning from in-the-wild demonstrations highlights the need for a generalizable manipulation policy capable of transferring learned skills to the robot during real-world deployment. A generalizable policy can adapt to new domains or environments, even with limited training data from restricted domains <ref type="bibr" target="#b110">[111]</ref>, and should generalize across variations in camera perspectives, backgrounds, objects, and embodiments. While many behaviorcloning-based robotic manipulation policies <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b29">30,</ref><ref type="bibr" target="#b30">31,</ref><ref type="bibr" target="#b77">78,</ref><ref type="bibr" target="#b89">90,</ref><ref type="bibr" target="#b122">123]</ref> perform well in-domain, they often fail in out-of-distribution scenarios, leading to compounded errors and task failures <ref type="bibr" target="#b101">[102,</ref><ref type="bibr" target="#b110">111]</ref>. Large-scale pre-training on real-world robot demonstration data can improve generalization <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b8">9,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b44">45,</ref><ref type="bibr" target="#b54">55,</ref><ref type="bibr" target="#b61">62,</ref><ref type="bibr" target="#b73">74,</ref><ref type="bibr" target="#b105">106,</ref><ref type="bibr" target="#b126">127]</ref>, but it does not fully address the inherent limit of the policy in adapting across diverse domains. Two promising approaches for improving generalization involve leveraging 3D perceptions <ref type="bibr" target="#b15">[16,</ref><ref type="bibr" target="#b29">30,</ref><ref type="bibr" target="#b30">31,</ref><ref type="bibr" target="#b101">102,</ref><ref type="bibr" target="#b115">116]</ref> to enhance environmental understanding and using 2D foundation models <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b59">60,</ref><ref type="bibr" target="#b78">79,</ref><ref type="bibr" target="#b110">111,</ref><ref type="bibr" target="#b118">119]</ref> to enrich the policy's recognition of complex object and scene information. Recent work <ref type="bibr" target="#b46">[47,</ref><ref type="bibr" target="#b120">121,</ref><ref type="bibr" target="#b121">122]</ref> combines these approaches to further enhance policy performance, though challenges remain in effectively integrating these strategies for broader generalization across diverse manipulation domains.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Method</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">AirExo-2: Efficiently Collecting and Adapting In-the-Wild Demonstrations</head><p>As discussed in §2, eliminating the need for physical robots enables low-cost and scalable in-thewild demonstration collection. However, visual and kinematic discrepancies introduce significant challenges for directly utilizing such data. To overcome this, our objective is to efficiently convert in-the-wild demonstrations into pseudo-robot demonstrations suitable for training real-world manipulation policies. This requires (1) robust hardware for reliable data collection, (2) accurate motion tracking, and (3) photo-realistic visual adaptation to support effective policy learning.</p><p>To this end, we present the AirExo-2 system, designed to efficiently collect and adapt in-the-wild demonstrations for downstream manipulation policy training, as illustrated in Fig. <ref type="figure" target="#fig_0">2</ref>. Unlike prior approaches that circumvent the visual gap through in-hand cameras <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b86">87,</ref><ref type="bibr" target="#b87">88,</ref><ref type="bibr" target="#b114">115]</ref> or rely on pre-training and fine-tuning paradigm <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b22">23,</ref><ref type="bibr" target="#b28">29,</ref><ref type="bibr" target="#b49">50,</ref><ref type="bibr" target="#b99">100,</ref><ref type="bibr" target="#b103">104]</ref>, our system explicitly bridges this gap by converting in-the-wild observations into pseudo-robot views using visual adaptors. Combined with accurate motion tracking enabled by the mechanical design, this semi-automatic adaptation process better aligns demonstrations with robot deployment conditions, allowing policies to directly transfer to real-world robot platform. Please refer to Appendix A for implementation details.</p><p>Hardware. As shown in Fig. <ref type="figure" target="#fig_0">2</ref> (left), we upgrade the AirExo design <ref type="bibr" target="#b28">[29]</ref> with aluminum profiles to improve structural robustness and motion tracking precision. To facilitate subsequent demonstration adaptations, we design the AirExo-2 to have a 1:1 scale and maintain kinematic isomorphism with the robotic arm. A mobile base is added to support data collection in diverse environments, and a dedicated calibration process is introduced to ensure accurate motion capture. Details of the  hardware design and calibration procedure are provided in Appendix A.1 and Appendix A.2, respectively. The system retains the low-cost advantage of the original AirExo, with the dual-arm platform (excluding the camera) priced at just $600.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Operation</head><p>Operation Space Adaptor. Following <ref type="bibr" target="#b101">[102,</ref><ref type="bibr" target="#b116">117]</ref>, we project all states and actions into the global camera coordinate -a universal coordinate frame between the AirExo-2 and robot platform.</p><p>Image Adaptor. As shown in Fig. <ref type="figure" target="#fig_0">2</ref> (top), we convert in-the-wild image into pseudo-robot image by (1) inpainting human-related regions -including hands and AirExo-2 -and (2) overlaying it with the generated robot image. Leveraging the joint encoder readings, calibration results, and the joint mapping between AirExo-2 and the robot, we render RGB-D and mask images of both systems in Open3D <ref type="bibr" target="#b123">[124]</ref>. The rendered AirExo-2 mask is merged with the hand mask obtained via SAM-2 <ref type="bibr" target="#b81">[82]</ref> to localize human-related areas, which are then inpainted using ProPainter <ref type="bibr" target="#b124">[125]</ref>. Inspired by <ref type="bibr" target="#b13">[14]</ref>, the rendered robot image is refined via ControlNet-guided Stable Diffusion <ref type="bibr" target="#b82">[83,</ref><ref type="bibr" target="#b119">120]</ref> and composited onto the inpainted image to generate the final photo-realistic pseudo-robot image.</p><p>Depth Adaptor. As shown in Fig. <ref type="figure" target="#fig_0">2</ref> (bottom), we first capture a universal reference depth of the empty workspace, and combine it with the static object depth from the first frame to form a reference depth for each demonstration. Guided by the combined mask from the image adaptor, we inpaint human-related regions in the depth map with the reference depth to maintain spatial consistency. The adapted depth is obtained by merging the inpainted depth with the rendered robot depth.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations</head><p>Although in-the-wild demonstrations are adapted into pseudo-robot demonstrations, domain gaps -such as differences in camera viewpoints -still persist. To effectively learn from such data, a generalizable policy is required. As discussed in §2, 3D perception provides view-invariant geometric information, while 2D foundation models offer rich semantic understanding from large-scale pretraining. To leverage the complementary strengths of both, we introduce RISE-2, a generalizable policy that integrates 3D spatial perception with 2D semantic features for robust robotic manipulation. As illustrated in Fig. <ref type="figure" target="#fig_1">3</ref>, the RISE-2 policy consists of a sparse encoder for 3D features, a dense encoder for 2D features, a spatial aligner for feature fusion, and an action generator that maps fused features to actions.  encodes point clouds using raw color information to capture both semantic and geometric cues, but it struggles to disentangle coordinate shifts from color variations. RISE-2 inherits the sparse 3D encoder from RISE, but removes color input to focus purely on geometric features. Formally, the sparse encoder E s : (D, K) → (F g , C g ), maps a depth image D and camera intrinsics K to sparse geometric features F g , along with the corresponding seed point coordinates C g = {c i g ∈ P} after network down-sampling. The encoder adopts a ResNet-like architecture <ref type="bibr" target="#b32">[33]</ref> built on MinkowskiEngine <ref type="bibr" target="#b19">[20]</ref>, enabling efficient sparse feature extraction and supporting real-time policy execution.</p><p>Dense Encoder. A generalizable policy requires rich semantic features to understand the scene, while the low-quality texture of point cloud data poses a challenge to this demand. Hence, RISE-2 adopts a dense 2D encoder to focus on semantic understanding based on the color image. Formally, the dense encoder E d : (I, D, K) → (F s , C s ) processes the color image I into semantic feature map F s = { f i s } densely organized in the 2D form of shape h × w, along with its reference 3D coordinates C s = {c i s }, calculated by applying 2D adaptive average pooling to size h × w on the point cloud generated from the depth map D and camera intrinsics K. One key advantage of the dense encoder is its compatibility with 2D foundation models, which provides highly generalizable visual representations across diverse tasks and domains <ref type="bibr" target="#b110">[111]</ref>. We implement E d using DINOv2 <ref type="bibr" target="#b74">[75]</ref> fine-tuned with LoRA <ref type="bibr" target="#b41">[42]</ref>, enhancing the robustness and adaptability of the policy in capturing contextual relationships within the environment. Spatial Aligner. RISE-2 extracts geometric and semantic features using separate encoders, posing a challenge for feature fusion from different domains. A straightforward solution is to concatenate the aggregated feature vectors, but this discards fine-grained local information critical for precise perception. An alternative <ref type="bibr" target="#b120">[121,</ref><ref type="bibr" target="#b121">122]</ref> upsamples F s to match the resolution of the input image I, projects it onto the point cloud, and then downsamples to align with the seed points C g . However, this process is computationally expensive and reduces the efficiency of policy training and deployment. Instead, RISE-2 utilizes a spatial aligner to efficiently fuse two kinds of features based on their 3D coordinates C g and C s . For each point c i g ∈ C g output by the sparse encoder E s , we compute its M nearest neighbors</p><formula xml:id="formula_0">N i = {n i 1 , n i 2 , • • • , n i M } ⊆ C s from</formula><p>the coordinates output by the dense encoder E d . The aligned semantic feature f i s * of c i g is computed by weighted spatial interpolation:</p><formula xml:id="formula_1">f i s * = Σ M j=1 f j s /dist(c i g , n i j ) Σ M j=1 1/dist(c i g , n i j ) ,<label>(1)</label></formula><p>where dist(c i , c j ) denotes the Euclidean distance between c i and c j . Then, the aligned feature for point c i s is obtained by concatenation, i.e., f i = Concat( f i g , f i s * ). By aligning the seed points C g Collect Toys</p><formula xml:id="formula_2">1 2 3 4</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Lift Plate Open Lid Close Lid</head><p>Success Rate (%)  with the dense semantic feature map F s through their 3D coordinates, we can accurately retrieve fine-grained semantic features at arbitrary locations. The fused features are then aggregated into high-level sparse representations using sparse convolution layers <ref type="bibr" target="#b19">[20]</ref>. Visualization of the weighted spatial interpolation applied to the 2D feature map is provided in Appendix B.3.</p><note type="other">ACT</note><p>Action Generator. RISE-2 utilizes a decoder-only transformer <ref type="bibr" target="#b95">[96]</ref> to map point tokens with sparse positional encoding <ref type="bibr" target="#b101">[102]</ref> to the latent feature, which conditions a diffusion head <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b36">37,</ref><ref type="bibr" target="#b45">46]</ref> to generate the action chunk <ref type="bibr" target="#b122">[123]</ref>. Actions are represented in the camera frame for cross-scene consistency, with translations in absolute coordinates and rotations in the 6D format <ref type="bibr" target="#b125">[126]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Experiments</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Policy Evaluation: RISE-2</head><p>Setup. To evaluate the performance of policies in both in-domain and generalization settings, we design 4 tasks in Fig. <ref type="figure" target="#fig_3">4</ref> and collect 50 demonstrations for each task using teleoperation <ref type="bibr" target="#b28">[29]</ref>. We compare RISE-2 against several representative policies based on 2D images or 3D point clouds, including ACT <ref type="bibr" target="#b122">[123]</ref>, Diffusion Policy <ref type="bibr" target="#b17">[18]</ref>, CAGE <ref type="bibr" target="#b110">[111]</ref>, RISE <ref type="bibr" target="#b101">[102]</ref>, and π 0 <ref type="bibr" target="#b6">[7]</ref>. Additionally, we include a RISE-2 variant with the dense encoder implemented with an ImageNet-pretrained <ref type="bibr" target="#b21">[22]</ref> ResNet-18 <ref type="bibr" target="#b32">[33]</ref>, denoted as RISE-2 (ResNet-18). Please refer to Appendix C.1 for details.</p><p>In-Domain Evaluation. As shown in Fig. <ref type="figure" target="#fig_3">4</ref>, RISE-2 significantly outperforms previous stateof-the-art imitation policies in average success rate across 4 tasks, demonstrating its effectiveness in handling diverse manipulation challenges. On tasks requiring precise motion execution, such as Lift Plate and Open Lid, RISE-2 achieves superior accuracy in predicting fine-grained actions, consistently surpassing all baselines. The performance gain over RISE <ref type="bibr" target="#b101">[102]</ref> highlights the benefits of using separate 2D and 3D encoders with spatial feature alignment. Further improvements from RISE-2 (ResNet-18) to RISE-2 (DINOv2) underscore the value of leveraging diverse knowledge from visual foundation models <ref type="bibr" target="#b74">[75]</ref> in robotic manipulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Method</head><p>In  Learning from Pseudo-Robot Demonstrations. Previous experiments have demonstrated that RISE-2 is a generalizable policy, making it well-suited for learning from in-the-wild demonstrations collected and processed by AirExo-2. In this evaluation, we utilize AirExo-2 to collect an equal number of in-the-wild demonstrations and convert them into pseudo-robot demonstrations. These demonstrations are then used to train the RISE-2 policy, which is deployed on a real robot without further fine-tuning. As shown in Fig. <ref type="figure" target="#fig_4">5</ref>, the policy achieves satisfactory success rates on all tasks, with only a slight performance drop compared to the policy trained on teleoperated demonstrations. This highlights the ability of the AirExo-2 system to collect and adapt high-quality demonstrations suitable for training downstream imitation policies. Please refer to Appendix C.4 for additional results of the RISE policy <ref type="bibr" target="#b101">[102]</ref>.  Complex Task. We evaluate the AirExo-2 system and the RISE-2 policy on the challenging, long-horizon, and contact-rich task Serve Steak. Using 50 in-the-wild demonstrations collected and adapted by AirExo-2, the RISE-2 policy achieves a decent 50% overall success rate, with strong performance even in the contactrich Scoop Steak phase, as shown in Fig. <ref type="figure" target="#fig_5">6</ref>. This demonstrates the effectiveness of AirExo-2 in capturing accurate, fine-grained actions and the ability of RISE-2 to accomplish complex tasks without requiring robot data. Combined with the scalability analysis in §4.3, increasing the number of in-the-wild demonstrations is expected to further boost performance. These results highlight the strong synergy between scalable, high-quality demonstration collection by AirExo-2 and generalizable RISE-2 policy learning, paving the way for efficient and adaptable robotic systems in realworld environments. Ablation on Visual Adaptors. We use the Collect Toys task to highlight the importance of the demonstration adaptor for learning from in-the-wild data. As shown in Tab. 2, removing visual adaptors significantly reduces performance, revealing a substantial visual gap between in-the-wild and robot demonstrations. These results also validate the quality of AirExo-2 pseudo-robot demonstrations for training high-performing policies. Notably, RISE-2 without adaptors still performs comparably to RISE <ref type="bibr" target="#b101">[102]</ref> with adaptors, demonstrating its strong generalization across embodiments. User Study. We compare three demonstration collection methods: end-effector pose teleoperation using a haptic device <ref type="bibr" target="#b26">[27]</ref>, joint-space teleoperation via AirExo <ref type="bibr" target="#b28">[29]</ref>, and in-the-wild collection with AirExo-2. Twenty participants (14 men, 6 women, aged 21-35) of varying expertise levels perform the Collect Toys task on all three platforms in randomized order, with each trial consisting of a 3-minute familiarization and a timed demonstration collection. After completing all trials, participants fill out a questionnaire to provide feedback on three collection methods. From the results in Tab. Action Accuracy. Accurate actions are essential for learning reliable policies from in-the-wild demonstrations. Unlike handheld devices such as UMI <ref type="bibr" target="#b18">[19]</ref>, which use visual SLAM for trajectory estimation, AirExo-2 leverages its mechanical structure and forward kinematics for more precise motion tracking. As shown in Tab. 4, it achieves significantly lower translation errors across 3 tracks (please refer to Appendix C.2 for details about accuracy evaluations), confirming its reliability for high-fidelity motion capture. Scalability Analysis. We compare the scalability and effectiveness of AirExo-2 in-the-wild data collection with traditional teleoperation data collection in Fig. <ref type="figure" target="#fig_6">7</ref>. Given the same collection time, AirExo-2 yields higher demonstration throughput (analogous to the findings in the previous user study) with lower costs ($0.6k per AirExo-2 system versus approximately $60k per teleoperation platform with robots), making it a more scalable solution to demonstration collection. Moreover, using the demonstrations collected under the same time, policies trained on AirExo-2 demonstrations outperform those trained on teleoperation data, underscoring the value of adapted pseudo-robot demonstrations for efficient and effective imitation learning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusion</head><p>This paper introduces AirExo-2, a novel system designed for scalable in-the-wild demonstration collection and adaptation using low-cost exoskeletons. By incorporating several adaptors, AirExo-2 enables the visual and kinematic transformation of in-the-wild demonstrations into pseudo-robot demonstrations, which can then be directly applied to downstream imitation learning tasks. We also propose a generalizable policy, RISE-2, which effectively integrates both 2D and 3D perception, demonstrating exceptional performance in both in-domain and generalization scenarios.</p><p>Further experiments on a variety of tasks demonstrate that when trained exclusively on pseudorobot demonstrations generated by the AirExo-2 system -without using any robot data -the policy achieves satisfactory performance during zero-shot deployment on a real-world robot platform, even for the complex, long-horizon, and contact-rich task Serve Steak. This highlights the potential of combining AirExo-2 and RISE-2 as a scalable and promising alternative to traditional teleoperation-imitation pipelines, providing a more efficient, cost-effective solution for scalable, generalizable robotic imitation learning. Together, these results open new possibilities for transferring manipulation skills from in-the-wild environments to real robots, without the need for extensive robot-centric data collection.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Limitations and Future Works</head><p>While we utilize the proposed demonstration adaptor to visually transform in-the-wild demonstrations collected by AirExo-2 into pseudo-robot demonstrations, these transformed demonstrations are primarily useful for generalizable policies. To enhance the applicability of the pseudo-robot demonstrations to a broader range of policies, future work could explore the integration of demonstration augmentation methods, such as novel view synthesis <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b84">85,</ref><ref type="bibr" target="#b93">94,</ref><ref type="bibr" target="#b94">95]</ref>, into the adaptation process to improve the diversity of the demonstrations, making them more versatile for various policy learning.</p><p>As demonstrated by several works <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b40">41,</ref><ref type="bibr" target="#b53">54,</ref><ref type="bibr" target="#b114">115]</ref>, the in-hand image is a semi-unified observation modality across different embodiments. Our case study in Appendix C.3 also reveals that combining in-hand observations can strengthen the performance of various 2D policies. However, the current AirExo-2 system does not include in-hand cameras. Although we have designed connectors to integrate them with the exoskeleton, calibrating the in-hand cameras with the exoskeleton remains challenging, making it difficult to adapt the in-hand images into the robot domain. Future work could explore effective methods for adapting in-hand images collected by AirExo-2 to the robot domain, or investigate strategies for leveraging the semi-unified in-hand observations in policy design.</p><p>The current AirExo-2 system only supports parallel grippers as end-effectors, limiting its applicability in more dexterous tasks. Future work could integrate the AirExo-2 system with dexterous hands <ref type="bibr" target="#b83">[84,</ref><ref type="bibr" target="#b88">89]</ref> and their corresponding exoskeletons <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b27">28]</ref>, enabling more complex manipulation capabilities and expanding the range of tasks the system can effectively perform. Moreover, adding additional sensors to the AirExo-2 system for recording other observation modalities -such as force/torque <ref type="bibr" target="#b33">[34,</ref><ref type="bibr" target="#b62">63]</ref>, tactile <ref type="bibr" target="#b60">[61]</ref>, and sound <ref type="bibr" target="#b63">[64]</ref> -can also be explored in the future.</p><p>European standard aluminum profiles, providing significantly higher strength at a very low cost.</p><p>For the joints, the outer shell is 3D-printed using PLA-CF, a carbon fiber-reinforced PLA material with higher hardness. Inside the joint, larger bearings are used to further enhance structural rigidity.</p><p>Together with the improved links, the hardware upgrade significantly increases the overall structural rigidity of AirExo-2, making the exoskeleton more durable, and thereby improving system accuracy.</p><p>Hollow Rotating Disc and Side-Mounted Encoder (H5). As shown in Fig. <ref type="figure">8</ref>, this design features an encoder mounted on the side of the joint, which uses a gear mechanism to translate the rotational angle of the rotating disc into encoder readings. hollow disc design allows wires to pass through, preventing them from stretching during rotation and thereby extending their lifespan. Additionally, the side-mounted encoder simplifies maintenance, enabling easy debugging and replacement without the need to disassemble the joint.</p><p>Joint with Angle Limit and Adjustable Friction (H2). This structure consists of a rotating disc with a grooved track and a friction pad that can be embedded into the track. Together, they allow for adjustment of the limiting angle, ensuring that the motion range of the AirExo-2 joint exactly aligns with the corresponding joint range of the robot. As illustrated in Fig. <ref type="figure">8</ref>, the rotating disc, pre-joint, and post-joint are connected through bearings, allowing the rotational motion of the joint to be directly transmitted to the track. For demonstration collection, excessive or insufficient friction in the rotation of the joints is undesirable. Hence, the friction force of the joint in AirExo-2 can be adjusted by turning the screw on the outer shell, which compresses the friction pad. This design ensures optimal friction for comfortable and accurate data collection.</p><p>Smooth Gripper Control (H4). Following <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b62">63]</ref>, the gripper of AirExo-2 incorporates a linear guide, with the fingers mounted on a sliding block. This design allows for smoother opening and closing of the gripper, ensuring it operates seamlessly under clamping forces without any stalling.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Mobile Data Collection Platform (H3).</head><p>Portability is crucial for in-the-wild data collection. However, to address the issue of base movement caused by the body motion of the operator, we mount AirExo-2 on a mobile aluminum profile stand, as shown in Fig. <ref type="figure">8</ref>. This setup ensures stability of the base during demonstration collection while maintaining the flexibility needed for mobility, enabling large-scale demonstration collection in real-world environments. An Intel RealSense D415 camera is set up on the top of the mobile platform to capture global observations. We also designed two optional camera mounts (though not used in this paper) for the future integration of in-hand cameras on the top of both grippers.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.2 Calibration</head><p>The AirExo-2 system requires two types of calibration simultaneously: (1) aligning the zero positions of each joint with the corresponding robot joint, and (2) determining the transformation between the global camera and the AirExo-2 base. To address these challenges, we propose a twostage calibration process.</p><p>Initial Calibration. For initial calibration, the former calibration can be achieved by manually adjusting the joints to approximate the zero position using specialized 3D-printed tools and reading the encoder values, obtaining { qleft calib , qright calib }. The latter calibration can be done by attaching an ArUco calibration marker board with a known position on the base T base marker and performing optical calibration using OpenCV <ref type="bibr" target="#b7">[8]</ref>, obtaining T camera marker . Thus, the transformation can calculated as </p><p>However, this approach introduces errors due to human observation, calibration board misalignment, and optical inaccuracies. In a chained system like AirExo-2, these errors may propagate and amplify across joints, leading to significant cumulative inaccuracies in the end-effector pose. Therefore, finegrained calibration is essential to ensure precise and consistent alignment between AirExo-2 and the camera frames during demonstration collection.</p><formula xml:id="formula_4">RGB Image 𝐼 ! Depth Image 𝑑 ! AirExo-2 Mask 𝑀 ! " Depth Mask 𝑀 ! # Rendered AirExo-2 Mask 𝑀 $ ! " Rendered AirExo-2 Depth 𝑑 % ! SAM2 SAM2 Optimization Objective AirExo-2 Joint Forward Kinematics &amp; Camera Projection Differentiable Rendering 𝑞 ! $%&amp;' 𝑞 ! ()*+'</formula><p>Joint 𝑞 ,-$).</p><p>$%&amp;' , 𝑞 ,-$).</p><p>()*+'</p><p>𝑻 .-/% ,-0%(-</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Camera</head><p>Mask Apply Calibration via Differentiable Rendering. In the second stage, inspired by prior works <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b38">39,</ref><ref type="bibr" target="#b65">66]</ref>, we use differentiable rendering <ref type="bibr" target="#b50">[51]</ref> to refine the initial calibration. Training samples are obtained from a single human play trajectory with AirExo-2. Using the joint states and calibration parameters, we render the system mask and depth via a differentiable rendering engine <ref type="bibr" target="#b57">[58]</ref>. Calibration parameters are optimized by minimizing discrepancies between the rendered and annotated system masks, as well as between the rendered and observed depths. Pseudo-ground-truth masks are manually annotated with SAM-2 <ref type="bibr" target="#b81">[82]</ref>. This iterative refinement compensates for errors that accumulate across joints, ultimately improving the overall accuracy.</p><p>Specifically, we define p, the calibration parameters to be optimized, as</p><formula xml:id="formula_5">p def = {∆t camera base , r camera base , ∆q left calib , ∆q right calib }<label>(3)</label></formula><p>where parameters, except for the base-to-camera rotation, are represented as deltas relative to the initial calibration results. The base-to-camera rotation is expressed in a 6D format <ref type="bibr" target="#b125">[126]</ref>. Thus, the final calibration results can be calculated as</p><formula xml:id="formula_6">T camera base = tcamera base + ∆t camera base | r camera base ,<label>(4)</label></formula><formula xml:id="formula_7">q type calib = qtype calib + ∆q type calib , type ∈ [left, right],<label>(5)</label></formula><p>and the initial parameter values are set as</p><formula xml:id="formula_8">p 0 = {0, rcamera base , 0, 0}<label>(6)</label></formula><p>For the optimization process, we first record a single in-the-wild play trajectory, in which the human operator uses the AirExo-2 to adopt various poses. During trajectory recording, ensure that all parts of the AirExo-2 remain above the human hands and arms from the camera's perspective.</p><p>After data collection, we sample approximately 40 image-joint pairs from the trajectory, denoted as</p><formula xml:id="formula_9">{I i , d i , q left i , q right i } N c i=1</formula><p>, where N c represents the total number of training samples for calibration, and I i and d i are the RGB and depth images of the i-th sample, respectively. Subsequently, we utilize SAM-2 <ref type="bibr" target="#b81">[82]</ref> to annotate the AirExo-2 mask M a i and the depth mask M d i ⊆ M a i for each sample i, as shown in Fig. <ref type="figure" target="#fig_8">9</ref>. The first mask provides supervision for the rendered AirExo-2 mask, while the second mask is used to select the valid depth information that serves as the supervision signal.</p><p>The differentiable rendering engine Redner <ref type="bibr" target="#b57">[58]</ref> is employed to render the AirExo-2 mask Ma i and AirExo-2 depth di using the calibration results and joint information:</p><formula xml:id="formula_10">Ma i , di = R(p; q left i , q right i , T camera base , qleft , qright ),<label>(7)</label></formula><p>where the rendering engine R(p; • • • ) computes the gradients of the calibration parameters p during the rendering process, and T camera base , qleft , qright represent the initial calibration results. The rendered AirExo-2 mask Ma i is supervised by the human-annotated pseudo-AirExo-2 mask M a i , and the rendered AirExo-2 depth di is supervised by the camera depth d i within the region of the human-annotated depth mask M d i . The depth mask ensures that only accurate depth information contributes to the loss. Thus, the objective can be written as:</p><formula xml:id="formula_11">L (p) = 1 N c N c ∑ i=1 β • M a i -Ma i 2 + d i -di 2 • M d i ,<label>(8)</label></formula><p>where β represents the weighting coefficient, and • denotes the mask-apply operation. In practice, we set β = 5, use N c = 40 samples for optimization, and employ the Adam optimizer <ref type="bibr" target="#b55">[56]</ref> with a learning rate of 10 -4 for 1000 iterations to fine-tune the calibration results.  <ref type="bibr" target="#b24">25</ref> 14.0 ±2.9</p><p>Table <ref type="table">5</ref>: Calibration Analysis Results. Using our proposed twostage calibration, we achieve higher accuracy than both initial calibration and human annotations. Including depth as additional supervision also helps the optimization process convergence.</p><p>Calibration Analysis. Precise calibration is vital for accurate action tracking. In addition to our proposed full two-stage calibration method, we evaluate three alternatives: (1) initial calibration, using first-stage results without refinement; (2) human annotation, where a user manually adjusts calibration parameters via a real-time GUI; and (3) two-stage calibration (mask only), which refines calibration using only mask differences as supervision. As shown in Tab. 5, our proposed full two-stage method achieves the highest accuracy, with a 0.78% mask difference and 14.0 mm depth error. While depth errors are affected by sensor noise and cannot fully reflect action accuracy (please refer to §4.3 for action accuracy analysis), the results confirm the benefits of modeling 3D information through differentiable rendering for accurate calibration. Notably, human annotation even performs worse than initial calibration due to its reliance on 2D visual cues, which limits depth estimation accuracy.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3 Visual Adaptors</head><p>Semi-Automatic SAM-2 Annotations. In the image adaptor, we initially annotate the hand mask (and, if visible, the head mask) manually using SAM-2 <ref type="bibr" target="#b81">[82]</ref>. After a few annotations on approximately 50 scenes, we can fine-tune SAM-2 on human-annotated samples, enabling automated labeling. This significantly reduces human effort and streamlines the demonstration adaptation process, making it nearly fully automated.</p><p>ControlNet Training. We train a ControlNet <ref type="bibr" target="#b119">[120]</ref> based on the Stable Diffusion 1.5 <ref type="bibr" target="#b82">[83]</ref> model to generate photo-realistic robot images from rendered robot images. To collect training samples, we use teleoperation to gather a small amount of play data, where the robot is teleoperated to move randomly within an empty workspace while recording RGB-D images and corresponding joint states. This ensures a diverse dataset of robot arm configurations, free from occlusions or distractions.</p><p>Notably, these training samples are platform-specific but task-invariant, meaning they only need to be collected once per robot platform, and the trained ControlNet can be used across all tasks. This also opens up the possibility of directly transforming our in-the-wild demonstrations to other robotic arms without the need to design new exoskeletons that match specific robots.</p><p>For training, we use a batch size of 88 and a learning rate of 10 -5 , while keeping other hyperparameters at their default settings. We use 50 DDPM sampling steps <ref type="bibr" target="#b36">[37]</ref> with a guidance scale of 9.0 <ref type="bibr" target="#b37">[38]</ref>. The prompt for generating robot images for our robot platform is displayed as follows.</p><p>Prompt: robotic arms, dual arm, industrial robotic manipulator, metallic silver color, mechanical joints, precise mechanical details, gripper end effector, high-quality photo, photorealistic, clear and sharp details</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.4 Discussions</head><p>Hardware Improvements over AirExo <ref type="bibr" target="#b28">[29]</ref>. We improved both the repairability and accuracy of the system to enable scalable, high-quality data collection. In terms of repairability, relocating networks are detailed in Tab. 6. The transformer in action generator contains 4 blocks, in which we set d model = 512 and d ff = 2048 following <ref type="bibr" target="#b101">[102]</ref>. The channel number of the readout token is 512.</p><p>The diffusion head adopts a CNN implementation <ref type="bibr" target="#b17">[18]</ref> with 100 denoising iterations in training and 20 iterations in inference. The output action horizon used in experiments is 20.</p><p>Layer Name Sparse Encoder Spatial Aligner  Inference. We deploy RISE-2 using an RTX 2060 SUPER GPU and achieve a 5Hz inference speed, demonstrating efficient performance compared to larger vision-language-action policies <ref type="bibr" target="#b6">[7]</ref>.</p><formula xml:id="formula_12">init conv k = [3, 3, 3], c = 32, - d = 1, s = 1 2x mean pooling conv1 k = [3, 3, 3], c = 32, k = [3, 3, 3], c = 256, d = 1, s = 1 d = 4, s = 4 conv2 k = [3, 3, 3], c = 64, k = [3, 3, 3], c = 256, d = 2, s = 1 d = 1, s = 2 conv3 k = [3, 3, 3], c = 128, k = [3, 3, 3], c = 512, d = 4, s = 1 d = 1, s = 2 conv4 k = [3, 3, 3], c = 128, k = [3, 3, 3], c = 512, d = 8, s = 2 d = 1, s = 2 final conv k = [1, 1, 1], c = 128, k = [1, 1, 1], c = 512, d = 1, s = 1 d = 1, s = 1</formula><p>We additionally provide scripts that enable policy inference to be executed on a remote server.  feature map output by the dense encoder is in low resolution (32×18 for DINOv2 <ref type="bibr" target="#b74">[75]</ref> backbone), we still observe clear and distinguishable continuous feature variations on the aligned features, where the targets at the current step can be easily identified from the entire scene. Such a characteristic ensures precise feature fusion in the spatial domain. Additionally, we find that the features from the visual foundation model DINOv2 <ref type="bibr" target="#b74">[75]</ref> change significantly as the task progresses, enabling the model to clearly understand the global state at the current time.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.3 Visualization of Sparse Semantic Features</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C Experiments Details</head><p>C.1 Setup Data Collection. The teleoperated demonstrations are collected using AirExo <ref type="bibr" target="#b28">[29]</ref>, while in-thewild demonstrations are collected and adapted using our proposed AirExo-2 system. For each task, unless further specified, we collect 50 teleoperated demonstrations for RISE-2 policy evaluation and 50 in-the-wild demonstrations for AirExo-2 system evaluations.</p><p>Baselines. We compare RISE-2 against several representative policies based on 2D images and 3D point clouds, including: (1) ACT <ref type="bibr" target="#b122">[123]</ref>, which employs transformers to map image observations and proprioception to robot action chunks; (2) Diffusion Policy <ref type="bibr" target="#b17">[18]</ref>, which formulates action prediction as a diffusion denoising process <ref type="bibr" target="#b36">[37,</ref><ref type="bibr" target="#b91">92]</ref> conditioned on the image observations; (3) CAGE <ref type="bibr" target="#b110">[111]</ref>, an extension of Diffusion Policy that incorporates visual foundation models <ref type="bibr" target="#b74">[75]</ref>, a causal observation perceiver <ref type="bibr" target="#b43">[44]</ref>, and an attention-based diffusion action head for improved generalization; (4) RISE <ref type="bibr" target="#b101">[102]</ref>, a 3D imitation policy that leverages a sparse 3D encoder for efficient point cloud perception; and (5) π 0 <ref type="bibr" target="#b6">[7]</ref>, a vision-language-action flow model for general robot control.</p><p>Evaluation Protocols. All policies except π 0 are deployed on a workstation with an NVIDIA RTX 2060 SUPER GPU, while π 0 is deployed remotely on a server with an NVIDIA A100 GPU for GPU memory considerations. Following the procedure outlined in <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b110">111]</ref>, we adopt a consistent evaluation method for each policy to minimize performance variation and ensure reproducibility. Specifically, we generate uniformly distributed test positions randomly before each task evaluation. The workspace is set up identically across different policies and test environments, and success rates are recorded for each test case. Each policy is evaluated over 20 consecutive trials per task (except for the Serve Steak task, where we evaluate each policy for 10 consecutive trials), and the success rates are computed accordingly. Generalization Evaluation. We select the Collect Toys task to conduct a generalization experiment to evaluate the robustness of different policies under varying levels of environmental disturbances. The policies are trained with demonstrations from a narrow domain, with only one training background and one target object. Then, we introduce two types of disturbances during generalization evaluations: background variations and object differences, as illustrated in Fig. <ref type="figure" target="#fig_12">11</ref>. We then follow the same evaluation protocol introduced above to compute the policy success rates under (1) novel backgrounds, (2) novel objects, and (3) both novel backgrounds and novel objects, enabling a comprehensive comparison of each policy's generalization capability. For evaluation concerning the background variations, we use each of the 5 novel backgrounds for 4 evaluation trials in the same order to ensure fairness.</p><note type="other">Training Object Training Background Unseen Backgrounds Unseen Object Generalization Evaluation</note></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.2 Action Accuracy Analysis Details</head><p>To evaluate the action accuracy of the data collection systems, we designed a special evaluation board with three tracks, as illustrated in Fig. <ref type="figure" target="#fig_13">12</ref>. Each track has fixed holes spaced 2 cm apart. We created custom connectors for both the AirExo-2 and UMI <ref type="bibr" target="#b18">[19]</ref> that fit into these fixed holes, allowing us to collect position data. By sequentially placing the connectors into each fixed hole along the track, we can calculate the relative movement distance between two adjacent fixed holes and compare it with the true value (20 mm) to calculate the error. We conducted a case study to investigate whether in-hand cameras are sufficient for many manipulation tasks. We select the Collect Toys task as an example and utilize CAGE <ref type="bibr" target="#b110">[111]</ref> as the policy for this case study.</p><p>In-hand Camera  In-hand cameras alone are often insufficient for manipulation tasks and may pose additional obstacles on policy learning. As shown in Fig. <ref type="figure" target="#fig_15">13</ref> (bottom), neither global nor in-hand cameras alone provide adequate observations for 2D image-based policies to achieve strong performance. Recent work <ref type="bibr" target="#b101">[102]</ref> has demonstrated that using only a global camera enables a 3D imitation policy to outperform 2D multi-view image-based policies, highlighting the importance of 3D information for scene understanding. However, as illustrated in Fig. <ref type="figure" target="#fig_15">13</ref> (top), in-hand cameras may produce incomplete depth information when the robotic arm approaches an object, making them unsuitable for 3D point-cloud-based policies. Consequently, relying solely on in-hand cameras can degrade the performance of the policies, particularly for 3D policies that rely on complete and accurate depth information to achieve superior performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.4 Additional Experiment Results</head><p>Teleop. Demo. AirExo-2 Demo.  Learning from Pseudo-Robot Demonstrations. We also evaluate the performance of the RISE <ref type="bibr" target="#b101">[102]</ref> using pseudo-robot demonstrations. Specifically, we employ AirExo-2 to collect an equivalent number of in-the-wild demonstrations, which are then transformed into pseudorobot data and used to train the RISE policy. The trained policy is deployed on a real robot without any fine-tuning. As shown in Fig. <ref type="figure" target="#fig_17">14</ref> and Tab. 7, RISE achieves good zeroshot performance, though with a slightly larger drop compared to RISE-2. These findings highlight the critical role of a generalizable policy in successfully transferring manipulation skills from in-the-wild demonstrations to real robots, under the circumstances of no teleoperation data.  </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Overview of the AirExo-2 System. (left) Human uses the low-cost mobile demonstration collection device for data collection. (top) The image adaptor transforms the RGB images into the robot domain. (bottom) The depth adaptor transforms the depth images into the robot domain. (right) The operation space adaptor generates the states and actions based on the hardware encoder readings.</figDesc><graphic coords="4,112.41,98.84,53.50,94.11" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: RISE-2 Policy Architecture. Given an RGB-D observation as input, the policy predicts continuous actions in the camera frame. The architecture consists of four key components: (1) the dense encoder to obtain 2D semantic features; (2) the sparse encoder to obtain the 3D local geometric features of seed points; (3) the spatial aligner for the feature fusion of 2D semantic features and 3D geometric features guided by their 3D coordinates; (4) the action generator to generate continuous robot actions based on the fused feature.</figDesc><graphic coords="5,267.72,105.11,133.04,81.69" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>.12M / 64.12M] Diffusion Policy [155.1M / 155.1M] CAGE [112.1M / 285.3M] RISE [51.02M / 51.02M] π0 [3288M / 3288M] RISE-2 (ResNet-18) [78.03M / 78.03M] RISE-2 (DINOv2) [69.58M / 156.2M]</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Tasks and In-Domain Evaluation Results.We design 4 tasks to evaluate the performance of the RISE-2 policy. Each policy is noted as "policy [# trainable parameters / # total parameters]". RISE-2 outperforms previous state-of-the-art imitation policies while using relatively few parameters.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: RISE-2 Policy Performance with Different Demonstrations. Policies trained solely on demonstrations collected and adapted by AirExo-2 achieve reasonable performance without any robot data, demonstrating the overall effectiveness of the AirExo-2 system.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Results of the Serve Steak Task. Trained only with demonstrations by AirExo-2, the RISE-2 policy achieves decent performance in the challenging task, even without robot data.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Scalability Analysis Results. AirExo-2 enables scalable and efficient demonstration collection without compromising data effectiveness.</figDesc><graphic coords="8,365.39,255.26,116.24,98.94" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Calibration via Differentiable Rendering. The parameters in orange denote the calibration parameters to be optimized via differentiable rendering.</figDesc><graphic coords="16,130.62,137.08,105.01,59.10" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Training.</head><label></label><figDesc>We train the RISE-2 policy on 4 NVIDIA A100 GPUs for 60k steps with a batch size of 240, an initial learning rate of 3 × 10 -4 , and a warmup step of 2000. We employ a cosine scheduler to adjust the learning rate during training. During training, 20% of the color images are augmented using color jitter with (brightness, contrast, saturation, hue) parameters set to (0.4, 0.4, 0.2, 0.1).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: Visualization of Sparse Semantic Features. The colors are obtained by performing PCA on the features. The original sparse semantic features are aligned to the input point cloud using weighted spatial interpolation function in the spatial aligner for clearer visualization.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Fig. 10</head><label>10</label><figDesc>Fig.10visualizes the sparse semantic features obtained from the dense encoder by projecting the 2D feature map to 3D form using the reference coordinates. The sparse semantic features are aligned to the input point cloud using weighted spatial interpolation, as detailed in §3.2. Although the 2D</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Generalization Evaluation Setup. We evaluate policy generalization using 5 unseen backgrounds and 1 unseen target object. Training is done in a narrow domain with only one background and one target object.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Figure 12 :</head><label>12</label><figDesc>Figure 12: The Evaluation Board. C.3 Case Study: Are In-Hand Cameras Sufficient for Manipulations?</figDesc><graphic coords="21,253.79,94.07,103.53,91.74" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_15"><head>Figure 13 :</head><label>13</label><figDesc>Figure 13: Case Study Results. (Top) Inhand cameras often yield low-quality depth during object interaction, limiting their use for 3D point cloud-based policies. (Bottom) This case study uses CAGE with relative actions, as in the original implementation [111]; subsequent experiments use CAGE with absolute actions.</figDesc><graphic coords="21,358.49,270.58,130.17,73.11" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_17"><head>Figure 14 :</head><label>14</label><figDesc>Figure 14: RISE Policy Performance with Different Demonstrations. Generalizable policies are crucial for learning from in-the-wild demonstrations.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Image Adaptor Depth Adaptor</head><label></label><figDesc></figDesc><table><row><cell>In-the-Wild Image AirExo-2 Joint Robot Joint Forward Kinematics</cell><cell>SAM2 Open3D Renderer</cell><cell>Hand AirExo-2</cell><cell>Mask Mask</cell><cell>ControlNet 🔥 Masked In-the-Wild Image Robot Image</cell><cell>Stable</cell><cell>Diffusion ProPainter</cell><cell>Inpainted Image Generated Robot Image</cell><cell>Adapted Image Adapted Point Cloud</cell><cell>AirExo-2 Joint Forward Adapted Actions AirExo-2 URDF Kinematics Camera Calibration Projection Results</cell></row><row><cell>In-the-Wild Depth Reference Depth</cell><cell>Hand Mask AirExo-2 Mask</cell><cell cols="2">Combined Mask</cell><cell>Masked In-the-Wild Depth Selected Reference Depth</cell><cell></cell><cell></cell><cell>Robot Depth Inpainted Depth</cell><cell>Adapted Depth</cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 1 :</head><label>1</label><figDesc></figDesc><table><row><cell>Generalization Evaluation. We select the Collect Toys</cell><cell></cell><cell>-Domain</cell><cell>Generalization</cell></row><row><cell>task to evaluate the generalization ability of different poli-</cell><cell></cell><cell></cell><cell>Bg. Obj. Both</cell></row><row><cell>cies under varying environmental disturbances. Please re-</cell><cell>ACT [123]</cell><cell>32.5%</cell><cell>0.0% 2.5% 0.0%</cell></row><row><cell>fer to Appendix C.1 for disturbance details. As shown in</cell><cell cols="3">Diffusion Policy [18] 40.0% 12.5% 5.0% 2.5%</cell></row><row><cell>Tab. 1, RISE-2 demonstrates strong robustness, maintain-ing high performance even under combined disturbances.</cell><cell>CAGE [111] RISE [102] π 0 [7]</cell><cell cols="2">65.0% 45.0% 42.5% 10.0% 72.5% 42.5% 12.5% 40.0% 85.0% 77.5% 82.5% 82.5%</cell></row><row><cell>While the RISE-2 (ResNet-18) variant performs slightly</cell><cell>RISE-2 (ResNet-18)</cell><cell cols="2">77.5% 47.5% 47.5% 37.5%</cell></row><row><cell></cell><cell>RISE-2 (DINOv2)</cell><cell cols="2">95.0% 85.0% 85.0% 62.5%</cell></row></table><note><p>Generalization Evaluation Results. "Bg." denotes novel backgrounds and "Obj." denotes novel objects. Policy success rates are reported. below the RISE-2 (DINOv2) model, it still generalizes well and outperforms most baselines. These results further validate our architectural choice of using separate encoders for 3D geometric and 2D semantic features, which effectively enhances policy robustness.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>Table 2 :</head><label>2</label><figDesc>Ablation Results on Visual Adaptors. The visual adaptors help bridge the embodiment visual gap, enabling effective policy transfer from inthe-wild demonstrations.</figDesc><table><row><cell>Method</cell><cell cols="2">Success Rate ↑</cell></row><row><cell></cell><cell cols="2">w.o. adaptors w. adaptors</cell></row><row><cell>RISE [102]</cell><cell>30.0%</cell><cell>57.5%</cell></row><row><cell>RISE-2</cell><cell>52.5%</cell><cell>90.0%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>Table 3 :</head><label>3</label><figDesc></figDesc><table><row><cell>4.3 System Analysis: AirExo-2</cell><cell></cell><cell></cell></row><row><cell>Method</cell><cell>Completion Time (s) ↓</cell><cell>Avg. Rank ↓ Rating ↑ Intui. Learn.</cell></row><row><cell cols="3">EE Teleop. 46.06 ±27.21 3.00/3 2.95/3 29.75</cell></row><row><cell cols="3">Joint Teleop. 17.31 ±5.055 1.80/3 2.00/3 49.58</cell></row><row><cell>AirExo-2</cell><cell cols="2">5.66 ±1.978 1.20/3 1.05/3 83.00</cell></row></table><note><p>User Study Results. "Intui." and "Learn." denote intuitiveness and learnability, respectively.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>Table 4 :</head><label>4</label><figDesc><ref type="bibr" target="#b2">3</ref>, we observe that both experienced and novice users find AirExo-2 easier to learn and operate than both types of teleoperation, leading to faster onboarding and smoother operation. Statistical analysis (Welch's t-test, p = 8.32 × 10 -10 ) further confirms its superior efficiency in task completion time. The userfriendliness and efficiency make AirExo-2 well-suited for diverse users and consistent, high-quality data collection at scale in real-world settings. Action Accuracy of Data Collection Systems. AirExo-2 achieves higher action accuracy than handheld devices like UMI<ref type="bibr" target="#b18">[19]</ref>.</figDesc><table><row><cell>Device</cell><cell cols="2">Error (mm) ↓</cell></row><row><cell></cell><cell>Avg ± Std</cell><cell>Max</cell></row><row><cell cols="3">UMI [19] 8.855 ±3.228 20.002</cell></row><row><cell cols="3">AirExo-2 1.737 ±1.713 6.134</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head></head><label></label><figDesc>Two-Stage Calibration (mask only) 1.10 ±0.26 17.6 ±4.1 Two-Stage Calibration (mask + depth) 0.78 ±0.</figDesc><table><row><cell>Calibration Method</cell><cell>Difference ↓</cell></row><row><cell></cell><cell>Mask (%) Depth (mm)</cell></row><row><cell>Initial Calibration</cell><cell>1.71 ±0.37 21.6 ±5.2</cell></row><row><cell>Human Annotation</cell><cell>2.31 ±0.31 31.2 ±6.4</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8"><head>Table 6 :</head><label>6</label><figDesc>Sparse Convolutional Network Parameters of the RISE-2 Policy. Both the sparse encoder and the spatial aligner utilize MinkResNet<ref type="bibr" target="#b19">[20]</ref> for point cloud encoding. k, c, d, s stand for the kernel size, output channel number, dilation, and stride in the convolutional layers, respectively.</figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_10"><head>Table 7 :</head><label>7</label><figDesc>Evaluation Results of Different Policies in Learning from Pseudo-Robot Demonstrations. RISE-2 shows a smaller performance drop than RISE<ref type="bibr" target="#b101">[102]</ref> when trained with adapted pseudo-robot demonstrations.</figDesc><table /></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgments</head><p>We would like to thank <rs type="person">Peishen Yan</rs> and <rs type="person">Chunyu Xue</rs> from <rs type="affiliation">Shanghai Jiao Tong University</rs> for their valuable suggestions on the figures in this paper. We would like to thank <rs type="person">Teng Hu</rs> from <rs type="affiliation">Shanghai Jiao Tong University</rs> for insightful discussions about inpainting strategies to mitigate the visual gap. This work was supported by the <rs type="funder">National Key Research and Development Project of China</rs> (No. <rs type="grantNumber">2022ZD0160102</rs>), the <rs type="funder">National Key Research and Development Project of China</rs> (No. <rs type="grantNumber">2021ZD0110704</rs>), <rs type="institution">Shanghai Artificial Intelligence Laboratory, XPLORER PRIZE</rs> grants.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_rfp66S6">
+					<idno type="grant-number">2022ZD0160102</idno>
+				</org>
+				<org type="funding" xml:id="_pdrWM6s">
+					<idno type="grant-number">2021ZD0110704</idno>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Appendix</head><p>A AirExo-2 Implementation A.1 Hardware Design High-quality in-the-wild data requires precise collection for effective pseudo-robot transformation. However, AirExo <ref type="bibr" target="#b28">[29]</ref> has several key hardware limitations: H1. Most of its components are 3D-printed using polylactic acid (PLA), leading to low rigidity and susceptibility to structural deformation. H2. Unlike typical robots with constrained ranges, its joints can rotate beyond 360 • , potentially reaching positions the robot cannot achieve. H3. Although portable, inevitable body movements during operations can cause its base to shift, leading to inaccurate action recording. H4. Its gripper lacks smooth control, leading to potential jamming under clamping forces.</p><p>H5. The shaft connects directly to the encoder, with side-routed wires that endure friction and stretching during joint movement, risking long-term damage or short circuits.</p><p>During demonstration collection using teleoperation, most of the above issues (except H4) might not significantly impact data acquisition, as the human operator can adjust their actions based on the movements of the robotic arms. However, during the in-the-wild demonstration collection, these drawbacks can substantially affect motion capture accuracy and may result in invalid or unusable demonstration data. Driven by the limitations above, the hardware design of AirExo-2 focuses on seamless integration with the learning process from in-the-wild demonstrations. To enable direct learning, the exoskeleton is built with a 1:1 dimensional match to the robotic arm, minimizing discrepancies between human and robot embodiments. An overview of the hardware is shown in Fig. <ref type="figure">2</ref>. Excluding cameras, the complete AirExo-2 platform costs $600. Key hardware design elements are outlined below.</p><p>Enhanced Overall Structural Rigidity (H1). In AirExo, the links connecting two consecutive joints are the most prone to deformation. In AirExo-2, we replace the 3D-printed parts with 20x20 the encoders outside the joint and adopting a gear-driven design reduced encoder replacement time from 15 minutes to just 2 minutes. In terms of accuracy, the system's action recording precision was significantly enhanced, as presented in Tab. 4.</p><p>Computation Overhead of Adaptation. Rendering a 1-minute scene of approximately 600 frames requires about 40 seconds on a single GPU, with the majority of the time consumed by the ControlNet-tuned Stable Diffusion <ref type="bibr" target="#b82">[83,</ref><ref type="bibr" target="#b119">120]</ref> model. This process can be further accelerated by: (1) rendering at a lower resolution, and (2) leveraging multiple GPUs in parallel. Notably, the primary bottleneck in data collection lies in human effort rather than computation. Given that computational resources can be scaled more readily, we argue that prioritizing the reduction of human involvement -even at the cost of slightly increased computational usage -can significantly improve the overall efficiency and scalability of the data collection pipeline.</p><p>Cross-Robot Transfer and Data Reusability. Our adaptation pipeline can be easily extended to other robots by deriving joint values from end-effector poses via inverse kinematics, followed by rendering and inpainting the corresponding robot. As shown in Tab. 2, even without visual adaptation, policies trained solely on in-the-wild demonstrations can sometimes complete tasks successfully. This suggests that raw in-the-wild data itself can already be used to train policies and deployed on different robots. By incorporating robot-specific adaptations, we can generate high-quality data for different robots and boost policy performance by training on these adapted demonstrations. This approach can greatly enhance data reusability across platforms and embodiments.</p><p>Strict 1:1 Joint Mapping Design of AirExo-2. In our experiments, the Flexiv arms are comparable in size to the commonly used robotic arms like Franka, KUKA, and xArms. As shown in Tab. 3, the user study indicates that operators find our system intuitive and easy to use, suggesting that exact 1:1 scaling is not a prerequisite for effective data collection. Moreover, as most humanoid robots are designed to match human dimensions, our system is naturally compatible. For manipulators of different sizes, human-sized exoskeletons can still be employed, with data transfer facilitated through the adaptation process described in the previous discussion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B RISE-2 Implementation B.1 Data Processing</head><p>Image. The color image is resized to 448×252 for DINOv2 backbone <ref type="bibr" target="#b74">[75]</ref> and 640×360 for ResNet-18 backbone <ref type="bibr" target="#b32">[33]</ref>. The depth image is resized to 640×360 before creating the point cloud.</p><p>The camera intrinsics are adjusted accordingly. Both the point clouds and actions are projected to the camera coordinate system following <ref type="bibr" target="#b101">[102,</ref><ref type="bibr" target="#b116">117]</ref>.</p><p>Point Cloud. The point cloud is down-sampled with a voxel size of 5mm. For the data collected with teleoperation, we crop the point clouds using the range of</p><p>For the data collected with AirExo-2, we crop the point clouds using the range of</p><p>Robot Trajectory Sampling. The robot trajectories are sampled using differences of translation, rotation, and gripper width to remove redundant actions. For the action at two adjacent timesteps, if all the differences are less than the thresholds, only the first action is retained. The threshold for translation and gripper width is 5mm, and the rotation threshold is π/24.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.2 Hyperparameters</head><p>Policy. The sparse encoder adopts a ResNet-like architecture built upon MinkowskiEngine <ref type="bibr" target="#b19">[20]</ref>.</p><p>The dense encoder adopts DINOv2-base <ref type="bibr" target="#b74">[75]</ref> as the 2D backbone with the output channel of 128.</p><p>In the spatial aligner, we use M = 3 for feature alignment. The aligned features are fused by shared MLPs with the size of (256, 256, 256), and then fed into another sparse network. The two sparse Action Representations. We conduct additional experiments on action representations for the Collect Toys task, comparing relative and absolute action representations. The results in Tab. 8 show that while relative action representation sometimes yields better results, absolute action representation provides more stable performance, particularly in terms of generalization. Therefore, we use absolute action representations for Diffusion Policy <ref type="bibr" target="#b17">[18]</ref> and CAGE <ref type="bibr" target="#b110">[111]</ref> throughout our experiments, except for the case study in Appendix C.3. For π 0 <ref type="bibr" target="#b6">[7]</ref>, we still use relative action representation for consistency with its released pre-trained models. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.5 Failure Analysis</head><p>Imprecise Action. During the policy rollouts, we observe that most failures stem from imprecise predicted actions. For example, in the Open Lid task, the lid protrudes only about 1.5 cm from the coffee machine body, requiring highly accurate end-effector control from the visuomotor policies. At the same time, the left gripper must stabilize the machine to prevent it from shifting on the table while the right arm applies force to lift the lid. Baseline failures typically arise from inaccuracy in either arm -where the left arm fails to stabilize the coffee machine or the right arm fails to open the lid. In contrast, our RISE-2 policy produces more precise actions, resulting in fewer failures, even when trained with adapted in-the-wild data.</p><p>Risk of Visual Overfitting to Robot States. We also observe that in bimanual manipulation tasks, since both arms occupy a large portion of the observation image, there is an increased risk of visuomotor policies overfitting to robot states. This occurs even without proprioceptive inputs, as the policy may implicitly infer actions from the visual configuration of the arms. The issue is further compounded by limited training data: with only 50 demonstrations, most baselines fail to learn sufficiently accurate actions, leading to low phase success rates. Such overfitting also reduces the likelihood of performing recovery behaviors after phase failures, which becomes especially evident in long-horizon and complex tasks such as Serve Steak, ultimately causing frequent task failures. In contrast, RISE-2 produces more precise actions, resulting in higher success rates. Nevertheless, all policies still exhibit varying degrees of overfitting to robot visual state and struggle to recover from failures in the absence of recovery demonstrations, highlighting an important direction for developing more generalizable robotic visuomotor policies.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D Author Contributions</head><p>The author contributions for this paper are as follows. For each item, authors are listed in order of contribution, and underlined names indicate equal contributions.</p><p>• Project Lead: Hongjie Fang.</p><p>• System Design and Implementation.</p><p>-AirExo-2 Hardware: Yiming Wang, Hongjie Fang, Hao-Shu Fang.</p><p>-AirExo-2 Visual Adaptors: Jingjing Chen, Hongjie Fang.</p><p>-RISE-2 Policy: Chenxi Wang, Hongjie Fang, Jingjing Chen, Shangning Xia.</p><p>• Experiments:</p><p>-Design: Hongjie Fang, Chenxi Wang, Jingjing Chen, Yiming Wang, Hao-Shu Fang.</p><p>-Platform Setup: Hongjie Fang, Yiming Wang.</p><p>-Data Collection: Hongjie Fang, Chenxi Wang, Jingjing Chen.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">RoCoDA: Counterfactual Data Augmentation for Data-Efficient Robot Learning from Demonstrations</title>
+		<author>
+			<persName><forename type="first">Ezra</forename><surname>Ameperosa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Affordances from Human Videos as a Versatile Representation for Robotics</title>
+		<author>
+			<persName><forename type="first">Shikhar</forename><surname>Bahl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">HOMIE: Humanoid Loco-Manipulation with Isomorphic Exoskeleton Cockpit</title>
+		<author>
+			<persName><forename type="first">Qingwei</forename><surname>Ben</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Position: Scaling Simulation is Neither Necessary Nor Sufficient for In-the-Wild Robot Manipulation</title>
+		<author>
+			<persName><forename type="first">Homanga</forename><surname>Bharadhwaj</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Gen2Act: Human Video Generation in Novel Scenarios enables Generalizable Robot Manipulation</title>
+		<author>
+			<persName><forename type="first">Homanga</forename><surname>Bharadhwaj</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2409.16283</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">RoboAgent: Generalization and Efficiency in Robot Manipulation via Semantic Augmentations and Action Chunking</title>
+		<author>
+			<persName><forename type="first">Homanga</forename><surname>Bharadhwaj</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="4788" to="4795" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">π 0 : A Vision-Language-Action Flow Model for General Robot Control</title>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Black</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">The OpenCV Library</title>
+		<author>
+			<persName><forename type="first">Gary</forename><surname>Bradski</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Dr. Dobb&apos;s Journal: Software Tools for the Professional Programmer</title>
+		<imprint>
+			<biblScope unit="volume">25</biblScope>
+			<biblScope unit="page" from="120" to="123" />
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">RT-1: Robotics Transformer for Real-World Control at Scale</title>
+		<author>
+			<persName><forename type="first">Anthony</forename><surname>Brohan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">AgiBot World Colosseo: A Large-scale Manipulation Platform for Scalable and Intelligent Embodied Systems</title>
+		<author>
+			<persName><forename type="first">Qingwen</forename><surname>Bu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2503.06669</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">What Makes Pre-Trained Visual Representations Successful for Robust Manipulation?</title>
+		<author>
+			<persName><forename type="first">Kaylee</forename><surname>Burns</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2312.12444</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">GR-2: A Generative Video-Language-Action Model with Web-Scale Knowledge for Robot Manipulation</title>
+		<author>
+			<persName><forename type="first">Chi-Lam</forename><surname>Cheang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.06158</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Towards Effective Utilization of Mixed-Quality Demonstrations in Robotic Manipulation via Segment-Level Selection and Optimization</title>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">RoVi-Aug: Robot and Viewpoint Augmentation for Cross-Embodiment Robot Learning</title>
+		<author>
+			<persName><forename type="first">Lawrence</forename><surname>Yunliang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">270</biblScope>
+			<biblScope unit="page" from="209" to="233" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">EasyHeC: Accurate and Automatic Hand-Eye Calibration Via Differentiable Rendering and Space Exploration</title>
+		<author>
+			<persName><forename type="first">Linghao</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="7234" to="7241" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">PolarNet: 3D Point Clouds for Language-Guided Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Shizhe</forename><surname>Chen</surname></persName>
+		</author>
+		<idno>PMLR. 2023</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<biblScope unit="page" from="1761" to="1781" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">ARCap: Collecting High-quality Human Demonstrations for Robot Learning with Augmented Reality Feedback</title>
+		<author>
+			<persName><forename type="first">Sirui</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.08464</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</title>
+		<author>
+			<persName><forename type="first">Chi</forename><surname>Cheng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots</title>
+		<author>
+			<persName><forename type="first">Chi</forename><surname>Cheng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">4D Spatio-Temporal ConvNets: Minkowski Convolutional Neural Networks</title>
+		<author>
+			<persName><forename type="first">Christopher</forename><surname>Choy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junyoung</forename><surname>Gwak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Silvio</forename><surname>Savarese</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="3075" to="3084" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Open X-Embodiment: Robotic Learning Datasets and RT-X Models</title>
+		<author>
+			<persName><forename type="first">X-Embodiment</forename><surname>Open</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Collaboration</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="6892" to="6903" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">ImageNet: A Large-Scale Hierarchical Image Database</title>
+		<author>
+			<persName><forename type="first">Jia</forename><surname>Deng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="248" to="255" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">AR2-D2: Training a Robot Without a Robot</title>
+		<author>
+			<persName><forename type="first">Jiafei</forename><surname>Duan</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page" from="2838" to="2848" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Robot Utility Models: General Policies for Zero-Shot Deployment in New Environments</title>
+		<author>
+			<persName><forename type="first">Haritheja</forename><surname>Etukuru</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">GraspNet-1billion: A Large-Scale Benchmark for General Object Grasping</title>
+		<author>
+			<persName><forename type="first">Hao-Shu</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="11444" to="11453" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">AnyGrasp: Robust and Efficient Grasp Perception in Spatial and Temporal Domains</title>
+		<author>
+			<persName><forename type="first">Hao-Shu</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">RH20T: A Comprehensive Robotic Dataset for Learning Diverse Skills in One-Shot</title>
+		<author>
+			<persName><forename type="first">Hao-Shu</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="653" to="660" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">DEXOS: Hand Exoskeleton System for Learning Robot Dexterous Manipulation from Human In-The-Wild</title>
+		<author>
+			<persName><forename type="first">Hao-Shu</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">RSS 2025 Workshop on Whole-body Control and Bimanual Manipulation: Applications in Humanoids and Beyond</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">AirExo: Low-Cost Exoskeletons for Learning Whole-Arm Manipulation in the Wild</title>
+		<author>
+			<persName><forename type="first">Hongjie</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="15031" to="15038" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Act3D: 3D Feature Field Transformers for Multi-Task Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Théophile</forename><surname>Gervet</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<editor>
+			<persName><forename type="first">Jie</forename><surname>Tan</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Marc</forename><surname>Toussaint</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Kourosh</forename><surname>Darvish</surname></persName>
+		</editor>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page" from="3949" to="3965" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">RVT: Robotic View Transformer for 3D Object Manipulation</title>
+		<author>
+			<persName><forename type="first">Ankit</forename><surname>Goyal</surname></persName>
+		</author>
+		<idno>PMLR. 2023</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<biblScope unit="page" from="694" to="710" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">Large-Scale Actionless Video Pre-Training via Discrete Diffusion for Efficient Policy Learning</title>
+		<author>
+			<persName><forename type="first">Haoran</forename><surname>He</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.14407</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Deep Residual Learning for Image Recognition</title>
+		<author>
+			<persName><forename type="first">Kaiming</forename><surname>He</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="770" to="778" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">FoAR: Force-Aware Reactive Policy for Contact-Rich Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Zihao</forename><surname>He</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<title level="m" type="main">Scaling Laws for Autoregressive Generative Modeling</title>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Henighan</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2010.14701</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">DITTO: Demonstration Imitation by Trajectory Transformation</title>
+		<author>
+			<persName><forename type="first">Nick</forename><surname>Heppert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="7565" to="7572" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Denoising Diffusion Probabilistic Models</title>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="page" from="6840" to="6851" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<title level="m" type="main">Classifier-Free Diffusion Guidance</title>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tim</forename><surname>Salimans</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2207.12598</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Fully Automatic Hand-Eye Calibration with Pretrained Image Models</title>
+		<author>
+			<persName><forename type="first">Zhengdong</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kangfu</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linghao</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">IntervenGen: Interventional Data Generation for Robust and Data-Efficient Robot Imitation Learning</title>
+		<author>
+			<persName><forename type="first">Ryan</forename><surname>Hoque</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems. IEEE. 2024</title>
+		<imprint>
+			<biblScope unit="page" from="2840" to="2846" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Vision-Based Manipulators Need to Also See from Their Hands</title>
+		<author>
+			<persName><forename type="first">Kyle</forename><surname>Hsu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">LoRA: Low-Rank Adaptation of Large Language Models</title>
+		<author>
+			<persName><forename type="first">Edward</forename><forename type="middle">J</forename><surname>Hu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">GenSim2: Scaling Robot Data Generation with Multi-Modal and Reasoning LLMs</title>
+		<author>
+			<persName><forename type="first">Pu</forename><surname>Hua</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">270</biblScope>
+			<biblScope unit="page" from="5030" to="5066" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Perceiver IO: A General Architecture for Structured Inputs &amp; Outputs</title>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Jaegle</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">BC-Z: Zero-Shot Task Generalization with Robotic Imitation Learning</title>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Jang</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Conference on Robot Learning</title>
+		<imprint>
+			<biblScope unit="volume">164</biblScope>
+			<biblScope unit="page" from="991" to="1002" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Planning with Diffusion for Flexible Behavior Synthesis</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Janner</surname></persName>
+		</author>
+		<idno>PMLR. 2022</idno>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+		<imprint>
+			<biblScope unit="page" from="9902" to="9915" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<monogr>
+		<author>
+			<persName><forename type="first">Yueru</forename><surname>Jia</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2411.18623</idno>
+		<title level="m">Lift3D Foundation Policy: Lifting 2D Large-Scale Pretrained Models for Robust 3D Robotic Manipulation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<title level="m" type="main">DexMimicGen: Automated Data Generation for Bimanual Dexterous Manipulation via Imitation Learning</title>
+		<author>
+			<persName><forename type="first">Zhenyu</forename><surname>Jiang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.24185</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Scaling Laws for Neural Language Models</title>
+		<author>
+			<persName><forename type="first">Jared</forename><surname>Kaplan</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2001.08361</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">EgoMimic: Scaling Imitation Learning via Egocentric Video</title>
+		<author>
+			<persName><forename type="first">Simar</forename><surname>Kareer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">Differentiable Rendering: A Survey</title>
+		<author>
+			<persName><forename type="first">Hiroharu</forename><surname>Kato</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2006.12057</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset</title>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Khazatsky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Training Robots Without Robots: Deep Imitation Learning for Master-to-Robot Policy Transfer</title>
+		<author>
+			<persName><forename type="first">Heecheol</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="2906" to="2913" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<monogr>
+		<title level="m" type="main">Giving Robots a Hand: Learning Generalizable Manipulation with Eye-in-Hand Human Video Demonstrations</title>
+		<author>
+			<persName><forename type="first">Jin</forename><surname>Moo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiajun</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2307.05959</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">OpenVLA: An Open-Source Vision-Language-Action Model</title>
+		<author>
+			<persName><forename type="first">Jin</forename><surname>Moo</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kim</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">270</biblScope>
+			<biblScope unit="page" from="2679" to="2713" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<title level="m" type="main">Adam: A Method for Stochastic Optimization</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Diederik</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kingma</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1412.6980</idno>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<title level="m" type="main">Phantom: Training Robots Without Robots Using Only Human Videos</title>
+		<author>
+			<persName><forename type="first">Marion</forename><surname>Lepert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiaying</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeannette</forename><surname>Bohg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2503.00779</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<analytic>
+		<title level="a" type="main">Differentiable Monte Carlo Ray Tracing through Edge Sampling</title>
+		<author>
+			<persName><forename type="first">Tzu-Mao</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Graphics</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page">11</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main">Data Scaling Laws in Imitation Learning for Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Fanqi</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<analytic>
+		<title level="a" type="main">SpawnNet: Learning Generalizable Visuomotor Skills from Pre-trained Network</title>
+		<author>
+			<persName><forename type="first">Xingyu</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="4781" to="4787" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<monogr>
+		<title level="m" type="main">ViTaMIn: Learning Contact-Rich Tasks Through Robot-Free Visuo-Tactile Manipulation Interface</title>
+		<author>
+			<persName><forename type="first">Fangchen</forename><surname>Liu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.06156</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<analytic>
+		<title level="a" type="main">RDT-1B: A Diffusion Foundation Model for Bimanual Manipulation</title>
+		<author>
+			<persName><forename type="first">Songming</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<analytic>
+		<title level="a" type="main">ForceMimic: Force-Centric Imitation Learning with Force-Motion Capture System for Contact-Rich Manipulation</title>
+		<author>
+			<persName><forename type="first">Wenhai</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b63">
+	<analytic>
+		<title level="a" type="main">ManiWAV: Learning Robot Manipulation from In-the-Wild Audio-Visual Data</title>
+		<author>
+			<persName><forename type="first">Zeyi</forename><surname>Liu</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">270</biblScope>
+			<biblScope unit="page" from="947" to="962" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b64">
+	<analytic>
+		<title level="a" type="main">Human-Agent Joint Learning for Efficient Robot Manipulation Skill Acquisition</title>
+		<author>
+			<persName><forename type="first">Shengcheng</forename><surname>Luo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b65">
+	<analytic>
+		<title level="a" type="main">SAM-RL: Sensing-Aware Model-Based Reinforcement Learning via Differentiable Physics-Based Simulation and Rendering</title>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Lv</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b66">
+	<analytic>
+		<title level="a" type="main">LIV: Language-Image Representations and Rewards for Robotic Control</title>
+		<author>
+			<persName><forename type="first">Jason</forename><surname>Yecheng</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Ma</surname></persName>
+		</author>
+		<idno>PMLR. 2023</idno>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+		<imprint>
+			<biblScope unit="page" from="23301" to="23320" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b67">
+	<analytic>
+		<title level="a" type="main">VIP: Towards Universal Visual Reward and Representation via Value-Implicit Pre-Training</title>
+		<author>
+			<persName><forename type="first">Jason</forename><surname>Yecheng</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Ma</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b68">
+	<analytic>
+		<title level="a" type="main">Where are We in the Search for an Artificial Visual Cortex for Embodied Intelligence?</title>
+		<author>
+			<persName><forename type="first">Arjun</forename><surname>Majumdar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="655" to="677" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b69">
+	<analytic>
+		<title level="a" type="main">MimicGen: A Data Generation System for Scalable Robot Learning using Human Demonstrations</title>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page" from="1820" to="1864" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b70">
+	<monogr>
+		<title level="m" type="main">Towards Generalist Robot Learning from Internet Video: A Survey</title>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Mccarthy</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2404.19664</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b71">
+	<analytic>
+		<title level="a" type="main">RoboTwin: Dual-Arm Robot Benchmark with Generative Digital Twins</title>
+		<author>
+			<persName><forename type="first">Yao</forename><surname>Mu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="27649" to="27660" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b72">
+	<analytic>
+		<title level="a" type="main">R3M: A Universal Visual Representation for Robot Manipulation</title>
+		<author>
+			<persName><forename type="first">Suraj</forename><surname>Nair</surname></persName>
+		</author>
+		<idno>PMLR. 2022</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<biblScope unit="page" from="892" to="909" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b73">
+	<analytic>
+		<title level="a" type="main">Octo: An Open-Source Generalist Robot Policy</title>
+		<author>
+			<persName><forename type="first">Octo</forename><surname>Model</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Team</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b74">
+	<analytic>
+		<title level="a" type="main">DINOv2: Learning Robust Visual Features without Supervision</title>
+		<author>
+			<persName><forename type="first">Maxime</forename><surname>Oquab</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Transactions on Machine Learning Research</title>
+		<imprint>
+			<biblScope unit="volume">2024</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b75">
+	<monogr>
+		<title level="m" type="main">R+X: Retrieval and Execution from Everyday Human Videos</title>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Papagiannis</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.12957</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b76">
+	<analytic>
+		<title level="a" type="main">Scalable Diffusion Models with Transformers</title>
+		<author>
+			<persName><forename type="first">William</forename><surname>Peebles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saining</forename><surname>Xie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF International Conference on Computer Vision. 2023</title>
+		<imprint>
+			<biblScope unit="page" from="4195" to="4205" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b77">
+	<analytic>
+		<title level="a" type="main">ALVINN: An Autonomous Land Vehicle in a Neural Network</title>
+		<author>
+			<persName><forename type="first">Dean</forename><surname>Pomerleau</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<publisher>Morgan Kaufmann</publisher>
+			<date type="published" when="1988">1988</date>
+			<biblScope unit="page" from="305" to="313" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b78">
+	<analytic>
+		<title level="a" type="main">Recasting Generic Pretrained Vision Transformers As Object-Centric Scene Encoders For Manipulation Policies</title>
+		<author>
+			<persName><forename type="first">Jianing</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anastasios</forename><surname>Panagopoulos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dinesh</forename><surname>Jayaraman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="17544" to="17552" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b79">
+	<analytic>
+		<title level="a" type="main">DexMV: Imitation Learning for Dexterous Manipulation from Human Videos</title>
+		<author>
+			<persName><forename type="first">Yuzhe</forename><surname>Qin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">European Conference on Computer Vision</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="570" to="587" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b80">
+	<analytic>
+		<title level="a" type="main">Real-World Robot Learning with Masked Visual Pre-Training</title>
+		<author>
+			<persName><forename type="first">Ilija</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<idno>PMLR. 2022</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<biblScope unit="page" from="416" to="426" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b81">
+	<analytic>
+		<title level="a" type="main">SAM 2: Segment Anything in Images and Videos</title>
+		<author>
+			<persName><forename type="first">Nikhila</forename><surname>Ravi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b82">
+	<analytic>
+		<title level="a" type="main">High-Resolution Image Synthesis With Latent Diffusion Models</title>
+		<author>
+			<persName><forename type="first">Robin</forename><surname>Rombach</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="10684" to="10695" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b83">
+	<analytic>
+		<title level="a" type="main">EyeSight Hand: Design of a Fully-Actuated Dexterous Robot Hand with Integrated Vision-Based Tactile Sensors and Compliant Actuation</title>
+		<author>
+			<persName><forename type="first">Branden</forename><surname>Romero</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="1853" to="1860" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b84">
+	<analytic>
+		<title level="a" type="main">ZeroNVS: Zero-Shot 360-Degree View Synthesis from a Single Image</title>
+		<author>
+			<persName><forename type="first">Kyle</forename><surname>Sargent</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="9420" to="9429" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b85">
+	<analytic>
+		<title level="a" type="main">Structure-from-Motion Revisited</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Johannes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan-Michael</forename><surname>Schonberger</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Frahm</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="4104" to="4113" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b86">
+	<analytic>
+		<title level="a" type="main">LEGATO: Cross-Embodiment Imitation Using a Grasping Tool</title>
+		<author>
+			<persName><forename type="first">Mingyo</forename><surname>Seo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="2854" to="2861" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b87">
+	<monogr>
+		<title level="m" type="main">On Bringing Robots Home</title>
+		<author>
+			<persName><forename type="first">Nur</forename><surname>Muhammad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mahi</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.16098</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b88">
+	<analytic>
+		<title level="a" type="main">LEAP Hand: Low-Cost, Efficient, and Anthropomorphic Hand for Robot Learning</title>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ananye</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b89">
+	<analytic>
+		<title level="a" type="main">Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Mohit</forename><surname>Shridhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lucas</forename><surname>Manuelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<editor>
+			<persName><forename type="first">Karen</forename><surname>Liu</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Dana</forename><surname>Kulic</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Jeffrey</forename><surname>Ichnowski</surname></persName>
+		</editor>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">205</biblScope>
+			<biblScope unit="page" from="785" to="799" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b90">
+	<analytic>
+		<title level="a" type="main">AVID: Learning Multi-Stage Tasks via Pixel-Level Translation of Human Videos</title>
+		<author>
+			<persName><forename type="first">Laura</forename><forename type="middle">M</forename><surname>Smith</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b91">
+	<analytic>
+		<title level="a" type="main">Denoising Diffusion Implicit Models</title>
+		<author>
+			<persName><forename type="first">Jiaming</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chenlin</forename><surname>Meng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefano</forename><surname>Ermon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b92">
+	<analytic>
+		<title level="a" type="main">HRP: Human Affordances for Robotic Pre-Training</title>
+		<author>
+			<persName><forename type="first">Mohan</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Srirama</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b93">
+	<analytic>
+		<title level="a" type="main">View-Invariant Policy Learning via Zero-Shot Novel View Synthesis</title>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>Tian</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Conference on Robot Learning</title>
+		<imprint>
+			<biblScope unit="volume">270</biblScope>
+			<biblScope unit="page" from="1173" to="1193" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b94">
+	<analytic>
+		<title level="a" type="main">Generative Camera Dolly: Extreme Monocular Dynamic Novel View Synthesis</title>
+		<author>
+			<persName><forename type="first">Basile</forename><surname>Van Hoorick</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">European Conference on Computer Vision</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="313" to="331" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b95">
+	<analytic>
+		<title level="a" type="main">Attention is All You Need</title>
+		<author>
+			<persName><forename type="first">Ashish</forename><surname>Vaswani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b96">
+	<analytic>
+		<title level="a" type="main">Instant Policy: In-Context Imitation Learning via Graph Diffusion</title>
+		<author>
+			<persName><forename type="first">Vitalis</forename><surname>Vosylius</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Edward</forename><surname>Johns</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b97">
+	<analytic>
+		<title level="a" type="main">BridgeData V2: A Dataset for Robot Learning at Scale</title>
+		<author>
+			<persName><forename type="first">Homer</forename><surname>Rich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Walke</forename></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page" from="1723" to="1736" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b98">
+	<analytic>
+		<title level="a" type="main">MimicPlay: Long-Horizon Imitation Learning by Watching Human Play</title>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="201" to="221" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b99">
+	<analytic>
+		<title level="a" type="main">DexCap: Scalable and Portable Mocap Data Collection System for Dexterous Manipulation</title>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b100">
+	<analytic>
+		<title level="a" type="main">Graspness Discovery in Clutters for Fast and Accurate Grasp Detection</title>
+		<author>
+			<persName><forename type="first">Chenxi</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF International Conference on Computer Vision. 2021</title>
+		<imprint>
+			<biblScope unit="page" from="15964" to="15973" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b101">
+	<analytic>
+		<title level="a" type="main">RISE: 3D Perception Makes Real-World Robot Imitation Simple and Effective</title>
+		<author>
+			<persName><forename type="first">Chenxi</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2870" to="2877" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b102">
+	<analytic>
+		<title level="a" type="main">CyberDemo: Augmenting Simulated Human Demonstration for Real-World Dexterous Manipulation</title>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="17952" to="17963" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b103">
+	<analytic>
+		<title level="a" type="main">EVE: Enabling Anyone to Train Robots using Augmented Reality</title>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACM Symposium on User Interface Software and Technology</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="1" to="13" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b104">
+	<analytic>
+		<title level="a" type="main">GenSim: Generating Robotic Simulation Tasks via Large Language Models</title>
+		<author>
+			<persName><forename type="first">Lirui</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b105">
+	<analytic>
+		<title level="a" type="main">Scaling Proprioceptive-Visual Learning with Heterogeneous Pre-Trained Transformers</title>
+		<author>
+			<persName><forename type="first">Lirui</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="124420" to="124450" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b106">
+	<analytic>
+		<title level="a" type="main">RoboGen: Towards Unleashing Infinite Data for Automated Robot Learning via Generative Simulation</title>
+		<author>
+			<persName><forename type="first">Yufei</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b107">
+	<analytic>
+		<title level="a" type="main">Any-point Trajectory Modeling for Policy Learning</title>
+		<author>
+			<persName><forename type="first">Chuan</forename><surname>Wen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b108">
+	<analytic>
+		<title level="a" type="main">Unleashing Large-Scale Video Generative Pre-training for Visual Robot Manipulation</title>
+		<author>
+			<persName><forename type="first">Hongtao</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b109">
+	<analytic>
+		<title level="a" type="main">RoboMIND: Benchmark on Multi-embodiment Intelligence Normative Data for Robot Manipulation</title>
+		<author>
+			<persName><forename type="first">Kun</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b110">
+	<analytic>
+		<title level="a" type="main">CAGE: Causal Attention Enables Data-Efficient Generalizable Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Shangning</forename><surname>Xia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b111">
+	<analytic>
+		<title level="a" type="main">Learning by Watching: Physical Imitation of Manipulation Skills from Human Videos</title>
+		<author>
+			<persName><forename type="first">Haoyu</forename><surname>Xiong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems. IEEE. 2021</title>
+		<imprint>
+			<biblScope unit="page" from="7827" to="7834" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b112">
+	<analytic>
+		<title level="a" type="main">Flow as the Cross-Domain Manipulation Interface</title>
+		<author>
+			<persName><forename type="first">Mengda</forename><surname>Xu</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">270</biblScope>
+			<biblScope unit="page" from="2475" to="2499" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b113">
+	<analytic>
+		<title level="a" type="main">Latent Action Pretraining from Videos</title>
+		<author>
+			<persName><forename type="first">Seonghyeon</forename><surname>Ye</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b114">
+	<analytic>
+		<title level="a" type="main">Visual Imitation Made Easy</title>
+		<author>
+			<persName><forename type="first">Sarah</forename><surname>Young</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">155</biblScope>
+			<biblScope unit="page" from="1992" to="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b115">
+	<analytic>
+		<title level="a" type="main">3D Diffusion Policy: Generalizable Visuomotor Policy Learning via Simple 3D Representations</title>
+		<author>
+			<persName><forename type="first">Yanjie</forename><surname>Ze</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b116">
+	<monogr>
+		<title level="m" type="main">Generalizable Humanoid Manipulation with Improved 3D Diffusion Policies</title>
+		<author>
+			<persName><forename type="first">Yanjie</forename><surname>Ze</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.10803</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b117">
+	<analytic>
+		<title level="a" type="main">Learning Manipulation by Predicting Interaction</title>
+		<author>
+			<persName><forename type="first">Jia</forename><surname>Zeng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b118">
+	<analytic>
+		<title level="a" type="main">SAM-E: Leveraging Visual Foundation Model with Sequence Imitation for Embodied Manipulation</title>
+		<author>
+			<persName><forename type="first">Junjie</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b119">
+	<analytic>
+		<title level="a" type="main">Adding Conditional Control to Text-to-Image Diffusion Models</title>
+		<author>
+			<persName><forename type="first">Lvmin</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anyi</forename><surname>Rao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maneesh</forename><surname>Agrawala</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF International Conference on Computer Vision. 2023</title>
+		<imprint>
+			<biblScope unit="page" from="3836" to="3847" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b120">
+	<analytic>
+		<title level="a" type="main">A Universal Semantic-Geometric Representation for Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Tong</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page" from="3342" to="3363" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b121">
+	<analytic>
+		<title level="a" type="main">Leveraging Locality to Boost Sample Efficiency in Robotic Manipulation</title>
+		<author>
+			<persName><forename type="first">Tong</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">270</biblScope>
+			<biblScope unit="page" from="3264" to="3284" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b122">
+	<analytic>
+		<title level="a" type="main">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</title>
+		<author>
+			<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b123">
+	<monogr>
+		<author>
+			<persName><forename type="first">Qian-Yi</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jaesik</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vladlen</forename><surname>Koltun</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1801.09847</idno>
+		<title level="m">Open3D: A Modern Library for 3D Data Processing</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b124">
+	<analytic>
+		<title level="a" type="main">ProPainter: Improving Propagation and Transformer for Video Inpainting</title>
+		<author>
+			<persName><forename type="first">Shangchen</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF International Conference on Computer Vision</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="10477" to="10486" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b125">
+	<analytic>
+		<title level="a" type="main">On the Continuity of Rotation Representations in Neural Networks</title>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="5745" to="5753" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b126">
+	<analytic>
+		<title level="a" type="main">RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control</title>
+		<author>
+			<persName><forename type="first">Brianna</forename><surname>Zitkovich</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page" from="2165" to="2183" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b127">
+	<monogr>
+		<author>
+			<persName><forename type="first">Zihao</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiyan</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunhan</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Guo</surname></persName>
+		</author>
+		<title level="m">Baselines: Hongjie Fang, Shangning Xia, Chenxi Wang, Jingjing Chen. -Policy Training: Hongjie Fang, Chenxi Wang, Shangning Xia, Jingjing Chen, Xinyu Zhan</title>
+		<imprint/>
+	</monogr>
+	<note>Data Processing. Lixin Yang</note>
+</biblStruct>
+
+<biblStruct xml:id="b128">
+	<monogr>
+		<author>
+			<persName><forename type="first">Hongjie</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chenxi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">. -User</forename><surname>Study ; Hongjie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chenxi</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiyan</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Yi</surname></persName>
+		</author>
+		<title level="m">Accuracy Analysis: Hongjie Fang, Jun Lv, Jingjing Chen, Yiming Wang. -Scalability Analysis: Hongjie Fang, Jingjing Chen</title>
+		<imprint>
+			<publisher>Chenxi Wang, Hao-Shu Fang</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b129">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">Hongjie</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chenxi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao-Shu</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">• Project Advisor: Hao-Shu Fang</title>
+		<imprint>
+			<publisher>Cewu Lu</publisher>
+			<pubPlace>Weiming Wang</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,1573 @@
+{
+  "terms": [
+    {
+      "term": "grasp planning",
+      "idf": 6.855,
+      "df": 2,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "MAE",
+      "idf": 6.855,
+      "df": 2,
+      "type": "acronym",
+      "definition": "Mean absolute error"
+    },
+    {
+      "term": "Mean absolute error",
+      "idf": 6.855,
+      "df": 2,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "TPU",
+      "idf": 6.855,
+      "df": 2,
+      "type": "acronym",
+      "definition": "By using the thermoplastic polyurethane"
+    },
+    {
+      "term": "By using the thermoplastic polyurethane",
+      "idf": 6.855,
+      "df": 2,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "PCB",
+      "idf": 6.855,
+      "df": 2,
+      "type": "acronym",
+      "definition": "bonding a thin layer of stiff"
+    },
+    {
+      "term": "bonding a thin layer of stiff",
+      "idf": 6.855,
+      "df": 2,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "AR",
+      "idf": 6.855,
+      "df": 2,
+      "type": "acronym",
+      "definition": "Augmented Reality"
+    },
+    {
+      "term": "Augmented Reality",
+      "idf": 6.855,
+      "df": 2,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "MDP",
+      "idf": 6.855,
+      "df": 2,
+      "type": "acronym",
+      "definition": "Markov decision process"
+    },
+    {
+      "term": "Markov decision process",
+      "idf": 6.855,
+      "df": 2,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "PyBullet",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "bin picking",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "contact model",
+      "idf": 6.567,
+      "df": 3,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "suction",
+      "idf": 6.567,
+      "df": 3,
+      "type": "gripper",
+      "definition": ""
+    },
+    {
+      "term": "antipodal grasp",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "collision detection",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "FOV",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Field Of View"
+    },
+    {
+      "term": "Field Of View",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "CSI",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Camera Serial Interface"
+    },
+    {
+      "term": "Camera Serial Interface",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "USB",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Universal Serial Bus"
+    },
+    {
+      "term": "Universal Serial Bus",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "FDM",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Fused Deposition Modeling"
+    },
+    {
+      "term": "Fused Deposition Modeling",
+      "idf": 6.567,
+      "df": 3,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "POMDP",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Partially Observed Markov Decision Process"
+    },
+    {
+      "term": "Partially Observed Markov Decision Process",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "PPO",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Proximal Policy Optimization"
+    },
+    {
+      "term": "Proximal Policy Optimization",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "MCU",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "The microcontroller unit"
+    },
+    {
+      "term": "The microcontroller unit",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "UART",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Universal Asynchronous Receiver-Transmitter"
+    },
+    {
+      "term": "Universal Asynchronous Receiver-Transmitter",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "FSR",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Force-Sensitive Resistor"
+    },
+    {
+      "term": "Force-Sensitive Resistor",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "RMP",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Riemannian Motion Policy"
+    },
+    {
+      "term": "Riemannian Motion Policy",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "P2",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Base plate with a mounting plate"
+    },
+    {
+      "term": "Base plate with a mounting plate",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "IP",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "The interphalangeal"
+    },
+    {
+      "term": "The interphalangeal",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DMA",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Direct Memory Access"
+    },
+    {
+      "term": "Direct Memory Access",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "FK",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Our approach combines Forward Kinematics"
+    },
+    {
+      "term": "Our approach combines Forward Kinematics",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DP3",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Diffusion Policy"
+    },
+    {
+      "term": "GRU",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Gated Recurrent Unit"
+    },
+    {
+      "term": "Gated Recurrent Unit",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "TCP",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Tool Center Point"
+    },
+    {
+      "term": "Tool Center Point",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "CPUT",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Completion per Unit Time"
+    },
+    {
+      "term": "Completion per Unit Time",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DFA",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Design for Assembly"
+    },
+    {
+      "term": "Design for Assembly",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DHB",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Denavit-Hartenberg Bidirectional"
+    },
+    {
+      "term": "Denavit-Hartenberg Bidirectional",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "GMM",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Gaussian Mixture Model"
+    },
+    {
+      "term": "Gaussian Mixture Model",
+      "idf": 6.567,
+      "df": 3,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "BT",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Behavior Tree"
+    },
+    {
+      "term": "Behavior Tree",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DIP",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Distal Interphalangeal"
+    },
+    {
+      "term": "Distal Interphalangeal",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "PIP",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Proximal Interphalangeal"
+    },
+    {
+      "term": "Proximal Interphalangeal",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "ROM",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "The full joint range of motion"
+    },
+    {
+      "term": "The full joint range of motion",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DOM",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Deformable Object Manipulation"
+    },
+    {
+      "term": "Deformable Object Manipulation",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "RL",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "While reinforcement learning"
+    },
+    {
+      "term": "While reinforcement learning",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DDPM",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Denoising Diffusion Probabilistic Model"
+    },
+    {
+      "term": "Denoising Diffusion Probabilistic Model",
+      "idf": 6.567,
+      "df": 3,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "MPL",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "The Modular Prosthetic Limb"
+    },
+    {
+      "term": "The Modular Prosthetic Limb",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "CAD",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Computer-Aided Design"
+    },
+    {
+      "term": "Computer-Aided Design",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "ANN",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "We used an Artificial Neural Network"
+    },
+    {
+      "term": "We used an Artificial Neural Network",
+      "idf": 6.567,
+      "df": 3,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "SCI",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Spinal Cord Injury"
+    },
+    {
+      "term": "Spinal Cord Injury",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "FRC",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Robotics Competition"
+    },
+    {
+      "term": "Robotics Competition",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "IMU",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "An Inertial Measurement Unit"
+    },
+    {
+      "term": "An Inertial Measurement Unit",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "BLDC",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Brushless Direct Drive"
+    },
+    {
+      "term": "Brushless Direct Drive",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "ATE",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Absolute Trajectory Error"
+    },
+    {
+      "term": "Absolute Trajectory Error",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "RPE",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "The mean Relative Pose Error"
+    },
+    {
+      "term": "The mean Relative Pose Error",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "BOM",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Bill of Materials"
+    },
+    {
+      "term": "Bill of Materials",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "PWM",
+      "idf": 6.567,
+      "df": 3,
+      "type": "acronym",
+      "definition": "Pulse-Width Modulation"
+    },
+    {
+      "term": "Pulse-Width Modulation",
+      "idf": 6.567,
+      "df": 3,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "CHILD",
+      "idf": 6.344,
+      "df": 4,
+      "type": "acronym",
+      "definition": "Humanoid Imitation and Live Demonstration"
+    },
+    {
+      "term": "Humanoid Imitation and Live Demonstration",
+      "idf": 6.344,
+      "df": 4,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "CT",
+      "idf": 6.344,
+      "df": 4,
+      "type": "acronym",
+      "definition": "We computed the collection throughput"
+    },
+    {
+      "term": "We computed the collection throughput",
+      "idf": 6.344,
+      "df": 4,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "GET",
+      "idf": 6.344,
+      "df": 4,
+      "type": "acronym",
+      "definition": "Abstract-We introduce the Grasp EveryThing"
+    },
+    {
+      "term": "Abstract-We introduce the Grasp EveryThing",
+      "idf": 6.344,
+      "df": 4,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "MLP",
+      "idf": 6.344,
+      "df": 4,
+      "type": "acronym",
+      "definition": "Multi-Layer Perceptron"
+    },
+    {
+      "term": "Multi-Layer Perceptron",
+      "idf": 6.344,
+      "df": 4,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "encoder-decoder",
+      "idf": 6.162,
+      "df": 5,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "ADC",
+      "idf": 6.162,
+      "df": 5,
+      "type": "acronym",
+      "definition": "Analog-to-Digital Converter"
+    },
+    {
+      "term": "Analog-to-Digital Converter",
+      "idf": 6.162,
+      "df": 5,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "URDF",
+      "idf": 6.162,
+      "df": 5,
+      "type": "acronym",
+      "definition": "Unified Robot Description Format"
+    },
+    {
+      "term": "Unified Robot Description Format",
+      "idf": 6.162,
+      "df": 5,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "YUBI",
+      "idf": 6.162,
+      "df": 5,
+      "type": "acronym",
+      "definition": "We introduce Yielding Universal Bidigital Interface"
+    },
+    {
+      "term": "We introduce Yielding Universal Bidigital Interface",
+      "idf": 6.162,
+      "df": 5,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "generative model",
+      "idf": 6.008,
+      "df": 6,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "reachability",
+      "idf": 6.008,
+      "df": 6,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "voxel",
+      "idf": 6.008,
+      "df": 6,
+      "type": "sensor",
+      "definition": ""
+    },
+    {
+      "term": "IL",
+      "idf": 6.008,
+      "df": 6,
+      "type": "acronym",
+      "definition": "Imitation learning"
+    },
+    {
+      "term": "Imitation learning",
+      "idf": 6.008,
+      "df": 6,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "VBTS",
+      "idf": 6.008,
+      "df": 6,
+      "type": "acronym",
+      "definition": "Vision-Based Tactile Sensors"
+    },
+    {
+      "term": "Vision-Based Tactile Sensors",
+      "idf": 6.008,
+      "df": 6,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "precision grasp",
+      "idf": 5.874,
+      "df": 7,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "analytical",
+      "idf": 5.874,
+      "df": 7,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "grasp success rate",
+      "idf": 5.874,
+      "df": 7,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "SPN",
+      "idf": 5.874,
+      "df": 7,
+      "type": "acronym",
+      "definition": "Soft Polyhedral Network"
+    },
+    {
+      "term": "Soft Polyhedral Network",
+      "idf": 5.874,
+      "df": 7,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "diffusion model",
+      "idf": 5.756,
+      "df": 8,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "PLA",
+      "idf": 5.756,
+      "df": 8,
+      "type": "acronym",
+      "definition": "Dprinted using polylactic acid"
+    },
+    {
+      "term": "Dprinted using polylactic acid",
+      "idf": 5.756,
+      "df": 8,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "DP",
+      "idf": 5.756,
+      "df": 8,
+      "type": "acronym",
+      "definition": "Diffusion Policy"
+    },
+    {
+      "term": "Diffusion Policy",
+      "idf": 5.756,
+      "df": 8,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "VAE",
+      "idf": 5.651,
+      "df": 9,
+      "type": "acronym",
+      "definition": ""
+    },
+    {
+      "term": "VR",
+      "idf": 5.651,
+      "df": 9,
+      "type": "acronym",
+      "definition": "spacemouse having the advantage of simplifying"
+    },
+    {
+      "term": "spacemouse having the advantage of simplifying",
+      "idf": 5.651,
+      "df": 9,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "BC",
+      "idf": 5.556,
+      "df": 10,
+      "type": "acronym",
+      "definition": "Behavioral cloning"
+    },
+    {
+      "term": "Behavioral cloning",
+      "idf": 5.556,
+      "df": 10,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "IK",
+      "idf": 5.469,
+      "df": 11,
+      "type": "acronym",
+      "definition": "Off-the-shelf inverse kinematics"
+    },
+    {
+      "term": "Off-the-shelf inverse kinematics",
+      "idf": 5.469,
+      "df": 11,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "clearance",
+      "idf": 5.389,
+      "df": 12,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "Isaac",
+      "idf": 5.389,
+      "df": 12,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "motion planning",
+      "idf": 5.389,
+      "df": 12,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "U-Net",
+      "idf": 5.389,
+      "df": 12,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "RGB-D",
+      "idf": 5.315,
+      "df": 13,
+      "type": "acronym",
+      "definition": ""
+    },
+    {
+      "term": "power grasp",
+      "idf": 5.315,
+      "df": 13,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "CNN",
+      "idf": 5.246,
+      "df": 14,
+      "type": "acronym",
+      "definition": ""
+    },
+    {
+      "term": "mesh",
+      "idf": 5.063,
+      "df": 17,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "multi-finger",
+      "idf": 5.009,
+      "df": 18,
+      "type": "gripper",
+      "definition": ""
+    },
+    {
+      "term": "grasp pose",
+      "idf": 4.958,
+      "df": 19,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "domain randomization",
+      "idf": 4.909,
+      "df": 20,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "depth image",
+      "idf": 4.818,
+      "df": 22,
+      "type": "sensor",
+      "definition": ""
+    },
+    {
+      "term": "7-DoF",
+      "idf": 4.818,
+      "df": 22,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "ACT",
+      "idf": 4.818,
+      "df": 22,
+      "type": "acronym",
+      "definition": "Action Chunking with Transformers"
+    },
+    {
+      "term": "Action Chunking with Transformers",
+      "idf": 4.818,
+      "df": 22,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "parallel-jaw",
+      "idf": 4.735,
+      "df": 24,
+      "type": "gripper",
+      "definition": ""
+    },
+    {
+      "term": "UMI",
+      "idf": 4.658,
+      "df": 26,
+      "type": "acronym",
+      "definition": "Universal Manipulation Interface"
+    },
+    {
+      "term": "Universal Manipulation Interface",
+      "idf": 4.658,
+      "df": 26,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "ablation",
+      "idf": 4.52,
+      "df": 30,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "self-supervised",
+      "idf": 4.427,
+      "df": 33,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "point cloud",
+      "idf": 4.398,
+      "df": 34,
+      "type": "sensor",
+      "definition": ""
+    },
+    {
+      "term": "force-torque",
+      "idf": 4.398,
+      "df": 34,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "6-DoF",
+      "idf": 4.343,
+      "df": 36,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "coverage",
+      "idf": 4.29,
+      "df": 38,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "MuJoCo",
+      "idf": 4.29,
+      "df": 38,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "sim-to-real",
+      "idf": 4.216,
+      "df": 41,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "cluttered",
+      "idf": 4.216,
+      "df": 41,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "ResNet",
+      "idf": 4.192,
+      "df": 42,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "transformer",
+      "idf": 4.062,
+      "df": 48,
+      "type": "architecture",
+      "definition": ""
+    },
+    {
+      "term": "inverse kinematics",
+      "idf": 4.062,
+      "df": 48,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "sampling",
+      "idf": 3.983,
+      "df": 52,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "manipulator",
+      "idf": 3.65,
+      "df": 73,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "reinforcement learning",
+      "idf": 3.65,
+      "df": 73,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "robot arm",
+      "idf": 3.262,
+      "df": 108,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "optimization",
+      "idf": 3.191,
+      "df": 116,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "workspace",
+      "idf": 3.063,
+      "df": 132,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "simulation",
+      "idf": 2.783,
+      "df": 175,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "end-effector",
+      "idf": 2.546,
+      "df": 222,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "dexterous",
+      "idf": 2.507,
+      "df": 231,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "success rate",
+      "idf": 2.457,
+      "df": 243,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "real-world",
+      "idf": 2.42,
+      "df": 252,
+      "type": "domain",
+      "definition": ""
+    },
+    {
+      "term": "gripper",
+      "idf": 1.685,
+      "df": 527,
+      "type": "gripper",
+      "definition": ""
+    },
+    {
+      "term": "tactile",
+      "idf": 1.651,
+      "df": 545,
+      "type": "domain",
+      "definition": ""
+    }
+  ],
+  "acronyms": [
+    {
+      "acronym": "UMI",
+      "full_form": "Universal Manipulation Interface",
+      "count": 26
+    },
+    {
+      "acronym": "ACT",
+      "full_form": "Action Chunking with Transformers",
+      "count": 22
+    },
+    {
+      "acronym": "IK",
+      "full_form": "Off-the-shelf inverse kinematics",
+      "count": 11
+    },
+    {
+      "acronym": "BC",
+      "full_form": "Behavioral cloning",
+      "count": 10
+    },
+    {
+      "acronym": "VR",
+      "full_form": "spacemouse having the advantage of simplifying",
+      "count": 9
+    },
+    {
+      "acronym": "PLA",
+      "full_form": "Dprinted using polylactic acid",
+      "count": 8
+    },
+    {
+      "acronym": "DP",
+      "full_form": "Diffusion Policy",
+      "count": 8
+    },
+    {
+      "acronym": "SPN",
+      "full_form": "Soft Polyhedral Network",
+      "count": 7
+    },
+    {
+      "acronym": "IL",
+      "full_form": "Imitation learning",
+      "count": 6
+    },
+    {
+      "acronym": "VBTS",
+      "full_form": "Vision-Based Tactile Sensors",
+      "count": 6
+    },
+    {
+      "acronym": "ADC",
+      "full_form": "Analog-to-Digital Converter",
+      "count": 5
+    },
+    {
+      "acronym": "URDF",
+      "full_form": "Unified Robot Description Format",
+      "count": 5
+    },
+    {
+      "acronym": "YUBI",
+      "full_form": "We introduce Yielding Universal Bidigital Interface",
+      "count": 5
+    },
+    {
+      "acronym": "CHILD",
+      "full_form": "Humanoid Imitation and Live Demonstration",
+      "count": 4
+    },
+    {
+      "acronym": "CT",
+      "full_form": "We computed the collection throughput",
+      "count": 4
+    },
+    {
+      "acronym": "GET",
+      "full_form": "Abstract-We introduce the Grasp EveryThing",
+      "count": 4
+    },
+    {
+      "acronym": "MLP",
+      "full_form": "Multi-Layer Perceptron",
+      "count": 4
+    },
+    {
+      "acronym": "FOV",
+      "full_form": "Field Of View",
+      "count": 3
+    },
+    {
+      "acronym": "CSI",
+      "full_form": "Camera Serial Interface",
+      "count": 3
+    },
+    {
+      "acronym": "USB",
+      "full_form": "Universal Serial Bus",
+      "count": 3
+    },
+    {
+      "acronym": "FDM",
+      "full_form": "Fused Deposition Modeling",
+      "count": 3
+    },
+    {
+      "acronym": "POMDP",
+      "full_form": "Partially Observed Markov Decision Process",
+      "count": 3
+    },
+    {
+      "acronym": "PPO",
+      "full_form": "Proximal Policy Optimization",
+      "count": 3
+    },
+    {
+      "acronym": "MCU",
+      "full_form": "The microcontroller unit",
+      "count": 3
+    },
+    {
+      "acronym": "UART",
+      "full_form": "Universal Asynchronous Receiver-Transmitter",
+      "count": 3
+    },
+    {
+      "acronym": "FSR",
+      "full_form": "Force-Sensitive Resistor",
+      "count": 3
+    },
+    {
+      "acronym": "RMP",
+      "full_form": "Riemannian Motion Policy",
+      "count": 3
+    },
+    {
+      "acronym": "P2",
+      "full_form": "Base plate with a mounting plate",
+      "count": 3
+    },
+    {
+      "acronym": "IP",
+      "full_form": "The interphalangeal",
+      "count": 3
+    },
+    {
+      "acronym": "DMA",
+      "full_form": "Direct Memory Access",
+      "count": 3
+    },
+    {
+      "acronym": "FK",
+      "full_form": "Our approach combines Forward Kinematics",
+      "count": 3
+    },
+    {
+      "acronym": "DP3",
+      "full_form": "Diffusion Policy",
+      "count": 3
+    },
+    {
+      "acronym": "GRU",
+      "full_form": "Gated Recurrent Unit",
+      "count": 3
+    },
+    {
+      "acronym": "TCP",
+      "full_form": "Tool Center Point",
+      "count": 3
+    },
+    {
+      "acronym": "CPUT",
+      "full_form": "Completion per Unit Time",
+      "count": 3
+    },
+    {
+      "acronym": "DFA",
+      "full_form": "Design for Assembly",
+      "count": 3
+    },
+    {
+      "acronym": "DHB",
+      "full_form": "Denavit-Hartenberg Bidirectional",
+      "count": 3
+    },
+    {
+      "acronym": "GMM",
+      "full_form": "Gaussian Mixture Model",
+      "count": 3
+    },
+    {
+      "acronym": "BT",
+      "full_form": "Behavior Tree",
+      "count": 3
+    },
+    {
+      "acronym": "DIP",
+      "full_form": "Distal Interphalangeal",
+      "count": 3
+    },
+    {
+      "acronym": "PIP",
+      "full_form": "Proximal Interphalangeal",
+      "count": 3
+    },
+    {
+      "acronym": "ROM",
+      "full_form": "The full joint range of motion",
+      "count": 3
+    },
+    {
+      "acronym": "DOM",
+      "full_form": "Deformable Object Manipulation",
+      "count": 3
+    },
+    {
+      "acronym": "RL",
+      "full_form": "While reinforcement learning",
+      "count": 3
+    },
+    {
+      "acronym": "DDPM",
+      "full_form": "Denoising Diffusion Probabilistic Model",
+      "count": 3
+    },
+    {
+      "acronym": "MPL",
+      "full_form": "The Modular Prosthetic Limb",
+      "count": 3
+    },
+    {
+      "acronym": "CAD",
+      "full_form": "Computer-Aided Design",
+      "count": 3
+    },
+    {
+      "acronym": "ANN",
+      "full_form": "We used an Artificial Neural Network",
+      "count": 3
+    },
+    {
+      "acronym": "SCI",
+      "full_form": "Spinal Cord Injury",
+      "count": 3
+    },
+    {
+      "acronym": "FRC",
+      "full_form": "Robotics Competition",
+      "count": 3
+    },
+    {
+      "acronym": "IMU",
+      "full_form": "An Inertial Measurement Unit",
+      "count": 3
+    },
+    {
+      "acronym": "BLDC",
+      "full_form": "Brushless Direct Drive",
+      "count": 3
+    },
+    {
+      "acronym": "ATE",
+      "full_form": "Absolute Trajectory Error",
+      "count": 3
+    },
+    {
+      "acronym": "RPE",
+      "full_form": "The mean Relative Pose Error",
+      "count": 3
+    },
+    {
+      "acronym": "BOM",
+      "full_form": "Bill of Materials",
+      "count": 3
+    },
+    {
+      "acronym": "PWM",
+      "full_form": "Pulse-Width Modulation",
+      "count": 3
+    },
+    {
+      "acronym": "MAE",
+      "full_form": "Mean absolute error",
+      "count": 2
+    },
+    {
+      "acronym": "TPU",
+      "full_form": "By using the thermoplastic polyurethane",
+      "count": 2
+    },
+    {
+      "acronym": "PCB",
+      "full_form": "bonding a thin layer of stiff",
+      "count": 2
+    },
+    {
+      "acronym": "AR",
+      "full_form": "Augmented Reality",
+      "count": 2
+    },
+    {
+      "acronym": "MDP",
+      "full_form": "Markov decision process",
+      "count": 2
+    },
+    {
+      "acronym": "CVAE",
+      "full_form": "Conditional VAE",
+      "count": 1
+    },
+    {
+      "acronym": "TE",
+      "full_form": "Temporal Ensemble",
+      "count": 1
+    },
+    {
+      "acronym": "VIO",
+      "full_form": "Visual-Inertial Odometry",
+      "count": 1
+    },
+    {
+      "acronym": "SAC",
+      "full_form": "Kitty robot using Soft Actor Critic",
+      "count": 1
+    },
+    {
+      "acronym": "NPG",
+      "full_form": "Natural Policy Gradient",
+      "count": 1
+    },
+    {
+      "acronym": "DAPG",
+      "full_form": "Demo-Augmented Policy Gradient",
+      "count": 1
+    }
+  ]
+}

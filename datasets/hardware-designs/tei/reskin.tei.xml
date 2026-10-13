@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">ReSkin: versatile, replaceable, lasting tactile skins</title>
+				<funder ref="#_nQvcA53">
+					<orgName type="full">NSF-NRI</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2022-02-12">12 Feb 2022</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Raunaq</forename><surname>Bhirangi</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Tess</forename><surname>Hellebrekers</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Carmel</forename><surname>Majidi</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Abhinav</forename><surname>Gupta</surname></persName>
+						</author>
+						<title level="a" type="main">ReSkin: versatile, replaceable, lasting tactile skins</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2022-02-12">12 Feb 2022</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">72EA5C8CED6A63AD6CD91637017E0C89</idno>
+					<idno type="arXiv">arXiv:2111.00071v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Soft sensors have continued growing interest because they enable both passive conformal contact and provide active contact data from the sensor properties. However, the same properties of conformal contact result in faster deterioration of soft sensors and larger variations in their response characteristics over time and across samples, inhibiting their ability to be long-lasting and replaceable. ReSkin is a tactile soft sensor that leverages machine learning and magnetic sensing to offer a low-cost, diverse and compact solution for long-term use. Magnetic sensing separates the electronic circuitry from the passive interface, making it easier to replace interfaces as they wear out while allowing for a wide variety of form factors. Machine learning allows us to learn sensor response models that are robust to variations across fabrication and time, and our self-supervised learning algorithm enables finer performance enhancement with small, inexpensive data collection procedures. We believe that ReSkin opens the door to more versatile, scalable and inexpensive tactile sensation modules than existing alternatives.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>In recent years, AI has advanced significantly from large-scale recognition to defeating human players in games. But surprisingly current approaches still struggle at one task: dexterous manipulation. While babies, from a young age, can perform several challenging manipulation tasks, robots continue to struggle even with simple tasks. Why is that? We believe a significant bottleneck in dexterous manipulation is the lack of practical solutions to tactile sensing. From collecting large-scale rich contact data in the wild for learning models to building individual tactile sensors for robot fingers and hand surfaces, current tactile sensing solutions lack on multiple dimensions and fail to scale up.</p><p>In the context of robotics and AI, good tactile skins aim to provide: (a) conformal contact for stable grasping/manipulation; (b) accurate compression and shear force measurements; (c) high force (&lt;0.1 N) and temporal resolution (&gt;100 Hz); and (d) large surface area coverage (&gt;4 cm 2 ) with good spatial resolution for sensing at all contact points. For practical usage, good tactile sensors should also prioritize being (e) compact and versatile, (f) inexpensive, and (g) long-lasting. Current solutions for tactile sensing have not been able to address all of these needs. For example, visionbased tactile sensors are often bulky, expensive, and slow to respond   <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b1">2]</ref>. Resistive and capacitive soft sensors require many connections that lead to early failure and integration challenges <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b3">4]</ref>. Commercial sensing options, such as BioTac, are expensive (&gt;$1000) and available in limited form factors. Rigid tactile sensors, such as force-sensitive resistors, lack the soft, deformable surface that is advantageous for object/environment interaction. Above all, while there has been a plethora of work focused on fingertip sensing, all-over sensing skins are much less studied.</p><p>There are two primary reasons why sensing skins have not been practical solutions for tactile sensing: (a) first, there is a direct trade-off between the soft materials that enable conformal contact and their ability to perform well over time. The exact properties that make soft sensors ideal for dexterous manipulation, make them degrade easily during robotic tasks; (b) but more importantly, even skins with durable lasting materials require data-driven modeling which generally fails to generalize from one sensor to another. Therefore, any replacement of skin requires relearning the model which is impractical (hence, limiting experiments to one sensor only <ref type="bibr" target="#b4">[5]</ref>). We propose ReSkin -an inexpensive (&lt;$30), replaceable, compact, versatile and long-lasting tactile soft skin. ReSkin is composed of soft magnetized skin and a flexible magnetometer-based sensing mechanism. Any deformation of the skin caused by normal/shear forces is read via distortions in magnetic fields. These distortions can be mapped back to estimate the contact points and forces on the original skin using a learned machine learning model. The ReSkin design is compact (2-3mm thick) and long-lasting (our ML models perform accurate predictions even beyond 50K interactions. ReSkin is versatile -the skin and the sensor mechanism can be used anywhere from robot hands to objects to gloves, arm sleeves and even dog paws. ReSkin has high temporal (up to 400Hz) and spatial resolution (1mm with 90% accuracy). But what makes ReSkin the ideal tactile skin is the ability to replace an old skin with a new skin as if you are peeling off an old band-aid and putting a new one on. Our learned models perform strongly even on new skins out-of-the-box but can be further adapted to high precision and resolution using a self-supervised calibration technique. We believe ReSkin has the ability to collect contact data in the wild, provide robust tactile perception capabilities to our robot (See Figure <ref type="figure">1</ref>) and effectively make tactile perception a first-class citizen among its peers (pixels and sound).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Background</head><p>Soft sensing skins provide tactile or proprioceptive information without affecting the underlying mechanics of the system. Machine learning approaches have recently been shown to effectively parse soft sensor data for robotic grasping <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b6">7,</ref><ref type="bibr" target="#b7">8]</ref>, proprioception <ref type="bibr" target="#b8">[9]</ref>, and object classification <ref type="bibr" target="#b9">[10]</ref>, among many others <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b11">12,</ref><ref type="bibr" target="#b12">13]</ref>. Recent work in this area has relied on all types of sensing principles to collect and infer information in all types of form factors <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b14">15,</ref><ref type="bibr" target="#b15">16]</ref>. For example, resistive networks patterned onto a knit glove have been used to collect tactile grasping dataset and classify objects using neural networks <ref type="bibr" target="#b16">[17]</ref>. Capacitive soft skins can be scaled up to larger areas by sampling at different interrogation frequencies to detect position via SVMs with just one interface <ref type="bibr" target="#b17">[18]</ref>. Multi-modal sensing skins have also been shown to improve the ability to discern between 8 types of applied deformation using neural networks <ref type="bibr" target="#b18">[19]</ref> and static or dynamic inputs <ref type="bibr" target="#b19">[20]</ref>. Data-driven approaches are becoming more common over traditional modeling due to the unpredictable material properties that introduce both non-stationary responses and non-linear behaviors over time, especially considering the dynamic interactions and unconstrained environments robots may encounter.</p><p>Unlike capacitive <ref type="bibr" target="#b17">[18]</ref>, resistive <ref type="bibr" target="#b16">[17]</ref>, and piezoelectric <ref type="bibr" target="#b20">[21]</ref> soft sensing, magnetic and optical soft sensors do not require direct electrical connections between the circuitry and elastomer. This is ideal to keep cost down, as the elastomeric interface degrades much faster than the accessory electronics. It also simplifies the replacement process by not requiring the user to disconnect and reconnect individual wires. While optical sensors provide high spatial resolution data, they also require a clear line of sight between the camera and elastomer to observe deformations <ref type="bibr" target="#b21">[22,</ref><ref type="bibr" target="#b22">23]</ref>. The camera's depthof-focus puts a hard limit on the minimum distance to the elastomer surface leading to relatively bulky sensor modules. In contrast, magnetic sensing benefits greatly from minimizing the distance between sensor and elastomer, allowing for a much more compact tactile sensor. In addition, the small form factor of magnetometers, as compared to cameras, enables compatibility across more diverse form factors for the tactile sensor. We demonstrate these key benefits by integrating the magnetic skin onto an arm sleeve, glove, dog shoe and a robot end-effector. In each case, the elastomer is removable while the circuitry stays in place. While there have been a number of attempts towards developing a large area skin -piezoresistive fabrics <ref type="bibr" target="#b15">[16,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b23">24]</ref>, rigid taxels <ref type="bibr" target="#b24">[25]</ref> as well as optical sensors <ref type="bibr" target="#b25">[26]</ref>, they often lack shear sensing capabilities <ref type="bibr" target="#b24">[25,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b23">24]</ref>, conformal contact <ref type="bibr" target="#b24">[25]</ref> and/or a scalable fabrication process <ref type="bibr" target="#b20">[21]</ref>. ReSkin, however, is uniquely positioned to satisfy all of these requirements, and has the potential to be a scalable solution for all-over sensing skin.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ReSkin</head><p>DIGIT <ref type="bibr" target="#b0">[1]</ref> GelSlim <ref type="bibr" target="#b21">[22]</ref> BioTac <ref type="bibr" target="#b26">[27]</ref> RSkin <ref type="bibr">[</ref> ? ?</p><p>Table <ref type="table">1</ref>: ReSkin is the only sensor that satisfies all the requirements for learning approaches The underlying principle for magnetic sensing is that an applied deformation is measured as a change in magnetic flux readings by nearby magnetometers. However, we still need to learn or estimate the mapping function that decodes change in magnetic flux into contact force position and magnitude. Several works on soft sensors have used neural networks for sensor characterizations <ref type="bibr" target="#b27">[28,</ref><ref type="bibr" target="#b28">29]</ref>, but these models are often trained on single sensor prototypes, and do not necessarily transfer to new copies of the sensor. Then, the end-user is required to collect and sometimes label their own data for each sensor, which additionally requires access expensive, specialized equipment <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b29">30]</ref>.</p><p>In this paper, we systematically perform an experimental analysis of the proposed magnetic tactile sensor. First, we extensively study the characterization of a single sensor over time. We demonstrate that one can learn a quite accurate data-driven model to map magnetic flux changes to contact force location and magnitude. We also demonstrate that the skins are long-lasting. However, models trained on one sensor fail to generalize to other sensors or to different circuit board designs. Our first insight is to exploit multi-sensor learning: learn a more generalizable model by using data from a larger number of sensors. While this leads to significant improvement, it still falls well short of training and testing on the same sensor. Inspired by recent work in self-supervised learning, we also present a simple self-supervised calibration procedure which learns to adapt the multi-sensor model to a particular sensor using just a couple of hundred pokes on the skin. Our self-supervised approach is inspired from several works in slow feature learning <ref type="bibr" target="#b30">[31,</ref><ref type="bibr" target="#b31">32]</ref> and contrastive learning <ref type="bibr" target="#b32">[33,</ref><ref type="bibr" target="#b33">34,</ref><ref type="bibr" target="#b34">35]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Design and Fabrication</head><p>The sensing principle for ReSkin relies on relative distance changes between embedded magnetic microparticles in an elastomer matrix and a nearby magnetometer. The use of magnetic microparticles allows the skin to be molded into many shapes and thicknesses. When the magnetic composite is deformed by applied force, the magnetometer reports changes in magnetic flux in its X-,Y-, and Z-coordinate system <ref type="bibr" target="#b35">[36]</ref>. For an overall sensing area of 20mm x 20mm (Figure <ref type="figure" target="#fig_1">3</ref>), we measure magnetic flux changes using 5 magnetometers. Four magnetometers (MLX90393; Melexis) are spaced 7mm apart around a central magnetometer. All 3D-printed molds, circuit board files, bill of materials, and libraries used have been publicly released and opensourced on the website. Magnetic Elastomer Fabrication. Our fabrication technique takes advantage of strong edge-effects of permanent magnets. We magnetize the composite over a 4x4 grid of much smaller cube magnets (0.25in; AppliedMagnets). Additionally, we apply a more uniform magnetic field during curing by placing the grid of magnets both above and below the sample (Figure <ref type="figure" target="#fig_1">3B</ref>). Magnetic microparticles (MQP-15-7 (∼80 mesh); Magnequench) and 2-part polymer (Dragonskin 10 NV; Smooth-On) are mixed in a 2:1:1 ratio and poured into a 3D-printed mold. The mold is placed in a vacuum chamber for 3 minutes to remove air bubbles before placing magnets above and below the sample. The sample cures at room temperature (approx 24 • C) for at least 3 hours before being removed.</p><p>Circuit Board. We use two variants of the circuit board for the experiments and demos presented in this paper -a rigid board and a flexible board illustrated in Figure <ref type="figure" target="#fig_1">3C</ref>. The circuit includes a 4-pin connector (JST-SH; Molex) that transfers 20 values of magnetometer data (Temp, B X , B Y , B Z for 5 chips) to a microcontroller (Trinket M0; Adafruit) at approximately 400 Hz. The microcontroller processes and transmits this data over USB to be read over serial from a central computer. To allow for easy replacement without damaging the board, we avoid the use of permanent adhesive for attaching the sensing skin. Skins are secured using four screws (M2-6; for the rigid boards), or using four sewable snaps (size 4/0, Dritz; for the flexible boards). The bottoms of the rigid boards are first insulated by applying a thin layer of polymer (nitrocellulose).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Experimental Setup</head><p>Our goal is to perform experimental analysis of the proposed sensor, ReSkin, and the learned mapping between the magnetic field measurements from the sensor (B) and the planar location (x = (x, y)) and magnitude of the applied force (F). We want to analyze how ReSkin performs on the different desired attributes -the accuracy of contact force estimation, spatial resolution of contact prediction, robustness to wear and tear and how model performance varies across different skin instances. For all the experiments, we use the data collection apparatus shown in Figure <ref type="figure" target="#fig_1">3</ref>. The circuit board along with the skin is fixed to a 3D printed mount and streams 4 values, (Temp, B X , B Y , B Z ), measurements for each of the five magnetometers at 400 Hz. A hemispherical indenter fastened to the end of a Dobot Magician robot is used to apply forces at different locations on the skin. The indenter also encases a 3-axis F/T sensor (Nano17; ATI) that streams force data at 1kHz. We restrict ourselves to quasi-static measurements and analysis for the results presented in the following sections, unless stated otherwise. The world coordinate frame used in these experiments is defined such that the xy-plane is aligned with the base of the robot as shown in Figure <ref type="figure" target="#fig_1">3</ref>. To collect data, we first specify a location for the robot to move to such that the indenter makes contact with the skin. We then record five measurements from the sensor board. The specified xy-location is used as the ground truth label for the location of the force. The normal force measured by the Nano17 sensor is used as the ground truth label for the magnitude of the applied force.</p><p>The indentations are made in a snake-like pattern along a 9x9 grid (excluding 4 points per corner; a total of 65 indentations) of size 16cm x 16cm shown in Figure <ref type="figure" target="#fig_1">3</ref>. During each iteration, we do a single pass at each of 6 depths from 0.2mm to 1.2mm, for a total of 390 indentations. We collect data over multiple iterations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Single Sensor Model -Decoding Magnetic Flux to Contact Characteristics</head><p>Our first experiment is to evaluate the accuracy of the mapping from magnetic flux B to contact force location and magnitude prediction.  <ref type="formula">3</ref>). The change in magnetic field resulting from deformation is used as the input to our model. The third activation layer is the bottleneck feature layer. We use f eat(•) to represent this 3-layer feature extraction network. Our loss function is L2loss on (x, y, F ). We define the accuracy of contact localization as the fraction of points whose x and y predictions are both within ±1 mm of their true label. We collect a total of 50K samples and use a random 45K for training and 5K for test. On this simple experiment, we get MSE for location and force is 0.037 ± 0.014 mm 2 and 0.005 ± 0.002 N 2 respectively, with a contact localization accuracy of 99.58 ± 0.34%.</p><p>To demonstrate the shear sensing capability of the sensor, we perform another experiment. Instead of the quasi-static setup explained in Sec. 4, data is collected dynamically by indenting the skin to a certain depth and dragging it along the length of the sensor. We move in straight lines along x and y directions at intervals of 2 mm to cover the entire area of the sensor. The network architecture is the same as described in the previous paragraph, predicting (x, y, F x , F y , F z ) instead of just (x, y, F z ). On this experiment, we get MSE for F xy : 0.0011 ± 0.0002 N 2 , without compromising on prediction of normal force (MSE:0.003 ± 0.001 N 2 ) or contact location (MSE:0.085 ± 0.006 mm 2 ).</p><p>Of course, the above setup is not realistic since training and test data is unlikely be sampled randomly from the same distribution. Instead, we use a more practical setting, training on an initial K samples and testing on the samples that come after. As the elastomer goes through multiple cycles of compression and retraction, we see a drift in the properties of the elastomer. This is evidenced by the variation in the recorded magnetic field shown in Figure <ref type="figure" target="#fig_3">4a</ref>. Therefore, it is critical to analyze how the learned model behaves with respect to time.</p><p>(a) Variation of magnetic field over time for a single sensor at two different points, over 10,000 indentations. The first measurement is subtracted from other measurements to better illustrate degree of variation.</p><p>(b) Variation in magnetic field at two different points across five different sensors. Each line corresponds to the average magnetic field measured over 10,000 indentations for a particular sensor Since we learn a sensor model that uses the change in magnetic field as input, we would need to record the magnetic field before and after contact occurs. Depending on the application scenario in which the sensor is deployed, it may often be easier to collect calibrating no-load magnetic field measurements at regular intervals. Here, we design an experiment to quantify the effect of the frequency of this measurement on learned sensor models. We collect data from 50,000 indentations on a single sensor. We train a neural network to predict contact location and force, using the first 5,000 indentations as the training set. This model is then evaluated on test sets comprising 1000 indentations after every 5000 indentations, to understand the degree and rate of domain shift. The results of this experiment are shown in Figure <ref type="figure" target="#fig_5">5</ref>.</p><p>Based on Figure <ref type="figure" target="#fig_5">5a</ref>, we observe that prediction errors are higher and increase faster when we only make a single no-load measurement at the start. This can be attributed to the drift in the elastomer response over time, which can be offset to a certain extent by more frequent no-load measurements. Errors are also higher when no-load measurements are updated before every contact. This could be   <ref type="figure" target="#fig_5">5b</ref> indicates that the model, on average, overestimates the applied force. This overestimation can be attributed to the softening of the elastomer as the number of interactions increases. <ref type="bibr" target="#b5">6</ref> Adapting to New Sensors -MultiSensor Model + Self-supervised Learning Our goal is to provide a simple, replaceable tactile sensor. To achieve this, it is imperative that any learned models acting on sensor measurements generalize to new sensor boards and skins. We demonstrate the generalizability of our learned sensor response model in the following sections. Our models predict the contact normal force (F ) and location(x = (x, y)) using the change in magnetic field measured by the magnetometers(B). However, the cheap and easy fabrication method for ReSkin comes with a significant degree of variability in the sensor response. Figure <ref type="figure" target="#fig_3">4b</ref> demonstrates the variation in raw magnetic field resulting from an identical indentation across different sensors. So, how can we learn a model that generalizes to new sensors and even new circuit boards?</p><p>We use two techniques to help improve generalization for new skins and PCBs. First, instead of using data from a single sensor, we use data from multiple sensors to train our mapping function. This allows the model to see more diverse data in training and learn a more generalizable mapping function. Additionally, we apply a feature regularization component (self-supervised loss) to our loss function. This component is a triplet loss computed in feature space as follows:</p><formula xml:id="formula_0">L triplet = max 0, ||f eat(B a ) -f eat(B p )|| 2 -||f eat(B a ) -f eat(B n )|| 2 , (<label>1</label></formula><formula xml:id="formula_1">)</formula><p>where B a , B p and B n are three datapoints with corresponding contact locations x a , x p and x n , such that ||x a -x p || &lt; ||x a -x n ||, ie. x a is closer to x p than x n . Subscripts a, p and n refer to anchor, positive and negative samples respectively. This loss encourages points that are closer on the skin to be closer to each other in feature space. It acts as a regularizer while also enabling us to use the self-supervised adaptation procedure described in the following paragraph.</p><p>Note that this self-supervised loss does not require ground-truth contact location or force readings and therefore can be leveraged to further improve performance on new sensor boards and skins. A new user can collect their own unlabeled dataset, which can be indexed without requiring explicit labels. For instance, the user can use the tip of a pen to indent the sensor skin in a straight line and incrementally index these points as they move along the line. Triplets of points can now be sampled along this line, and the indices can be used to order the pairs within each triplet by distance. Our multi-sensor learned model can then be fine-tuned using these triplets to minimize the triplet loss. At every training step, we sample a batch from the original training data, and an equal-sized batch of triplets (sampled with replacement) from the unlabeled dataset. The former is used to minimize the original loss function, while the latter is only used to minimize the triplet loss.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1">Results</head><p>We compare four model approaches. Our baseline model is trained on one sensor and tested on a different sensor. The other three are multi-sensor models -(a) trained without the triplet loss, (b) trained with the triplet loss, and (c) trained with the triplet loss along with self-supervised adaptation.</p><p>For the following comparisons, we collect data of 10,000 indentations each from 18 different skins. We use a set of 6 sensor boards and 18 skins: each board appearing thrice in the dataset, each time with a different skin on top. For the multi-sensor models, we perform 6-fold cross-validation, with the held out test set corresponding to three different skins on a particular sensor board each time. For the self-supervised adaptation, we use different subsets of the unseen sensor data in the The single-sensor baseline performs poorly, failing to capture variability across sensors.</p><p>Our self-supervised adaptation significantly improves prediction accuracy as well as MSE in xy, F adaptation step, to qualitatively illustrate the effect of the quantity of data used for adaptation. For the single-sensor model, we individually train on 3 different sensors and test on 9 other sensors.</p><p>Based on Table <ref type="table" target="#tab_1">2</ref>, we see that the multi-sensor models do significantly better than the single-sensor model. Training on a larger set of sensors allows the neural network model to generalize better. Further, we see that adding the triplet loss slightly affects performance. This small drop could be attributed to the additional constraint on the feature space resulting from the triplet loss. However, the self-supervised adaptation gives us a sizeable improvement over the model predicting without adaptation. Note that the adaptation procedure also results in improved force prediction performance.  To further investigate the effectiveness of our self-supervised adaptation procedure, we look at how increasing the quantity of data used for adaptation correlates with model performance. As can be seen from Figure <ref type="figure" target="#fig_7">6a</ref>, there is a significant improvement in performance between no self-supervision and using 780 points for self-supervision. However, performance seems to plateau as we increase the data beyond this point, which indicates that our model adapts quickly with small amounts of unlabeled data. Finally, Figure <ref type="figure" target="#fig_7">6b</ref> shows the effect of the number of sensors in the training data on model performance. We use data from three unseen sensors as the test set. As expected, performance improves as the amount of training data increases. Further, we observe that the self-supervised adaptation, while always doing better than the other models, offers a significant improvement in performance when using fewer sensors in training.</p><p>Generalizing models with manual indentations Since the analysis of our self-supervised adaptation technique is performed in a very controlled scenario we perform another, less controlled, experiment which is likely to be closer to the end user's application setting. We manually indent the sensor 325 times and run self-supervised adaptation using the triplet loss. To test the effectiveness of the adaptation, we collect test data using the original experimental setup to evaluate the adapted models. After adaptation we see improvements in accuracy, from 79.86% to 84.84%, MSE xy from 0.676 mm 2 to 0.489 mm 2 and MSE F from 0.268 N 2 to 0.192 N 2 , clearly demonstrating the effectiveness of our proposed method even outside a controlled environment.</p><p>Generalizing models to a different sensor board type In order to demonstrate the effectiveness of our self-supervised adaptation scheme, we now adapt a model learned using rigid sensor boards on a flexible sensor board. Note that this is a significantly harder adaptation problem since the distance between skin and circuit board is 80% lesser in case of the flexible board. We see an average contact localization accuracy of 75% with MSE error on location and force as 0.72 mm 2 and 0.54 N 2 respectively. The relatively larger force errors can be attributed to an overestimation bias resulting from signals appearing stronger due to the reduced thickness of the flexible board.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">ReSkin in Action</head><p>We have demonstrated that ReSkin is a sensor capable of high resolution contact localization and force prediction. The performance does not deteriorate significantly with wear and tear. But most importantly, learned models generalize to new skins with a simple self-supervised adaptation scheme. We now highlight how ReSkin's compact design allows it to be used in diverse applications with different form factors. In this section, we use ReSkin in different settings to emphasize its effectiveness in a range of application scenarios. These demos are for proof-of-concept only. For the following, we fabricated both flexible and rigid circuit boards of the exact same design: flexible boards are more comfortable and thinner, while rigid boards can withstand larger applied forces.</p><p>Force Sensitivity: Water in shot glass To visually illustrate the force sensitivity of our sensor, we do a pouring demo where we place a shot glass on top of a ReSkin sensor. As the water fills up, we see monotonically increasing sensor measurements indicating the sensor's ability to distinguish forces as small as the weight of less than 20 mL (&lt; 0.2N) of water (Supplementary Video S1).</p><p>Robot Gripper. Next, we show that ReSkin can be a useful tactile sensor for robotics applications such as grasping delicate objects such as blueberries and grapes (See Figure <ref type="figure">1B</ref>). Two ReSkin sensors with flexible circuit boards are placed on either side of a parallel jaw gripper (Robotiq Hand-E Gripper on Sawyer Arm). Grasping soft and squishy objects requires force feedback -applying too much force will squish blueberry and the grape. We show that the built-in force sensing (30N minimum) is insufficient for the task, whereas ReSkin does an excellent job of using force feedback to control grasping. Furthermore, we demonstrate that the grasping continues to work well, with no tuning required, when we replace one of the skins with a new skin (Supplementary Videos S2, S3).</p><p>Location Sensitivity: Poking To visually illustrate the location sensitivity of our sensor, we do a simple poking task on a new sensor and show the resolution of real-time contact location estimation (See Figure <ref type="figure">1D</ref> and Supplementary Video S4).</p><p>Dog Shoe. Our next application demonstrates how ReSkin's compact design makes it non-obtrusive and useful for measuring tactile forces in the wild. One magnetic skin and flexible circuit board is placed inside the sole of a dog shoe (size: 1.75in). A 1/16in layer of urethane foam is added on top for comfort. The data is collected on-board and logged to an SD card at 250 Hz. The sensorized shoe is worn on the front right leg of a small dog (17 lb). The sensor tracks magnitude and direction of applied force while resting, walking, and running (See Figure <ref type="figure">1C</ref> and Supplementary Video S5).</p><p>Glove. We also demonstrate how ReSkin can be used to measure forces during natural humanobject interactions. A magnetic skin and rigid circuit board is placed on the right-hand index finger. A nitrile glove was placed over to hold the board in place, and keep the objects clean. The data was collected on-board and logged to an SD card at 250 Hz. We demonstrate sensor output during the sealing of dough (See Figure <ref type="figure">1F</ref> and Supplementary Video S6).</p><p>Arm Sleeve. Finally, we want to demonstrate that ReSkin is a surface sensor and can be used for wide coverage tactile sensing. Specifically, we connected 8 flexible boards in two rows of four and fabricated a larger, continuous skin (2in x 4in). All 8 boards are connected to a microcontroller (QT Py; Adafruit) that samples all 40 magnetometers at 133 Hz. We show how ReSkin can be scaled up for contact localization across larger surface areas (See Figure <ref type="figure">1E</ref> Supplementary Video S7).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Conclusion</head><p>We present ReSkin: a low-cost, compact and long-lasting surface tactile sensor with high localization accuracy and force sensitivity. ReSkin combines soft sensing with recent advances in machine learning to develop models that generalize across time and individual skins. More specifically, we use multi-sensor learning combined with self-supervised triplet loss for slow feature changes. We also present an SSL adaptation procedure to further refine the models for new skins. Therefore, ReSkin sensors have easily replaceable skin (as easy as peeling and putting new band-aid) that can be used right away. We demonstrate that the compact form of ReSkin makes it an ideal candidate for diverse applications: from grasping delicate objects to measuring forces exerted by dog feet; from building wide-coverage contiguous skin to measuring contact forces in the wild.</p><p>Limitations and Future Work: While we have shown promising results on contact localization and force prediction, there is enormous untapped potential for ReSkin at this stage. Experiments in this paper are based on single point contact, and we aim to further investigate multi-point contact. An interesting direction for future work is to analyze the effect of external magnetic fields and metallic objects on ReSkin's sensing ability. ReSkin can stream data up to 400 Hz and we aim to leverage this capability to train better models using dynamic time-series data. We believe that ReSkin (and its desirable properties) will make tactile perception far more accessible for real-world use.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :Figure 2 :</head><label>12</label><figDesc>Figure 1: A) ReSkin is easy to fabricate and the size of a penny, enabling a wide range of applications. B) Robot gripper using tactile feedback from ReSkin sensors to hold a blueberry without squishing it. C) Dog shoe with an embedded ReSkin sensor; (inset) visualization of sensor measurements. D) Contact localization on a new ReSkin sensor using our self-supervised adaptation procedure. E) Contact localization on a ReSkin curated into a fabric sleeve as a 2in x 4in contiguous skin. F) ReSkin sensor as a fingertip sensor to record forces and contacts while folding a dumpling</figDesc><graphic coords="2,108.00,72.00,396.02,211.38" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: A) Experimental setup for data collection with Dobot Magician, ATI Nano 17 (inset), and six sensor boards streaming to a control computer. B) Mold for curing elastomer along with magnet holders. C) Two types of circuit boards -rigid and flexible -designed to be used with ReSkin.</figDesc><graphic coords="4,157.50,72.00,297.00,114.27" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>Our five-layer multilayer perceptron (MLP) architecture for the mapping function is: B(15) → MLP+ReLU(200) → MLP(200) → MLP(40) → MLP+ReLU(200) → MLP+ReLU(200) → xyF(</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Variation in magnetic field over time and across different sensors. Each tick on the xaxis corresponds to a component of the magnetic fields measured by the sensor. While the general properties of the individual sensors overlap, there is still obvious variation across the samples.</figDesc><graphic coords="5,313.92,413.10,190.08,71.02" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head></head><label></label><figDesc>(a) Accuracy of contact localization and MSE for force predictions, as the number of interactions with the skin increases (b) Scatter plot of predicted force and the actual force applied, after 45,000 interactions.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Model performance with increasing number of interactions a result of overfitting to the training data, since later experiments were seen to significantly benefit from updating zero measurements just before every contact. Furthermore, Figure5bindicates that the model, on average, overestimates the applied force. This overestimation can be attributed to the softening of the elastomer as the number of interactions increases.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head></head><label></label><figDesc>(a) Self-supervised adaptation improves significantly even with small quantities of adaptation data (b) Self-supervised adaptation leads to even larger performance gain with fewer sensors in training data</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Self-supervised adaptation works with lesser adaptation data as well as training data</figDesc><graphic coords="7,112.85,291.10,184.35,57.87" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 :</head><label>2</label><figDesc>ModelAccuracy, in % MSE xy , in mm 2 MSE F , in N 2</figDesc><table><row><cell>Single-sensor</cell><cell>25.24±10.12</cell><cell>6.453±3.363</cell><cell>0.420 ± 0.149</cell></row><row><cell cols="2">Multi-sensor without triplet loss 84.43±12.88</cell><cell>0.733±0.707</cell><cell>0.155 ± 0.025</cell></row><row><cell>Multi-sensor with triplet loss</cell><cell>81.03±12.86</cell><cell>0.756±0.718</cell><cell>0.155 ± 0.030</cell></row><row><cell>Multi-sensor with triplet loss, adapted using 390 indentations</cell><cell cols="3">87.00 ± 11.81 0.514 ± 0.601 0.142 ± 0.025</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgments</head><p>The authors would like to thank <rs type="person">Sudeep Dasari</rs> for his help with setting up the Sawyer robot and <rs type="person">Yunsik Ohm</rs> and <rs type="person">Zach Patterson</rs> for their help with fabrication in the initial stages of the project. The authors would also like to thank everyone at <rs type="institution">AGI</rs> Labs as well as the <rs type="institution">Soft Machines Lab</rs> for their constant help and support. CM was supported in part by <rs type="funder">NSF-NRI</rs> #<rs type="grantNumber">1830362</rs>.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_nQvcA53">
+					<idno type="grant-number">1830362</idno>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Digit: A novel design for a low-cost compact high-resolution tactile sensor with application to in-hand manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P.-W</forename><surname>Chou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Maloon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">R</forename><surname>Most</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Stroud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Santos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Byagowi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Kammerer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="3838" to="3845" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">An elastomer-based flexible optical force and tactile sensor</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Konstantinova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Noh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alomainy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Althoefer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 2nd IEEE International Conference on Soft Robotics (RoboSoft)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="361" to="366" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">A highly sensitive capacitive-based soft pressure sensor based on a conductive fabric and a microporous dielectric layer. Advanced materials technologies</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Atalay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Atalay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gafford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Walsh</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page">1700237</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Toward perceptive soft robots: Progress and challenges</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Totaro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Beccai</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Science</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page">1800541</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Soft magnetic tactile skin for continuous force and location estimation using neural networks</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hellebrekers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Chin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Ford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Kroemer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Majidi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="3892" to="3898" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Learning object grasping for soft robot hands</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Schwarting</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Delpreto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rus</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="2370" to="2377" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Owens</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Upadhyaya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1710.05512</idno>
+		<title level="m">The feeling of success: Does touch sensing help predict grasp outcomes? arXiv preprint</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">More than a feeling: Learning to grasp and regrasp using vision and touch</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Owens</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="3300" to="3307" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Soft optoelectronic sensory foams with proprioception</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Van Meerbeek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">De</forename><surname>Sa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Shepherd</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">24</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Automated recycling separation enabled by soft robotic material classification</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lipton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">C</forename><surname>Yuen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Kramer-Bottiglio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rus</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 2nd IEEE International Conference on Soft Robotics (RoboSoft)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="102" to="107" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Electronic skins and machine learning for intelligent soft robots</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Shih</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">G</forename><surname>Thuruthel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-L</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Iida</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Bao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Kramer-Bottiglio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">T</forename><surname>Tolley</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Machine learning for soft robotic sensing and control</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Chin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hellebrekers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Majidi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Intelligent Systems</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page">1900171</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Soft magnetic skin for superresolution tactile sensing with force self-decoupling</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Shen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">51</biblScope>
+			<biblScope unit="page">2021</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Gelsight: High-resolution robot tactile sensors for estimating geometry and force</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page">2762</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">A tunable magnet-based tactile sensor framework</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Harber</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Schindewolf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Webster-Wood</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choset</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors</title>
+		<imprint>
+			<biblScope unit="page" from="1" to="4" />
+			<date type="published" when="2020">2020. 2020</date>
+			<publisher>IEEE</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Flexible and stretchable fabric-based tactile sensor</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">H</forename><surname>Büscher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Koiva</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Schürmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Haschke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">J</forename><surname>Ritter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">63</biblScope>
+			<biblScope unit="page" from="244" to="252" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Learning the signatures of the human grasp using a scalable tactile glove</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sundaram</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Kellnhofer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Torralba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Matusik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature</title>
+		<imprint>
+			<biblScope unit="volume">569</biblScope>
+			<biblScope unit="issue">7758</biblScope>
+			<biblScope unit="page" from="698" to="702" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">An any-resolution distributed pressure localization scheme using a capacitive soft sensor skin</title>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">A</forename><surname>Sonar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">C</forename><surname>-S. Yuen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Kramer-Bottiglio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Paik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE RAS International Conference on Soft Robotics (RoboSoft), number CONF</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Heterogeneous sensing in a multifunctional soft sensor for human-robot interfaces</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-L</forename><surname>Park</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">49</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Fingerprint-enhanced capacitive-piezoelectric flexible sensing skin to discriminate static and dynamic tactile stimuli</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Navaraj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Dahiya</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Intelligent Systems</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page">1900051</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Tactile sensing over articulated joints with stretchable sensors</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Bhattacharjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Vaish</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Killpack</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">C</forename><surname>Kemp</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2013 World Haptics Conference (WHC)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="103" to="108" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Gelslim: A high-resolution, compact, robust, and calibrated tactile-sensing finger</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Donlon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="1927" to="1934" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>She</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2106.08851</idno>
+		<title level="m">Gelsight wedge: Measuring high-resolution 3d contact geometry with a compact robot finger</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">A force and thermal sensing skin for robots in human environments</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wade</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Bhattacharjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">D</forename><surname>Williams</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">C</forename><surname>Kemp</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.robot.2017.06.008</idno>
+		<ptr target="https://www.sciencedirect.com/science/article/pii/S0921889016307837" />
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<idno type="ISSN">0921-8890</idno>
+		<imprint>
+			<biblScope unit="volume">96</biblScope>
+			<biblScope unit="page" from="1" to="14" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">A comprehensive realization of robot skin: Sensors, sensing, control, and applications</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Dean-Leon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Bergner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R G</forename><surname>Olvera</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Leboutet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mittendorfer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE</title>
+		<meeting>the IEEE</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">107</biblScope>
+			<biblScope unit="page" from="2034" to="2051" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Large-scale vision-based tactile sensing for robot links: Design, modeling, and evaluation</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Van Duong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">A</forename><surname>Ho</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TRO.2020.3031251</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="390" to="403" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Robust learning of tactile force estimation through robot interaction</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Sundaralingam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">S</forename><surname>Lambert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Boots</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hermans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Birchfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="9035" to="9042" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Soft robot perception using embedded soft sensors and recurrent neural networks</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">G</forename><surname>Thuruthel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Shih</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Laschi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">T</forename><surname>Tolley</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">26</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Use of deep learning for characterization of microfluidic soft sensors</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-L</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Jo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="873" to="880" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Adaptive calibration of soft sensors using optimal transportation transfer learning for mass production and long-term usage</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kwon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Jeon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-L</forename><surname>Park</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Intelligent Systems</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page">1900178</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Unsupervised learning of spatiotemporally coherent metrics</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Goroshin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bruna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tompson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Eigen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lecun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE international conference on computer vision</title>
+		<meeting>the IEEE international conference on computer vision</meeting>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="4086" to="4093" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Slow and steady feature analysis: higher order temporal coherence in video</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Grauman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="3852" to="3861" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Unsupervised learning of visual representations using videos</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE international conference on computer vision</title>
+		<meeting>the IEEE international conference on computer vision</meeting>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="2794" to="2802" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Facenet: A unified embedding for face recognition and clustering</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Schroff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kalenichenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Philbin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="815" to="823" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">A simple framework for contrastive learning of visual representations</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kornblith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Norouzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hinton</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">International conference on machine learning</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="1597" to="1607" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Soft magnetic skin for continuous deformation sensing</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hellebrekers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Kroemer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Majidi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Intelligent Systems</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">1900025</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

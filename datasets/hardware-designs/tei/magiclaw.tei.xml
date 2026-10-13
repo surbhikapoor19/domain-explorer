@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">MAGICLAW: A DUAL-USE, VISION-BASED SOFT GRIPPER FOR BRIDGING THE HUMAN DEMONSTRATION TO ROBOTIC DEPLOYMENT GAP A PREPRINT</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-09-24">September 24, 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Tianyu</forename><surname>Wu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Design + Learning Research Group</orgName>
+								<orgName type="institution">Southern University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xudong</forename><surname>Han</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Design + Learning Research Group</orgName>
+								<orgName type="institution">Southern University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Haoran</forename><surname>Sun</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Design + Learning Research Group</orgName>
+								<orgName type="institution">Southern University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zishang</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Design + Learning Research Group</orgName>
+								<orgName type="institution">Southern University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Bangchao</forename><surname>Huang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Design + Learning Research Group</orgName>
+								<orgName type="institution">Southern University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<author role="corresp">
+							<persName><forename type="first">Chaoyang</forename><surname>Song</surname></persName>
+							<email>songcy@ieee.org</email>
+							<affiliation key="aff0">
+								<orgName type="department">Design + Learning Research Group</orgName>
+								<orgName type="institution">Southern University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">MAGICLAW: A DUAL-USE, VISION-BASED SOFT GRIPPER FOR BRIDGING THE HUMAN DEMONSTRATION TO ROBOTIC DEPLOYMENT GAP A PREPRINT</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-09-24">September 24, 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">E76191D08F7943BFB6CBAF252F932F04</idno>
+					<idno type="arXiv">arXiv:2509.19169v1[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Robot Learning from Demonstration</term>
+					<term>Vision-based Deformable Perception</term>
+					<term>Soft Robotics</term>
+					<term>Teleoperation</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The transfer of manipulation skills from human demonstration to robotic execution is often hindered by a "domain gap" in sensing and morphology. This paper introduces MagiClaw, a versatile twofinger end-effector designed to bridge this gap. MagiClaw functions interchangeably as both a handheld tool for intuitive data collection and a robotic end-effector for policy deployment, ensuring hardware consistency and reliability. Each finger incorporates a Soft Polyhedral Network (SPN) with an embedded camera, enabling vision-based estimation of 6-DoF forces and contact deformation. This proprioceptive data is fused with exteroceptive environmental sensing from an integrated iPhone, which provides 6D pose, RGB video, and LiDAR-based depth maps. Through a custom iOS application, MagiClaw streams synchronized, multi-modal data for real-time teleoperation, offline policy learning, and immersive control via mixed-reality interfaces. We demonstrate how this unified system architecture lowers the barrier to collecting high-fidelity, contact-rich datasets and accelerates the development of generalizable manipulation policies. Please refer to the iOS app at <ref type="url" target="https://apps.apple.com/cn/app/magiclaw/id6661033548">https://apps.apple.com/cn/app/magiclaw/id6661033548</ref> for further details.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>The success of modern robot learning paradigms, from Learning from Demonstration (LfD) <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b1">2]</ref> to offline reinforcement learning, is fundamentally dependent on the quality and richness of the underlying data <ref type="bibr" target="#b2">[3]</ref>. For contact-rich manipulation tasks, robust policies require more than just kinematic trajectories; they demand a holistic understanding of interaction forces, tactile feedback, and environmental context <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5]</ref>. Consider a human deftly handling a delicate object: the action is a symphony of precise motion, modulated forces, and continuous tactile adjustments <ref type="bibr" target="#b5">[6]</ref>. Replicating such skills requires capturing this multi-modal information stream in its entirety.</p><p>However, existing data collection methodologies present significant challenges. First, they often rely on a patchwork of disparate, expensive sensors-such as external motion capture systems, wrist-mounted force/torque sensors, and complex tactile skins <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b7">8]</ref>-resulting in cumbersome and costly setups. This high barrier to entry limits the scale and diversity of data collection efforts <ref type="bibr" target="#b8">[9]</ref>. Second, and more critically, a persistent domain gap exists between the human demonstrator and the robotic learner <ref type="bibr" target="#b9">[10]</ref>. Data is often collected using one set of hardware (e.g., an instrumented glove) and deployed on a robot with entirely different sensor suites and end-effector morphology. This mismatch necessitates complex domain adaptation techniques and is a primary reason why policies trained on demonstration data often fail to generalize to physical hardware <ref type="bibr" target="#b10">[11]</ref>.</p><p>To address these challenges, we present MagiClaw, a unified hardware platform designed to seamlessly bridge the gap from human demonstration to robotic deployment. MagiClaw is a dual-purpose, two-fingered gripper that merges three key innovations:</p><p>1. Unified Hardware Form Factor: The exact same MagiClaw device can be used as a hand-held tool for human demonstration or mounted on a robot arm for autonomous execution. This hardware consistency minimizes the sensor and morphological domain gap, facilitating direct policy transfer.</p><p>2. Vision-Based Proprioceptive Fingertips: Each finger integrates a Soft Polyhedral Network (SPN) <ref type="bibr" target="#b11">[12]</ref> with an embedded miniature camera. This novel design enables visuotactile perception, inferring 6-DoF forces, torque, and high-resolution contact deformation from the distortion of the internal lattice structure, thereby obviating the need for costly external force sensors.</p><p>3. Integrated Multi-Modal Exteroception: An attached iPhone leverages its powerful sensor suite (LiDAR, RGB cameras, IMU) and ARKit framework <ref type="bibr" target="#b12">[13]</ref> to provide synchronized, rich environmental context, including gripper pose, depth maps, and high-resolution video.</p><p>Our primary contribution is an integrated system that fundamentally streamlines the collection of holistic, contact-centric data for robot learning. By fusing proprioceptive force/tactile data from the fingertips with exteroceptive visual and spatial data from a commodity smartphone, MagiClaw offers a low-cost, powerful, and user-friendly solution for both teleoperation and autonomous policy development. We posit that by democratizing access to such high-fidelity, multi-modal data, MagiClaw can serve as a catalyst for developing more robust and generalizable manipulation skills, advancing the pursuit of universal action embodiment in robotics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">The MagiClaw Gripper System</head><p>MagiClaw is designed to bridge the gap between human demonstration and autonomous robotic manipulation through a unified, dual-purpose gripper system. As shown in Fig. <ref type="figure" target="#fig_0">1</ref>, it can function either as a hand-held tool for collecting multimodal data in human-guided demonstrations or as a robotic end-effector mounted onto an industrial or collaborative robot arm. By sharing identical hardware and sensor layouts in these two modes, MagiClaw minimizes sensor disparities that often hinder the transfer of learned skills from humans to robots. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Engineering Highlights</head><p>Mechanical Design as a Dual-Purpose EOAgenT Fig. <ref type="figure" target="#fig_0">1A</ref> shows the overall design, which is inspired by widely adopted industrial solutions such as OnRobot's RG2 gripper. However, we completely redesigned the entire mechanical system for use in robot learning scenarios, ensuring it is suitable for dual-purpose usage by both human operators and robotic arms.</p><p>The base design features a parallel four-bar gripper mechanism, actuated by a back-driable motor, with a detachable iPhone mount, and two omni-adaptive fingertips with an in-finger miniature camera capable of Vision-based Deformable Perception.</p><p>Two variations are currently available, including a Hand-Held Mode for data collection and an End-Effector mode for robotic manipulation, formulating an End-of-Arm-Agent (EOAgenT) system.</p><p>• Hand-Held Mode -Ergonomic Handle and Trigger: When used in hand-held mode (Fig. <ref type="figure" target="#fig_0">1A</ref>), a molded handle accommodates the user's grip, and a trigger mechanism directly manipulates the finger openings. This setup enables an operator to perform everyday tasks, such as lifting, placing, sliding, or rotating objects, just as they would with a normal tool. Meanwhile, MagiClaw's onboard sensors continuously log force, pose, and environmental context without impeding the user's natural motions. -Live Data Capture for Demonstrations: Because the same system can later be mounted on a robot, the hand-held demonstration data (trajectories, forces, tactile events) directly translate into robotic replay or training sets for imitation learning. Operators can also leverage real-time visual or force feedback to refine their demonstrations in real-time. This approach significantly lowers the entry barrier to collecting rich multi-modal data, even outside specialized lab environments. • End-Effector Mode -Mounting and Interface: In robotic deployments (Fig. <ref type="figure" target="#fig_0">1B</ref>), the handle and trigger assembly can be detached, and the same mechanical finger unit is secured onto a standard robotic flange (e.g., an ISO 9409-1 mount). The iPhone remains attached to the gripper, maintaining the same sensing configurations.</p><p>A single cable or wireless link connects the microcontroller to the robot's main controller, issuing commands that open/close or apply force. -Closing the Demonstration-to-Deployment Loop: This dual-use design is key to minimizing discrepancies between human-collected data and final robotic execution. By ensuring sensor placement, geometry, and compliance remain the same, MagiClaw helps learned policies replicate the human-demonstrated strategies more accurately. Tasks initially taught to the robot in hand-held mode-like gently grasping a delicate object or manipulating flexible packaging-can be re-executed on the robot with high fidelity since the gripper's mechanical and sensing characteristics are unchanged.</p><p>The entire design is 3D printable, offering a low-cost solution that can also be fabricated using metallic parts for enhanced reliability. We have open-sourced this design for the research community's use, with an iOS app available for free download at <ref type="url" target="https://apps.apple.com/cn/app/magiclaw/id6661033548">https://apps.apple.com/cn/app/magiclaw/id6661033548</ref>, along with accompanying documentation.</p><p>Parallel Four-Bar as the Driving Mechanism Although there is no universally "better" choice of design for the drive mechanism, the parallel four-bar design offers several key advantages that may be suitable for this dual-purpose application:</p><p>• Field Use at a Low Cost: Since its mechanism is driven, no rails are needed, which is great for small robots or end-effectors with tight mass budgets. The use of rolling joints means that it's less sensitive to dust, chips, or sprays than sliding guides, which is also 3D-printing-friendly. • A Big Stroke in a Thin Package: The mechanism itself deploys and folds during usage, making it a more compact solution for field use while being capable of dealing with large-width objects during manipulation, covering most object sizes in daily life or even industrial scenarios. • Tunable Force Curve &amp; Compliance: The jaw speed and force changes with the angular input, meaning that the motion is an arc (the fingers' orientation stays parallel but their paths aren't perfectly straight), which provides a high mechanical advantage near full closure for strong holding with a small motor.</p><p>Backdrivable Actuation for Tunable Interaction Each finger is driven by a small motor with an encoder for accurate position feedback. The gearing ratio is tuned to deliver sufficient gripping force for everyday objects while preserving back-drivability, allowing the system to sense external contact forces and accommodate unmodeled variations. This design choice is especially helpful when switching between human-held demonstrations (where the user demands a responsive device) and robotic operation (where compliance prevents accidental damage to objects or the environment).</p><p>Adaptive Fingertips with Omni-directional Perception At the distal end of each four-bar linkage lies a Soft Polyhedral Network (SPN) <ref type="bibr" target="#b11">[12]</ref>, seen in Fig. <ref type="figure" target="#fig_0">1C</ref>. These fingertips have a flexible lattice pattern (e.g., a TPU-based 3D-printed mesh) that can conform in omni-directions around diverse object profiles. Unlike silicone or purely elastic membranes, this lattice architecture provides both structural integrity and localized deformation nodes, thereby enhancing grip stability on irregular or deformable items.</p><p>Inside each fingertip, we embed a miniature camera (e.g., a wide-angle micro camera) that observes the lattice from within. As external forces act on the SPN, the lattice geometry distorts. By tracking the shifting pattern of these lattice elements in real-time, a lightweight neural network infers 6D force/torque at the fingertip. Compared to conventional force sensors:</p><p>• Low Cost: The hardware cost is dominated by commodity micro cameras rather than specialized force-torque transducers. • High Spatial Resolution: Deformation is recorded across the entire fingertip, reflecting where and how contact forces are applied. • Minimal Additional Bulk: The sensing mechanism is entirely contained within the existing soft structure, maintaining a low overall profile.</p><p>Smartphone Sensing for Robotics A hallmark of MagiClaw is the integration of a consumer smartphone, specifically an iPhone Pro (although other smartphone brands or series may offer similar functionalities, depending on their hardware capabilities), into the gripper assembly (Figs. 1A&amp;B). Currently, this smartphone offers the following capabilities. By leveraging off-the-shelf smartphone hardware, MagiClaw benefits from on-device processing capabilities, integrated communication (Wi-Fi, Bluetooth, cellular), and a user-friendly interface for real-time monitoring.</p><p>• LiDAR Depth Sensing: High-frame-rate 3D mapping of the environment, enabling real-time object detection, scene reconstruction, or augmented-reality overlays. • RGB Video: High-resolution images or videos from the rear camera for visual context, teleoperation views, or training data. • Gripper Pose Tracking: Using Apple's ARKit framework and provided APIs to track the gripper's orientation and movement relative to the global frame <ref type="bibr" target="#b12">[13]</ref>. • Audio Capture: Potentially useful for event detection (e.g., collision sounds or object rattles).</p><p>Motor Drivers and Microcontroller Beyond the smartphone, a microcontroller (such as the Raspberry Pi 5) handles low-level tasks. This architecture isolates time-critical control from higher-level processes on the smartphone, maintaining robust performance despite the smartphone's variable compute load. It 1) receives setpoints (e.g., desired grip width) and commands the servo or DC motor drivers accordingly, 2) reads encoder values to relay finger positions and detect contact or stalling conditions, 3) measures interaction forces and transmits them to the handheld gripper, enabling haptic feedback for the user, and 4) coordinates timestamping of finger data with the smartphone's sensor streams.</p><p>System Communication Architecture The communication architecture of the MagiClaw system is illustrated in Fig. <ref type="figure" target="#fig_1">2</ref>. An iPhone, mounted on the hand-held or motorized gripper, connects to a Wi-Fi router over a wireless network. Both the handheld and motorized grippers contain a motor, each wired to a Raspberry Pi. These two Raspberry Pi boards communicate with their respective motors via the CAN protocol.</p><p>Each gripper also integrates two SPNs, each equipped with an internal camera. The cameras connect to the Raspberry Pi using Wi-Fi hotspots that they create themselves. The Raspberry Pis, in turn, communicate wirelessly with the central Wi-Fi router.</p><p>A computer running Rerun for real-time data visualization is also connected to the same router. It receives data streams from all devices in the local network. The MagiClaw app, running on the iPhone, serves a dual purpose. First, it displays 6D force/torque data from the SPN. Second, it broadcasts its own 6D pose, RGB images, and depth images, which are accessible to all devices within the local network. Additionally, the app offers direct control of the gripper motors, allowing for start and stop commands.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Experimental Validation: The Imitation Game</head><p>We validate the MagiClaw system through a series of use cases framed as The Imitation Game-a spectrum of tasks that demonstrate the system's capacity to capture holistic human actions and transfer them to a robot. These experiments serve to confirm the utility of our unified hardware and multi-modal sensing approach.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">High-Fidelity Teleoperation and Immersive Demonstration</head><p>A primary use case for MagiClaw is real-time teleoperation, where a human operator's actions are mirrored by a robot-mounted gripper (Fig. <ref type="figure" target="#fig_2">3</ref>). The operator uses a hand-held MagiClaw, and its state (6D pose and grip width) is streamed to the robot. This setup validates several key system capabilities:</p><p>• Intuitive Control and Data Capture: The direct physical interface allows for natural and dexterous manipulation. Simultaneously, the system logs a complete, synchronized dataset of the operator's actions and the resulting environmental interactions. • Closed-Loop Force Feedback: The vision-based force estimation from the robot's SPN fingertips is streamed back to the operator's hand-held device, providing haptic feedback. This allows the operator to "feel" the interaction forces, enabling delicate tasks that would be impossible with visual feedback alone.</p><p>To further enhance the operator's situational awareness, we integrate this system with an Apple Vision Pro mixed-reality headset (Fig. <ref type="figure" target="#fig_2">3A</ref>). The headset provides a first-person view from the robot's perspective, overlaying real-time sensor data (e.g., force vectors, depth maps) to enhance situational awareness. This immersive interface significantly reduces the cognitive load on the operator, enabling the demonstration of highly precise and complex maneuvers. This capability validates our claim of creating a user-friendly and powerful interface for demonstration.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Learning from Multi-Modal Replays</head><p>The rich datasets collected during teleoperation or offline hand-held demonstrations (Fig. <ref type="figure" target="#fig_3">4</ref>) form the foundation for policy learning. This workflow validates the core hypothesis that unified hardware reduces the domain gap. Please refer to the Supplementary Video for further demonstration.</p><p>• Direct Policy Transfer: Because the demonstration and deployment hardware are identical, simple behavioral cloning policies can be trained on the collected data and directly deployed on the robot with minimal performance degradation from sensor or kinematic mismatch. • Seeding for Advanced Learning Algorithms: The multi-modal data is ideally suited for training more sophisticated models. For example, synchronized force and visual data can be utilized in offline reinforcement learning to learn reward functions that encourage gentle contact, or to train predictive models that anticipate contact events based on visual input. The ability to replay demonstrations on the physical robot allows for iterative debugging and policy refinement. Discrepancies between the original demonstration and the robotic execution can be logged and used to further improve the learned model.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Overview of the MagiClaw System. (A) MagiClaw's dual-purpose design: a hand-held device for intuitive demonstration, data collection, and an identical end-effector mounted on a robotic arm for policy deployment. (B) An integrated iPhone provides exteroceptive sensing (6D pose, RGB, Depth) and a user interface for data management. (C) The Soft Polyhedral Network (SPN) fingertip contains an internal camera for vision-based proprioceptive sensing of 6D forces, torque, and local deformation.</figDesc><graphic coords="2,72.00,502.41,467.98,156.07" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Data visualization interface (via Rerun) and communication topology. Multi-modal data streams (pose, depth, fingertip images, etc.) are synchronized across devices for real-time or offline analysis.</figDesc><graphic coords="4,72.00,72.00,468.01,209.31" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: MagiClaw in Action. (A) An operator performs teleoperation with an immersive, first-person view provided by an Apple Vision Pro headset, which overlays real-time sensor data. (B) The system's versatility is demonstrated across various manipulation tasks, both in the real world and in simulation, showcasing its adaptability.</figDesc><graphic coords="5,72.00,567.91,468.00,112.39" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Collected Multi-Modal Data. Task of transferring a slice of pizza to plate and heating it in the microwave, showing RGB and depth images alongside temporal variations of left and right fingertip 6D force/torque and MagiClaw gripper's 6D pose.</figDesc><graphic coords="6,72.00,274.29,468.00,364.41" type="bitmap" /></figure>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Validation in Contact-Rich Scenarios</head><p>We further validate MagiClaw's utility in advanced tasks where force and tactile feedback are critical. Please refer to the Supplementary Video for further demonstration.</p><p>These scenarios confirm that the high-fidelity contact data captured by MagiClaw enables the learning of skills that are beyond the reach of systems relying solely on kinematic and visual information.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Conclusion</head><p>This paper introduced MagiClaw, a multi-modal gripper system designed to accelerate research in robot learning by directly addressing the demonstration-to-deployment gap. Its novel dual-purpose design, which unifies the hardware for data collection and policy execution, fundamentally minimizes domain shift. By integrating vision-based proprioceptive force sensing in soft fingertips with comprehensive exteroceptive sensing capabilities from a commodity smartphone, MagiClaw provides a low-cost yet powerful turnkey solution for generating rich, contact-centric datasets.</p><p>We have demonstrated how this integrated system enables high-fidelity teleoperation with immersive feedback, streamlines data collection for policy learning, and proves effective in challenging, contact-rich tasks. By simplifying and democratizing access to holistic action data, we believe MagiClaw will catalyze progress in data-driven robotics, paving the way for more dexterous, adaptable, and human-like manipulation.</p><p>Limitations and Future Work. The current system depends on low-latency wireless communication, which may bottleneck in congested networks. Vision-based force estimation is cost-effective but requires fingertip-specific calibration and training, suggesting room for streamlining. Reflective surfaces challenge LiDAR depth accuracy. As the iPhone is not a hard real-time system, iOS scheduling and thermal throttling limit the safety-critical control, making the integration of off-the-shelf cooling solutions a preferable option.</p><p>Our future work will focus on improving the system's robustness and expanding its capabilities. We plan to explore onboard policy learning directly on the integrated smartphone, investigate more sample-efficient calibration methods for the SPN fingertips, and develop a library of pre-trained models for common manipulation tasks. Crucially, we intend to open-source the hardware designs and core software modules to foster collaboration and empower the wider robotics research community to build upon our work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Supplementary Materials</head><p>Please refer to this link: <ref type="url" target="https://bionicdl.ancorasir.com/?p=2162">https://bionicdl.ancorasir.com/?p=2162</ref> for a supplementary video of this paper, the iOS app, and the full documentation.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">A Survey of Robot Learning from Demonstration</title>
+		<author>
+			<persName><forename type="first">Sonia</forename><surname>Brenna D Argall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuela</forename><surname>Chernova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brett</forename><surname>Veloso</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Browning</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.robot.2008.10.024</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">57</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="469" to="483" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Robot Programming by Demonstration</title>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Billard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sylvain</forename><surname>Calinon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rüdiger</forename><surname>Dillmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Schaal</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/978-3-540-30301-5_60</idno>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+			<publisher>Springer</publisher>
+			<biblScope unit="page" from="1371" to="1394" />
+			<pubPlace>Berlin Heidelberg, Berlin, Heidelberg</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">A Practical Roadmap to Learning from Demonstration for Robotic Manipulators in Manufacturing</title>
+		<author>
+			<persName><forename type="first">Alireza</forename><surname>Barekatain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hamed</forename><surname>Habibi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Holger</forename><surname>Voos</surname></persName>
+		</author>
+		<idno type="DOI">10.3390/robotics13070100</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Visual-Force-Tactile Fusion for Gentle Intricate Insertion Tasks</title>
+		<author>
+			<persName><forename type="first">Piaopiao</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bidan</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wang</forename><forename type="middle">Wei</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tiefeng</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Yang</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/LRA.2024.3379803</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="4830" to="4837" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">ForceMimic: Force-Centric Imitation Learning with Force-Motion Capture System for Contact-Rich Manipulation</title>
+		<author>
+			<persName><forename type="first">Wenhai</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junbo</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weiming</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cewu</forename><surname>Lu</surname></persName>
+		</author>
+		<idno type="DOI">10.48550/arXiv.2410.07554</idno>
+		<idno type="arXiv">arXiv:2410.07554</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Trends and Challenges in Robot Manipulation</title>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Billard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danica</forename><surname>Kragic</surname></persName>
+		</author>
+		<idno type="DOI">10.1126/science.aat8414</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Science</title>
+		<imprint>
+			<biblScope unit="volume">364</biblScope>
+			<biblScope unit="issue">6446</biblScope>
+			<biblScope unit="page">8414</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Tactile Sensing: New Directions, New Challenges</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Mark</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Lee</surname></persName>
+		</author>
+		<idno type="DOI">10.1177/027836490001900702</idno>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="636" to="643" />
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">Mahmoud</forename><surname>Meribout</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Olyad</forename><surname>Natnael Abule Takele</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nidal</forename><surname>Derege</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohamed</forename><forename type="middle">El</forename><surname>Rifiki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Varun</forename><surname>Khalil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jing</forename><surname>Tiwari</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zhong</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.measurement.2024.115332</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Tactile Sensors: A Review. Measurement</title>
+		<imprint>
+			<biblScope unit="volume">238</biblScope>
+			<biblScope unit="page">115332</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Learning Hand-Eye Coordination for Robotic Grasping with Deep Learning and Large-Scale Data Collection</title>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Pastor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Krizhevsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julian</forename><surname>Ibarz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deirdre</forename><surname>Quillen</surname></persName>
+		</author>
+		<idno type="DOI">10.1177/0278364917710318</idno>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">4-5</biblScope>
+			<biblScope unit="page" from="421" to="436" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Recent Advances in Robot Learning from Demonstration</title>
+		<author>
+			<persName><forename type="first">Harish</forename><surname>Ravichandar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sonia</forename><surname>Athanasios S Polydoros</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Chernova</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Billard</surname></persName>
+		</author>
+		<idno type="DOI">10.1146/annurev-control-100819-063206</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics, and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="297" to="330" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note>Annual Review of Control</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">A Survey of Imitation Learning: Algorithms, Recent Developments, and Challenges</title>
+		<author>
+			<persName><forename type="first">Maryam</forename><surname>Zare</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Parham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abbas</forename><surname>Kebria</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saeid</forename><surname>Khosravi</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Nahavandi</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TCYB.2024.3395626</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Cybernetics</title>
+		<imprint>
+			<biblScope unit="volume">54</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page" from="7173" to="7186" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Proprioceptive Learning with Soft Polyhedral Networks</title>
+		<author>
+			<persName><forename type="first">Xiaobo</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xudong</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fang</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chaoyang</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="DOI">10.1177/02783649241238765</idno>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">43</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page" from="1916" to="1935" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Apple Developer Documentation</title>
+		<idno>2025-08-20</idno>
+		<ptr target="https://developer.apple.com/documentation/arkit/,2025" />
+		<imprint>
+			<publisher>Apple Inc. ARKit</publisher>
+		</imprint>
+	</monogr>
+	<note type="report_type">Technical report</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

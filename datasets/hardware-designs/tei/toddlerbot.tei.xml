@@ -1,0 +1,1977 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">ToddlerBot: Open-Source ML-Compatible Humanoid Platform for Loco-Manipulation</title>
+				<funder ref="#_jdZH2tN #_vzkzvpm">
+					<orgName type="full">National Science Foundation</orgName>
+					<orgName type="abbreviated">NSF</orgName>
+				</funder>
+				<funder ref="#_SdHS7cF #_sKeVGfg">
+					<orgName type="full">unknown</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-10-06">6 Oct 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Haochen</forename><surname>Shi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Weizhuo</forename><surname>Wang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">C</forename><forename type="middle">Karen</forename><surname>Liu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">ToddlerBot: Open-Source ML-Compatible Humanoid Platform for Loco-Manipulation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-10-06">6 Oct 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">A73BC6E89FCF0BA1F4628B94B3C14EA7</idno>
+					<idno type="arXiv">arXiv:2502.00893v4[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Humanoid</term>
+					<term>Mechanisms &amp; Design</term>
+					<term>Robot Modeling &amp; Simulation</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Learning-based robotics research driven by data demands a new approach to robot hardware design-one that serves as both a platform for policy execution and a tool for embodied data collection. We introduce ToddlerBot, a low-cost, open-source humanoid robot platform designed for robotics and AI research. ToddlerBot enables seamless acquisition of high-quality simulation and real-world data. The plug-and-play zero-point calibration and transferable motor system identification ensure a high-fidelity digital twin and zero-shot sim-toreal policy transfer. A user-friendly teleoperation interface streamlines real-world data collection from human demonstrations. With its data collection ability and anthropomorphic design, ToddlerBot is ideal for whole-body loco-manipulation research. Additionally, ToddlerBot's compact size (0.56 m, 3.4 kg) ensures safe operation in real-world environments. Reproducibility is achieved with entirely 3D-printed, open-source design and off-the-shelf components, keeping the total cost under 6, 000 USD. This allows assembly and maintenance with basic technical expertise, as validated by successful independent replications of the system. We demonstrate ToddlerBot's capabilities through arm span, payload, endurance tests, loco-manipulation tasks, and a collaborative long-horizon scenario where two robots tidy a toy session together. By advancing ML-compatibility, capability, and reproducibility, ToddlerBot provides a robust and scalable platform for policy learning and execution in robotics research.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Conventional robot design prioritizes actuator strength, sensor accuracy, and mechanical precision. While these characteristics are essential for deploying robots in real-world environments, they fall short in addressing the needs of robotics research-where affordability, rapid repairability, and fullstack ownership with no black boxes are crucial for faster innovation, easier debugging, and total system understanding. Additionally, traditional robot platforms are often not aligned with modern machine learning (ML) paradigms driven by embodied data. A robot platform compatible with ML must possess the innate ability to collect observation and action data, both in simulation and the real world, as these complementary data sources are essential for scalable policy learning.</p><p>In response to these challenges, we introduce ToddlerBot, an open-source humanoid robot platform for the robotics and AI research community (Figure <ref type="figure" target="#fig_1">1</ref>), specifically developed to facilitate policy learning for locomotion and manipulation skills. ToddlerBot is designed to resemble a miniature human to minimize construction and maintenance costs and specialized expertise, lowering the barrier for researchers seeking to build self-sufficient, fully transparent humanoids free from critical reliance on third-party components. Although ToddlerBot lacks the payload capacity of full-sized humanoids, it offers more degrees of freedom in both the upper and lower body than any existing miniature humanoids-sufficient for advancing research in manipulation and locomotion.</p><p>9th Conference on Robot Learning (CoRL 2025), Seoul, Korea.  ToddlerBot is an open-source humanoid platform for large-scale, high-quality data collection in both simulation and the real world. It combines massive parallel simulation and an accurate digital twin for simulation, and an intuitive teleoperation device for whole-body control in the real world. ToddlerBot enables diverse loco-manipulation skills, including walking, push-ups, pull-ups, wagon pushing, bimanual, and full-body manipulation, learned from both data sources.</p><p>Inspired by recent quadrupeds <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b1">2]</ref> and robotic manipulators <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b3">4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b5">6,</ref><ref type="bibr" target="#b6">7]</ref>, ToddlerBot is designed with ML-compatibility in mind. Researchers can use ToddlerBot to not only execute policies but also to serve as a robust data collection platform. It enables the acquisition of high-quality simulation data through a plug-and-play zero-point calibration procedure and transferable motor system identification (sysID) results. These tools ensure a high-fidelity digital twin. We validate the quality of simulation data with keyframe-interpolated motions (e.g., push-ups and pull-ups) and reinforcement learning (RL) policies (e.g., walking), demonstrating the capability for zero-shot sim-to-real transfer. ToddlerBot can also acquire scalable real-world data. We design an intuitive teleoperation interface that allows simultaneous control of ToddlerBot's upper and lower body to collect wholebody manipulation data and develop effective visuomotor policies. Additionally, ToddlerBot's small size and weight (0.56 m, 3.4 kg) ensure safe and accessible operation in real-world environments.</p><p>Beyond ML-compatibility, ToddlerBot is designed with a focus on capability and reproducibility. A humanoid has the potential to utilize large scale human demonstrations by leveraging its anatomical similarity to the human body. As such, ToddlerBot features an anthropomorphic design with 30 active degrees of freedom (excluding end effectors). We demonstrate ToddlerBot's capabilities through arm span, payload, endurance tests, and various open-loop and closed-loop loco-manipulation tasks.</p><p>Reproducibility is achieved through low-cost, open-source designs and readily accessible hardware components. ToddlerBot uses commercially available motors and is completely 3D-printed, with a total cost under 6, 000 USD (90% of the cost is for motors and computers). We release digital twin, learning algorithms, hardware designs, and comprehensive tutorials to ensure that ToddlerBot can be built at home with basic knowledge of hardware and software, without requiring specialized equipment for manufacturing or repair. To validate reproducibility, we enlisted a CS-major student not involved in this project to independently build another instance of ToddlerBot. and successfully zero-shot transfer loco-manipulation policies between the two instances. We also received five reports of independent replications of ToddlerBot within a week by teams worldwide.</p><p>We summarize our contributions as follows: (1) As a system paper, we integrate existing components to create the first miniature humanoid with 30 DoFs and a superhuman range of motion, offering a practical humanoid platform with new capabilities for the community. (2) We develop a comprehensive sysID pipeline to ensure a high-fidelity digital twin in simulation. (3) We design a whole-body teleoperation solution to collect loco-manipulation data in the real world.  (a) TFLOPS refers to Tera FLoating-point Operations Per Second with single precision (FP32). (b) The active degrees of freedom actuated by motors, excluding end effectors such as parallel grippers or dexterous hands.</p><p>(c) While human body is powered by over 600 muscles, the primary functional movements can be approximated using 32 revolute joints: six DoFs per leg, seven DoFs per arm, three DoFs for the waist, and three DoFs for the neck, excluding fingers and toes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Works</head><p>In recent years, numerous humanoid robots have been developed. Full size industrial humanoids such as Boston Dynamics Atlas <ref type="bibr" target="#b7">[8]</ref>, Cassie <ref type="bibr" target="#b25">[26]</ref>, Digit <ref type="bibr" target="#b10">[11]</ref>, Figure <ref type="bibr" target="#b8">[9]</ref>, Tesla Optimus <ref type="bibr" target="#b9">[10]</ref>, Unitree H1 <ref type="bibr" target="#b11">[12]</ref> and Fourier GR1 <ref type="bibr" target="#b12">[13]</ref>. Half-scaled Booster T1 <ref type="bibr" target="#b13">[14]</ref>, Berkeley Humanoid Lite <ref type="bibr" target="#b19">[20]</ref> and Unitree G1 <ref type="bibr" target="#b14">[15]</ref>. Miniature-sized NAO H25 <ref type="bibr" target="#b21">[22]</ref>, Robotis OP3 <ref type="bibr" target="#b22">[23]</ref>, and K-Scale Zeroth <ref type="bibr" target="#b23">[24]</ref>. Together, they showcase diverse designs and capabilities. On the other hand, humanoids from research institutions, including the Berkeley Humanoid <ref type="bibr" target="#b16">[17]</ref>, BRUCE <ref type="bibr" target="#b20">[21]</ref>, Duke Humanoid <ref type="bibr" target="#b18">[19]</ref>, iCub <ref type="bibr" target="#b15">[16]</ref>, and MIT Humanoid <ref type="bibr" target="#b17">[18]</ref>, also explore the humanoid design space with different optimization emphasis.</p><p>As outlined in Table <ref type="table" target="#tab_0">1</ref>, we identify nine metrics to compare different humanoid platforms.</p><p>Size and weight are critical when designing humanoid robots. For manipulation, full-size humanoids are compatible with human-scale objects, whereas reduced-size robots are limited in their ability to manipulate them. However, reduced-size humanoids can still benefit manipulation research when paired with appropriately scaled objects <ref type="bibr" target="#b19">[20]</ref>. Furthermore, dynamic whole-body control techniques are likely transferable to larger humanoids. For locomotion, full-sized and small-scale humanoids offer similar research values <ref type="bibr" target="#b26">[27]</ref>. Full-size humanoids typically require a substantial engineering team to operate and maintain, along with specialized facilities like gantry cranes for safety. In contrast, a smaller humanoid is inherently cheaper, easier to build and repair, and safer <ref type="bibr" target="#b27">[28,</ref><ref type="bibr" target="#b26">27,</ref><ref type="bibr" target="#b28">29]</ref>. They can be deployed by a single person and operated in constrained environments with a laptop.</p><p>The number of active DoFs is crucial for human-like motion. While the human musculoskeletal system employs over 600 muscles, primary functional movement can be approximated using 32 revolute joints <ref type="bibr" target="#b15">[16,</ref><ref type="bibr" target="#b29">30]</ref>: six DoFs per leg, seven DoFs per arm, three DoFs for the waist, and three DoFs for the neck, excluding fingers and toes. Therefore, humanoid designs aim to achieve a DoF count as close to 32 as possible. The public perception of the limited performance of miniature humanoids is primarily due to fewer DoFs. This limitation often arises from space constraints that restrict the incorporation of many DoFs, a challenge we have successfully addressed in ToddlerBot.</p><p>To qualitatively assess the capability, we evaluate the humanoid's ability to perform both manipulation and locomotion tasks. The combination of both is particularly compelling, as it unlocks opportunities for whole-body control research <ref type="bibr" target="#b30">[31,</ref><ref type="bibr" target="#b31">32,</ref><ref type="bibr" target="#b32">33,</ref><ref type="bibr" target="#b33">34,</ref><ref type="bibr" target="#b34">35]</ref>. Furthermore, certain motions, such as push-ups, pull-ups, and cartwheels, require coordinated use of both arms and legs. Apart from physical capabilities, ToddlerBot also has best compute in class. Onboard CUDA accelerator allows concurrent policy inferences to support visual and locomotion capabilities. Large-scale simulation data collection is effective for locomotion <ref type="bibr" target="#b35">[36,</ref><ref type="bibr" target="#b36">37,</ref><ref type="bibr" target="#b37">38]</ref>, while real-world data collection  is more promising for manipulation <ref type="bibr" target="#b38">[39,</ref><ref type="bibr" target="#b39">40,</ref><ref type="bibr" target="#b40">41]</ref>. Therefore, to be ML-compatible, a humanoid research platform should facilitate data collection in both world.</p><p>Moreover, being open-source and low-cost is essential for others to reproduce. Without these qualities, research in this field would remain restricted to those with specialized expertise and significant resources. While making no compromise in functionality, ToddlerBot stands out as completely open-source and the most accessible among recent humanoid research platforms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">System Design</head><p>The design space of humanoid robots is vast; ToddlerBot's key design principles prioritize reproducibility as a hard constraint, and capability and ML-compatibility as key design objectives.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Reproducibility -A Hard Constraint</head><p>Unlike most prior works, we treat reproducibility as a hard constraint, as our humanoid platform holds no value if others cannot reproduce it. We define reproducibility as the ability of a single person to replicate the robot system at home without specialized equipment. 3D printing has become a popular method for reproducing open-source hardware systems due to its accessibility and fast turnaround time <ref type="bibr" target="#b1">[2,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b3">4]</ref>. Despite these merits, it's challenging to ensure sufficient strength and precision for printed plastic parts. We discuss our justifications for 3D printing in Appendix 8.1. For performance-critical components like motors and bearings, we limit ourselves to off-the-shelf parts. The total BOM cost of ToddlerBot is 6, 000 USD, with 90% spent on the computer (NVIDIA Jetson) and motors (Robotis Dynamixel). We detail our design considerations in Appendix 8.2.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Capability -Design Objective</head><p>Mechatronic Design. As shown in Figure <ref type="figure" target="#fig_3">2</ref>, ToddlerBot replicates the structure of an adult human body to maximize the number of active DoFs, enabling human-like motion and versatile locomanipulation tasks. Each arm features seven DoFs with spur gears for axis-aligned transmission, ensuring high functionality and reachability. Each leg has six DoFs: three at the hip for a wide range of motion and optimized walking strides, a parallel linkage at the knee to reduce inertia, and two at the ankle for stable locomotion. The neck, with two DoFs, incorporates parallel linkages at the pitch joint for a compact design, allowing expressive motion and full head mobility. The waist, also with two DoFs, uses coupled bevel gears to balance the space budget and effectively transmit power from two motors for yaw and roll actuation, which enables whole-body control. Additionally, ToddlerBot offers two end-effector designs: a parallel jaw gripper for grasping and a compliant palm for tasks requiring a palm-like posture. The end-effector designs can be switched quickly within two minutes. For each active DoF, we maximize the range of motion by optimizing geometries to prevent self-collisions (Appendix 8.3). To address concerns such as space constraints, axis alignment, and inertia reduction, we integrated a combination of three transmission mechanisms in the design: spur gears, coupled bevel gears, and parallel linkages (Appendix 8.4).</p><p>Sensors, Compute, and Power. To enhance ToddlerBot's capabilities, we integrate a comprehensive set of sensors and computational components. Two fisheye cameras are included to expand the field of view. An Inertial Measurement Unit (IMU) is placed in the chest to provide state feedback. A speaker and microphones facilitate communication with humans and other robots. We provide a conversation example between two ToddlerBot instances in the supplementary video. The onboard computation is powered by a Jetson Orin NX 16GB, enabling real-time inference of ML models. Based on our proposed power metric (Appendix 8.5), we choose Dynamixel motors for their reliability and accessibility (Appendix 8.6). Power management is handled by a custom-designed power distribution board which can be easily ordered online (Appendix 8.7).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">ML-Compatibility -Design Objective</head><p>Digital Twin. A high-fidelity digital twin is fundamental for high-quality simulation data collection and zero-shot sim-to-real transfer. We divide the digital twin development into two key components: zero-point calibration for correct kinematics and motor system identification for accurate dynamics. Since Dynamixel motors lack an absolute zero point, a reliable method is needed to calibrate after reassembly. We designed a set of calibration devices that can align the robot to the desired zero point within a minute, defined as standing with both arms parallel to the body (Appendix 8.8). For accurate sysID, we designed a motor test bed and automatic test procedures described in Appendix 8.9 to measure the range of dynamics parameters. Next, we collect actuator position tracking data by commanding a chirp signal <ref type="bibr" target="#b26">[27]</ref>, and use the position tracking result to fit an actuation model <ref type="bibr" target="#b41">[42]</ref> with optimization, as detailed in Appendix 8.10. Testing across instances shows Dynamixel motors of the same model have nearly identical dynamics parameters. This is also validated by successful direct deployment of policies to a second ToddlerBot instance without additional sysID.</p><p>Teleoperation Device. Inspired by previous works <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b42">43]</ref>, we develop a second upper body of ToddlerBot as the leader arms to collect high-quality real-world data. Two force-sensitive resistors (FSRs) are embedded in the gripping area of the end effectors to detect compression force from the operator, allowing gripper movement based on force input. We use a handheld gaming computer (either Steam Deck or ROG Ally X) to control the other body parts. The joysticks send velocity commands to walk, turn, and squat. Buttons trigger either programmed or trained policies and provide direct control over neck and waist movements. The detailed mapping is described in Appendix 8.11.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">System Control</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Keyframe Animation</head><p>Keyframe animation is widely used in character animation, but it provides only kinematics data, lacking a guarantee of dynamic feasibility <ref type="bibr" target="#b43">[44]</ref>. To address this, we develop a tool integrating MuJoCo <ref type="bibr" target="#b44">[45]</ref> with a GUI, enabling real-time tuning and validation of keyframe motion trajectories. Combined with high-fidelity digital twin, we can efficiently generate open-loop trajectories such as cuddling, push-ups, and pull-ups that can be executed zero-shot in the real world.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Reinforcement Learning</head><p>For walking, we train a reinforcement learning (RL) policy, π(a t |s t ), which outputs a t as joint position setpoints for proportional-derivative (PD) controllers, based on the observable state s t : where ϕ t is a phase signal, c t represents velocity commands, ∆q t denotes the position offset relative to the neutral pose q 0 , a t-1 is the action from the previous time step, θ t represents the torso orientation, and ω t is the torso's angular velocity. During PPO policy training <ref type="bibr" target="#b45">[46]</ref>, the environment generates the next state, s t+1 , updates the phase signal, and returns a scalar reward r t = r(s t , a t , s t+1 , ϕ t , c t ). Following standard practice <ref type="bibr" target="#b41">[42]</ref>, the reward is decomposed as:</p><formula xml:id="formula_0">s t = (ϕ t , c t , ∆q t , qt , a t-1 , θ t , ω t ) ,<label>(1)</label></formula><formula xml:id="formula_1">r t = r imitation t + r regularization t + r survival t .<label>(2)</label></formula><p>Among these components, r imitation t encourages accurate imitation of the reference walking motion, which is generated using a closed-form ZMP (Zero Moment Point) solution <ref type="bibr" target="#b46">[47]</ref>. r regularization t incorporates heuristics of ideal walking motion, penalizes joint torques, and promotes smooth actions to minimize unnecessary movements. A survival reward r survival t prevents early episode termination during training. Additional details are provided in Appendix 8.12.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Imitation Learning</head><p>Real-world data collection involves a human operator guiding the leader's arms to teleoperate the follower's arms while using a joystick and buttons on a handheld game controller to control body movements. During data collection, when the upper body tracks the position commands from the leader arms, ToddlerBot's lower body employs a two-layer PD controller to actively maintain balance. The first layer is a Center of Mass (CoM) PD controller, which keeps the CoM close to the center of the support polygon. The second layer is a torso pitch PD controller, which uses IMU readings to ensure the torso remains upright. The first layer addresses CoM shifts caused by arm movements, while the second layer compensates when lifting heavy objects. With this setup, we can collect 60 trajectories in just 20 minutes for both bimanual and full-body manipulation tasks. The motor positions of the leader's arms are recorded as the actions, while the motor positions of the follower robot, along with the RGB images captured from its camera, are recorded as observations. We train a diffusion policy <ref type="bibr" target="#b47">[48]</ref> on this dataset, with further details provided in Appendix 8.13.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Experiments</head><p>Capability: Arm Span, Payload, and Endurance. To evaluate ToddlerBot's arm span, we teleoperate it to hug a large object using the compliant palm gripper while maintaining balance. We show that, ToddlerBot can grasp objects up to 27 × 24 × 31 cm 3 , approximately 14 times its torso volume.</p><p>The payload test assesses both the upper body's lifting capacity and the lower body's ability to maintain balance. ToddlerBot successfully lifts up to 1484 g, 40% of its total weight (3484 g). To  In the endurance test, ToddlerBot starts with a fully charged battery, running the walking RL policy while stepping in place. ToddlerBot achieved the longest streak of 19 minutes without falling. Over time, increased motor temperatures gradually pushed it outside the policy's training distribution, leading to more frequent falls. ToddlerBot withstands up to 7 falls before breaking, but even then, repairs are quick-requiring only 21 minutes of 3D printing and 14 minutes of assembly, including removing the damaged part, installing the replacement, and performing zero-point calibration.</p><p>Capability: Push-ups and Pull-ups. To demonstrate expressive and dynamic motions, we program push-ups and pull-ups in our keyframe software and perform zero-shot sim-to-real transfer (Figure <ref type="figure" target="#fig_6">4</ref>). For pull-ups, we use an AprilTag to help ToddlerBot locate the horizontal bar. Both tasks require strong limbs, balanced upper-lower body strength, and precise coordination, particularly when ToddlerBot transitions from a planking pose to standing after push-ups and when it releases the horizontal bar and lands after pull-ups. These open-loop transfers require only a single motion trajectory designed in simulation, highlighting the fidelity of our digital twin.</p><p>ML-Compatibility: Omnidirectional Walking. To demonstrate ToddlerBot's locomotion capabilities, we train RL walking policies to follow a square trajectory with a predefined velocity profile. The right part of Figure <ref type="figure" target="#fig_4">3</ref> presents the results, with real-world tracking data collected via motion capture. Due to RL policy limitations, both simulation and real-world tracking deviate from the command, primarily because the learned walking policy struggles with in-place rotation, causing translation offsets. However, the sim-to-real gap is notably smaller than the tracking gap, supporting a successful zero-shot transfer. Additionally, we report a position tracking error variance of 0.018 m, which demonstrates good repeatability (more details in Appendix 8.14).</p><p>ML-Compatibility: Vision-based Manipulation. We show ToddlerBot's ability to perform bimanual manipulation and full-body manipulation by transferring octopus toys from a table and the </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ML-Compatibility: Skill Chaining</head><p>We test ToddlerBot's ability to combine loco-manipulation skills with wagon pushing. The results are shown in Appendix 8.15. To push the wagon, ToddlerBot first executes a diffusion policy to grasp the handle, while maintaining that pose, switches to the RL policy to walk forward. To enable walking while maintaining the grip, we sample the robot's end pose from the grasping policy's training data (60 demonstrations) during RL training.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Reproducibility: Hardware and Policies</head><p>To demonstrate hardware reproducibility, we recruit a CS-major student with no prior hardware experience to assemble a second ToddlerBot using our open-source assembly manual and videos. The student independently completes the assembly in three days, including the time for 3D printing. The open-source community has also reported successful reproductions of ToddlerBot, and most of them were completed in one week (Appendix 8.16). For policy reproducibility, we run the manipulation policy trained on data collected with one instance on the other instance, achieving the same success rate of 90% across 20 trials. We also successfully transferred the RL walking policy between both robots. To further showcase the equivalent performance of both ToddlerBot instances, we have them collaborate on a long-horizon toy tidy-up session, as shown in Figure <ref type="figure" target="#fig_7">5</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusions</head><p>In conclusion, we demonstrate that ToddlerBot is ML-compatible, capable, and reproducible through a series of tests and loco-manipulation tasks. ToddlerBot extends beyond locomotion and supports full-body manipulation, character animation, human-robot interaction, and a range of ML applications, making it a versatile research platform. To bridge the sim-to-real gap, we develop a comprehensive sysID pipeline to create a high-fidelity digital twin, alongside a whole-body teleoperation system to collect loco-manipulation data. Being fully open-source, ToddlerBot empowers researchers to explore new research directions and fosters open collaboration across the community.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Limitations and Future Work</head><p>ToddlerBot's performance in more agile tasks is constrained by the off-the-shelf motors' max speed, max torque, and communication speed. Should there be stronger motor choices, the performance can still improve. Rather than achieving superhuman capabilities, ToddlerBot aligns more closely with average human performance in loco-manipulation tasks. In addition, the current actuation model does not consider motor temperature and is less accurate when close to the performance limit. The miniature scale limits its interaction with human-sized objects, though this does not hinder research if appropriately sized objects are used. Compared to metal shells, 3D-printed parts are more likely to break after the event of impact. Despite 3D printing being fast, repairs still require time.</p><p>To overcome these limitations, we plan to develop customized communication boards to increase control frequency and improve our actuation model to maximize usable envelope, especially when the motor heats up. We will refine ToddlerBot's design to improve structural strength, as we believe that design has a greater impact than material choice. We also aim to improve sensing capabilities, including stereo vision for depth perception, additional IMUs for improved state estimation, and tactile sensors for richer manipulation feedback.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Appendix</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.1">3D Printing</head><p>3D printing is a deliberate design choice when combined with miniature-sized parts, not just a cost-saving measure. A quick derivation from Euler-Bernoulli beam bending theory suggests that ToddlerBot's smaller structures experience much less relative deflection with the same material strength-δ</p><formula xml:id="formula_2">= P L 3 3EI → δ L ∝ P L 2 3EL 4 = P 3EL 2</formula><p>, where δ is deflection, P is point load at tip, E is material elastic modulus, L is characteristic length, and I ∝ L 4 is second moment of area. We estimate that our miniature (smaller L) 3D-printed parts (smaller E) offer comparable strength to full-size aluminum ones. Using metal parts would reduce reproducibility with marginal gains. Our gears are carefully tuned for minimal backlash, precise transmission, and direct motor integration, while off-the-shelf parts can't achieve this. We also incorporate various bearings to minimize friction in power transmission components. After over a year of testing on two ToddlerBot instances, we are confident that ToddlerBot's reliability matches that of commercial platforms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2">Ease of Assembly and Maintenance</head><p>The ease of assembly and maintenance is crucial yet difficult to optimize, as it requires mentally simulating the assembly and disassembly process. In early iterations, we explicitly optimize for fewer screw types and ensured unobstructed tool access, which allowed a clear assembly direction for the screwdriver. We also prioritized modular design, allowing individual parts to be replaced independently. These considerations significantly improve maintainability and simplify repairs. As we continue our research on this platform, we have addressed several reliability issues, including motor overheating and link durability. We are committed to releasing ongoing fixes and upgrades to improve the humanoid further.   We design each joint's range of motion based on human biomechanics, optimizing geometries to prevent self-collisions and achieve near-human or even superhuman mobility in most joints (Figure <ref type="figure" target="#fig_9">6</ref>). The additional extension of the ankle pitch partially compensates for the 40°gap in the knee  pitch and the absence of toes. For shoulder roll, although 90°is limited compared to human shoulder abduction, the same hand-up pose can be achieved by actuating the shoulder pitch joint.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.3">Range of Motion</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.4">Transmission Mechanisms</head><p>Placing motors directly at the joint is often impractical due to the limited space budget. With carefully designed transmission mechanisms, motors can be relocated outside the interference zone, amplify torque output, and offload mechanical stress to the structure. This section highlights key design features, including spur gears, coupled bevel gears, and parallel linkages, as shown in Figure <ref type="figure" target="#fig_11">7</ref>.</p><p>Each transmission type offers unique benefits. To start with, spur gears provide three advantages:</p><p>• Relocated joint axis: A 1:1 spur gear set allows repositioning of the joint axis to a more convenient in-plane location. This is widely used in ToddlerBot's arm.</p><p>• Torque modification: A ratioed spur gear set adjusts the final torque output, which is particularly useful for the parallel jaw gripper.</p><p>• Load distribution: When a motor's output shaft has significant free play, as in Dynamixel XC330, where it is supported only by a Teflon bushing, using it directly as the joint axis is undesirable. A 1:1 spur gear set enables a reinforced secondary axis with planar bearings and metal shafts to carry the load, protecting the motor from transverse forces. This approach is used in the hip yaw joints, where torque demands are low, but load-bearing capacity is critical.</p><p>With precise tolerance tuning, 3D-printed bevel gears provide a highly interlocking design with minimal backlash, while still being structurally strong. They also offer three key advantages:</p><p>• Rotated joint axis: A coupled bevel gear set enables a parallel waist mechanism, where two motors in the same orientation drive two perpendicular DoFs.</p><p>• Combined torque output: On each axis, both motors contribute to the driving torque, enhancing power and efficiency. This is critical, as a single Dynamixel XC330 lacks the power to drive the entire upper body, but two motors combined are sufficient.</p><p>• Compact actuation: In the waist, where space is highly constrained, a coupled bevel gear set allows the compact integration of two DoFs.</p><p>Lastly, parallel linkages allow the motor to be positioned away from the joint axis, as seen in the knee and neck pitch. Despite a slightly smaller range of motion (usually &lt; 160°), this design efficiently transfers high torque when paired with ball bearings. They provide three key benefits:   <ref type="formula" target="#formula_4">4</ref>). The total power factor is the sum of the upper and lower body power factor: ptotal = pupper + plower . ToddlerBot is the closest to human compared with other humanoids, implying potentially comparable loco-manipulation capabilities.</p><p>• Compact design: This enables a cleaner neck design by placing the motor inside the head.</p><p>• Reduced Inertia: The knee motor is placed higher to reduce rotational inertia.</p><p>• Structural Efficiency: In the thigh, the knee motor is bolted to a 3D-printed structure for better load distribution, increased rigidity, and reduced weight.</p><p>A potential drawback of these transmission mechanisms is their inaccurate simulation modeling. However, in MuJoCo <ref type="bibr" target="#b44">[45]</ref>, we mitigate this by using joint equality constraints for spur gears, fixed tendons for coupled bevel gears, and weld constraints for parallel linkages. This approach has empirically shown a small sim2real gap, as demonstrated in Section 5.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.5">Power Factor</head><p>To quantitatively assess a humanoid robot's capability, we propose p as the power factor, representing the total torque (and thus mechanical power) a robot can generate relative to its weight and height. Intuitively, a higher p means that a humanoid can perform energetic, dynamic motions more easily. We argue that p should at least exceed the human threshold phuman to achieve human-like motion, given the inherent gap between robot and human policies, assuming humans operate as an oracle policy that is energy efficient. However, raising p far beyond phuman can have adverse effects: unnatural motion, excessive reliance on motor power, fewer DoFs to accommodate larger motors, reduced battery life, and increased safety concerns. Thus, pushing p past diminishing returns involves a practical trade-off. As shown in Figure <ref type="figure" target="#fig_12">8</ref>, ToddlerBot has a p score closest to humans.</p><p>When comparing the performance of humanoids with different scales and weights, directly having a full-sized 1.8 m humanoid and a 0.5 m scaled humanoid both jump 0.5 m or run at 3 m/s is not a fair comparison. A more reasonable approach is to normalize performance metrics, for example, by evaluating a jump at 10% of body height or a running speed of twice the body length per second. Formally, we say two humanoids have the same performance if they execute the same sequence of joint motions over a time span T , and their total power consumption is the same fraction of their motors' maximum power:</p><formula xml:id="formula_3">T 0 p(t)dt N i=0 |τ max i qi | ≈ ∆h • mg N i=0 |τ max i qi | ≈ h • mg N i=0 |τ max i qi | ,<label>(3)</label></formula><p>where p(t) is the humanoid's power output at time t. τ max i and qi are the maximum torque and joint velocity of the i-th motor in the humanoid respectively. Moreover, when computing the maximum power, we take the absolute value to ensure that all motors do positive work. For the numerator, the integral of the power output over T , which is equivalent to the work done by the robot, can be approximated by the gravitational energy gained: ∆h • mg. Since ∆h is approximately proportional to the height of the humanoid, we further replace ∆h with just the humanoid's height h.</p><p>Based on Equation 3, we now define power factor to measure the performance of a humanoid:</p><formula xml:id="formula_4">p = N i=0 |τ max i | h • mg .<label>(4)</label></formula><p>Note that we flip the fraction from Equation 3 to make the power factor value increase as the utilized torque ratio decreases. We also drop q as the same sequence of joint motion would be executed when using power factor to compare the performance of humanoids.</p><p>Chi et al. <ref type="bibr" target="#b19">[20]</ref> proposes a similar power metric but with an additional normalization by N , the number of active DoFs. However, we find it to be an inappropriate modification. Consider an exaggerated case where two humanoids have the same height and weight: one have a single DoF and the other have 100 equally capable DoF. Normalizing by N would assign them the same power factor, which does not reflect the true actuation capacity of the system at all.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.6">Motor Selection</head><p>We choose Dynamixel motors because of their robustness, reliability, and accessibility. Different types of Dynamixel motors were selected for various joints based on space constraints, torque requirements, and cost considerations. In terms of communication speed, Dynamixel motors communicate via a 5V TTL protocol running at 2M baudrate, providing full-state feedback for all 30 motors at 50 Hz using an off-the-shelf communication board. Precision-wise, our motors have a backlash of about 0.25°, on par with most QDD joints used in full-scale humanoids. Also, the Dynamixel encoder resolution is 4096 pulse/rev, and thus the resolution of the motor position reading is 0.09°. Given ToddlerBot's size constraint and 30-DoF design, Brushless Direct Drive (BLDC) motors are not a viable option. As BLDC motors shrink, their winding thickness decreases, reducing current capacity and torque constant. Despite their high power density, they still require a high-ratio gearbox, making them less suitable given our limited space budget. We initially explored electric linear actuators, but found them unsuitable due to insufficient power density and low control frequency. After a few iterations, we narrowed our choices to servo motors, ultimately selecting Dynamixel motors for their desirable performance and well-documented support. Given that reproducibility is a hard constraint in our system, we believe a pure Dynamixel design is the most feasible to reproduce, especially for those with limited hardware experience.</p><p>For Dynamixel motors, the smallest units start at approximately 50 g. This allows us to estimate the total weight as 3100 = 30 × 50 (motors) + 600 (computer, battery, camera) + 1000 (3D-printed structure and metal hardware) g.</p><p>To estimate the torque required for each joint to achieve human-like motions, we followed the reference values from <ref type="bibr" target="#b24">[25]</ref> and Equation 4 to derive the torque estimation:</p><formula xml:id="formula_5">τ robot = h robot • m robot h human • m human • τ human .<label>(5)</label></formula><p>With an estimated height of 0.5 m and weight of 3.1 kg, the required lower limb torque for Toddler-Bot to perform the most demanding tasks such as running and slope climbing <ref type="bibr" target="#b24">[25]</ref>, is estimated as follows: τ knee robot = 2.35 Nm, τ ankle pitch robot = 2.66 Nm, τ hip pitch robot = 1.77 Nm.</p><p>As shown in Table <ref type="table" target="#tab_3">2</ref>, XM430 is the only option that provides sufficient torque for the knee and ankle pitch joints. Its metal gears, low backdrive resistance, and high torque output make it ideal for these joints that directly impact walking stability. For the hip, we use 2XC430s for roll and pitch, as they provide sufficient torque while maintaining a compact design, integrating two actuated DoFs in a single housing. This setup allows for a greater range of motion compared to placing two  XC430s sequentially. The XC330 series is the smallest and most cost-effective in the lineup, but has higher tracking errors and backlash. Therefore, we use XC330s on joints with lower torque demands or strict weight and space constraints, such as the neck, waist, hip yaw, and parallel jaw gripper. 2XL430, a lower-cost variant of the 2XC430, is used in the arm to balance performance and cost, ensuring minimal performance loss while maximizing affordability. For the remaining joints, including the shoulder pitch and ankle roll, XC430 is used as a standard choice.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.7">Power Budget</head><p>With the motor selection finalized, we can estimate the power budget. The computer and camera together consume approximately 15 W under typical operating conditions. Actual walking power consumption depends on the energy efficiency of the control policy, but preliminary analysis suggests that the upper body requires minimal power during walking, as it carries no additional load. The lower body operates with alternating support, meaning only one leg is actively working at a time. Assuming a 70% duty cycle, total motor power consumption is estimated at 50 W, requiring a 75 Wh battery for one hour of continuous walking.</p><p>For the battery, we offer two options: A 2000 mAh LiPo battery (215 g) available off-the-shelf or a custom-made 4-cell 21700 battery with 5000 mAh, which has higher energy density and weighs 330 g. In practice, the battery lasts 3-5 hours in research settings where the robot walks intermittently. The peak power output from the battery is 14.8 V × 25 A = 370 W, sufficient to power all the joints. When debugging without a battery, a 15 V 300 W power supply is a practical alternative-safer and easier to obtain than those required for full-scale humanoids, which often exceed 2 kW and 60 V. In practice, ToddlerBot's battery can last about 2 hours, longer than other commonly available humanoids -Zeroth <ref type="bibr" target="#b23">[24]</ref>: 20 min, OP3 <ref type="bibr" target="#b22">[23]</ref>   As shown in Figure <ref type="figure" target="#fig_13">9</ref>, the battery provides a 14 -19V input, regulated to 12V via dual step-down converters to power the motors through TTL communication outlets. An E-stop terminal block controls motor power, enabling emergency reboots. The 14 -19V output powers the Jetson Orin NX, which remains on when the battery is connected to prevent data loss from abrupt shutdown.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.8">Zero-point Calibration</head><p>Figure <ref type="figure" target="#fig_16">10</ref> shows the zero-point calibration process with the 3D-printed devices.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.9">Motor Test Bed</head><p>Each motor family used on ToddlerBot differs in gearbox material, gear ratio, and core, resulting in distinct stiction, backdrive resistance, damping, and inertia. To enable successful sim-to-real transfer, we must minimize the gap between simulated and real actuator behavior. Specifically, MuJoCo/MJX models a simplified actuator characteristics with predominantly 3 values: frictionloss, damping, and armature <ref type="bibr" target="#b44">[45]</ref>. Frictionloss is the minimum torque τ f required for the actuator to start moving, with a unit of Nm. Damping d refers to the rate at which backdrive resistance increases with speed, measured in Nms/rad. Armature I denotes the effective rotor inertia, accounting for the gearbox, with units of kgm 2 . The model in MuJoCo does not consider stiction peak, therefore, the actuator resistance is simply:</p><formula xml:id="formula_6">τ r = τ f + d • q (6)</formula><p>Therefore, it is straightforward to design a test platform to measure these physical parameters using a series of test sequences. Specifically, damping and friction loss can be measured by backdriving the motor at a constant RPM and recording the resisting torque via a torque sensor. A linear fit to the torque-speed data yields friction loss as the intercept at 0 RPM and damping as the slope.</p><p>To estimate armature inertia, the actuator is allowed to spin freely before cutting motor power to observe spin-down behavior. Using the previously measured damping values, the resistance power can be numerically integrated to estimate the initial stored energy E. The armature inertia I is then computed using:</p><formula xml:id="formula_7">E = 1 2 I • ω 2 → I = 2E ω 2<label>(7)</label></formula><p>We have developed the test profile and analysis code to automatically identify these parameters in MuJoCo. If a more complex actuator model is needed, our modular test bed can be easily extended with additional sensors. The current setup supports active braking (5 Nm), active driving (1 Nm), </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.10">Actuation Model</head><p>The PD position control equation is computed through:</p><formula xml:id="formula_8">τ m = k p (q -q) -(k min d + k d ) q,<label>(8)</label></formula><p>where k p and k d are the gains, q is the joint setpoint, q is the joint position, and q is the joint velocity.</p><p>During motor testing, we observed significant additional damping when the motor was powered on, even with k d = 0. We modeled this effect as k min d , separate from passive damping, as it only occurs when the motor is active and should respect torque limits. Additionally, we found the conversion factor from Dynamixel's unitless k p to physical k p used in simulators to be approximately 150.</p><p>Inspired by Grandia et al. <ref type="bibr" target="#b41">[42]</ref>, we design our actuation model as follows. The motor torque limit τ limit varies with velocity:</p><formula xml:id="formula_9">τ limit =        τ max , | q| ≤ qτmax qmax -| q| qmax -qτmax • τ max , qτmax &lt; | q| ≤ qmax 0, | q| &gt; qmax<label>(9)</label></formula><p>τ limit comprises a constant torque limit τ max &gt; 0 for low velocities, and a linear reduction in available torque beyond a specific velocity qτmax . This linear limit reaches zero torque at the velocity qmax . Note that τ limit is the maximum acceleration torque, but maximum deceleration torque is assumed to be always a constant τ brake . We separate the braking torque limit rather than using the Torque Upper Limit Torque Lower Limit Figure <ref type="figure" target="#fig_3">12</ref>: The relationship between torque limit τ limit and joint velocity q for Dynamixel XC330.  (a) The units of damping and k min d are Nms/rad, the unit of armature is kgm 2 , the units of frictionloss, τ max and τ brake are Nm, and the units of qτmax and qmax are rad/s. acceleration torque limit as in Grandia et al. <ref type="bibr" target="#b41">[42]</ref>, since the motor typically provides higher braking torque due to passive resistance and gearbox inefficiencies. Additionally, the gearbox efficiency has a large effect when the motor is back-driven by external torque. Concretely, when the motor is back-driven, it shows significantly higher k p , as the external torque is consumed by the gearbox inefficiency. We model this by a parameter called passive-active ratio, which is equivalent to 1 η 2 , where η is gearbox efficiency. We have empirically determined the passive-active ratio to be 3, equating gearbox torque efficiency around 58%. The resulting sysID relationship for Dynamixel XC330 is illustrated in Figure <ref type="figure" target="#fig_3">12</ref>.</p><p>The joint torque is calculated by applying torque limits to τ m and combining the resistance force τ r : τ = clamp [-τmax,τbrake] (τ m )τ r , q ≥ 0 clamp [-τbrake,τmax] (τ m ) + τ r , q &lt; 0 (10) τ r follows the joint passive force model in MuJoCo <ref type="bibr" target="#b44">[45]</ref>, which is characterized by three parameters: damping, armature, and friction loss. The sysIDed parameters for various Dynamixel motors are presented in Table <ref type="table" target="#tab_4">3</ref>.</p><p>Using this actuator model, we jointly optimize all parameters to minimize the gap between simulated and real-world tracking. The model includes 9 parameters: damping, frictionloss, armature, τ max , qτmax , τ qmax , qmax , k min d , and τ brake . Due to the complexity of this optimization, constraining parameter ranges is crucial for convergence to a valid local minimum. The final simulation achieves an average tracking error of 1.3°with the optimized parameters (Table <ref type="table" target="#tab_4">3</ref>).</p><p>With 300M parameters, the inference latency remains under 0.1 s on the GPU, ensuring smooth execution at 10 Hz without stuttering. Each inference yields a 16-step prediction; the first 3 actions are discarded to compensate for latency <ref type="bibr" target="#b54">[55]</ref>, and the next 5 actions are executed.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.14">Velocity Tracking Details</head><p>Table <ref type="table" target="#tab_5">7</ref> shows the quantitative results of the walking velocity tracking experiment.   We demonstrate that ToddlerBot can seamlessly transition from a DPbased grasping skill to an RL-trained walking policy, enabling it to grasp the wagon handle and push it forward while maintaining its grip.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.16">Reproduction Results</head><p>Figure <ref type="figure" target="#fig_21">15</ref> shows some successful reproductions of ToddlerBot by teams around the world.   </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1:ToddlerBot is an open-source humanoid platform for large-scale, high-quality data collection in both simulation and the real world. It combines massive parallel simulation and an accurate digital twin for simulation, and an intuitive teleoperation device for whole-body control in the real world. ToddlerBot enables diverse loco-manipulation skills, including walking, push-ups, pull-ups, wagon pushing, bimanual, and full-body manipulation, learned from both data sources.</figDesc><graphic coords="2,57.60,73.29,190.73,190.73" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>Two fisheye cameras (c) Speaker (b) Two microphones (I) Parallel jaw gripper (II) Compliant palm (d) IMU (e) Battery box (f) Power board (g) Comm. board (h) Jetson Orin NX</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Mechatronic Design. Orange markers highlights ToddlerBot's 30 active DoFs: 7 per arm, 6 per leg, a 2 on neck, and a 2 on waist. Green markers indicate two end-effector designs-a compliant palm and a parallel-jaw gripper. Purple markers denote the electronics layout with exploded views, featuring 2 fisheye cameras, 1 speaker, 2 microphones, 1 IMU, and 1 Jetson Orin computer.</figDesc><graphic coords="4,97.87,51.68,333.42,199.05" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Arm Span, Payload, and Trajectory Tracking.On the left, we show that with a torso dimension of 13 × 9 × 12 cm 3 , ToddlerBot can grasp objects up to 27 × 24 × 31 cm 3 , about 14 times the torso size. Additionally, ToddlerBot can lift weights up to 1484 g, which is 40% of its body weight (3484 g). On the right, we present ten consecutive real-world rollouts of an RL walking policy tracking a square trajectory with a predefined velocity profile. Both raw and smoothed linear and angular velocity tracking are displayed, with real-world results averaged across trials.</figDesc><graphic coords="6,107.96,72.00,108.51,123.53" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Experiment Results. We present four different tasks: push-up, pull-up, bimanual, and full-body manipulation, showing ToddlerBot's capability in challenging loco-manipulation tasks. eliminate friction effects, we use a 3D-printed cup for the gripper to lock in securely. We incrementally add screws to the cup until ToddlerBot falls over. Results are shown on the left of Figure 3.</figDesc><graphic coords="7,120.57,296.24,51.75,69.00" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 5 :</head><label>5</label><figDesc>Long-horizon Collaboration. In this task, two instances of ToddlerBot, Arya and Toddy, collaborate to clean up a toy session. (1) The task begins with a pink octopus on the table and a purple octopus on the ground. (2) Arya picks up the pink octopus from the table and places it in the wagon. (3) Arya walks to the wagon handle. (4) Arya grasps the handle while Toddy walks over. (5) Arya pushes the wagon toward the purple octopus. (6) Toddy reaches the pickup position. (7) Toddy kneels and picks up the purple octopus. (8) Finally, Arya and Toddy leave side by side. ground to a wagon. Both tasks are trained with RGB-based diffusion policy [48] with 60 demonstrations. Across 20 test trials, we achieve a 90% success rate for bimanual manipulation and 75% for full-body manipulation. We leverage a combination of open-loop motions and closed-loop policies to enhance data collection efficiency. In the bimanual task, the torso rotating and releasing motions are open-loop, while in full-body manipulation, kneeling down is open-loop. ToddlerBot's onboard computing runs a 300M parameter diffusion policy with about 100 ms latency, enabling real-time operation. Results are shown in Figure 4.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Range of Motion. We show that ToddlerBot has near-human or even superhuman mobility in most joints. Negative values represent extensions, adductions, and inversions, while flexions, abductions, and eversions are positive.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Transmission Mechanisms. We show three design primitives in ToddlerBot's mechanical design: spur gears, coupled bevel gears, and parallel linkages.</figDesc><graphic coords="15,269.51,48.78,192.44,223.01" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Humanoid Metrics. Two key criteria of humanoid capability are the number of active DoFs and power factor p (Equation4). The total power factor is the sum of the upper and lower body power factor: ptotal = pupper + plower . ToddlerBot is the closest to human compared with other humanoids, implying potentially comparable loco-manipulation capabilities.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Power Distribution. We show the power distribution board design, including four XT30 power plugs, an Estop terminal block, seven JST EH TTL communication outlets, and two 12V step-down convertors.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_14"><head></head><label></label><figDesc>: 10-15 min, BRUCE<ref type="bibr" target="#b20">[21]</ref>: 20 min, Berkeley Humanoid Lite<ref type="bibr" target="#b19">[20]</ref>: 30 min, NAO H25<ref type="bibr" target="#b21">[22]</ref>: 1 hour, Unitree G1<ref type="bibr" target="#b14">[15]</ref>: 2 hours.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_16"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: Zero-point Calibration. We 3D-print devices for the plug-and-play zero-point calibration procedure: orange for the arm, yellow for the neck, red for the hip, and beige for the ankle. Arrows indicate the insertion direction, and the zero-point is fixed once the devices click into place.</figDesc><graphic coords="19,145.70,-9.46,441.30,263.45" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_17"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Motor Test Stand.We show a photo of the assembled motor test stand. The test motor is mounted via the blue-grey quick-connect shaft, which is directly coupled to a torque sensor. A secondary motor on the side provides active driving torque, while a powder brake at the rear offers up to 5 Nm of controllable resistance. On the left, a controller MCU handles torque sensing, brake actuation, and CAN communication with the driving motor. and accurate torque measurements (precision 3e -4 Nm), meeting most motor SysID requirements. The test bed will be open-sourced with the release. A photo of the setup is shown in Figure11.</figDesc><graphic coords="20,187.20,71.99,237.58,258.99" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_18"><head>(</head><label></label><figDesc>qmax , τ qmax ) (-qmax , -τ qmax ) ( qτ max , τ max ) (-qτ max , -τ max )</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_19"><head>Figure 14</head><label>14</label><figDesc>Figure14shows the results of the skill chaining experiment.</figDesc><graphic coords="24,242.05,293.54,184.37,92.19" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_20"><head>Figure 14 :</head><label>14</label><figDesc>Figure 14: Skill Chaining. We demonstrate that ToddlerBot can seamlessly transition from a DPbased grasping skill to an RL-trained walking policy, enabling it to grasp the wagon handle and push it forward while maintaining its grip.</figDesc><graphic coords="24,318.63,293.54,184.37,92.19" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_21"><head>Figure 15 :</head><label>15</label><figDesc>Figure 15: Successful Reproductions. We showcase five independent replications of ToddlerBot by teams across the globe. On average, each team completed the replication in about a week.</figDesc><graphic coords="24,431.83,510.66,72.19,128.34" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_22"><head>Figure 16</head><label>16</label><figDesc>Figure16shows our open-source assembly manual.</figDesc><graphic coords="24,265.14,510.66,94.49,125.94" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_23"><head>Figure 16 :</head><label>16</label><figDesc>Figure 16: Assembly Manual. We present the open-source assembly manual for ToddlerBot.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 :</head><label>1</label><figDesc>Comparison with Other Popular Humanoid Research Platforms.</figDesc><table><row><cell>Humanoid</cell><cell cols="9">Size Weight Compute Active DoFs (b) Manipulation Locomotion Sim Data Real Data Open Source Price (m) (kg) (TFLOPS) (a) ------($)</cell></row><row><cell cols="2">BD Atlas [8] Figure [9] Optimus [10] Digit [11] Unitree H1 [12] Fourier GR1 [13] 1.65 55.0 1.50 89.0 1.68 70.0 1.73 57.0 1.75 65.0 1.76 47.0</cell><cell>----1.92 2.23</cell><cell>28 26 28 16 19 32</cell><cell>✓ ✓ ✓ ✓ ✓ ✓</cell><cell>✓ ✓ ✓ ✓ ✓ ✓</cell><cell>---✓ ✓ -</cell><cell>---✗ ✓ -</cell><cell>✗ ✗ ✗ code code ✗</cell><cell>---250K 70K 110K</cell></row><row><cell>Booster T1 [14] Unitree G1 [15] iCub [16] Berkeley [17] MIT [18]</cell><cell>1.18 30.0 1.32 35.0 1.04 24.0 0.85 16.0 1.04 24.0</cell><cell>3.33 2.50 1.93 1.92 -</cell><cell>23 29 32 12 18</cell><cell>✓ ✓ ✓ ✗ ✗</cell><cell>✓ ✓ ✓ ✓ ✓</cell><cell>✓ ✓ ✓ ✓ -</cell><cell>✗ ✓ ✗ ✗ -</cell><cell>code code code code ✗</cell><cell>34K 57K 300K 10K -</cell></row><row><cell cols="2">Duke [19] Berkeley Lite [20] 0.80 16.0 1.00 30.0 BRUCE [21] 0.70 4.8 NAO H25 [22] 0.57 5.2 Robotis OP3 [23] 0.51 3.5 Zeroth [24] 0.48 3.6</cell><cell>Optional 0.29 0.1 0.02 0.30 0.01</cell><cell>10 22 16 23 20 16</cell><cell>✗ ✓ ✗ ✓ ✗ ✓</cell><cell>✓ ✓ ✓ ✓ ✓ ✓</cell><cell>✓ ✓ ✓ ✓ ✓ ✓</cell><cell>✗ ✓ ✗ ✗ ✗ ✗</cell><cell cols="2">design, code 16K design, code 5K code 6.5K code 14K code 11K design, code 1.4K</cell></row><row><cell>Ours</cell><cell>0.56 3.4</cell><cell>2.50</cell><cell>30</cell><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell cols="2">design, code 6K</cell></row><row><cell cols="2">Average Adult [25] 1.73 70.9</cell><cell>-</cell><cell>32 (c)</cell><cell>✓</cell><cell>✓</cell><cell>-</cell><cell>-</cell><cell>-</cell><cell>-</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>Table 2 :</head><label>2</label><figDesc>Dynamixel Motor Assignments for ToddlerBot. The Stall Torque data are measured at 12V as reported on the Dynamixel official website<ref type="bibr" target="#b48">[49]</ref>. The unit is Nm. (b) R, P, and Y denote roll, pitch, and yaw respectively.</figDesc><table><row><cell cols="2">Motor Model Stall Torque (a)</cell><cell>Assigned DoFs</cell></row><row><cell>XC330-T288 XC430-T240BB XM430-W210 2XL430-W250 2XC430-W250</cell><cell>1.0 1.9 3.0 1.5 1.8</cell><cell>Neck PY (b) , Waist RY, Hip Y, Gripper Shoulder P, Ankle R Knee P, Ankle P Shoulder RY, Elbow RY, Wrist RP Hip RP</cell></row><row><cell cols="3">(a) 12V Step Down</cell></row><row><cell></cell><cell></cell><cell>Convertor</cell></row><row><cell>14-19V</cell><cell></cell><cell></cell></row><row><cell>Power Input</cell><cell></cell><cell></cell></row><row><cell></cell><cell cols="2">Estop</cell></row><row><cell></cell><cell cols="2">Terminal</cell></row><row><cell></cell><cell cols="2">Block</cell></row><row><cell></cell><cell></cell><cell>14-19V</cell></row><row><cell>TTL</cell><cell></cell><cell>Power Output</cell></row><row><cell cols="2">Communication</cell><cell></cell></row><row><cell>Outlet (12V</cell><cell></cell><cell></cell></row><row><cell cols="2">Power Output)</cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>Table 3 :</head><label>3</label><figDesc>SysIDed Parameters for Dynamixel Motors.</figDesc><table><row><cell>Parameter</cell><cell cols="4">2XL430 XC330 XC430 2XC430 XM430-W210</cell></row><row><cell>Damping (a) Armature Friction Loss τ max qτmax qmax τ qmax k min d τ brake</cell><cell>0.0010 0.0083 0.078 0.94 2.00 5.97 0.10 0.161 1.40</cell><cell>0.0036 0.0066 0.0040 0.0042 0.036 0.024 0.76 1.32 1.80 1.60 6.50 7.00 0.48 0.21 0.384 0.170 1.75 3.00</cell><cell>0.0028 0.0044 0.060 1.09 2.00 6.78 0.23 0.185 2.20</cell><cell>0.0056 0.0022 0.025 1.61 0.10 7.63 0.47 0.203 3.70</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>Table 7 :</head><label>7</label><figDesc>Tracking Errors in Simulation versus the Real World</figDesc><table><row><cell>Tracking Errors</cell><cell>Simulation</cell><cell>Real-World</cell></row><row><cell>Position [m] Linear Velocity [m/s] Angular Velocity [rad/s]</cell><cell>0.082 0.016 0.056</cell><cell>0.133 ± 0.018 0.032 ± 0.002 0.113 ± 0.010</cell></row><row><cell>8.15 Skill Chaining Details</cell><cell></cell><cell></cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgments</head><p>The authors would like to express their gratitude to <rs type="person">Kaizhe Hu</rs> for assembling the second instance of ToddlerBot and assisting with keyframe animation and demo recording. We also extend our thanks to <rs type="person">Huy Ha</rs>, <rs type="person">Yen-Jen Wang</rs>, <rs type="person">Pei Xu</rs>, and <rs type="person">Yifan Hou</rs> for their insightful discussions on locomotion, and to <rs type="person">Sirui Chen</rs>, <rs type="person">Chen Wang</rs>, and <rs type="person">Yunfan Jiang</rs> for valuable input on manipulation policy deployment. We are grateful to <rs type="person">Albert Wu</rs> for his guidance on mathematical formulation and notation. Additionally, we thank <rs type="person">João Pedro Araújo</rs> for his assistance with the motion capture system. Finally, we appreciate the helpful discussions from all members of TML and REALab. This work was supported by <rs type="funder">National Science Foundation</rs> <rs type="grantNumber">NSF-FRR-2153854</rs>, <rs type="grantNumber">NSF-2143601</rs>, <rs type="grantNumber">NSF-2037101</rs>, <rs type="grantNumber">NSF-2132519</rs>, <rs type="person">Sloan Fellowship</rs>, <rs type="institution">Stanford Institute for Human-Centered Artificial Intelligence</rs>, and <rs type="funder">Stanford Wu Tsai Human Performance Alliance</rs>.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_jdZH2tN">
+					<idno type="grant-number">NSF-FRR-2153854</idno>
+				</org>
+				<org type="funding" xml:id="_SdHS7cF">
+					<idno type="grant-number">NSF-2143601</idno>
+				</org>
+				<org type="funding" xml:id="_sKeVGfg">
+					<idno type="grant-number">NSF-2037101</idno>
+				</org>
+				<org type="funding" xml:id="_vzkzvpm">
+					<idno type="grant-number">NSF-2132519</idno>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Hold to run the wagon pushing policy and release to end.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>R2</head><p>Hold to run the cuddling policy and release to end.</p><p>(a) This mapping is compatible with various remote controllers and has been tested on the ROG Ally X and Steam Deck. The remaining buttons can be assigned to additional skills based on user preference.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.11">Pupperteering Mapping</head><p>Figure <ref type="figure">13</ref> illustrates the remote controller layout to teleoperate ToddlerBot, with button and axis mappings detailed in Table <ref type="table">4</ref>. During teleoperation, the human operator sends velocity commands to the walking policy and determines the timing for skill transitions. The same mapping was used for Steam Deck and ROG Ally X.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.12">Reinforcement Learning Details</head><p>The RL implementation leverages MJX <ref type="bibr" target="#b44">[45]</ref> and Brax <ref type="bibr" target="#b49">[50]</ref>. We train the policy using PPO <ref type="bibr" target="#b45">[46]</ref> with hyperparameters listed in Table <ref type="table">5</ref>. Inspired by prior work <ref type="bibr" target="#b50">[51,</ref><ref type="bibr" target="#b51">52]</ref>, our reward function is shaped by three categories of reward terms as detailed in  The diffusion policy processes a cropped and downsampled 96 × 96 RGB image, which is encoded by a ResNet <ref type="bibr" target="#b52">[53]</ref> pretrained on ImageNet <ref type="bibr" target="#b53">[54]</ref> to extract visual features. Both leader and follower joint angles are downsampled to 10 Hz for training, where the leader joint angles serve as actions and the follower as observations. To prevent motor overload during data collection, the upper body motors use low proportional gains, allowing modulation of the manipulation force. This behavior is embedded in the discrepancy between leader and follower joint angles, which the policy learns.</p><p>The model is trained with 100 diffusion steps. During inference, the trained model runs directly on the Jetson Orin NX 16GB with 3 DDPM steps, which are sufficient for satisfactory results.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Mini Cheetah: A Platform for Pushing the Limits of Dynamic Quadruped Control</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Katz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">D</forename><surname>Carlo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA.2019.8793865</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019-05">May 2019</date>
+			<biblScope unit="page" from="6295" to="6301" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Stanford Pupper: A Low-Cost Agile Quadruped Robot for Benchmarking and Education</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kau</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2022-02">Feb. 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2023.XIX.016</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems XIX. Robotics: Science and Systems Foundation</title>
+		<imprint>
+			<date type="published" when="2023-07">July 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Towards Generalist Robots: Learning Paradigms for Scalable Skill Acquisition @ CoRL2023</title>
+		<imprint>
+			<date type="published" when="2023-10">Oct. 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">LEAP Hand: Low-Cost, Efficient, and Anthropomorphic Hand for Robot Learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2023.XIX.089</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems XIX. Robotics: Science and Systems Foundation</title>
+		<imprint>
+			<date type="published" when="2023-07">July 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">EyeSight Hand: Design of a Fully-Actuated Dexterous Robot Hand with Integrated Vision-Based Tactile Sensors and Compliant Actuation</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-S</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Agrawal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024-08">Aug. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">All the Feels: A Dexterous Hand With Large-Area Tactile Sensing</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bhirangi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Defranco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Adkins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Majidi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hellebrekers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/LRA.2023.3327619</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<idno type="ISSN">2377-3766</idno>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page" from="8311" to="8318" />
+			<date type="published" when="2023-12">Dec. 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">B</forename><surname>Dynamics</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Atlas</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Figureai</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Figure</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Tesla</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Robotics</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">A</forename><surname>Robotics</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agility Robotics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Unitree H1 -Unitree&apos;s First Universal Humanoid Robot -Unitree</title>
+		<author>
+			<persName><surname>Unitree</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Fourier-Robotics</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<publisher>FOURIER-Robotics</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">B</forename><surname>Robotics</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<pubPlace>Booster</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Unitree G1 -Humanoid Agent AI Avatar -Unitree</title>
+		<author>
+			<persName><surname>Unitree</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">THE DESIGN OF THE iCub HUMANOID ROBOT</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Parmiggiani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Maggiali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Natale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Nori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Schmitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Tsagarakis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">S</forename><surname>Victor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Becchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Sandini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Metta</surname></persName>
+		</author>
+		<idno type="DOI">10.1142/S0219843612500272</idno>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Humanoid Robotics</title>
+		<idno type="ISSN">0219-8436</idno>
+		<imprint>
+			<biblScope unit="volume">09</biblScope>
+			<biblScope unit="issue">04</biblScope>
+			<biblScope unit="page">1250027</biblScope>
+			<date type="published" when="2012-12">Dec. 2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Liao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sreenath</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Berkeley Humanoid</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">A Research Platform for Learning-based Control</title>
+		<imprint>
+			<date type="published" when="2024-07">July 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">The MIT Humanoid Robot: Design, Motion Planning, and Control For Acrobatic Behaviors</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chignoli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Stanger-Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/HUMANOIDS47582.2021.9555782</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE-RAS 20th International Conference on Humanoid Robots (Humanoids)</title>
+		<meeting><address><addrLine>Munich, Germany</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2021-07">July 2021</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">The Duke Humanoid: Design and Control For Energy Efficient Bipedal Locomotion Using Passive Dynamics</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Scutari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Chen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024-09">Sept. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Liao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Long</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Shao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Nikolic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sreenath</surname></persName>
+		</author>
+		<title level="m">Demonstrating Berkeley Humanoid Lite: An Open-source, Accessible, and Customizable 3D-printed Humanoid Robot</title>
+		<imprint>
+			<date type="published" when="2025-04">Apr. 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Design and Control of a Miniature Bipedal Robot with Proprioceptive Actuation for Dynamic Behaviors</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hong</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA46639.2022.9811790</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2022 International Conference on Robotics and Automation (ICRA)</title>
+		<meeting><address><addrLine>Philadelphia, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022-05">May 2022</date>
+			<biblScope unit="page" from="8547" to="8553" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">NAO H25 -Aldebaran 2.1.4.13 Documentation</title>
+		<author>
+			<persName><surname>Nao H25</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Robotis</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Op</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">3 E-Manual, 2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">K</forename><surname>Lab</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+		<respStmt>
+			<orgName>Kscales Lab Zeroth Bot</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Human Lower Limb Joint Biomechanics in Daily Life Activities: A Literature Based Requirement Analysis for Anthropomorphic Robot Design</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Grimmer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Elshamanhory</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Beckerle</surname></persName>
+		</author>
+		<idno type="DOI">10.3389/frobt.2020.00013</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Robotics and AI</title>
+		<idno type="ISSN">2296-9144</idno>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<date type="published" when="2020-02">Feb. 2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Cassie Sets a Guinness World Record</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Robotics</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Learning Agile Soccer Skills for a Bipedal Robot with Deep Reinforcement Learning</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Haarnoja</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Moran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Lever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">H</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Tirumala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Humplik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wulfmeier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tunyasuvunakool</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">Y</forename><surname>Siegel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hafner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bloesch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hartikainen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Byravan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Hasenclever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sadeghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Batchelor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Casarini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Saliceti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Game</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Sreendra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gwira</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Huber</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hurley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Nori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hadsell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Heess</surname></persName>
+		</author>
+		<idno type="DOI">10.1126/scirobotics.adi8022</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">89</biblScope>
+			<date type="published" when="2024-04">Apr. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Improving Human-Robot Interaction by Enhancing NAO Robot Awareness of Human Facial Expression</title>
+		<author>
+			<persName><forename type="first">F</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<date type="published" when="2021-01">Jan. 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Sim-to-Real Transfer for Biped Locomotion</title>
+		<author>
+			<persName><forename type="first">Y</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IROS</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">On the coordination of highly dynamic human movements: An extension of the Uncontrolled Manifold approach applied to precision jump in parkour</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Maldonado</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Bailly</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Souères</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Watier</surname></persName>
+		</author>
+		<idno type="DOI">10.1038/s41598-018-30681-6</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Scientific Reports</title>
+		<idno type="ISSN">2045-2322</idno>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">12219</biblScope>
+			<date type="published" when="2018-08">Aug. 2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Om-niH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>He</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Luo</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>He</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xiao</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">M</forename><surname>Kitani</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Liu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Shi</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2nd Workshop on Dexterous Manipulation: Design</title>
+		<imprint>
+			<date type="published" when="2024-07">July 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<author>
+			<persName><forename type="first">T</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kautz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<title level="m">HOVER: Versatile Neural Whole-Body Controller for Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2024-10">Oct. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">HumanPlus: Humanoid Shadowing and Imitation from Humans</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Wetzstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">8th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024-09">Sept. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">ExBody2: Advanced Expressive Humanoid Whole-Body Control</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024-12">Dec. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<title level="m" type="main">Mobile-TeleVision: Predictive Motion Priors for Humanoid Whole-Body Control</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024-12">Dec. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Rudin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hoeller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Reist</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hutter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 5th Conference on Robot Learning</title>
+		<meeting>the 5th Conference on Robot Learning</meeting>
+		<imprint>
+			<date type="published" when="2022-01">Jan. 2022</date>
+			<biblScope unit="page" from="91" to="100" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Sim-to-Real: Learning Agile Locomotion For Quadruped Robots</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Coumans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Iscen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hafner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bohez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Vanhoucke</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2018.XIV.010</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems XIV. Robotics: Science and Systems Foundation</title>
+		<imprint>
+			<date type="published" when="2018-06">June 2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Learning Quadrupedal Locomotion over Challenging Terrain</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hwangbo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wellhausen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Koltun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hutter</surname></persName>
+		</author>
+		<idno type="DOI">10.1126/scirobotics.abc5986</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">47</biblScope>
+			<date type="published" when="2020-10">Oct. 2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Open X-Embodiment: Robotic Learning Datasets and RT-X Models : Open X-Embodiment Collaboration0</title>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">X</forename><surname>Collaboratoin</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA57147.2024.10611477</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2024-05">May 2024</date>
+			<biblScope unit="page" from="6892" to="6903" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khazatsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Karamcheti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ellis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Fagan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hejna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Itkina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lepert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Belkhale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dass</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Memmel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zhan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mercat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rehman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sanketi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Simpson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Wulfe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Yavary</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Agia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Baijal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Castro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Chung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Drake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Foster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Herrera</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Heo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jackson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Le</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Maddukuri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mirchandani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Morton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>O'neill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Scalise</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Seale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Son</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Bastani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berseth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Martín-Martín</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ramamoorthy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sadigh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yip</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2024.XX.120</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems XX. Robotics: Science and Systems Foundation</title>
+		<imprint>
+			<date type="published" when="2024-07">July 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Scaling Robot Supervision to Hundreds of Hours with RoboTurk: Robotic Manipulation Dataset through Human Reasoning and Dexterity</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Booher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Spero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Tung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Garg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Savarese</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/IROS40897.2019.8968114</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2019-11">Nov. 2019</date>
+			<biblScope unit="page" from="1048" to="1055" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Design and Control of a Bipedal Robotic Character</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Grandia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Knoop</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hopkins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Wiedebach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bishop</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Pickles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Müller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bächer</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2024.XX.103</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems XX. Robotics: Science and Systems Foundation</title>
+		<imprint>
+			<date type="published" when="2024-07">July 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">J</forename><surname>Aldaco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Armstrong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Baruch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bingham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Dwibedi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Goodrich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Gramlich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hoech</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Storz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Tabanpour</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tompson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wahid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wahrburg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yaroshenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ALOHA</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<date type="published" when="2024">2024</date>
+			<publisher>An Enhanced Low-Cost Hardware for Bimanual Teleoperation</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Keyframe Animation and Motion Capture for Creating Animation: A Survey and Perception from Industry People</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Izani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Aishah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Norzaiha</forename><surname>Eshaq</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/SCORED.2003.1459684</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings. Student Conference on Research and Development, 2003. SCORED 2003</title>
+		<meeting>Student Conference on Research and Development, 2003. SCORED 2003</meeting>
+		<imprint>
+			<date type="published" when="2003-08">Aug. 2003</date>
+			<biblScope unit="page" from="154" to="159" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">MuJoCo: A Physics Engine for Model-Based Control</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Todorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/IROS.2012.6386109</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2012 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2012-10">Oct. 2012</date>
+			<biblScope unit="page" from="5026" to="5033" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Proximal Policy Optimization Algorithms</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schulman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wolski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Dhariwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Radford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Klimov</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ArXiv</title>
+		<imprint>
+			<date type="published" when="2017-07">July 2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">A Closed-Form Solution for Real-Time ZMP Gait Generation and Feedback Stabilization</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kuindersma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Deits</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Miura</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/HUMANOIDS.2015.7363473</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2015 IEEE-RAS 15th International Conference on Humanoid Robots (Humanoids)</title>
+		<meeting><address><addrLine>Seoul, South Korea</addrLine></address></meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2015-11">Nov. 2015</date>
+			<biblScope unit="page" from="936" to="940" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2023.XIX.026</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems XIX. Robotics: Science and Systems Foundation</title>
+		<imprint>
+			<date type="published" when="2023-07">July 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Robotis</forename><surname>Dynamixel-X E-Manual</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">D</forename><surname>Freeman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Frey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Raichuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Girgin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Mordatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Bachem</surname></persName>
+		</author>
+		<title level="m">Brax -A Differentiable Physics Engine for Large Scale Rigid Body Simulation</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">Humanoid-Gym: Reinforcement Learning for Humanoid Robot with Zero-Shot Sim2Real Transfer</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024-04">Apr. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">Advancing Humanoid Locomotion: Mastering Challenging Terrains with Denoising World Model Learning</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Deep Residual Learning for Image Recognition</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sun</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/CVPR.2016.90</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</title>
+		<meeting><address><addrLine>Las Vegas, NV, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2016-06">June 2016</date>
+			<biblScope unit="page" from="770" to="778" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">ImageNet: A Large-Scale Hierarchical Image Database</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Socher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L.-J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/CVPR.2009.5206848</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2009 IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2009-06">June 2009</date>
+			<biblScope unit="page" from="248" to="255" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2024.XX.045</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems XX. Robotics: Science and Systems Foundation</title>
+		<imprint>
+			<date type="published" when="2024-07">July 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

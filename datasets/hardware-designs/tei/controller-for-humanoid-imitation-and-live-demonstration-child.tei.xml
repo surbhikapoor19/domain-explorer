@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">CHILD (Controller for Humanoid Imitation and Live Demonstration): a Whole-Body Humanoid Teleoperation System</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-09-24">24 Sep 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Noboru</forename><surname>Myers</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">KIMLAB (Kinetic Intelligent Machine LAB)</orgName>
+								<orgName type="institution">University of Illinois Urbana</orgName>
+								<address>
+									<postCode>61801</postCode>
+									<settlement>Champaign</settlement>
+									<region>IL</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Obin</forename><surname>Kwon</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">KIMLAB (Kinetic Intelligent Machine LAB)</orgName>
+								<orgName type="institution">University of Illinois Urbana</orgName>
+								<address>
+									<postCode>61801</postCode>
+									<settlement>Champaign</settlement>
+									<region>IL</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sankalp</forename><surname>Yamsani</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">KIMLAB (Kinetic Intelligent Machine LAB)</orgName>
+								<orgName type="institution">University of Illinois Urbana</orgName>
+								<address>
+									<postCode>61801</postCode>
+									<settlement>Champaign</settlement>
+									<region>IL</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Joohyung</forename><surname>Kim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">KIMLAB (Kinetic Intelligent Machine LAB)</orgName>
+								<orgName type="institution">University of Illinois Urbana</orgName>
+								<address>
+									<postCode>61801</postCode>
+									<settlement>Champaign</settlement>
+									<region>IL</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">CHILD (Controller for Humanoid Imitation and Live Demonstration): a Whole-Body Humanoid Teleoperation System</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-09-24">24 Sep 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">6C2886BA2B8EBC38EA2CB965910815FC</idno>
+					<idno type="arXiv">arXiv:2508.00162v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>obinkwon</term>
+					<term>yamsani2</term>
+					<term>joohyung}@illinois.edu Locomotion Command Upper Body Joint Mapping Leg Joint Mapping Joint State</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Recent advances in teleoperation have demonstrated robots performing complex manipulation tasks. However, existing works rarely support whole-body joint-level teleoperation for humanoid robots, limiting the diversity of tasks that can be accomplished. This work presents Controller for Humanoid Imitation and Live Demonstration (CHILD), a compact reconfigurable teleoperation system that enables joint level control over humanoid robots. CHILD fits within a standard baby carrier, allowing the operator control over all four limbs, and supports both direct joint mapping for fullbody control and loco-manipulation. Adaptive force feedback is incorporated to enhance operator experience and prevent unsafe joint movements. We validate the capabilities of this system by conducting loco-manipulation and full-body control demonstrations on a humanoid robot and multiple dual-arm systems. Lastly, we open-source the design of the hardware promoting accessibility and reproducibility. Additional details and open-source information are available at our project website: <ref type="url" target="https://uiuckimlab.github.io/CHILD-pages">https://uiuckimlab.github.io/CHILD-pages</ref>.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Teleoperation is a commonly used technique to bridge the gap between robots' current autonomous and physical capabilities. More recently, teleoperation has become a popular method to collect demonstration data for learningbased policies. It is particularly effective when applied to single or dual-arm tasks, allowing robots to perform complex manipulation tasks. However, teleoperating humanoid robots poses unique challenges due to the high degrees of freedom (DoFs), inherent dynamic instability, and the unstructured environments in which they are expected to operate.</p><p>Joint-level teleoperation using a scaled kinematically identical structure offers many advantages in teleoperation systems, simplifying the controls, providing a direct feedback to the operator on joint limits and singularities, and enabling bilateral operation in the form of force feedback. However, utilizing this method for whole body teleoperation has not been explored extensively. To this end, we introduce the Controller for Humanoid Imitation and Live Demonstration (CHILD), a compact reconfigurable humanoid teleoperation system that offers direct joint-level control over humanoid robots. To the best of our knowledge, our proposed device is the first system utilizing the direct joint mapping approach for whole-body control. As illustrated in Fig. <ref type="figure" target="#fig_0">1</ref>, CHILD is a compact system designed to fit in a baby carrier that enables the user to teleoperate a wide variety of motions. It is comprised of a small enclosure with seven mounts (Fig. Upper body joints are directly mapped, while the legs are directly mapped or used as joy sticks for locomotion control.</p><p>2) in which the leader limbs can be easily attached and detached according to the configuration of the follower robot. This reconfigurability enables teleoperation of a variety of robot systems, including full humanoid systems, dual-arm platforms, and single-arm manipulators. By enabling jointlevel control and being adaptable to a variety of follower robots, it combines the intuitive advantages of joint-space teleoperation with a general-purpose architecture. We then validate this system on the Unitree G1 humanoid robot <ref type="bibr" target="#b0">[1]</ref>, Orthrus <ref type="bibr" target="#b1">[2]</ref> a custom dual-arm system mounted on Boston Dynamics' Spot, and a custom kitchen dual arm system <ref type="bibr" target="#b2">[3]</ref>.</p><p>The key contributions of CHILD are:</p><p>• A whole-body teleoperation system that enables direct, joint-level control of a full-body humanoid or multilimbed robotic system. • A reconfigurable teleoperation system capable of adapting to and controlling a wide range of robot configurations. • Open-source release of the hardware design, promoting accessibility, reproducibility, and further development by the broader robotics community.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>Many existing works on humanoid teleoperation focus on performing loco-manipulation tasks. In these methods, the upper body is controlled to closely follow the operator's movements, while high-level commands are sent to a lower body controller. The target upper body pose is often estimated using exoskeletons <ref type="bibr" target="#b3">[4]</ref>, <ref type="bibr" target="#b4">[5]</ref> or through vision based systems such as virtual reality (VR) <ref type="bibr" target="#b5">[6]</ref>- <ref type="bibr" target="#b8">[9]</ref> and RGB-D cameras <ref type="bibr" target="#b9">[10]</ref>, <ref type="bibr" target="#b10">[11]</ref>. When using vision-based systems, the operator's estimated end effector pose is typically mapped to the robot using inverse kinematics (IK). Such systems enable efficient control of loco-manipulation tasks, but rely on a separate locomotion controller for the lower body, limiting their applications to tasks using the lower body as a mobile base. Because this approach relies only on the end-effector pose, it can be generalized across a wide range of robots and implemented at relatively low cost when using simple RGB or RGB-D cameras. However, this method can be limited in the accuracy of the pose estimation, particularly due to frequent occlusions. Moreover, the vision based approaches typically provide only unilateral teleoperation-offering no physical feedback to the user about the robot's interaction with the environment.</p><p>Full-body teleoperation has been accomplished using a variety of methods. He et al. <ref type="bibr" target="#b11">[12]</ref> propose whole body control using a trained control policy with input from a VR headset, voice commands, or an RGB camera. Ishiguro et al. <ref type="bibr" target="#b12">[13]</ref> propose the use of a full-body exoskeleton in a seated position to directly control all four limbs. Another approach is to use inertial measurement units (IMUs) placed on the operator <ref type="bibr" target="#b13">[14]</ref>- <ref type="bibr" target="#b15">[16]</ref>. When augmented by an additional stability or walking controller, these methods have successfully demonstrated whole-body retargeting and walking. These systems are intuitive but expensive and require the operator to perform all movements, making them unsuitable for longduration use. Real-time motion capture-based systems <ref type="bibr" target="#b16">[17]</ref>, <ref type="bibr" target="#b17">[18]</ref> provide similar capabilities with greater fidelity in pose estimation but are often quite expensive and have similar drawbacks as the IMU based approach. Additionally, motion capture systems are not easily portable, so the teleoperation workspace is limited.</p><p>Recently joint-level teleoperation has become a popular approach for dual-arm systems that offers a more direct and interpretable form of control. In recent works such as <ref type="bibr" target="#b18">[19]</ref>- <ref type="bibr" target="#b21">[22]</ref>, operators control scaled models of the follower robots made from inexpensive servo motors. This method simplifies the control pipeline by allowing direct joint state transfer from the leader to the follower. Because they operate at the joint level, they can also support bilateral teleoperation, enabling follower state feedback through mechanisms such as haptics and force feedback. Bilateral teleoperation tends to provide a more intuitive and responsive user experience, particularly in avoiding joint limits or singularities.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. HARDWARE DESIGN</head><p>The primary focus for the hardware design is to make a reconfigurable, compact teleoperation system to facilitate whole-body control. The design goals are summarized as follows: • Reconfigurable: The system should be easily customized for different follower robot configurations. We achieve this by implementing seven mounts and a simple clip to attach and detach leader limbs. Off-the-shelf servo motors and 3D printed parts to make the parts relatively low cost and customizable. • Compact: All power, electronics, and teleoperation components are fully contained in a standard baby carrier. This self-contained design enables a single operator to control all four leaders while remaining mobile and able to adjust viewing positions as needed. To support teleoperation across a diverse range of configurations, the varying shoulder configurations that are popular among humanoid robots must be considered. The rotation axis of the first shoulder joint is generally inclined between about 0 and 45 degrees. Examples of low inclination shoulder joints include G1<ref type="foot" target="#foot_0">foot_0</ref> and Boston Dynamics' Atlas<ref type="foot" target="#foot_1">foot_1</ref> , while Figure AI's Figure <ref type="figure">02</ref> <ref type="foot" target="#foot_2">foot_2</ref> and Fourier GR-1 <ref type="foot" target="#foot_3">4</ref> exhibit inclined shoulder joints closer to 45 degrees. Therefore, CHILD features arm mounts both parallel to the ground and inclined by 45 degrees. In this way, the closest matching set of mounts can be used to approximate the shoulder orientation of the follower. Specifically, it includes a total of seven mounts: two for legs, two for arms parallel to the ground, two for arms offset by 45 degrees, and one on the top to enable neck control.</p><p>The leaders are designed to maintain the same kinematic configuration as the corresponding follower. The translational transformation between each joint coordinate frame is then scaled by a factor α to keep the overall leader workspace well within the operators reach. Consequently, the value of α is adjusted based on the follower robot. For example, we use α = 0.65 for our custom robotic arm, and α = 0.9 for the G1 leader arms. Fig. <ref type="figure">3</ref> displays an example of the joint configuration matching between G1 and CHILD. In this case, the IMU is mapped to the torso joints. A handle with a single-DoF trigger is attached to the end effectors to allow the user to comfortably control parallel grippers. Each joint of the leader limbs utilize relatively low cost servo motors, DYNAMIXEL XL330-M288-T. Along with providing highresolution encoders for joint state measurements, they also enable force feedback.</p><p>The outer dimensions of the torso and the mount locations are primarily limited by the size of the baby carrier and the gaps between the straps. The width of the torso is selected to be 90% of the shoulder width of the humanoid robot, with the two bottom mounts inset to maintain the same shoulder to hip ratio. To achieve reconfigurability of the system, each mount features a print-in-place compliant retaining clip to hold each leaders' base servo motor securely in place. Additionally, pogo pin connectors are used to transmit power and communication from the torso to the leaders, eliminating the need to manage wiring. This allows the leaders to be quickly attached or detached, making it suitable for different robot followers.</p><p>Utilizing the baby carrier allows for a single operator to directly control up to two limbs at a time in an approximately upright orientation. In cases where the task requires more complex motions or would require the operator to be in an uncomfortable orientation such as for a crawling motion, CHILD can also be deployed on a stationary platform off of the body. For such cases, we design a desktop monitor stand adapter as shown in Fig. <ref type="figure" target="#fig_2">4</ref>. Paired with a standard six-DoF monitor arm stand, the CHILD can be oriented in any pose desired, and multiple operators can simultaneously control all four limbs. The entire system is 3D printed using PLA on an FDM printer, making the hardware relatively low cost and easily reproducible. The total cost of the system amounts to just under $1k, with the full bill of materials available on </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Electronics</head><p>Mobility is essential for using this system in a diverse set of tasks. Therefore, we design it to contain all power and electronics within the torso shell, and communicate with the follower robot via Wi-Fi. The onboard computer and motors are powered by two 4S 75C LiPo batteries stepped down using a 5V 15A buck converter. Cumulatively, this provides a runtime of continous teleoperation of over two hours. A Raspberry Pi 5 is used as the onboard computer to read and send the leader joint positions and velocities. Communication between the onboard computer and the motors is established via the DYNAMIXEL U2D2. Finally, torso orientation is measured using a BNO055 9-axis IMU, also located in the torso, and communicates to the onboard computer using the I2C protocol. The IMU contains an onboard sensor fusion algorithm to provide the absolute orientation from the raw accelerometer, gyroscope, and magnetometer readings. The internal layout of the electronics is shown in Fig. <ref type="figure">2</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. SOFTWARE</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Control Interface</head><p>The control interface also adopts a reconfigurable design. To teleoperate the humanoid robot using the attached leaders, users only need to write configuration files that specify the motor-joint mapping on the leader, and which joints on the leader will be mapped to the follower robot. The overall control architecture is illustrated in Fig. <ref type="figure">5</ref>. Based on the given configuration files, the computer inside the torso shell reads joint states and IMU data from the leader devices and publishes the information over Wi-Fi using ROS2. A separate onboard computer in the humanoid robot subscribes to the leader states and sends motor commands to the corresponding actuators.</p><p>Inside of the onboard computer, three modules run asynchronously, as illustrated in Fig. <ref type="figure">5</ref>  The Direct Joint Controller maps the leader joint states directly onto the follower joint states, and converts IMU data to euler angles, which can then be directly sent as position commands to the three torso joints. This controller is mainly used for upper body (arms and torso) control. We can also use this controller for the lower body (legs) to achieve a full-body teleoperation system. In this mode, the humanoid legs directly follow the joint positions of the leader legs. This enables full-body teleoperation, allowing the humanoid to perform a wide range of motions and poses.</p><p>Locomotion Controller supports a different type of control for lower body. This module translates leader joint states into velocity messages and sends them to a walking controller that manages balance and locomotion. This flexible control system allows the humanoid to perform a wide variety of tasks beyond simple motion replication-for example, pick-and-place operations across the environment. For our experiment with the humanoid robot, we used the embedded walking controller, but it can be replaced with a custom controller if needed.</p><p>Utilizing the modular control architecture, a simulation can easily be integrated in place of the follower robot hardware. A separate node running a MuJoCo simulation subscribes to the leader joint states and sends to joint commands to the simulation. A simulation environment provides more flexible control over the use of the leader IMU. We use the IMU to define the orientation of the follower robot's torso relative to the world frame, rather than as waist joint commands. With this method, we can orient the robot to perform motions such as crawling.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Teleoperation Session</head><p>The overall teleoperation procedure follows the structure described in <ref type="bibr" target="#b22">[23]</ref>. After launching the teleoperation system, the controller waits for the operator to activate the session by holding the grippers on the leader device for three seconds. Once triggered, the robot slowly moves to the current pose of the leader device to synchronize their positions. After synchronization, the robot continuously follows commands from the leader device. For additional details on the teleoperation framework, please refer to <ref type="bibr" target="#b22">[23]</ref>.</p><p>In the case of CHILD, we introduce an additional modeswitching mechanism within the teleoperation session. When the lower body of the humanoid is controlled in locomotion mode, the user can activate joystick-based control by closing a single gripper (either left or right) for one second. The corresponding arm is then deactivated while the leg functions as a joystick, with its hip joint angles interpreted as velocity commands for the walking controller; roll, pitch, and yaw mapping to left/right, forward/backward, and rotational velocities respectively. If this mode is not activated, the system defaults to outputting zero velocity. The operator can reactivate the arm by closing the gripper for one second.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Adaptive Force Feedback</head><p>To improve the operator experience and avoid singular joint configurations, force feedback terms are applied through commanded joint torques. Since the operator can only directly control the six-DoF of the end effector, they cannot reliably control all seven DoFs of the leader arms. For this reason, a virtual spring is applied to each joint to bias the joint positions towards a specified base position. The bias torque is calculated as  where q base is the base position, q(t) is the current joint positions, and k is a diagonal matrix containing the userdefined spring constant for each joint. The strength of the force feedback varies depending on the phase of the teleoperation session. For example, when the operator is using a leg as a joystick to navigate the humanoid, stronger force feedback is applied to the deactivated arm. This helps the operator return the leader arm to its previous position before switching control modes back from locomotion control.</p><formula xml:id="formula_0">τ bias = k q(t) -q base ,<label>(1)</label></formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. RESULTS</head><p>In this section, we provide several demonstrations using multiple follower platforms to validate the system. We tested our system on the following robots:</p><p>• G1</p><p>• Orthrus (a dual-arm mobile manipulator) <ref type="bibr" target="#b1">[2]</ref> • Dual-arm kitchen setup <ref type="bibr" target="#b2">[3]</ref> The accompanying video includes the full demonstrations described in this section.</p><p>A. Humanoid Control 1) Upper body teleoperation: In this experiment, we demonstrate loco-manipulation capabilities of this system by using the direct joint controller for the upper body and a locomotion controller for the legs. We utilize the onboard walking controller for lower body walking and stability control. Shown in Fig. <ref type="figure">7a</ref>, we use this control framework to navigate between a table and book shelf (1), grasp a box off of the table <ref type="bibr" target="#b1">(2)</ref>, transport it to a second table <ref type="bibr" target="#b2">(3)</ref>, and set it down (4).</p><p>2) Full-body teleoperation: To demonstrate full-body joint-level teleoperation, we perform several movements requiring fine control over all of the robot's joint states. Regarding the leg leaders, we reduce the degrees of freedom to make the system easier to control. Specifically, we choose to neglect the ankle joints. In Fig. <ref type="figure">7b</ref>, we take advantage of the low latency and fine control over the leg joint states to catch a ball with the feet (2), drop the ball to the ground (3), and pass the ball back to the thrower (4). Note: the humanoid robot is being supported by a gantry and a person. Next, in Fig. <ref type="figure">6</ref>, we demonstrate a crawling motion in simulation. The pelvis of the robot is fixed in place, with the orientation controlled by the leader IMU. The waist joints are consequently fixed. Due to the increased complexity of controlling four limbs, we perform this demonstration with the device mounted on a monitor stand and two operators.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Alternate Configurations</head><p>In addition to humanoid robots, the reconfigurability of the proposed system allows for the teleoperation of other forms of robotic arm systems. For example, by utilizing the top mount and one side mount, we can approximate the configuration of a custom dual-arm kitchen setup as shown in Fig. <ref type="figure">8a</ref>. Using the same control framework, we can perform manipulation tasks in the kitchen environment, including loading the dishwasher. In Fig. <ref type="figure">8a</ref> we show an intermediate step of this task, handing over a plate. We also test this system on Orthrus. In this case, the two arms are mounted at an inclination of 45 degrees, so we utilize the corresponding mounts on the leader system. In Fig. <ref type="figure">8b</ref>, we show an intermediate step of the following pick and place task: grasp the toy fish, open the air fryer basket, place the fish inside, and close the air fryer. Note: in this demonstration, the mobile base, Spot, is operated through a handheld controller off-screen and is not integrated with the teleoperation framework.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSIONS AND DISCUSSIONS</head><p>In this paper, we introduce a humanoid teleoperation device CHILD, Controller for Humanoid Imitation and Live Demonstration, which leverages direct joint state mapping to achieve full-body control. The device features several leader mounts to target the control of many different humanoid configurations. We apply the proposed device to demonstrate full-body teleoperation of a humanoid and dual-arm control on a mobile manipulator and custom kitchen environment. We demonstrate the utility of the reconfigurable design of CHILD to control a custom kitchen dual-arm system. Moreover, we show the capability of this device to perform complex motions, taking advantage of direct joint level teleoperation for full-body control.</p><p>In future works, we intend to address several limitations in the hardware and controls. Regarding the system hardware, the current leader end effectors are simple triggers that are best used for parallel grippers. Higher DoF grippers can be designed to control dexterous hands and enable more complex loco-manipulation tasks. From a control standpoint, the humanoid robot requires external support for whole body joint level control, limiting the diversity of tasks that can be performed in this mode. Stability controllers can be developed to allow full joint-level teleoperation while the robot is free-standing. Additionally, such controllers can improve the stability during loco-manipulation tasks.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. Overview of CHILD humanoid teleoperation system. Upper body joints are directly mapped, while the legs are directly mapped or used as joy sticks for locomotion control.</figDesc><graphic coords="1,313.20,198.70,95.11,127.35" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 .Fig. 3 .</head><label>23</label><figDesc>Fig. 2. Internal components and mount locations of the torso structure.</figDesc><graphic coords="2,365.79,65.74,112.39,189.48" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4. CHILD mounted on a six-DoF monitor stand.</figDesc><graphic coords="3,314.30,50.22,119.17,124.50" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 5 .Fig. 6 .</head><label>56</label><figDesc>Fig. 5. Overview of the teleoperation software architecture.</figDesc><graphic coords="4,54.00,234.31,244.89,124.27" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head></head><label></label><figDesc>Direct joint teleoperation of legs to catch and pass a ball</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 7 .Fig. 8 .</head><label>78</label><figDesc>Fig. 7. Example tasks using two different modes of humanoid teleoperation</figDesc><graphic coords="5,67.65,151.91,113.13,162.38" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head></head><label></label><figDesc>. The first module is Joint State Subscriber, which subscribes to the joint states and IMU data from CHILD, and update the Joint States variable. This variable is shared with other two modules, Locomotion Controller and Direct Joint Controller. These controllers read the Joint States variable, and translate it into motor commands. All</figDesc><table><row><cell>Joint State Publisher</cell><cell></cell><cell>Velocity</cell><cell>Walking Controller</cell><cell></cell></row><row><cell>IMU State Publisher</cell><cell>Joint State Subscriber Thread</cell><cell>Locomotion Controller Thread</cell><cell>Thread Direct Joint Controller</cell><cell>Motor Commands</cell></row><row><cell></cell><cell>Update</cell><cell>Read</cell><cell>Read</cell><cell></cell></row><row><cell></cell><cell></cell><cell>Shared Variable</cell><cell></cell><cell></cell></row><row><cell></cell><cell></cell><cell>Joint States</cell><cell></cell><cell></cell></row><row><cell>CHILD</cell><cell></cell><cell>G1 Dev Computer</cell><cell>G1</cell><cell></cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>https://www.Unitree.com/g1</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1"><p>https://bostondynamics.com/atlas/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_2"><p>https://www.figure.ai/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_3"><p>https://www.fftai.com/products-gr1Stand Attachment</p></note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<author>
+			<persName><surname>Unitree</surname></persName>
+		</author>
+		<ptr target="https://www.unitree.com/g1" />
+		<title level="m">Unitree G1: Humanoid Agent AI Avatar</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2025" to="2029" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Orthrus: A dual-arm quadrupedal robot for mobile manipulation and entertainment applications</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yamsani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">C</forename><surname>Mathur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 32nd IEEE International Conference on Robot and Human Interactive Communication</title>
+		<imprint>
+			<publisher>RO-MAN</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="331" to="336" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Papras: Plug-and-play robotic arm system</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">C</forename><surname>Mathur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Taylor</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2302.09655" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">HOMIE: Humanoid loco-manipulation with isomorphic exoskeleton cockpit</title>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Ben</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">RSS 2025 Workshop on Whole-body Control and Bimanual Manipulation: Applications in Humanoids and Beyond</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Dynamic mobile manipulation via whole-body bilateral teleoperation of a wheeled humanoid</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Purushottam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Jung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ramos</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1214" to="1221" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Virtual reality teleoperation of a humanoid robot using markerless human upper body pose imitation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hirschmanner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Tsiourti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Patten</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Vincze</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE-RAS 19th International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="259" to="265" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Deep imitation learning for humanoid loco-manipulation through human teleoperation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Seo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">H</forename><surname>Bang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Gonzalez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Sentis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE-RAS 22nd International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">ACE: A cross-platform and visual-exoskeletons system for low-cost dexterous teleoperation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note>in 8th Annual Conference on Robot Learning</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Open-TeleVision: Teleoperation with Immersive Active Visual Feedback</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">8th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Qin</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Su</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-W</forename><surname>Chao</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems</meeting>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Dexpilot: Vision-based teleoperation of dexterous robotic hand-arm system</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-W</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Birchfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="9164" to="9170" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">M</forename><surname>Kitani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Shi</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note>in 8th Annual Conference on Robot Learning</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Bilateral humanoid teleoperation system using whole-body exoskeleton cockpit tablis</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ishiguro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Makabe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Nagamatsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kojio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Kojima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sugai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kakiuchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Okada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Inaba</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="6419" to="6426" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<author>
+			<persName><forename type="first">L</forename><surname>Penco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Clement</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Modugno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">Mingo</forename><surname>Hoffman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Nava</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pucci</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">G</forename><surname>Tsagarakis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Mouret</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ivaldi</surname></persName>
+		</author>
+		<title level="m">Robust realtime whole-body motion retargeting from human to humanoid,&quot; in 2018 IEEE-RAS 18th International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="425" to="432" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Synchronized human-humanoid motion imitation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Dallard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Benallegue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Kanehiro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kheddar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="4155" to="4162" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Whole-body geometric retargeting for humanoid robots</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Darvish</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tirupachuri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Romualdi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Rapetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ferigo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">J A</forename><surname>Chavez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pucci</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE-RAS 19th International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="679" to="686" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Twist: Teleoperated whole-body imitation system</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ze</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">P</forename><surname>Araújo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><forename type="middle">B</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Liu</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2505.02833" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Teleoperation of a humanoid robot using an optical motion capture system</title>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">N M</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Dajles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Siles</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE International Work Conference on Bioinspired Intelligence (IWOBI)</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems XIX</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Mobile aloha: Learning bimanual mobile manipulation with low-cost whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Echo: An open-source, low-cost teleoperation system with force feedback for dataset collection in robot learning</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bazhenov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Satsevich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Egorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Khabibullin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Tsetserukou</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2504.07939" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Gello: A general, lowcost, and intuitive teleoperation framework for robot manipulators</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page">163</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">PAPRLE (Plug-And-Play Robotic Limb Environment): A Modular Ecosystem for Robotic Limbs</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Kwon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yamsani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Myers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alspach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2507.05555" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

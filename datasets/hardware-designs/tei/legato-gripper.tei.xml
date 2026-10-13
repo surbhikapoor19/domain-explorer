@@ -1,0 +1,1286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">LEGATO: Cross-Embodiment Imitation Using a Grasping Tool</title>
+				<funder ref="#_swuFZcr">
+					<orgName type="full">AI Institute</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-02-19">19 Feb 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName><forename type="first">Mingyo</forename><surname>Seo</surname></persName>
+							<email>mingyo@utexas.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">H</forename><forename type="middle">Andy</forename><surname>Park</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shenli</forename><surname>Yuan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yuke</forename><surname>Zhu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Luis</forename><surname>Sentis</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Mingyo Seo, Yuke Zhu, and Luis Sentis</orgName>
+								<orgName type="institution" key="instit2">University of Texas</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">LEGATO: Cross-Embodiment Imitation Using a Grasping Tool</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-02-19">19 Feb 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">A37E519CD3B29ABE61206C52256CE105</idno>
+					<idno type="arXiv">arXiv:2411.03682v3[cs.RO]</idno>
+					<note type="submission">Manuscript received: August 22, 2024; Revised: November 21, 2024; Accepted: January 7, 2025.</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Imitation Learning</term>
+					<term>Transfer Learning</term>
+					<term>Whole-Body Motion Planning and Control</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Cross-embodiment imitation learning enables policies trained on specific embodiments to transfer across different robots, unlocking the potential for large-scale imitation learning that is both cost-effective and highly reusable. This paper presents LEGATO, a cross-embodiment imitation learning framework for visuomotor skill transfer across varied kinematic morphologies. We introduce a handheld gripper that unifies action and observation spaces, allowing tasks to be defined consistently across robots. We train visuomotor policies on task demonstrations using this gripper through imitation learning, applying transformation to a motion-invariant space for computing the training loss. Gripper motions generated by the policies are retargeted into high-degree-of-freedom whole-body motions using inverse kinematics for deployment across diverse embodiments. Our evaluations in simulation and real-robot experiments highlight the framework's effectiveness in learning and transferring visuomotor skills across various robots. More information can be found on the project page: <ref type="url" target="https://ut-hcrl.github.io/LEGATO">https://ut-hcrl.github.io/LEGATO</ref>.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>R ECENT advancements in robot hardware-from wheeled manipulators to humanoid robots <ref type="bibr" target="#b0">[1]</ref><ref type="bibr" target="#b1">[2]</ref><ref type="bibr" target="#b2">[3]</ref><ref type="bibr" target="#b3">[4]</ref><ref type="bibr" target="#b4">[5]</ref>-have greatly increased access to diverse robotic platforms. To fully leverage these advancements in supporting human activities, robots must autonomously perform a wide range of complex tasks. Deep imitation learning has shown promise in training autonomous policies for sensorimotor skills, reducing the need for extensive human programming compared to traditional rule-based approaches. It has yielded impressive results in complex robotic systems <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b6">7]</ref> and across diverse dexterous manipulation tasks <ref type="bibr" target="#b7">[8]</ref><ref type="bibr" target="#b8">[9]</ref><ref type="bibr" target="#b9">[10]</ref>. However, such an approach typically requires demonstration data from a specific target robot, which limits scalability due to high hardware costs and the intensive workload involved in operating the robot during demonstrations. Additionally, individualized training for each robot restricts cross-embodiment applications, as data cannot be transferred to different robot systems, even for similar tasks.</p><p>To enable scalable demonstration collection, pioneering works have introduced data collection tools that allow humans to directly manipulate during demonstrations <ref type="bibr" target="#b10">[11]</ref><ref type="bibr" target="#b11">[12]</ref><ref type="bibr" target="#b12">[13]</ref><ref type="bibr" target="#b13">[14]</ref><ref type="bibr" target="#b14">[15]</ref>. These approaches enable training visuomotor policies that are deployable to specified target robots, reducing human workload and avoiding the costs and risks associated with using real robots for data collection. However, these methods require either designing specialized data collection tools for specific robot gripper mechanisms or replacing robots' original grippers with customized hardware. This limitation restricts the applicability of these tools for robots with diverse gripper mechanisms. For example, Universal Manipulation Interface <ref type="bibr" target="#b14">[15]</ref> is designed specifically for the Schunk WSG-50 gripper with its parallel-jaw mechanism but is incompatible with grippers employing other mechanisms, such as hinge types. Additionally, variations in control latency and trajectory-tracking errors across robots, absent in human demonstrations, complicate policy transfer between embodiments. Chi et al. <ref type="bibr" target="#b14">[15]</ref> addressed this by compensating for control and observation latencies, while Song et al. <ref type="bibr" target="#b10">[11]</ref> used fine-tuning through trial and error on the target robot system. However, these strategies are difficult to generalize across diverse robots, as control latency varies between platforms due to differences in hardware and controllers.</p><p>Our key idea to address hardware differences across robots is to integrate a handheld grasping tool that can be shared across various robot embodiments for performing the same tasks (see Figure <ref type="figure" target="#fig_0">1</ref>). We name our method LEGATO (Learning with a Handheld Grasping Tool). In our method, the LEGATO Gripper, a custom-designed handheld gripper, acts as a versatile and adaptive tool, representing tasks through its trajectories and grasping actions to ensure consistency across embodiments during both demonstration and deploy-ment. This handheld gripper-compatible with various robot grippers-enables a single visuomotor policy to be applied across diverse robot systems without requiring modifications to the original systems. Sharing the gripper across robots and directly manipulating human demonstrators ensures consistent, actively actuated grasping actions. In contrast, other data collection methods often create discrepancies in grasping actions because demonstrations rely on passive actuation by demonstrators, while robots require active actuation during deployment.</p><p>Our framework incorporates low-level motion retargeting through inverse kinematic (IK) optimization, tailored to each robot, along with a high-level transferable visuomotor policy (see Figure <ref type="figure" target="#fig_1">2</ref>). Commands from the visuomotor policy for the handheld gripper are converted into whole-body motions using IK, enabling adaptation across robotic systems with only kinematic information, thereby avoiding extensive robotspecific training. While the IK optimization adapts gripper motions to each robot, variations in hardware and kinematics introduce differences in control latency and errors. To address this, we incorporate regularization on the gripper's trajectories in a motion-invariant space during training, preventing bias toward the demonstration embodiment and effectively learning motor skills. This approach ensures that gripper trajectories from the visuomotor policy can be consistently translated into whole-body robot motions, regardless of control latency and IK response differences. Together, these components enable the learned visuomotor policy in LEGATO to be effectively transferred across diverse robotic systems.</p><p>We validate our approach through simulation and realrobot experiments, demonstrating its cross-embodiment transferability. In simulation, visuomotor policies trained on human demonstrations are successfully deployed across various embodiments, including a tabletop manipulator, a wheeled robot, a quadruped, and a humanoid. We further demonstrate the reusability of demonstration data by transferring a policy trained on one robot to another. In real-world tabletop manipulator setups, our method achieves a 72% success rate in complex manipulation tasks through policy transfer from direct human demonstrations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK A. Skill Learning Across Embodiments</head><p>Cross-embodiment policy transfer enables collecting demonstration data from easier or less costly embodiments and reusing it across different robot embodiments. One approach involves learning from videos of direct human demonstrations, which has been extensively explored in earlier works <ref type="bibr" target="#b15">[16]</ref><ref type="bibr" target="#b16">[17]</ref><ref type="bibr" target="#b17">[18]</ref><ref type="bibr" target="#b18">[19]</ref><ref type="bibr" target="#b19">[20]</ref><ref type="bibr" target="#b20">[21]</ref>. However, robot deployment is limited by its reliance on third-person visual observations and the absence of real-world physical interaction data.</p><p>Another approach integrates tools specifically designed for demonstration collection. One method involves leader-follower systems, which have been shown to be successful <ref type="bibr" target="#b21">[22,</ref><ref type="bibr" target="#b22">23]</ref>. However, this method requires designing leader hardware with a kinematic structure identical to a target robot, enabling its joint states to be directly mapped onto the robot. Alternatively, recent works use handheld tools to record on-hand visual observations and corresponding motions from demonstrations <ref type="bibr">[11-13, 15, 24]</ref>. While these approaches simplify tool design, they still require a system-specific tool or modifications to a robot's original hardware to align the end-effector's physical interactions and the recorded visual observations. Unlike prior methods, we aim to generalize crossembodiment learning by incorporating an adaptable handheld gripper and flexible kinematics-based motion retargeting. As a result, our learned policies are deployable across various types of robots without requiring robot-specific hardware for demonstrations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Whole-body Motion Retargeting</head><p>Motion retargeting enables the generation of practical motions across different embodiments. A substantial body of research exists on motion retargeting between similar morphologies, such as from humans to humanoid robots, employing either model-based methods <ref type="bibr" target="#b24">[25]</ref><ref type="bibr" target="#b25">[26]</ref><ref type="bibr" target="#b26">[27]</ref><ref type="bibr" target="#b27">[28]</ref> or data-driven approaches <ref type="bibr" target="#b28">[29]</ref><ref type="bibr" target="#b29">[30]</ref><ref type="bibr" target="#b30">[31]</ref>. In contrast, translating human movements into equivalent motions for varying target morphologies presents a challenge due to the inherently ambiguous nature of the task. Recent studies have investigated motion retargeting across embodiments with diverse morphologies <ref type="bibr" target="#b31">[32]</ref><ref type="bibr" target="#b32">[33]</ref><ref type="bibr" target="#b33">[34]</ref>. While these studies have successfully demonstrated motion retargeting from humanoid to non-humanoid morphologies, they often rely on either embodiment-specific or task-specific models.</p><p>Our method shares similarities with previous works <ref type="bibr" target="#b26">[27,</ref><ref type="bibr" target="#b27">28]</ref> in utilizing kinematic optimization for motion retargeting. Unlike these works, however, we use a lower-dimensional action space based on the motions of the handheld gripper. This approach enables flexible motion retargeting across diverse robot embodiments with varying morphologies.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Trajectory Representations</head><p>To effectively transfer motions across diverse embodiments, motion primitives offer a practical solution. These primitives facilitate the assembly of elemental motions, as extensively explored in the literature <ref type="bibr" target="#b34">[35]</ref><ref type="bibr" target="#b35">[36]</ref><ref type="bibr" target="#b36">[37]</ref>. However, their adaptability is inherently limited by design, making them less effective for novel tasks or environments. Recent advancements, such </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>MLP</head><p>Fig. <ref type="figure">3</ref>: High-level visuomotor policy architecture. The trained policies generate desired handheld-gripper trajectories and grasping actions ut at 10 Hz from ego-centric stereo camera observations and previous policy actions. These action and observation spaces, defined in the handheld-gripper frame, remain consistent across various robot platforms. To learn actions on handheld-gripper trajectories, we apply two action losses: the negative log-likelihood loss L NLL for the distribution in SE(3) and the L2 loss L invar in the DHB motion-invariant space. The grasping actions are trained using the cross-entropy loss L CE .</p><p>as encoder-decoder frameworks that project trajectories into a latent space, have significantly improved the learning of motion primitives <ref type="bibr" target="#b37">[38]</ref><ref type="bibr" target="#b38">[39]</ref><ref type="bibr" target="#b39">[40]</ref>. Encoding motions into learned latent spaces facilitates the transfer of human motions to simulated humanoid models <ref type="bibr" target="#b40">[41]</ref> and adapts them to robot embodiments with varying kinematic structures <ref type="bibr" target="#b33">[34]</ref>. Nevertheless, these approaches often encounter challenges in achieving broad generalization across different scenarios.</p><p>To address these challenges, our method employs motion representations as training regularization elements rather than directly using them for motion generation. Specifically, we utilize the Denavit-Hartenberg Bidirectional (DHB) invariant representation <ref type="bibr" target="#b41">[42]</ref>, which offers invariance to rotationaltranslational shifts and scaling. The regularization in this motion-invariant space ensures robust alignment with demonstrated trajectories, enhancing policy generalizability across various embodiments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. METHOD</head><p>Here, we introduce LEGATO, a cross-embodiment imitation learning framework comprising a visuomotor policy at the high level and motion retargeting at the low level, as illustrated in Figure <ref type="figure" target="#fig_1">2</ref>. The visuomotor policy is trained through imitation learning on task demonstrations, collected either from humans directly using the tool or from teleoperated robots holding the tool. The consistency of the action space of handheld gripper motions and ego-centric visual observations across different robots enables deployment to various embodiments. The lowlevel motion retargeting realizes these gripper trajectories as whole-body motions across different robot platforms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Problem Formulation</head><p>We model the problem of cross-embodiment manipulation as a discrete-time Markov Decision Process M = (S, A, P, R, γ, ρ 0 ) where S is the state space, A is the action space, P(•|s, a) is the transition probability, R(s, a, s ′ ) is the reward function, γ ∈ [0, 1) is the discount factor, and ρ 0 (•) is the initial state distribution. Our objective is to learn a closedloop visuomotor policy π(a t |s t ) that maximizes the expected return E[ ∞ t=0 γ t R(s t , a t , s t+1 )] across different robot systems. In our problem, S is the space of visual observations captured by the handheld gripper's egocentric cameras, the robot's proprioceptive feedback, and previous actions, while A is the space of the robot's joint-space commands. These two spaces vary across different robot systems, reflecting the diversity in sensory capabilities and actuation mechanisms inherent to each robot platform. R(s, a, s ′ ) is the reward function designed for the manipulation task, and π is a closedloop policy deployed on the robot.</p><p>To handle the complexity of visuomotor skills and ensure that the policy π is deployable across various robot systems, we decompose the policy into a two-level hierarchy. At the high level is a cross-embodiment visuomotor policy π H , implemented as neural networks that compute target motion trajectories of the handheld gripper u. We train π H through imitation learning with demonstrations collected by manipulating the handheld gripper. At the low level, we use a whole-body motion optimizer π L , which determines target joint configurations to follow the trajectories u established by π H through IK. This eliminates the need for additional training on target robot systems. With this hierarchical structure, the entire policy can be represented as π(a t |s t ) = π L (a t |s t , u t )π H (u t |s t ).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Actions Based on the Handheld Gripper</head><p>We incorporate the LEGATO Gripper, which can be shared across different robot systems. Inspired by Noguchi et al. <ref type="bibr" target="#b42">[43]</ref>, each robot uses its own gripper to hold the handheld gripper, integrating it as part of the embodiment. The handheld gripper maintains a consistent shape and viewpoint, unifying visual observation and action spaces across embodiments. This reduces the complexity of the cross-embodiment problem, streamlining the mapping of handheld-gripper motions and coordinating whole-body motions to execute them.</p><p>We define the action space as the differential pose in SE(3) between consecutive time steps. This action space is suitable for generalizable whole-body manipulation on floating-base robots, as it eliminates reliance on a fixed reference frame. Actions are thus represented in the current handheld-gripper frame. Differential pose actions, sampled from a Gaussian Mixture Model <ref type="bibr" target="#b43">[44]</ref>, capture the multimodal nature of human demonstrations and essential motion information within the motion-invariant space, as described in Section III-D.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Whole-body Motion Retargeting</head><p>In this section, we detail our approach for mapping the trajectory actions of the handheld gripper u t into wholebody robot motions a t . We employ an optimization-based IK method to handle the constrained IK problem. This enables our motion optimizer π L to map commands effectively to robot motions by leveraging degree-of-freedom (DOF) redundancy while respecting actuation bounds and other constraints. Our approach addresses kinematic differences, constraints, and the diversity in DOFs across robot embodiments by using kinematic redundancy to satisfy joint and other constraints during deployment, without requiring additional robot-specific demonstrations.</p><p>The motion retargeting formulation is expressed as the following quadratic programming (QP) problem:</p><formula xml:id="formula_0">min at 1 2 a ⊤ t Ha t subject to J i (q t )a t = ẋdes i , L i ≤ C i a t ≤ L i ,<label>(1)</label></formula><p>where L i , L i and C i define the velocity-level constraints for joint positions q, velocities q, and accelerations q, along with other Cartesian limits (e.g., virtual walls and collision distance bounds). H is a positive-definite weighting matrix. ẋdes i represents the desired velocities at the prioritized tasks, formulated in the following order:</p><formula xml:id="formula_1">J 1 = J grip , ẋdes 1 = K grip (x des -x(q)), J 2 = I nj , ẋdes 2 = K bias (q bias -q),<label>(2)</label></formula><p>where J grip and I nj represent the Jacobians for gripper pose control and maintaining the configuration bias q bias of n j DOFs, respectively, with the control gains K grip and K bias .</p><p>x des represents the target pose of the handheld gripper, as determined by the visuomotor policy outputs u t .</p><p>To solve the QP problem with the hierarchical priorities and the inequality constraints, we utilize the extended Saturation in the Null Space (eSNS) algorithm <ref type="bibr" target="#b44">[45]</ref>. The constrained optimization problem of Equation 1 is formulated as follows:</p><formula xml:id="formula_2">maximize i c i subject to J i (q t )a t = c i ẋdes i , L i ≤ C i a t ≤ L i . (3)</formula><p>Here, c i represents scaling factors within the range [0,1] that allow for scaling speed of the prioritized tasks defined in Equation <ref type="formula" target="#formula_1">2</ref>, while accurately tracking their trajectories. This optimization problem, maximizing the sum of scaling factors, yields the closest mapping motions while meeting all constraints. Our framework ensures that robot movements not only follow the prescribed hierarchy but also adhere to the constraints, guaranteeing flexible task execution and robust motion generalization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Training of Visuomotor Policies</head><p>Task demonstrations can be performed on any embodiment capable of executing the tasks within its joint space. The collected demonstration dataset D consists of state-action pairs</p><formula xml:id="formula_3">D = {(s i , u i )} N i=1 .</formula><p>Here, N represents the total number of data points. The observations s i comprise stereo images from the handheld gripper's onboard camera and a history buffer of previous actions u kk=t-T :t-1 . The visual observations are provided as stereo grayscale images with a resolution of 128 × 128 pixels. The demonstration commands u i include the subsequent setpoints for the handheld gripper (6D) and the grasping actions (1D).</p><p>We train our policy π H using a deep imitation learning algorithm, specifically using a behavioral cloning policy with LSTM networks <ref type="bibr" target="#b45">[46,</ref><ref type="bibr" target="#b46">47]</ref>, as shown in Figure <ref type="figure">3</ref>. The visuomotor policy employs two separate ResNet18-based image encoders <ref type="bibr" target="#b47">[48]</ref>, trained end-to-end. The encoded features are flattened and processed by two-layer LSTM networks, each with 400 hidden units. The policy outputs are generated by a three-layer Multi-Layer Perceptron (MLP), with each layer containing 2048 hidden units. For hand trajectories, the policy outputs Gaussian Mixture Model (GMM) parameters to determine the next target pose based on spatial and rotational differences from the previous frame, using a 5-mode GMM. Grasping actions are provided as binary classifications for opening and closing the gripper.</p><p>For imitation learning, we employ behavioral cloning with the following training loss:</p><note type="other">Start End Start End</note><p>Closing the lid Cup shelving </p><note type="other">Start End Ladle reorganization</note><formula xml:id="formula_4">L = L NLL + L invar + L CE .<label>(4)</label></formula><p>Here, L NLL and L invar , associated with the trajectories of the handheld gripper, represent the negative log-likelihood loss and the regularization term in the motion-invariant space, respectively. Additionally, L CE denotes the cross-entropy loss for binary grasping actions. The term L invar is calculated as the L2 loss in the motion-invariant space, specifically using the DHB invariant transformation <ref type="bibr" target="#b41">[42]</ref>, ϕ(•) (see Appendix for details). This transformation is applied to the differential poses of the gripper in SE(3) from the policy outputs u t and the demonstrations ût :</p><formula xml:id="formula_5">L invar = ∥ϕ(u t , {û k } t-1 k=t-T ) -ϕ({û k } t k=t-T )∥ 2 . (<label>5</label></formula><formula xml:id="formula_6">)</formula><p>Incorporating L invar into the training loss influences the distribution of handheld-gripper motions, preventing the policy from being biased by embodiment-specific properties like tracking errors and control latency. Unlike SE(3), these invariants represent motion by breaking it down into magnitude and directional changes, unaffected by embodiment-specific factors such as viewpoints, reference frames, pose offsets, or scales. Leveraging motion invariance ensures the policy captures essential motion information from demonstrations without bias toward specific embodiments. This is critical for cross-embodiment learning, as it makes the policy robust to domain mismatches across different robot embodiments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS</head><p>In this section, we demonstrate the feasibility and effectiveness of LEGATO for cross-embodiment transfer of visuomotor policies, both in MuJoCo simulation <ref type="bibr" target="#b48">[49]</ref> and real-world settings. Leveraging the scalability and ease of simulation environments, we employ them to investigate the following research questions: 1) How does the regularization in the motion-invariant space impact the training of crossembodiment policies? 2) How do differences in morphology and controllability affect the task capacity of robot embodiments?</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. LEGATO Gripper</head><p>The LEGATO Gripper design described in Section III-B is implemented on real hardware. It is designed for intuitive use in both direct human demonstrations and robot operations, as illustrated in Figure <ref type="figure" target="#fig_3">4</ref>. During human demonstrations, a user carries the LEGATO Gripper and controls the grasping actions. Robots, on the other hand, can hold the tool with their original grippers without needing any hardware modifications.</p><p>To enable easy attachment and replacement, the design is modularized, particularly the handle parts that robots grip, as presented in Figure <ref type="figure" target="#fig_3">4</ref>. Thus, only the handle parts need replacement for different robots, allowing all other core components to be shared across robots. These handle parts can be easily designed using CAD models of target robots provided by manufacturers, ensuring adaptability to diverse robot systems. The LEGATO Gripper features two pairs of parallel fourbar linkage mechanisms, each actuated by one DOF, enabling a wider and more flexible range of opening distances. The tool employs fingertips of compliant fin ray mechanisms for high compliance and adaptability during contact. Made from 3D-printed parts, with TPU 95A for the fingertips and PLA for other components, the LEGATO Gripper is significantly lighter than typical commercial grippers. These key features facilitate the concept of integrating the tool as part of the embodiment, even under robots' limited payload capacities, while supporting generalizable grasping actions.</p><p>The LEGATO Gripper is equipped with a Realsense T265 <ref type="bibr" target="#b49">[50]</ref> camera (or an alternative stereo tracking camera such as the SeerSense XR50 <ref type="bibr" target="#b50">[51]</ref>), with fisheye stereo cameras and an IMU for streaming visual observations and estimating the handheld gripper's motions via visual odometry. During demonstrations, both stereo images and visual odometry data are recorded to form observation-action pairs. In contrast, during robot deployment, only stereo images are streamed. Fig. <ref type="figure">6</ref>: Quantitative results in simulation. We report success rates on 50 trials of our LEGATO policies compared to baselines. On average, LEGATO outperforms all other methods in cross-embodiment deployment by 28.9%, 10.5%, and 21.1%, compared to BC-RNN, Diffusion Policy, and LEGATO (SE3), respectively. Notably, unlike the baselines that achieve high success rates only on specific robot embodiments, typically the Abstract embodiment used for training, LEGATO demonstrates consistent success rates across different embodiments.</p><p>In simulation, the mechanism and geometry of the real hardware are modeled. Visual observations are emulated by adapting the properties of the tracker camera used in the hardware design. The LEGATO Gripper is attached to each robot's original gripper with an offset.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Experimental Setup</head><p>We designed the following three realistic manipulation tasks to study the cross-embodiment deployment of our method for both simulation and real robot systems.</p><p>• Closing the lid: A robot grasps the lid and places it on the pot within reach. This task requires precise manipulation to accurately close the lid. • Cup shelving: A robot places the cup into the shelf. In addition to requiring a large workspace, this task involves complex collision-free motion to position the cup against the shelf's non-convex shapes. • Ladle reorganization: A robot picks up the ladle from the pot and places it into the utensil organizer. This task involves complex manipulation and handling objects potentially out of view due to limited visibility and occlusion. A task is considered successful if a robot accomplishes the designated goals within a specific time limit. Across all baselines and tasks, the initial states of robots are consistent, and the initial poses of objects, other than the table, are uniformly randomized.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Quantitative Evaluation in Simulation</head><p>In these experiments, we demonstrate the effectiveness of our domain-transfer method across different embodiments. To systematically evaluate our method, we use embodiments representing various kinematic morphologies, as shown in Figure <ref type="figure" target="#fig_0">1</ref>: Franka Emika Panda <ref type="bibr" target="#b51">[52]</ref>, Boston Dynamics Spot <ref type="bibr" target="#b1">[2]</ref>, Fourier GR-1 <ref type="bibr" target="#b4">[5]</ref>, and Google Robot <ref type="bibr" target="#b52">[53]</ref>.</p><p>• Abstract: an idealized embodiment designed for simulation that can manipulate hands along continuous trajectories without speed or workspace limitations. Human motion commands are directly mapped to the simulation, replicating direct human demonstration in real-world settings. • Panda: a 7-DOF tabletop manipulator, used to demonstrate the impact of redundant DOFs on motion retargeting compared to the robots listed below.</p><p>• Spot: a quadrupedal robot with 6 DOFs in its arm and 6 DOFs in its body pose. To demonstrate achieving an extensive workspace through whole-body motion alone, the robot's locomotion is not considered; instead, the leg joints track the robot's body within a limited SE(3) range. • GR-1: a humanoid robot with 7 DOFs per arm and 3 DOFs each for the head and torso. Similar to Spot, the robot's locomotion is not considered, and the leg joints are fixed. This demonstrates the application of our method to highly redundant DOF systems. • Google Robot: a wheeled mobile robot with 7 DOFs in its arm and 3 DOFs in planar base motion, used to show how handheld-gripper trajectories map to mobile manipulation. We focus on demonstrations from the Abstract embodiment, where commands from human demonstrators are directly mapped, enabling task performance without being affected by tracking errors that occur in robots. The trained policies are then transferred directly to the robots without any adaptation, using the pre-defined IK optimizer, as shown in Figure <ref type="figure" target="#fig_4">5</ref>.</p><p>Figure <ref type="figure">6</ref> reports quantitative evaluations of our simulated tasks, comparing our model with the following baselines.</p><p>• BC-RNN: a baseline that uses recurrent neural networks to learn manipulation skills from teleoperated demonstrations, as introduced by Mandlekar et al. <ref type="bibr" target="#b46">[47]</ref>. It employs flat GMM outputs and is trained with the negative log-likelihood loss. • Diffusion Policy: a baseline that employs a recedinghorizon visual-motor policy based on a diffusion model, as introduced by Chi et al. <ref type="bibr" target="#b53">[54]</ref>. In particular, we adapt the Velocity Diffusion Policy. Due to the requirement for precise tracking and state estimation of the end-effector pose with respect to the global frame, the Position Diffusion Policy is not applicable in our settings. • LEGATO (SE3): a variant of our final model that excludes the motion-invariant regularization loss L invar from the training loss, with all other components unchanged. This variant is designed to evaluate the impact of the regularization in the motion-invariant space on cross-embodiment deployment. All baselines are trained on the same dataset of 150 task demonstrations using the Abstract embodiment with identical policy inputs, as shown in Figure <ref type="figure">3</ref>. They output handheld gripper trajectories realized by the same IK optimizer, using consistent parameters within a single robot. As shown in Figure <ref type="figure">6</ref>, LEGATO outperforms the three baseline methods across various robot embodiments. The success rates for the Abstract embodiment indicate that all baselines are well-trained within that domain. However, the higher success rates of LEGATO (SE3) and Diffusion Policy, which uses the state-of-the-art diffusion model and performs best in the Abstract domain, are followed by a notable decline when applied to other robots. This suggests that exclusive training in SE(3) may introduce domain bias toward the training embodiment. In contrast, the performance improvement of LEGATO across diverse embodiments suggests that its regularization in the motion-invariant space enhances policy robustness across different robot domains, even with a simple model architecture. In addition, LEGATO and the baselines show reduced performance overall in the Cup shelving task with the Panda and GR-1 robots, as well as in the Ladle reorganization task with the Panda robot. This underscores the limitations of fixed-base robots for tasks requiring extensive motion, highlighting the need for whole-body manipulation. Supplementary evaluations for further discussion are provided in Appendix.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Varying Demonstration Embodiments</head><p>We investigate how different embodiments used in demonstrations affect policy performance in simulation. We collected 150 trajectories by teleoperating each robot in Section IV-C for the Closing the lid task and trained policies on these demonstrations. Figure <ref type="figure" target="#fig_6">7</ref> shows the success rates for deploying these policies across the robots. The policies trained on the Abstract embodiment performed best, indicating that joint controller latency and the IK motion retargeting affect demonstration quality. Among the policies trained on robot teleoperation, demonstrations on the Spot robot yield the highest success rates, whereas those on the Panda robot yield the lowest. This suggests that whole-body motion capability and redundancy influence task demonstration quality, as the Spot robot has full 6 DOFs in its body, while the Panda robot has less redundancy. Notably, policies trained on the Panda and Google Robot exhibit lower success rates when deployed on the robot used for demonstrations compared to other robots. This highlights that the trajectory tracking capabilities constrained by the deployment embodiments affect task complexity. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Ladle reorganization</head><p>Fig. <ref type="figure">8</ref>: Timelapse of deploying LEGATO in the real-robot system. We trained visuomotor policies on direct human demonstrations and successfully deployed them on the Panda robot system. The timelapse of deploying these policies demonstrates consistent time intervals.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Real-Robot Experiments</head><p>We aim to validate the robustness of our method against variations caused by controller limitations and sensor inaccuracies in real-world settings. We collected direct human demonstrations through the LEGATO Gripper to train policies and deployed them, particularly on the Panda robot, the most challenging due to its limited workspace at the IK motion retargeting, as shown in Section IV-C. During the evaluation of each task, the same visuomotor policy was attempted for 20 trials on the Panda robot. Our method succeeded in 16 trials of the Closing the lid task, 13 trials of the Cup shelving task, and 14 trials of the Ladle reorganization task, respectively (see Figure <ref type="figure">8</ref>). More videos are provided on our project website.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION</head><p>We present LEGATO, a cross-embodiment learning framework for transferring visuomotor skills across diverse robot morphologies. By using a handheld gripper for consistent observations and actions, our framework enables visuomotor policies to transfer across embodiments without hardware modifications. Handheld-gripper trajectories from the visuomotor policies are mapped to whole-body robot motions through IK optimization. Although trained on specific embodiments, regularization in a motion-invariant space allows these policies to adapt easily to different robots, managing variations in control latency and tracking errors. Our current focus is on whole-body manipulation, employing redundant DOFs for flexibility and an extended workspace through coordinated body movements, though our method is limited to non-walking scenarios. Future work will incorporate loco-manipulation, integrating manipulation with walking to enable legged robots to perform diverse tasks with larger workspaces. Additionally, while our method currently relies on designing handles specific to target robots, this can be addressed by identifying grasping location to enable the use of universal handles across robots. We also believe our approach is adaptable to a wide range of tools and applications beyond the LEGATO Gripper design.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Motion-Invariant Regulation Loss</head><p>The motion-invariant transform ϕ(•), used to compute L invar in Equation <ref type="formula" target="#formula_5">5</ref>, follows the DHB motion-invariant framework <ref type="bibr" target="#b41">[42]</ref>. Given trajectories {u k } t k=t-T with T ≥ 2, we compute the relative positions p k and orientations r k of the gripper with respect to the initial frame at t -T , where p t-T and r t-T are at the origin.</p><p>The differences ∆p k = p k+1 -p k and ∆r k = r k+1 -r k represent the linear and angular trajectory changes between k + 1 and k. The initial linear frames are defined as:</p><formula xml:id="formula_7">xp,k = ∆p k ∥∆p k ∥ , ŷp,k = xp,k × xp,k+1 ∥x p,k × xp,k+1 ∥ , ẑp,k = xp,k × ŷp,k .</formula><p>Similarly, the initial angular frames are:</p><formula xml:id="formula_8">xr,k = ∆r k ∥∆r k ∥ , ŷr,k = xr,k × xr,k+1 ∥x r,k × xr,k+1 ∥ , ẑr,k = xr,k × ŷr,k .</formula><p>The directions of the axes in both frames are chosen to prevent discontinuities across time steps.</p><p>In the DHB transformation, the motion of a rigid body is separated into position and orientation components using two frames. Two invariants are the norms of the relative positions and orientations between these frames:</p><formula xml:id="formula_9">m p,k = ∥∆p k ∥, m r,k = ∥∆r k ∥.</formula><p>These invariants, m p and m r , describe the translation of the linear and angular frames. Four additional values describe their rotation: To ensure continuity, the computed frame rotations are transformed using sin(•) and sin(2•). The final transformation applied in our regularization loss thus yields 10 variables of length T -1:</p><formula xml:id="formula_10">θ 1 p,k = arctan xp,k × xp,k+1 xp,k • xp,k+1 • ŷp,k , θ 2 p,k = arctan ŷp,k × ŷp,k+1 ŷp,k • ŷp,k+1 • xp,k+1 , θ<label>1</label></formula><formula xml:id="formula_11">ϕ {u k } t k=t-T =                                                m p,k sin(θ 1 p,k ) sin(2θ 1 p,k ) sin(θ 2 p,k ) sin(2θ 2 p,k ) m r,k sin(θ 1 r,k ) sin(2θ 1 r,k ) sin(θ 2 r,k ) sin(2θ 2 r,k )                                                t-2 k=t-T .</formula><p>When computing L invar , we transform two types of trajectories: 1) ϕ({û k } t k=t-T ), the transformed values from the demonstration trajectories, and 2) ϕ(u t , {û k } t-1 k=t-T ), the transformed values from the given previous trajectories {û k } t-1 k=t-T and the predicted target u t at time t. By calculating the L2 loss between these two transformed values and using it as a training loss, the predicted trajectories u t are aligned with the demonstration trajectories in the motion-invariant space, given {û k } t-1 k=t-T .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Supplementary Evaluation in Simulation</head><p>We provide additional quantitative evaluations in simulation to further discuss cross-embodiment visuomotor policies. Specifically, we aim to address: 1) a comparison with existing cross-embodiment learning frameworks that utilize different action spaces, and 2) the applicability of the motion-invariant regularization to varied neural network architectures and its impact on their performance. a) Comparison with the Diffusion Policy Using Relative-Trajectory Actions: To compare our method with existing works aimed at cross-embodiment learning of ego-centric visuomotor policies, we adapted the Diffusion Policy with the action space of relative end-effector trajectories, as used in Universal Manipulation Interface <ref type="bibr" target="#b14">[15]</ref>, to our setting, where the visuomotor policy outputs gripper trajectories based on previous actions and visual observations. We refer to this baseline as Diffusion Policy (Relative Trajectory). This baseline serves as a reference for Universal Manipulation Interface <ref type="bibr" target="#b14">[15]</ref>, but without the latency compensation process. As described in Section I, generalizing latency compensation across various robot embodiments is challenging because it requires finetuning for each target robot system. Therefore, we exclude the latency compensation process in our evaluation.</p><p>We used the same setup as the quantitative evaluation in Section IV-C, utilizing the same dataset of 150 task demonstrations with the Abstract embodiment. In Figure <ref type="figure">9</ref>, we report the success rates for deploying Diffusion Policy (Relative Trajectory) with LEGATO and the Diffusion Policy baseline used in Section IV-C. For clarification, the Diffusion Policy baseline from Section IV-C is referred to as Diffusion Policy (Velocity). In our work, we considered only the action space of the handheld gripper's differential poses to minimize the impact of visual odometry errors during demonstration collection and to eliminate reliance on specified frames other than the handheld gripper's pose. This ensures suitability across We provide an additional ablation study on the complementary use of the motion-invariant regularization loss to enhance cross-embodiment transferability in policies, as shown in Figure <ref type="figure" target="#fig_8">10</ref>. Specifically, we applied the motion-invariant regularization loss L invar , as described in Section III-D and Appendix A, to BC-RNN <ref type="bibr" target="#b46">[47]</ref>, Diffusion Policy (Velocity) adapted from the Velocity Diffusion Policy introduced by Chi et al. <ref type="bibr" target="#b53">[54]</ref>, and Diffusion Policy (Relative Trajectory) adapted from the Diffusion Policy using relative end-effector trajectories as the action space in Universal Manipulation Interface <ref type="bibr" target="#b14">[15]</ref>. Similar to the quantitative evaluation in Section IV-C, all baselines are trained on the same dataset of 150 task demonstrations using the Abstract embodiment. Additionally, the same IK optimizer with consistent parameters is used within a single robot.</p><p>As outlined in Equation <ref type="formula" target="#formula_4">4</ref>of Section III-D, the motioninvariant regularization loss are added to the original loss functions for each baseline. In BC-RNN, the motion-invariant regularization loss is added to the negative log-likelihood between the predicted and demonstration actions. For the Diffusion Policy baselines, the motion-invariant regularization loss is integrated with the L2-based DDPM loss during the denoising process. The motion-invariant regularization loss is adapted for the sequence of receding-horizon actions used in the Diffusion Policy baselines and is defined as:</p><formula xml:id="formula_12">L invar = ∥ϕ({u k } t+P k=t , {û k } t-1 k=t-T ) -ϕ({û k } t+P k=t-T )∥ 2 ,</formula><p>where P is the prediction horizon, and the sequence of actions of length P +1 is transformed into the motion-invariant space.</p><p>Our findings indicate that incorporating the motion-invariant regularization during training generally reduces success rates when deploying policies on the Abstract embodiment but enhances performance in cross-embodiment settings with different robot embodiments, regardless of the neural network architectures. This highlights the applicability of leveraging motion invariance across various neural network architectures and its effectiveness for cross-embodiment learning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Implementation Details</head><p>The visuomotor policy π H predicts target poses for the handheld gripper at 10 Hz. The IK optimizer π L realizes these target poses by retargeting them into whole-body motions, updating target joint positions and body orientation at 100 Hz. In simulation, we applied low-level PD control for each joint and body at 500 Hz. For the Spot robot, we additionally computed joint positions for the legs by solving IK analytically based on the target body pose. For the Google Robot, body motion was controlled similarly to other arm joints with PD control, though using high gains. In real robot setups, we controlled the robots through APIs provided by the manufacturers. For quantitative evaluation on the Panda robot, we used JOINT_IMPEDANCE mode via Deoxys <ref type="bibr" target="#b54">[55]</ref> for joint position control. In the demonstration on the Spot robot, we directly streamed one-point trajectories for arm joint positions and body poses through Boston Dynamics' Spot SDK.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Demonstrations in Simulation</head><p>Task demonstrations in simulation use the same tracking camera setup as in real-robot evaluations-a Realsense T265 <ref type="bibr" target="#b49">[50]</ref> camera. To replicate real-world human demonstration behaviors, visual odometry data from the tracking camera is mapped to simulated handheld gripper motions in the Abstract embodiment or to IK commands for teleoperated simulation robots. The button interface for triggering grasp actions and recording data is kept consistent with the realworld setup. However, unlike real-world demonstrations, simulation does not require physical interaction with the handheld gripper. Therefore, shared gripper components were removed, and a simplified handle was used to reduce the workload on the human demonstrators. We evaluate the success rates of policies trained with and without the motion-invariant regularization, L invar , over 50 trials across varied architectures. Each policy is trained on demonstrations from the Abstract embodiment. While the success rates on the Abstract embodiment (used for demonstrations) decrease with the motion-invariant regularization, the success rates improve in cross-embodiment settings, where policies are deployed to other robots.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 :</head><label>1</label><figDesc>Fig.1: Overview of LEGATO. LEGATO addresses the challenge of transferring visuomotor skills across diverse robot embodiments. We present a cross-embodiment imitation learning framework using a versatile handheld grasping tool that ensures consistent physical interactions across different embodiments. Visuomotor policies trained on demonstrations by humans or teleoperated robots using the tool can be deployed across various robots equipped with the same gripper. Motion retargeting enables the execution of trajectories on different robots without requiring robot-specific training data.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: LEGATO's cross-embodiment learning pipeline. During data collection, the LEGATO Gripper records its trajectories, grasping actions, and visual observations captured by its egocentric stereo camera. A visuomotor policy is then trained on these demonstrations through imitation learning. During deployment, the visuomotor policy's outputs are retargeted to the robots' whole-body motions through IK optimization.</figDesc><graphic coords="2,504.47,113.86,51.43,54.29" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: LEGATO Gripper design. The LEGATO Gripper is designed for both human demonstration collection and robot deployment. (Left) It features a shared actuated gripper with adaptable handles, ensuring reliable human handling and consistent grasping across robots while minimizing components. (Right top) A human demonstrator can directly perform tasks by carrying the LEGATO Gripper in hand. The design includes a simple yet intuitive button interface with a status LED, allowing data recording to start and end with a double-click and grasping actions to trigger with a single click. (Right bottom) The LEGATO Gripper is easily installed on various robots, securely held by their original grippers, and is ready for immediate use.</figDesc><graphic coords="4,222.90,167.12,50.85,51.67" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 5 :</head><label>5</label><figDesc>Fig.5: Timelapse of deploying LEGATO in simulation. We trained visuomotor policies using demonstrations from the Abstract embodiment and deployed them on robots with diverse morphologies, from the top: Abstract, Panda, Spot, GR-1, and Google Robot. The timelapse of deploying these policies reveals consistent time steps. The tracking performance of the IK motion retargeting varies with morphology, leading to domain gaps across embodiments. Despite these challenges, LEGATO achieves successful deployment on various robots.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Simulation evaluation across different demonstration embodiments. We show success rate changes on 50 trials from policies trained on demonstrations of different embodiments.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Fig. 10 :</head><label>10</label><figDesc>Fig.10: Impact of training with the motion-invariant regularization We evaluate the success rates of policies trained with and without the motion-invariant regularization, L invar , over 50 trials across varied architectures. Each policy is trained on demonstrations from the Abstract embodiment. While the success rates on the Abstract embodiment (used for demonstrations) decrease with the motion-invariant regularization, the success rates improve in cross-embodiment settings, where policies are deployed to other robots.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head></head><label></label><figDesc>Comparison with different types of Diffusion Policy baselines We report success rates from 50 trials of our LEGATO policies compared to Diffusion Policy baselines, using different action spaces: end-effector velocities<ref type="bibr" target="#b53">[54]</ref> and relative end-effector trajectories<ref type="bibr" target="#b14">[15]</ref>. Although Diffusion Policy (Relative Trajectory) outperformed Diffusion Policy (Velocity) in cross-embodiment settings, LEGATO policies achieved the highest success rates across most cross-embodiment settings, except for deployment on the Goodle Robot for the Cup shelving task and the Spot robot for the Ladle reorganization task. various robot platforms, including floating-base robot systems. Unlike our setting, training with the action space of relative trajectories requires additional geometric information, such as the initial gripper pose for a sequence of receding-horizon actions, to generate the training dataset. This information is not incorporated into other baselines or the LEGATO framework. Nevertheless, LEGATO achieved higher performance than Diffusion Policy (Relative Trajectory) in cross-embodiment settings for the Closing the lid and Ladle reorganization tasks, though not in deployment within the same domain. As noted by Chi et al.<ref type="bibr" target="#b14">[15]</ref>, Diffusion Policy (Relative Trajectory) outperformed Diffusion Policy (Velocity) in their evaluation, and this was also observed in our setting.</figDesc><table><row><cell></cell><cell></cell><cell></cell><cell></cell><cell cols="3">Diffusion Policy (Velocity)</cell><cell cols="4">Diffusion Policy (Relative Trajectory)</cell><cell cols="2">LEGATO</cell><cell></cell><cell></cell></row><row><cell cols="2">100</cell><cell cols="3">Closing the lid</cell><cell>100</cell><cell></cell><cell cols="3">Cup shelving</cell><cell>100</cell><cell></cell><cell cols="3">Ladle reorganization</cell></row><row><cell>Success rate [%]</cell><cell>20 40 60 80</cell><cell></cell><cell></cell><cell></cell><cell>20 40 60 80</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>20 40 60 80</cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell>0</cell><cell></cell><cell></cell><cell></cell><cell>0</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>0</cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell>A b s t r a c t</cell><cell>P a n d a</cell><cell>S p o t</cell><cell>G R -1</cell><cell>G o o g l e R o b o t</cell><cell>A b s t r a c t</cell><cell>P a n d a</cell><cell>S p o t</cell><cell>G R -1</cell><cell>G o o g l e R o b o t</cell><cell>A b s t r a c t</cell><cell>P a n d a</cell><cell>S p o t</cell><cell>G R -1</cell><cell>G o o g l e R o b o t</cell></row><row><cell>Fig. 9:</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row></table><note><p>b) Impact of Training with the Motion-Invariant Regularization:</p></note></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><p>Acknowledgements This work was conducted during Mingyo Seo's internship at the <rs type="affiliation">AI Institute</rs>. We thank <rs type="person">Rutav Shah</rs> and <rs type="person">Minkyung Kim</rs> for providing feedback on this manuscript. We thank <rs type="person">Osman Dogan Yirmibesoglu</rs> for designing the fin ray style compliant fingers and helping with hardware prototyping. We thank <rs type="person">Mitchell Pryor</rs> and <rs type="person">Fabian Parra</rs> for their support with the real Spot demonstration.</p></div>
+			</div>
+			<div type="funding">
+<div><p>This paper was recommended for publication by Editor <rs type="person">Jens Kober</rs> upon evaluation of the Associate Editor and Reviewers' comments. This work was partially supported by the <rs type="funder">AI Institute</rs> and the <rs type="institution">Office of Naval Research</rs> (<rs type="grantNumber">N00014-22-1-2204</rs>).</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_swuFZcr">
+					<idno type="grant-number">N00014-22-1-2204</idno>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">The design of stretch: A compact, lightweight mobile manipulator for indoor human environments</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">C</forename><surname>Kemp</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Edsinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">M</forename><surname>Clever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Matulevich</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title/>
+		<ptr target="https://bostondynamics.com/products/spot" />
+	</analytic>
+	<monogr>
+		<title level="j">Boston Dynamics Spot</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">B1</forename><surname>Unitree</surname></persName>
+		</author>
+		<ptr target="https://shop.unitree.com/products/unitree-b1" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title/>
+		<ptr target="https://agilityrobotics.com/robots" />
+	</analytic>
+	<monogr>
+		<title level="j">Agility Robotics Digit</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<ptr target="https://fourierintelligence.com/gr1" />
+		<title level="m">GR1 -Fourier Intelligence</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Deep imitation learning for bimanual robotic manipulation</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Chowdhury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>De Paolis Kaluza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Deep imitation learning for humanoid locomanipulation through human teleoperation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Seo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Mimicgen: A data generation system for scalable robot learning using human demonstrations</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Memoryconsistent neural networks for imitation learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sridhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dutta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Weimer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Grasping in the wild: Learning 6dof closed-loop grasping from low-cost demonstrations</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Funkhouser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Visual imitation made easy</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Young</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Gandhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tulsiani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">The surprising effectiveness of representation learning for visual imitation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">P</forename><surname>Arunachalam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Learning to walk by steering: Perceptive quadrupedal locomotion in dynamic environments</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Seo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Skoutnev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Sentis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Avid: Learning multi-stage tasks via pixel-level translation of human videos</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Dhawan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Xirl: Cross-embodiment inverse reinforcement learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zakka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tompson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Dwibedi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Videodex: Learning dexterity from internet videos</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Mimicplay: Long-horizon imitation learning by watching human play</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Xskill: Cross embodiment skill discovery</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Veloso</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Okami: Teaching humanoid robots manipulation skills through single video imitation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Low-cost exoskeletons for learning whole-arm manipulation in the wild</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Training robots without robots: Deep imitation learning for master-to-robot policy transfer</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ohmura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nagakubo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kuniyoshi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">UMI on legs: Making manipulation policies mobile with manipulation-centric whole-body controllers</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Telexistence cockpit for humanoid robot control</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tachi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Robotics</title>
+		<imprint>
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Motion retargeting for humanoid robots based on simultaneous morphing parameter identification and motion optimization</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ayusawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Yoshida</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Robust real-time whole-body motion retargeting from human to humanoid</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Penco</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Whole-body geometric retargeting for humanoid robots</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Darvish</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Learning agile robotic locomotion skills by imitating animals</title>
+		<author>
+			<persName><forename type="first">X</forename><forename type="middle">B</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Coumans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T.-W</forename><forename type="middle">E</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Learning human-to-humanoid real-time whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>He</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Humanplus: Humanoid shadowing and imitation from humans</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Wetzstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Human motion control of quadrupedal robots using deep reinforcement learning</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sorokin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Ace: Adversarial correspondence embedding for cross morphology motion retargeting from human to nonhuman characters</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Won</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Clegg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SIGGRAPH Asia</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">ImitationNet: Unsupervised human-to-robot motion retargeting via shared latent space</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">V</forename><surname>Mascaro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Dynamic movement primitives in robotics: A tutorial survey</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Saveriano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">J</forename><surname>Abu-Dakka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kramberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Peternel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Probabilistic movement primitives</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Paraschos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Daniel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R</forename><surname>Peters</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Neumann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Learning via-point movement primitives with inter-and extrapolation capabilities</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Asfour</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Taskconditioned variational autoencoders for learning movement primitives</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Noseworthy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Paul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Roy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Roy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on robot learning</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Imitationflow: Learning deep stable stochastic dynamic systems by normalizing flows</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Urain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ginesi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Tateo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Peters</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Equivariant motion manifold primitives</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Son</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">C</forename><surname>Park</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Universal humanoid motion representations for physicsbased control</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Luo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Bidirectional invariant representation of rigid body motions and its application to gesture recognition and reproduction</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Soloperto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Saveriano</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Autonomous Robots</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<monogr>
+		<title level="m" type="main">Tool as embodiment for recursive manipulation</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Noguchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Matsushima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Matsuo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">S</forename><surname>Gu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2112.00359</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Critic regularized regression</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">A general framework for hierarchical redundancy resolution under arbitrary constraints</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Fiore</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Meli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ziese</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Siciliano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Natale</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Long short-term memory</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hochreiter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schmidhuber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neural Computation</title>
+		<imprint>
+			<date type="published" when="1997">1997</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">What matters in learning from offline human demonstrations for robot manipulation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Deep residual learning for image recognition</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Conference on Computer Vision and Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Mujoco: A physics engine for model-based control</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Todorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tassa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Intel</forename><surname>Realsense</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sdk</forename></persName>
+		</author>
+		<ptr target="https://github.com/IntelRealSense/librealsense" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<ptr target="https://www.xvisiotech.com/product/seersense-xr50/" />
+		<title level="m">SeerSense™ XR50 Module</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title/>
+		<ptr target="https://franka.de/" />
+	</analytic>
+	<monogr>
+		<title level="j">Franka Robotics</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Deep rl at scale: Sorting waste in office buildings with a fleet of mobile manipulators</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">Viola: Imitation learning for vision-based manipulation with object proposal priors</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Stone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

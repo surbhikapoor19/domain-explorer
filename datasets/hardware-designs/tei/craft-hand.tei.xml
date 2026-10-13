@@ -1,0 +1,988 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">CRAFT: A Tendon-Driven Hand with Hybrid Hard-Soft Compliance</title>
+				<funder ref="#_a2Hdt9F">
+					<orgName type="full">unknown</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2026-06-23">23 Jun 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Leo</forename><surname>Lin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shivansh</forename><surname>Patel</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jay</forename><surname>Moon</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Svetlana</forename><surname>Lazebnik</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Unnat</forename><surname>Jain</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">U</forename><forename type="middle">C</forename><surname>Irvine</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">CRAFT: A Tendon-Driven Hand with Hybrid Hard-Soft Compliance</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-06-23">23 Jun 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">F6F0E9A885503FF08A6BE178E06B9EEB</idno>
+					<idno type="arXiv">arXiv:2603.12120v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Fig. 1: CRAFT Hand. A) Full hand view showing the compact, anthropomorphic form factor with forearm-mounted actuators. B) CRAFT holding chopsticks to show complex dexterity. C) CRAFT holding a tennis ball, demonstrating its human-like size. D) One finger composed of hard PLA links and soft TPU joints. E) CRAFT conforming to a surface under contact, illustrating passive compliance at the joints.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Classical dexterous hands built around rigid linkages and direct-drive actuation have demonstrated precise, repeatable kinematics and strong actuation across decades of work. More recently, low-cost open platforms have made anthropomorphic dexterity substantially more accessible for robot learning research <ref type="bibr" target="#b24">[25]</ref>. However, as the use of hands scales up, contact becomes the dominant failure mode: rigid structures transmit impacts directly into joints and linkages, and even minor collisions can interrupt long-running data collection. At its core, dexterous manipulation is about making and managing contact, which exposes a fundamental tension: a robot hand must be accurate enough to place contact where a learned policy expects it, yet robust enough to survive the inevitable collisions, slips, and suboptimal interactions that occur during data collection.</p><p>Soft robotic hands attempt to solve this by replacing rigid structures with compliant materials that deform under load <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b12">13]</ref>. This passive compliance is appealing: the hardware absorbs uncertainty that would otherwise require precise control <ref type="bibr" target="#b17">[18]</ref>. But compliance introduces a different problem. Without a rigid structure, soft hands have limited load capacity and exhibit configuration-dependent kinematics. A soft finger can bend differently depending on how much it is already supporting, making its motion and force transmission difficult to model and repeat.</p><p>Both failure modes, rigid hands that break under contact and soft hands that lose geometric structure, stem from applying uniform material choices across the hand. In manipulation, impacts and conforming contact concentrate at joints, where the hand changes direction and collides with objects. The segments between joints, by contrast, must reliably transmit actuation forces from the motors, so they must be rigid. This spatial separation motivates a hybrid style of compliance: place compliance at joints where impacts and contact uncertainty concentrate, and use rigid links where geometric predictability and load paths matter. The goal is not "soft everywhere," but "soft where it helps," so passive deformation absorbs shocks and regulates forces without sacrificing kinematic structure.</p><p>To this end, we propose CRAFT hand (Fig. <ref type="figure">1</ref>), a tendondriven anthropomorphic hand with hybrid hard-soft compliance that costs under $600 and weighs 800g. The hand is fully 3D-printed: finger segments use rigid polylactic acid (PLA) material, while the finger joints use soft thermoplastic polyurethane (TPU), as highlighted in Fig. <ref type="figure">1 D</ref>. Introducing soft joints raises two practical challenges. First, soft joints are difficult to control predictably: in conventional tendondriven fingers, a single tendon pulls through both the proximal interphalangeal (PIP) and distal interphalangeal (DIP) joints, causing one joint to bend more than the other depending on load and posture. We address this with a bidirectional mechanical linkage that couples the PIP and DIP joints, so both bend equally and simultaneously regardless of external load, producing repeatable finger postures. Second, soft flexure joints accumulate fatigue under repeated bending, eventually breaking. We address this with rolling-contact joints at the PIP and DIP locations: rather than bending at a fixed point, the joint rotates along a constrained curved interface, distributing load across the TPU surface and significantly reducing stress concentration <ref type="bibr" target="#b0">[1]</ref>. Together, these two mechanisms allow the compliant joints to remain both predictable and durable through contact-rich operation.</p><p>Actuation comes from 15 actuators located behind the wrist, with three actuators per finger driving flexion and side-toside motion through tendons. Routing actuation away from the fingers keeps the hand compact and anthropomorphic in form factor. It also removes the actuators from contact zones, reducing the risk of damage during collisions, and keeps the fingers light, which simplifies full-system teleoperation. Tendon routing also provides mechanical advantage, improving holding strength and reducing effort during sustained grasps. The hand is modular and fully 3D-printable, so damaged components can be replaced quickly without disassembling the system.</p><p>Because the hand is intended for data-driven learning, we pair the hardware with tools for data collection and reinforcement learning. For teleoperation, we use a single RGB camera with vision-based whole-body tracking to control both the arm and hand simultaneously, enabling natural data collection without wrist-mounted sensors or gloves. The compliant joints reduce the operator's cognitive load during collection: passive contact absorption means demonstrations remain valid even when finger placement is imprecise, which is particularly important for fragile or deformable objects. We also release URDF and MuJoCo XML models that preserve the hand's kinematics while using practical approximations for the soft joints, suitable for reinforcement learning.</p><p>We evaluate three questions. First, does our hybrid compliance preserve structural performance? Benchmarked against the rigid LEAP hand <ref type="bibr" target="#b24">[25]</ref>, CRAFT matches strength, precision, and repeatability, while giving the benefits of compliance. Second, does compliance enable more robust manipulation? Teleoperation across five tasks, from rigid objects to fragile and low-friction items, shows CRAFT achieves consistently higher success by passively regulating contact forces that would otherwise demand precise control. Third, does the hybrid design support general dexterity? We validate against the Feix grasp taxonomy <ref type="bibr" target="#b7">[8]</ref>, demonstrating success on all 33/33 grasps from power grips to precision pinches.</p><p>In summary, our contributions are as follows:</p><p>• Hybrid hard-soft hand: CRAFT localizes compliance at joints and rigidity at links, resolving the precision-robustness tradeoff at under $600, fully open-source. • Coupled rolling-contact joints: A bidirectional PIP-DIP linkage and rolling-contact surfaces produce predictable, repeatable joint motion while absorbing impact forces. • Structural benchmarking: CRAFT matches the LEAP hand <ref type="bibr" target="#b24">[25]</ref> in repeatability and pull-out strength while surviving impacts that would break the rigid baseline. • Manipulation and dexterity validation: 100% success on fragile objects in teleoperation studies, and full coverage of all 33 Feix grasp types.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>Direct-Drive Robotic Hands Historically, dexterous manipulation research has relied on fully actuated, direct-drive hands <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b2">3,</ref><ref type="bibr" target="#b8">9,</ref><ref type="bibr" target="#b3">4]</ref>. These systems employ rigid linkages with motors at joints or in the palm for high torque and precise control. The DLR-HIT Hand II <ref type="bibr" target="#b8">[9]</ref> integrates motors into finger bases and phalanges for a compact design. However, it comes at steep costs ($15,000-$80,000) and has kinematic limitations. Meanwhile, the Allegro Hand <ref type="bibr" target="#b28">[29]</ref>, while robust, lacks abduction/adduction degree of freedom (DoF), restricting its ability to perform human-like opposition and power grasps.</p><p>Recent efforts focus on bridging this gap through affordable, open-source hardware (approx. $2,000). The LEAP Hand <ref type="bibr" target="#b24">[25]</ref> addresses kinematic shortcomings of direct-drive predecessors; its universal abduction-adduction mechanism eliminates workspace dead zones. Similarly, the D'Manus <ref type="bibr" target="#b3">[4]</ref> offers affordable dexterity. However, housing motors within fingers or palms increases thickness, creating a bulky form factor exceeding human dimensions. Furthermore, these rigid hands rely on complex active impedance control rather than mechanical compliance to manage contact forces. Consequently, inaccuracies cause high-force collisions, risking damage. In contrast, our hand integrates a hybrid soft-rigid structure with tendon-driven compliance, adapting to contact while retaining a human-like form factor.</p><p>Tendon-driven and compact designs While direct-drive hands offer simplicity and robustness, placing motors within the fingers or palm creates bulky, non-anthropomorphic form factors. To achieve the compact size of a human hand, researchers use tendons to relocate motors to the forearm <ref type="bibr" target="#b22">[23,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b11">12,</ref><ref type="bibr" target="#b18">19,</ref><ref type="bibr" target="#b13">14,</ref><ref type="bibr" target="#b30">31,</ref><ref type="bibr" target="#b5">6]</ref>. The Shadow Hand <ref type="bibr" target="#b22">[23]</ref>, a long-standing benchmark in this category, uses a complex array of tendons to actuate 24 joints, mimicking human kinematics. However, its high cost and closed-source nature have limited its use in large-scale learning experiments.</p><p>Recent open-source initiatives have sought to democratize this morphology. The RUKA hand <ref type="bibr" target="#b30">[31]</ref> achieves a 15-DoF anthropomorphic design, more compact than direct-drive alternatives by housing servos in a forearm unit. Similarly, the ORCA Hand <ref type="bibr" target="#b5">[6]</ref> addresses tendon fragility via "popping" joints that dislocate under stress rather than breaking, ensuring reliability for operation. Despite these advancements, most tendon-driven hands remain rigid. Stiff tendons transfer motor torque directly to joints, meaning these systems still rely on active impedance control rather than passive compliance to manage interaction forces. Our hand utilizes soft materials, providing inherent compliance that allows fingers to naturally conform without complex control.</p><p>Compliance and Soft Robotics To overcome the challenges posed by the stiffness of rigid and tendon-driven mechanisms, where imperfect state estimation can lead to damaging collisions, researchers have turned to passive compliance as a hardware-level solution. Early efforts <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b29">30,</ref><ref type="bibr" target="#b6">7,</ref><ref type="bibr" target="#b18">19,</ref><ref type="bibr" target="#b16">17]</ref> utilized elastomer flexure joints to achieve this, allowing fingers to conform passively without complex control. However, these designs are typically underactuated (low DoF), limiting their ability to perform complex in-hand manipulation.</p><p>To combine robustness with dexterity, recent works <ref type="bibr" target="#b27">[28,</ref><ref type="bibr" target="#b12">13]</ref> have explored hybrid soft-rigid architectures. The closest to our work is Leap V2 <ref type="bibr" target="#b23">[24]</ref>, which successfully integrates elastomer joints into a high-DoF (22 joints) system. However, while mechanically capable, the Leap V2 remains expensive ($5000) and relatively bulky. In contrast, our hand achieves a significantly more compact, anthropomorphic form factor at a fraction of the cost ($600), without sacrificing the high-DoF compliance essential for robust manipulation. Furthermore, our use of rolling contact joints improves durability compared to flexure-based joints, which break under repeated use.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. KINEMATIC DESIGN</head><p>This section presents the mechanical implementation of our hybrid design principle, describing the hand architecture, joint mechanisms, and tendon routing.</p><p>CRAFT Hand Structure: The entire hand structure is shown in Fig. <ref type="figure">1</ref> (top-right) and an X-ray view of CRAFT is shown in Fig. <ref type="figure" target="#fig_0">3</ref>. To maintain anthropomorphism, CRAFT has 95 mm palm and 103 mm finger length, totaling 198 mm. These dimensions align with median male hand measurements [10], ensuring the system is compact for teleoperation. CRAFT weighs 800g and employs 15 actuators for 15 active and 5 passive degrees of freedom (DoF). To maintain compactness, all motors are located in the forearm.</p><p>Finger and Joints Structure: We denote the finger joints using standard anatomy: the metacarpophalangeal (MCP) joint at the finger base, the proximal interphalangeal (PIP) joint in the middle, and the distal interphalangeal (DIP) joint closest to the fingertip, as shown in Fig. <ref type="figure" target="#fig_0">3</ref>. We assign three actuators to each finger to control (i) coupled flexion of the PIP and DIP joints, (ii) abduction/adduction of the MCP joint, and (iii) flexion/extension of the MCP joint.</p><p>Each finger comprises distinct rigid PLA and soft TPU parts, shown in Fig. <ref type="figure" target="#fig_1">4</ref>. Rigid PLA wraps the segments to maintain alignment and transmit tendon forces, while the PIP and DIP joints consist entirely of soft TPU, allowing elastic deformation under impact.</p><p>At the PIP and DIP joints, a single tendon (Fig. <ref type="figure" target="#fig_1">4A</ref>) drives both joints through a bidirectional TPU linkage (Fig. <ref type="figure" target="#fig_1">4B</ref>) that couples them so motion at one drives the other with equal rotation. CRAFT uses rolling contact joints <ref type="bibr" target="#b0">[1]</ref> at these locations rather than the pin joints <ref type="bibr" target="#b24">[25,</ref><ref type="bibr" target="#b30">31]</ref>  peatable and predictable, allowing accurate modeling. Passive elastic bands (Fig. <ref type="figure" target="#fig_1">4C</ref>) return both joints to neutral when tendon tension is released.</p><p>At the MCP joint, a cylindrical snap-fit interface motivated by Christoph et al. <ref type="bibr" target="#b5">[6]</ref> simplifies assembly and pops out under excessive force, reducing the risk of joint breakage. A flexion/extension tendon (Fig. <ref type="figure" target="#fig_1">4D</ref>) and an abduction/adduction tendon (Fig. <ref type="figure" target="#fig_1">4E</ref>) actuate the MCP independently, and both are backdrivable, allowing external forces to drive the transmission in reverse. Metal dowels throughout the finger provide structural support and low-friction guidance for all tendons.</p><p>The modular design allows a full finger to be swapped by detaching the dowel pins, without disassembling the hand or rewiring tendons. The thumb is mounted laterally to replicate human anatomy. Its joints use distinct anatomical names, CMC, MP, and IP, but the mechanical implementation mirrors the fingers exactly: the CMC uses the same snap-fit interface for 2-DoF motion, and the MP and IP joints use the same rolling-contact design and coupled-linkage mechanism as the finger PIP and DIP joints.</p><p>The routing layout for a single finger is shown in Fig. <ref type="figure" target="#fig_1">4</ref>. Two opposing pairs control MCP flexion/extension and abduction/adduction, while a single tendon drives coupled PIP/DIP flexion. We use high-strength braided line to withstand substantial tension. To minimize friction, metal dowel pins serve as smooth guide surfaces. Our routing layout is designed for visual and mechanical simplicity, allowing users to readily identify tendons during maintenance. The motors are arranged in a compact pentagonal shape, with each face serving a single finger. Similar to Christoph et al. <ref type="bibr" target="#b5">[6]</ref>, we use a ratchet spool to quickly re-tension the tendons.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. TELEOPERATION AND SIMULATION SUPPORT</head><p>For a hand to be useful for robot learning, it must map reliably to both a human operator and a simulator. We address this in two steps: first, a calibration procedure that aligns the operator's hand range to the robot's joint limits, and then integration with vision-based teleoperation for data collection and simulation for reinforcement learning.</p><p>Teleoperation. To teleoperate the hand, we must know how many motor turns move each joint across its full range. Following <ref type="bibr" target="#b5">[6]</ref>, we employ a joint-wise calibration procedure to align each operator's movements with CRAFT hardware. We begin by manually moving each robot joint to its extremes to record its range. We then record the operator's biological limits using HaMeR <ref type="bibr" target="#b19">[20]</ref> as they move their fingers through their full range of motion, covering both flexion/extension and abduction/adduction. During teleoperation, a linear function maps the operator's current joint position, normalized against their biological range, to the corresponding angle within the robot's calibrated limits, ensuring accurate retargeting across all degrees of freedom.</p><p>With calibration in place, we follow the vision-based teleoperation framework of Sivakumar et al. <ref type="bibr" target="#b25">[26]</ref> to collect demonstration data. As shown in Fig. <ref type="figure" target="#fig_2">5A</ref>, the operator stands in front of a single RGB camera. FrankMocap <ref type="bibr" target="#b21">[22]</ref> estimates the 3D pose of the operator's wrist relative to their torso (Fig. <ref type="figure" target="#fig_2">5B</ref>), which is mapped to the robot's workspace for whole-arm retargeting. Simultaneously, HaMeR estimates the operator's hand pose (Fig. <ref type="figure" target="#fig_2">5C</ref>) for finger retargeting. An exponential moving average is applied to smooth targets and mitigate noise inherent to vision-based tracking. Together, these estimates drive CRAFT, mounted as the end-effector of a robotic arm (Fig. <ref type="figure" target="#fig_2">5D</ref>), enabling simultaneous control of the arm and hand with no wrist-mounted sensors or gloves. Simulation. For simulation-based policy learning, we provide URDF <ref type="bibr" target="#b15">[16]</ref> and XML <ref type="bibr" target="#b26">[27]</ref> files compatible with widely adopted simulators <ref type="bibr" target="#b1">[2,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b4">5]</ref>. Since the physical behavior of soft materials does not transfer reliably from simulation to the real world, we avoid soft-body physics and instead model the rolling-contact joints using equality constraints that enforce surface contact conditions and treat them as revolute joints, as shown in Fig. <ref type="figure" target="#fig_3">6</ref>. This approximation maintains computational efficiency while preserving the essential kinematics for policy learning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. EXPERIMENTS</head><p>We evaluate CRAFT along three axes. First, we test structural performance to measure the strength and precision that the hybrid design achieves relative to a rigid baseline. Second, we assess manipulation performance to determine whether passive compliance reduces operator effort and failures during teleoperation. Third, we validate grasp versatility to confirm that the hybrid design maintains the kinematic range and strength required for general manipulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Structural Tests</head><p>To evaluate the structural robustness of CRAFT hand, we conduct three assessments. We evaluate the strength, precision, and endurance of CRAFT to the LEAP hand <ref type="bibr" target="#b24">[25]</ref> using standardized structural tests, consistent with prior work <ref type="bibr" target="#b30">[31,</ref><ref type="bibr" target="#b5">6]</ref>. It is a widely used rigid, direct-drive hand. To ensure a fair comparison, we assembled the LEAP hand using the same motors as CRAFT hand (Dynamixel XL330-M288-T instead of the 4× expensive Dynamixel XC330-M288-T), hereafter denoted as LEAP. This allows us to make a head-on comparison between CRAFT and a rigid, direct-drive linkage (LEAP).</p><p>Pull-out Test (Strength). This experiment quantifies the maximum payload a finger can retain before mechanical failure. We command the finger to a fully flexed position and apply an external force opposing the flexion direction. The failure threshold is defined as the point where the finger slips or deflects by more than 15 • from the target pose. We track the deflection angle using ArUco markers attached to the finger. As detailed in Tab. I, CRAFT withstands 15.29 N of pull-out force, nearly double the 8.67 N measured for the LEAP hand. This performance gap highlights the mechanical advantage of the tendon routing system. By distributing the load through the tendon, CRAFT reduces the direct torque demand on the motors compared to the direct-drive linkage of the LEAP, allowing for higher holding forces with identical actuation hardware. Repeatability Test (Precision). We investigate whether the tendon-driven mechanism introduces position errors or slack over prolonged operation. We program both hands to perform a grasp-and-release sequence on a plush toy continuously for one hour. Fig. <ref type="figure" target="#fig_5">7</ref> presents the joint angle tracking error over the duration of the experiment. The error is calculated using the motor encoder values. Both CRAFT and LEAP maintain consistent performance with mean tracking errors remaining below 0.01 rad. This result demonstrates that CRAFT achieves consistency similar to rigid hands, confirming that the benefits of compliance do not come at the cost of repeatability. Holding Test (Endurance). Finally, we evaluate the hand's efficiency during high-load static holding. Both CRAFT and LEAP are commanded to grasp and hold a 5 lb dumbbell vertically for one hour (Fig. <ref type="figure" target="#fig_6">8</ref>). We monitor the current draw to assess motor strain and thermal throttling. The results show that the average current consumption of CRAFT is approximately 50% lower than that of LEAP. While current draw in both hands rises initially as motor temperature increases, CRAFT stabilizes well below the motor's 600 mA limit. The friction inherent in the tendon routing acts as a passive braking mechanism, assisting in load retention and reducing the active torque required from the motors. In contrast, the direct-drive LEAP must constantly supply higher torque to combat the moment arm of the weight, leading to higher power consumption and thermal stress. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Teleoperation Tests</head><p>To validate whether CRAFT's compliance translates into improved utility in real-world manipulation, we conduct a teleoperation user study comparing CRAFT against the rigid Fig. <ref type="figure">9</ref>: Teleoperation User Study Objects. To validate real-world utility, we evaluate teleoperation performance on five objects: (1) a ball (rigid grasping), (2) a wine glass (large and fragile), (3) an egg (low friction and fragile), (4) a raspberry (small and deformable), and (5) a frito chip (extremely delicate).</p><p>LEAP baseline. We hypothesize that the passive compliance provided by the soft components will allow for higher success rates with fragile objects and faster completion times by reducing the cognitive load required for precise alignment. To test this, we experiment on five objects shown in Fig. <ref type="figure">9</ref>, each selected to isolate a specific manipulation challenge: 1) Grasping a Ball: Requires no compliance, as the ball is solid. This is a reasonably easy object to grasp. 2) Lifting a Wine Glass: Requires handling a large, fragile object susceptible to shattering under excessive force. 3) Handling an Egg: Requires managing low-friction fragility, demanding a grasp that is delicate enough to prevent crushing but firm enough to prevent slip. 4) Picking a Raspberry: Requires extreme delicacy at a small scale, where the object is easily deformed by minor force. 5) Lifting a Frito Chip: Requires extreme delicacy, serving as a test for passive compliance.</p><p>To strictly evaluate the grasping capability of the hand, the robot arm is fixed at an optimal pre-grasp pose for each task. Users control only the hand's fingers via teleoperation. Prior to testing, participants were briefed on the mechanical differences between the hands and given two minutes to familiarize themselves with the teleoperation interface. A limit of 150 seconds per trial was enforced. We run 10 trials for each hand with different people. We plot the results in Fig. <ref type="figure" target="#fig_7">10</ref> and discuss them below.</p><p>We measure both success rate and completion time across trials. Success rate captures whether the hand can complete the task at all, while completion time reflects the cognitive and control effort required from the operator. We run 10 trials for each hand with different people. We plot the results in Fig. <ref type="figure" target="#fig_7">10</ref> and discuss them next.</p><p>We first examine the grasping ball task to test performance on rigid, non-deformable objects. The bulky structure of LEAP proved a confounding factor, making effective grasps difficult and resulting in taking a longer time and achieving a lower success rate. Since the ball is rigid, CRAFT's passive conformity played a minor role compared to other tasks.</p><p>Next, we evaluate lifting the wine glass to assess the manipulation of large, fragile objects. While the glass's substantial size made grasping it straightforward, the task highlighted a significant difference in user confidence. Those operating the rigid hand exhibited noticeable hesitation, moving slowly to avoid applying excessive force that might shatter the glass, taking more than twice as long to complete the task. Conversely, users with CRAFT leveraged the hand's passive compliance to close the grasp rapidly, trusting the soft hand to compensate for contact force. Since the glass's substantial size made grasping straightforward, both hands achieved a 100% success rate.</p><p>Handling the egg introduced the dual challenge of low surface friction and moderate fragility. The low friction proved to be the deciding factor, forcing LEAP users to operate with extreme caution and often taking significantly longer to attempt finding a stable grasp. CRAFT mitigated these risks through its compliant surface materials, which increased contact area, allowing users to secure the egg approximately 15 seconds faster on average than with the rigid hand. The rigid hand frequently failed to find a stable grasp before the time limit or slipped due to the lack of friction, resulting in a 60% failure rate. CRAFT achieved a 90% success rate.</p><p>Finally, picking the raspberry and the chip were extreme delicacy tests of small objects, requiring precise force application. While users still required significant time (approx. 40-50 s) to carefully align the grasp for these small targets, the task exposed a critical difference in force regulation. The rigid hand frequently crushed objects upon contact due to the lack of passive give, resulting in a 60% success rate. CRAFT achieved a 100% success rate on both tasks, as the soft fingers absorbed contact forces. CRAFT's compliance became the deciding factor.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Grasp Taxonomy Assessment</head><p>A crucial focus area in compliant robots is whether the introduction of compliance compromises the kinematic versatility required for general-purpose manipulation. To evaluate this, we assess CRAFT on the standardized benchmark of Grasp Taxonomy introduced by Feix et al. <ref type="bibr" target="#b7">[8]</ref> and as attempted by previous works <ref type="bibr" target="#b30">[31]</ref>. This taxonomy formalizes human grasp types into a classification system, organizing grasps based on contact type, opposition direction, and hand shape. Consistent with prior works on open, robot hands <ref type="bibr" target="#b30">[31]</ref>, we evaluate on this benchmark because it represents the widest possible range of practically useful grasps required for daily activities.</p><p>Fig. <ref type="figure" target="#fig_8">11</ref>   Power grip small tools, Pick up coins Hold Pen or Chopsticks Fig. <ref type="figure">12</ref>: Finger Movement Comparison. Unlike prior work, our hand incorporates both side-to-side movement from the base of the finger and active control of the first knuckle. In contrast, the RUKA hand <ref type="bibr" target="#b30">[31]</ref> (RSS 2025) cannot move fingers sideways to squeeze objects, and the ORCA hand <ref type="bibr" target="#b5">[6]</ref> (IROS 2025) lacks active control of the fingertips. By utilizing 20 degrees of freedom, our design enables significantly higher dexterity for tasks like picking up coins or using pens/chopsticks.  RUKA's 29/33. Tendon-driven actuation provides the flexion torque to secure objects in power configurations, like the Large Diameter (row 1, col 1). Complementing this, soft material properties facilitate conformal contact for precision grasps, such as the Prismatic 2 Finger (row 2, col 2), stabilizing the hold through local deformation. We highlight performance on configurations typically challenging for compliant mechanisms. The Adduction Grip (row 4, col 5) demonstrates the index finger's ability to maintain lateral stiffness against the thumb's orthogonal force. Similarly, the Writing Tripod (row 4, col 2) shows distal links can maintain specific geometry without collapsing under contact pressure. Finally, the Extension Type (row 7, col 3) validates the hand's full range of motion, forming a stable, flat platform for supporting objects.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Whole Arm Teleopration</head><p>To evaluate the practical utility of CRAFT across diverse manipulation scenarios, we demonstrate teleoperation on openworld tasks shown in Fig. <ref type="figure" target="#fig_9">13</ref>. Picking up a plush toy validates grasping of soft objects. Wiping a whiteboard with a sponge demonstrates the benefit of compliance during sustained surface contact, as the soft joints maintain consistent pressure. Twisting a key illustrates the advantage of compliance in contact-rich scenarios, where the joints absorb reaction forces during torque. Picking up a raspberry tests precision grasping of small items, handling an egg requires managing lowfriction fragility, and pouring from a wine glass validates stable manipulation of large breakable objects during dynamic motion. The hand completes all demonstrations without object damage or grasp failure, confirming that the hybrid design maintains functionality across a spectrum of functional tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Structural Comparison to Representative Robot Hands</head><p>We compare the CRAFT design with representative anthropomorphic hands. While many other designs simplify kinematics to reduce complexity, CRAFT maintains full articulation within a compact form factor. We specifically contrast our kinematic structure with the RUKA and ORCA hands in Fig. <ref type="figure">12</ref>, and evaluate our compact physical profile against the Leap Hand V2 in Fig. <ref type="figure" target="#fig_10">14</ref> RUKA <ref type="bibr" target="#b30">[31]</ref>: The RUKA hand utilizes a simplified structure that omits abduction/adduction DoF. While this reduces mechanical complexity, it completely eliminates the lateral workspace of the fingers. This limitation prevents inter-finger grasps, such as holding objects between fingers, and does not allow the manipulation of tools like chopsticks or pens, which rely on lateral forces between fingers. The RUKA hand is unable to execute four Feix grasps due to this constraint, whereas CRAFT achieves full taxonomy coverage.</p><p>ORCA <ref type="bibr" target="#b5">[6]</ref>: Similarly, the ORCA hand simplifies structure by employing a fixed DIP joint. This reduces the effective curling range of the fingers and limits the hand's ability to adjust the fingertips necessary for precise tasks. This, again, limits its ability to perform tasks such as holding chopsticks and a pen.</p><p>Leap V2 <ref type="bibr" target="#b23">[24]</ref>: Leap V2 also adopts a hybrid hard-soft architecture but places some of its actuators behind the palm and fingers, resulting in a bulkier form factor than CRAFT. As demonstrated in Fig. <ref type="figure" target="#fig_10">14</ref>, this limits its access in confined spaces: where Leap V2 collides with the environment, CRAFT's slim profile allows it to reach in.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSION</head><p>We introduce CRAFT, an open-source anthropomorphic hand built for the reality of dexterous learning: lots of contact, repetition, and not much patience for broken hardware. CRAFT follows a hybrid hard-soft design, using rigid links to carry loads and compliant joints to absorb impacts. Rollingcontact joints at the PIP and DIP locations distribute load across the joint surface, preventing the stress concentrations that cause flexure joints to fracture under repeated use, and constrain motion to a well-defined kinematic path regardless of loading conditions. In structural benchmarks, CRAFT matches the repeatability of a rigid baseline while improving strength and reducing effort during sustained holding. In teleoperation, passive compliance reduces operator effort and contact failures, enabling reliable handling of fragile and lowfriction items. Finally, CRAFT achieves full coverage of all 33 grasps in the Feix taxonomy, from power grasps to precision pinches. By releasing the full stack, we aim to make durable, repeatable dexterous data collection and policy learning easier to reproduce and scale.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Joints Structure. Black denotes the rigid components, while blue denotes the compliant (TPU) components. The index finger and thumb are highlighted to illustrate kinematics, with purple components indicating joint axes. Fingers feature a 2-DoF MCP and coupled PIP/DIP joints; the thumb mirrors this with a 2-DoF CMC and coupled MP/IP joints. PIP/DIP and MP/IP employ rolling contacts, while MCP/CMC use the cylindrical snap-fit interface.</figDesc><graphic coords="3,315.31,45.90,231.71,254.56" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: Finger Structure. Dark gray denotes the hard (PLA) components and light gray denotes the soft (TPU) components. (A) PIP/DIP Tendon. (B) Bidirectional Linkage. (C) Elastic bands. (D) MCP Flexion/Extension Tendons. (E) Abduct/Adduct Tendons.</figDesc><graphic coords="3,313.78,503.28,253.15,165.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Whole-Arm Teleoperation. (A) An operator stands in front of a single RGB camera (highlighted with a dashed box). (B) FrankMocap estimates the 3D pose of the operator's wrist relative to their torso, used for whole-arm retargeting. (C) HaMeR estimates the operator's hand pose for finger retargeting. (D) The estimated poses are mapped to CRAFT, mounted as the end-effector of a robotic arm.</figDesc><graphic coords="4,102.57,52.75,333.58,208.39" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: CRAFT in MuJoCo Simulation. CRAFT grasping a sphere, with rolling contact joints modeled as equality constraints and joints treated as revolute constraints.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head></head><label></label><figDesc>Pull-out Strength Comparison. We measure the resistance of a flexed finger against an opposing external force (in N). The maximum force is recorded immediately prior to a fingertip deflection exceeding 15 • . CRAFT demonstrates significantly higher retention strength due to the mechanical advantage of its tendon.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Repeatability under Cyclic Load. Left: CRAFT performing continuous grasp-release cycles on an object. Right: Joint angle tracking error over one hour of operation. Despite the use of flexible tendons, CRAFT (blue dots) maintains a tracking error of &lt; 0.01 rad, comparable to the rigid LEAP baseline (red dots), demonstrating consistent control. (shades depict joints closing and opening)</figDesc><graphic coords="5,240.91,163.47,131.12,58.77" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 8 :</head><label>8</label><figDesc>Fig.8: Holding Test. We make CRAFT and LEAP hand grasp a heavy 5lb weight in its palm for one hour. On the vertical axis, we show that the average current running through CRAFT Hand is two times less compared to LEAP. The right axis shows that the current use initially increases. However, it still holds the weight and uses around one-third of its maximum possible current of 600mA.</figDesc><graphic coords="5,322.67,484.47,77.88,101.03" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 10 :</head><label>10</label><figDesc>Fig. 10: Teleoperation User Study Results. Comparison of average completion time and success rate for five manipulation tasks. CRAFT consistently outperforms the LEAP hand, particularly in handling fragile objects (Raspberry, Chip) where compliance prevents damage, and in dynamic grasping (Ball) where adaptation simplifies capture.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Fig. 11 :</head><label>11</label><figDesc>Fig.11: Grasp Taxonomy Validation. CRAFT demonstrating 33 distinct grasp types from the Feix taxonomy<ref type="bibr" target="#b7">[8]</ref>. The hand successfully executes a wide range of configurations, including power grasps (e.g., Large Diameter), precision grasps (e.g., Prismatic Pinch), and intermediate poses, confirming that the compliant design maintains the kinematic versatility required for general-purpose manipulation.</figDesc><graphic coords="7,260.16,608.40,81.85,153.08" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 13 :</head><label>13</label><figDesc>Fig. 13: Whole Arm Teleoperation. CRAFT executing various tasks, including wiping, picking fragile objects, and twisting a key.</figDesc><graphic coords="8,131.29,312.35,84.26,72.98" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Fig. 14 :</head><label>14</label><figDesc>Fig. 14: Narrow Space Accessibility. CRAFT demonstrates the ability to fit into a narrow jar, while the bulkier Leap Hand V2 fails to enter the same workspace due to its rigid linkage size. Both cans have the same radius. Results reproduced with the help of the authors of Leap Hand V2 [24].</figDesc><graphic coords="8,438.26,227.28,66.14,117.63" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head></head><label></label><figDesc>reports CRAFT's performance on this standardized set of 33 grasp types, achieving 33/33 successes compared to</figDesc><table><row><cell>Large Diameter</cell><cell>Small Diameter</cell><cell>Medium Diameter</cell><cell>Adducted Thumb</cell><cell>Light Tool</cell></row><row><cell>Prismatic 3 Finger</cell><cell>Prismatic 2 Finger</cell><cell>Palmar Pinch</cell><cell>Power Disk</cell><cell>Power Sphere</cell></row><row><cell>Precision Sphere</cell><cell>Tripod</cell><cell>Fixed Hook</cell><cell>Lateral</cell><cell>Index Finger Ext.</cell></row><row><cell>Distal Type</cell><cell>Writing Tripod</cell><cell>Tripod Variation</cell><cell>Parallel Extension</cell><cell>Adduction Grip</cell></row><row><cell>Lateral Tripod</cell><cell>Sphere 4 Finger</cell><cell>Quadpod</cell><cell>Sphere 3 Finger</cell><cell>Stick</cell></row><row><cell>Ring</cell><cell>Ventral</cell><cell>Inferior Pincer</cell><cell>Tap Pinch</cell><cell>Palmar</cell></row><row><cell></cell><cell>Prismatic 4 Finger</cell><cell>Precision Disk</cell><cell>Extension Type</cell><cell></cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>VII. ACKNOWLEDGEMENTS</head><p>We thank the <rs type="institution">Siebel School Robotics Lab at UIUC</rs> and the <rs type="institution">School of Information and Computer Sciences at UC Irvine</rs> for their support. We are grateful to <rs type="person">Akash Sharma</rs>, <rs type="person">Kenneth Shaw</rs>, and <rs type="person">Yuchen Song</rs> for feedback on the draft. We also thank <rs type="person">Steven Oh</rs> and <rs type="person">Kenneth Shaw</rs> for assistance with LEAP V2 demonstrations, as well as the members of <rs type="institution">UIUC SIGRobotics</rs> for helpful discussions. This work was supported in part by the <rs type="programName">1517 Fund and Dynamixel</rs>.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_a2Hdt9F">
+					<orgName type="program" subtype="full">1517 Fund and Dynamixel</orgName>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Asymmetric rolling contact joint for enhanced payload capabilities</title>
+		<author>
+			<persName><forename type="first">Jeongdo</forename><surname>Ahn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minho</forename><surname>Hwang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dukyoo</forename><surname>Kong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joonhwan</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dong-Soo</forename><surname>Kwon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE/ASME Transactions on Mechatronics</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="202" to="213" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Learning dexterous in-hand manipulation</title>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Openai ; Marcin Andrychowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maciek</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rafal</forename><surname>Chociej</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bob</forename><surname>Jozefowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jakub</forename><surname>Mcgrew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Pachocki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthias</forename><surname>Petron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Glenn</forename><surname>Plappert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Ray</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="3" to="20" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Barrett</forename><surname>Technology</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Barretthand</surname></persName>
+		</author>
+		<ptr target="https://barrett.com/barretthand" />
+		<imprint>
+			<biblScope unit="page" from="2025" to="2037" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">All the feels: A dexterous hand with large area sensing</title>
+		<author>
+			<persName><forename type="first">Raunaq</forename><surname>Bhirangi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abigail</forename><surname>Defranco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jacob</forename><surname>Adkins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carmel</forename><surname>Majidi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhinav</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tess</forename><surname>Hellebrekers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2210.15658</idno>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">2022</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Visual dexterity: Inhand reorientation of novel and complex object shapes</title>
+		<author>
+			<persName><forename type="first">Tao</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Megha</forename><surname>Tippur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyang</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<editor>
+			<persName><forename type="first">Pulkit</forename><surname>Adelson</surname></persName>
+		</editor>
+		<editor>
+			<persName><surname>Agrawal</surname></persName>
+		</editor>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">84</biblScope>
+			<biblScope unit="page">9244</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Orca: An open-source, reliable, costeffective, anthropomorphic robotic hand for uninterrupted dexterous task learning</title>
+		<author>
+			<persName><forename type="first">Clemens</forename><forename type="middle">C</forename><surname>Christoph</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maximilian</forename><surname>Eberlein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Filippos</forename><surname>Katsimalis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arturo</forename><surname>Roberti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aristotelis</forename><surname>Sympetheros</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michel</forename><forename type="middle">R</forename><surname>Vogt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Davide</forename><surname>Liconti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chenyu</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Barnabas</forename><surname>Gavin Cangan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ronan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><forename type="middle">K</forename><surname>Hinchet</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Katzschmann</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2504.04259" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page">2025</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">A novel type of compliant and underactuated robotic hand for dexterous grasping</title>
+		<author>
+			<persName><forename type="first">Raphael</forename><surname>Deimel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Oliver</forename><surname>Brock</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="issue">1-3</biblScope>
+			<biblScope unit="page" from="161" to="185" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">The grasp taxonomy of human grasp types</title>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Feix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Javier</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Heinz-Bodo</forename><surname>Schmiedmayer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aaron</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danica</forename><surname>Kragic</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on human-machine systems</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="66" to="77" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<ptr target="https://www.dlr.de/en/rm/research/robotic-systems/hands/dlr-hit-hand-ii" />
+		<title level="m">Dlr-hit hand ii</title>
+		<imprint>
+			<publisher>German Aerospace Center (DLR</publisher>
+			<biblScope unit="page" from="2025" to="2037" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Hand anthropometry of us army personnel</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Thomas</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Greiner</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1991">1991</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Technical report</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Design of the utah/mit dextrous hand</title>
+		<author>
+			<persName><forename type="first">Steve</forename><surname>Jacobsen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Edwin</forename><surname>Iversen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Knutti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Biggers</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings. 1986 IEEE International Conference on Robotics and Automation</title>
+		<meeting>1986 IEEE International Conference on Robotics and Automation</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="1986">1986</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="1520" to="1532" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title/>
+		<ptr target="https://inmoov.fr/inmoov-hand/" />
+	</analytic>
+	<monogr>
+		<title level="j">Gaël Langevin. Inmoov hand</title>
+		<imprint>
+			<biblScope unit="page" from="2026" to="2027" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Brl/pisa/iit softhand: a low-cost, 3d-printed, underactuated, tendon-driven hand with soft and adaptive synergies</title>
+		<author>
+			<persName><forename type="first">Haoran</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><forename type="middle">J</forename><surname>Ford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matteo</forename><surname>Bianchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuel</forename><forename type="middle">G</forename><surname>Catalano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Efi</forename><surname>Psomopoulou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nathan</forename><forename type="middle">F</forename><surname>Lepora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="8745" to="8751" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Multisensory five-finger dexterous hand: The dlr/hit hand ii</title>
+		<author>
+			<persName><forename type="first">Hong</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ke</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Meusel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikolaus</forename><surname>Seitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gerd</forename><surname>Hirzinger</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Mh Jin</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Sw Fan</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Lan</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2008 IEEE/RSJ international conference on intelligent robots and systems</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2008">2008</date>
+			<biblScope unit="page" from="3692" to="3697" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Yale openhand project: Optimizing open-source hand designs for ease of fabrication and adoption</title>
+		<author>
+			<persName><forename type="first">Raymond</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aaron</forename><surname>Dollar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="32" to="40" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<author>
+			<persName><forename type="first">Viktor</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lukasz</forename><surname>Wawrzyniak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunrong</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michelle</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kier</forename><surname>Storey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Miles</forename><surname>Macklin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Hoeller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikita</forename><surname>Rudin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ankur</forename><surname>Handa</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2108.10470</idno>
+		<title level="m">Isaac gym: High performance gpu-based physics simulation for robot learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">A framework for designing anthropomorphic soft hands through interaction</title>
+		<author>
+			<persName><forename type="first">Pragna</forename><surname>Mannam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dominik</forename><surname>Bauer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jean</forename><surname>Oh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nancy</forename><surname>Pollard</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2306.04784</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Passive Dynamic Walking</title>
+		<author>
+			<persName><forename type="first">Tad</forename><surname>Mcgeer</surname></persName>
+		</author>
+		<idno type="DOI">10.1177/027836499000900206</idno>
+		<ptr target="http://ijr.sagepub.com/content/9/2/62.abstract" />
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="62" to="82" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">An open-source anthropomorphic robot hand system: Hri hand</title>
+		<author>
+			<persName><forename type="first">Hyeonjun</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Donghan</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">HardwareX</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page">100</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Reconstructing hands in 3d with transformers</title>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Pavlakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dandan</forename><surname>Shan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ilija</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Angjoo</forename><surname>Kanazawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Fouhey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="9826" to="9836" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">In-hand object rotation via rapid motor adaptation</title>
+		<author>
+			<persName><forename type="first">Haozhi</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashish</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Roberto</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1722" to="1732" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Rong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Takaaki</forename><surname>Shiratori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hanbyul</forename><surname>Joo</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2008.08324</idno>
+		<title level="m">Frankmocap: Fast monocular 3d hand and body motion capture by regression and integration</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title/>
+		<ptr target="https://www.shadowrobot.com" />
+	</analytic>
+	<monogr>
+		<title level="j">Shadow Robot Company. Shadow dexterous hand</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Demonstrating leap hand v2: Low-cost, easy-to-assemble, high-performance hand for robot learning</title>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2025</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Leap hand: Low-cost, efficient, and anthropomorphic hand for robot learning</title>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ananye</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.06440</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Robotic telekinesis: Learning a robotic hand imitator by watching humans on youtube</title>
+		<author>
+			<persName><forename type="first">Aravind</forename><surname>Sivakumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2202.10448" />
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Mujoco: A physics engine for model-based control</title>
+		<author>
+			<persName><forename type="first">Emanuel</forename><surname>Todorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Erez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuval</forename><surname>Tassa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2012 IEEE/RSJ international conference on intelligent robots and systems</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="5026" to="5033" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Getting the ball rolling: Learning a dexterous policy for a biomimetic tendondriven hand with rolling contact joints</title>
+		<author>
+			<persName><forename type="first">Yasunori</forename><surname>Toshimitsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benedek</forename><surname>Forrai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Barnabas</forename><surname>Gavin Cangan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ulrich</forename><surname>Steger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuel</forename><surname>Knecht</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Weirich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><forename type="middle">K</forename><surname>Katzschmann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE-RAS 22nd International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1" to="7" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Wonik</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.wonikrobotics.com/research-robot-hand" />
+		<imprint>
+			<biblScope unit="page" from="2025" to="2037" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">How to create affordable, modular, lightweight, underactuated, compliant robot hands</title>
+		<author>
+			<persName><surname>Agisilaos G Zisimatos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Minas</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Liarokapis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Christoforos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">George</forename><forename type="middle">P</forename><surname>Mavrogiannis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kostas</forename><forename type="middle">J</forename><surname>Kontoudis</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kyriakopoulos</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+		<respStmt>
+			<orgName>National Technical University of Athens, Tech. Rep</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Rethinking the design of humanoid hands with learning</title>
+		<author>
+			<persName><forename type="first">Anya</forename><surname>Zorin</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Irmak</forename><surname>Guzey</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Billy</forename><surname>Yan</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Aadhithya</forename><surname>Iyer</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Lisa</forename><surname>Kondrich</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Nikhil</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Bhattasali</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><surname>Pinto</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><surname>Ruka</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2025</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

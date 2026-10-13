@@ -1,0 +1,1330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main"></title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">F5A8C5FD8292684D8D4591E714C010A2</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Enabling robots with contact-rich manipulation remains a pivotal challenge in robot learning, which is substantially hindered by the data collection gap, including its inefficiency and limited sensor setup. While prior work has explored handheld paradigms, their rod-based mechanical structures remain rigid and unintuitive, providing limited tactile feedback and posing challenges for operators. Motivated by the dexterity and force feedback of human motion, we propose FreeTacMan, a humancentric and robot-free data collection system for accurate and efficient robot manipulation. Concretely, we design a wearable gripper with visuo-tactile sensors for data collection, which can be worn by human fingers for intuitive control. A highprecision optical tracking system is introduced to capture endeffector poses while synchronizing visual and tactile feedback simultaneously. We leverage FreeTacMan to collect a large-scale multimodal dataset, comprising over 3000k paired visuo-tactile images with end-effector poses, 10k demonstration trajectories across 50 diverse contact-rich manipulation tasks. FreeTacMan achieves multiple improvements in data collection performance over prior works and enables effective policy learning from self-collected datasets. By open-sourcing the hardware and the dataset, we aim to facilitate reproducibility and support research in visuo-tactile manipulation.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Humans inherently rely on the integration of vision and touch to perform contact-rich manipulation tasks. While vision provides comprehensive object recognition and pose estimation capabilities, tactile feedback conveys critical information about local contacts that cannot be obtained visually, such as surface texture <ref type="bibr" target="#b0">[1]</ref>, in-hand pose <ref type="bibr" target="#b1">[2]</ref>, material compliance <ref type="bibr" target="#b2">[3]</ref>, and force distribution <ref type="bibr" target="#b3">[4]</ref>. For example, when handling a fragile or deformable object, vision guides initial motion planning and object localization, while tactile information enables modulation of grip force and adjustment of object orientation to prevent damage.</p><p>The vision-based imitation learning has shown strong potential in robot manipulation tasks <ref type="bibr" target="#b4">[5]</ref>, <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>, <ref type="bibr" target="#b7">[8]</ref>, benefiting from the growing large-scale demonstration datasets <ref type="bibr" target="#b8">[9]</ref>, <ref type="bibr" target="#b9">[10]</ref>. In the tactile domain, visuo-tactile sensors offer highresolution, sensitive, and easily integrable multimodal signals, making them particularly well-suited for existing policy learning pipelines. However, the lack of large-scale, highquality tactile datasets and compatible sensing hardware has prevented similar advances. To accelerate research in this domain, two prerequisites would be addressed: 1) a visuotactile data collection system that provides real-time tactile feedback and enables rapid redeployment, and 2) a largescale, high-precision visuo-tactile dataset covering diverse contact-rich manipulation tasks <ref type="bibr" target="#b10">[11]</ref>.</p><p>Early efforts concentrated on collecting data using sensors mounted on robots <ref type="bibr" target="#b11">[12]</ref>, <ref type="bibr" target="#b12">[13]</ref>, which limit the flexibility for scaling visuo-tactile data. Systems that rely on motion-capture with AR/VR visualization <ref type="bibr" target="#b13">[14]</ref> or primary-replica teleoperation rigs <ref type="bibr" target="#b14">[15]</ref> capture accurate camera views and trajectories. They conversely offer no direct, real-time tactile signals, and impose a fixed robot setup with complex calibration or high latency. Handheld data collection paradigms <ref type="bibr" target="#b15">[16]</ref>, <ref type="bibr" target="#b16">[17]</ref> release the human operators from robot embodiment. However, these methods typically rely on SLAM and IMU fusion for localization, which introduces significant positioning errors that are particularly detrimental to tactile perception. Moreover, they transmit tactile cues through long mechanical linkages, hindering direct tactile feedback and precise measurement of instantaneous tactile signals.</p><p>The inefficiency and lack of real-time tactile feedback in current data collection setups compromise data quality, limit scalability, and pose a risk of sensor damage during operation. Consequently, existing visuo-tactile datasets <ref type="bibr" target="#b17">[18]</ref>, <ref type="bibr" target="#b18">[19]</ref> are largely confined to specific perception tasks or lack the diversity and precision required for generalizable visuotactile policy learning across diverse manipulation scenarios.</p><p>In this work, we introduce FreeTacMan, a robot-free and human-centric visuo-tactile data collection system to acquire manipulation data accurately and efficiently. With a modular sensor and in-situ 1 hardware, it ensures precise, real-time tactile feedback via two mechanisms -a gripperfinger interface coupled to human fingertips, and a linear transmission mechanism enabling precise gripper control and unattenuated tactile feedback. This foundation enables a comprehensive visuo-tactile manipulation dataset with high precision, diverse task scenarios, and rich contact dynamics, recorded with synchronized high-resolution visual, visuotactile, and pose data. This extensive collection provides a robust foundation for training and evaluating generalizable visuo-tactile policies. To validate the effectiveness of the data collected by FreeTacMan, we train and deploy imitation learning policies that leverage a temporal-aware tactile pretraining strategy on challenging manipulation tasks.</p><p>In summary, our main contributions are: (i) An in-situ, robot-free, real-time tactile data-collection system that leverages a handheld gripper with modular visuo-1 "In-situ" indicates that FreeTacMan preserves natural fingertip-environment interaction. It emphasizes maintaining the original grasp posture while capturing tactile feedback. This is akin to the concept in materials science <ref type="bibr" target="#b19">[20]</ref> and biology <ref type="bibr" target="#b20">[21]</ref>, where systems are studied in their native conditions-without altering their environment or state-to gain a deeper understanding of their behavior under actual working conditions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>TABLE I:</head><p>Comparison with existing data collection systems. Our in-situ design delivers direct and high-precision tactile feedback to operators. To evaluate tactile feedback fidelity of handheld methods quantitatively, we measure the number of mechanical transmission "link" inside the handheld gripper from the human hand to the grasped object.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Category Method</head><p>Control Method Tactile Feedback</p><p>Teleop: VR/AR ARCap <ref type="bibr" target="#b21">[22]</ref> VR Controller -DexCap <ref type="bibr" target="#b22">[23]</ref> Hand Mocap -TactAR <ref type="bibr" target="#b13">[14]</ref> VR Controller Visual Bunny-VisionPro <ref type="bibr" target="#b23">[24]</ref> Hand Retargeting Vibration Teleop: Primary-Replica ALOHA <ref type="bibr" target="#b14">[15]</ref> Puppet Arm -GELLO <ref type="bibr" target="#b24">[25]</ref> Puppet Arm -Bi-ACT <ref type="bibr" target="#b25">[26]</ref> Puppet Arm Force</p><p>Handheld UMI <ref type="bibr" target="#b15">[16]</ref>, FastUMI <ref type="bibr" target="#b16">[17]</ref> Trigger Contact (4 links) ViTaMIn <ref type="bibr" target="#b26">[27]</ref> In-situ FreeTacMan (Ours) Fingertips Touch <ref type="bibr">(1 link)</ref> tactile sensors to excel at diverse contact-rich tasks efficiently.</p><p>(ii) A large-scale, high-precision (sub-millimeter) visuotactile manipulation dataset with over 3000k visuo-tactile image pairs, more than 10k trajectories across 50 tasks.</p><p>(iii) Experimental validation shows that imitation policies trained with our visuo-tactile data achieve an average 50% higher success rate than vision-only approaches across challenging contact-rich manipulation tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>A. Dataset Collection System for Robot Learning.</p><p>Recent robot learning has been greatly advanced through imitating expert demonstrations <ref type="bibr" target="#b27">[28]</ref>. Popular approaches <ref type="bibr" target="#b28">[29]</ref>, <ref type="bibr" target="#b29">[30]</ref> leverage large-scale visuomotor datasets (pairs of RGBD sensors and actions) to train end-to-end policies that generalize across objects and scenes. To gather data suitable for imitation learning, prior works have relied on different interfaces to teleoperate real robots, including motion capture with AR or VR visualization <ref type="bibr" target="#b21">[22]</ref>, <ref type="bibr" target="#b9">[10]</ref>, <ref type="bibr" target="#b13">[14]</ref>, 3D space mouse <ref type="bibr" target="#b29">[30]</ref>, primary-replica system <ref type="bibr" target="#b14">[15]</ref>, <ref type="bibr" target="#b24">[25]</ref>, <ref type="bibr" target="#b25">[26]</ref>, and wearable devices <ref type="bibr" target="#b30">[31]</ref>. However, these setups are either expensive, operationally complex, or suffer from limited precision. Handheld data collection paradigms <ref type="bibr" target="#b15">[16]</ref> offer greater flexibility for various robot embodiments, but their trigger-based grippers and multi-link transmission designs introduce backlash between links, which blurs tactile cues and leads to inaccurate relay of gripper contact to the operator. In contrast, FreeTacMan implements an in-situ data collection system that enables operators to feel gripper contact directly in real time. The comparison of control methods and tactile feedback between ours and prior work is depicted in Table <ref type="table">I</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Tactile dataset for contact-rich Manipulation.</head><p>Most existing visuo-tactile datasets focus on perception tasks such as 6DoF pose tracking <ref type="bibr" target="#b31">[32]</ref>, cross-modal generation <ref type="bibr" target="#b17">[18]</ref>, representation learning <ref type="bibr" target="#b18">[19]</ref>, garment-feature spatially-aligned perception <ref type="bibr" target="#b32">[33]</ref>, and tactile-semantic description <ref type="bibr" target="#b33">[34]</ref>, with limited coverage of the full manipulation process. The ObjectFolder benchmark <ref type="bibr" target="#b34">[35]</ref> includes 4 visuo-tactile manipulation tasks, exhibiting limited scale and diversity. Moreover, most tactile manipulation datasets are collected with tactile array sensors based on piezoresistive or Hall-effect principles <ref type="bibr" target="#b12">[13]</ref>, <ref type="bibr" target="#b35">[36]</ref>, <ref type="bibr" target="#b36">[37]</ref>, <ref type="bibr" target="#b37">[38]</ref>. Although policies trained on these datasets show promising results, the intrinsic limitations of these sensors, such as low spatial resolution, crosstalk, complex fabrication, and environment interference, can constrain policy performance and reduce deployment efficiency in real-world settings. Taken together, these limitations expose an urgent demand for a visuo-tactile dataset that offers rich, high-resolution, and scalable data spanning the entire manipulation process.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. METHOD A. Hardware Design</head><p>Design criteria. To enable efficient collection of highfidelity tactile data, we define the following criteria. (a) Multimodal data acquisition: The system must provide competitive visuo-tactile sensing with exceptional consistency, coupled with high-precision pose tracking. (b) Efficiency: The system should minimize the tactile transmission path from human fingers to the grasped object for real-time and precise tactile feedback, while ensuring stable and fingertip-level control. (c) Scalability: A modular design architecture should be adopted to ensure compatibility across robot embodiments. (d) Usability: The system should accommodate a wide range of fingertip sizes, providing ergonomic comfort during operation.</p><p>Multimodal sensing. As shown in Fig. <ref type="figure" target="#fig_0">2</ref>(a), we employ visuo-tactile sensors and a wrist-mounted camera to capture tactile and visual information. End-effector poses are tracked using a high-precision motion capture system, achieving submillimeter accuracy-an essential factor for contact-rich tasks, where even minute pose errors can result in disproportionately large deviations in tactile feedback.</p><p>In-situ gripper. FreeTacMan achieves hinge-free operation through visuo-tactile sensors mounted on the operator's fingertip, where the sensor layer forms the interface between skin and manipulated objects, eliminating intermediate linkages to provide zero mechanical attenuation and natural proprioception. To ensure that the unattenuated tactile feedback directly translates to operator control precision, as illustrated in Fig. <ref type="figure" target="#fig_0">2</ref>(b), the system incorporates a linear transmission mechanism with chrome-plated steel shafts and linear bearings, constraining movement to highly accurate linear trajectories (axial deviation ≥ 0.02 mm). Additionally, an inverted crank-slider mechanism converts finger-driven motion into synchronized linear output, while dual parallel shafts and rolling bearings in linking joints minimize friction and lateral torque, achieving over 90% transmission efficiency.</p><p>Modular architecture. FreeTacMan system is built as three plug-and-play modules, each optimized for rapid setup and cross-embodiment compatibility: a sensor perception module for tactile data collection, a universal gripper interface (Fig. <ref type="figure" target="#fig_0">2(c</ref>)) for robot compatibility, and a camera mounting scaffold to ensure aligned visual feedback from wrist camera. The sensor is based on the McTac design <ref type="bibr" target="#b38">[39]</ref> and features enhanced modularity and consistency. The improved universal mechanical interface allows the same sensor unit to be used interchangeably on a data collection setup or a robotic arm. Automated fabrication ensures consistent quality. Customized interfaces are provided for different robot arms, including a 6-DOF Piper arm for low-load tasks and a 7-DOF Franka arm for high-precision, heavy-load applications. For 3D models of end-effectors and their integration on different robot arms (e.g., Piper, Franka), please visit our demo page.</p><p>Human-machine interface design. To achieve rapid adaptability, we incorporate hook-and-loop straps for fingertip fastening, as illustrated in Fig. <ref type="figure" target="#fig_0">2(d</ref>). These straps fit hand sizes ranging from the 5% to 95% percentile of adults and support repeated use <ref type="bibr" target="#b39">[40]</ref>, balancing operational efficiency. Furthermore, the system features a lightweight (157.5, g) and compact (145 × 85 × 106, mm 3 ) design that ensures comfort.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Human-to-Robot Data Transfer</head><p>To facilitate human-to-robot skill transfer, a high-precision NOKOV Motion Capture System is used for 6D pose tracking of the interface at 240 Hz, achieving sub-millimeter accuracy. Five retro-reflective markers are mounted on the interfaces, with three positioned on the top plate to measure pose and two on the grippers to capture relative displacement. The coordinates of markers are first transformed from the world </p><formula xml:id="formula_0">(a) Pretrain Encoder � �-1 � � � � Tactile Encoder � � � �-2 � � �+1 � . . . . . . Tactile Projection � � � �-1 � � � �-2 � �+1 7-DoF Pos . . . . . . concat Visual Encoder � �-1 � � � � � � � �-2 � � �+1 � . . . . . . Visual Projection � � � �-2 � � �-1 � � � � � �+1 � � �-2 � � �-1 � � � � � �+1 � . . . . . . . . . . . . � �-1 � � � �-2 � �+1 � �-1 � � � �-2 � �+1 . . . . . . . . . . . . � �-1 � � � �-2 � �+1 � �-1 � � � �-2 � �+1 . . . . . . . . . . . . � �-1 � � � �-2 � �+1 � �-1 � � � �-2 � �+1<label>Memory</label></formula><formula xml:id="formula_1">� �-1 � � � � Tactile Encoder � � � �-2 � � �+1 � � �-1 � � � �-2 � �+1</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>7-DoF Pos Visual Encoder</head><formula xml:id="formula_2">� �-1 � � � � � � � �-2 � � �+1 �</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ACT Visual Alignment and Tactile Guidance。 Insert until Fully Seated。</head><p>The sensor on the other end of the USB will only light up when the USB is firmly plugged in. coordinate frame to the robot base coordinate frame. A local coordinate frame, aligned with the robot URDF, is established at the gripper's Tool Center Point (TCP) using three topplate markers, allowing derivation of end-effector pose while ensuring consistency with the robot kinematic model. We downsample the tracking data to synchronize with RGB images. To this end, each frame contains: the wrist camera RGB image, two visuo-tactile images, the end-effector pose of the in-situ gripper in the world coordinate frame, and gripper width. Each trajectory consists of a sequence of such embodiment-agnostic data synchronized at 30 Hz.</p><p>Unlike prior works <ref type="bibr" target="#b15">[16]</ref>, <ref type="bibr" target="#b16">[17]</ref> relying on SLAM and IMU fusion to estimate end-effector poses, the motion capture system avoids IMU drift and tracking errors. Given the URDF of a target embodiment, we could utilize IKPY <ref type="bibr" target="#b40">[41]</ref> as an inverse kinematic solver to map poses of the in-situ gripper to joint positions directly as the action representation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Tactile Pretraining and Policy Learning</head><p>A two-stage approach is employed to learn visuo-tactile manipulation policies: 1) Tactile representation learning, 2) visuo-tactile policy learning.</p><p>Tactile representation learning. Our wearable system yields high-precision, contact-rich visuo-tactile trajectories, enabling a high-fidelity dataset for representation learning. Although tactile outputs resemble 2D images, applying a vision encoder pretrained on RGB data often produces suboptimal features due to the domain gap in appearance and semantics <ref type="bibr" target="#b41">[42]</ref>, <ref type="bibr" target="#b26">[27]</ref>. We adopt a CLIP-style <ref type="bibr" target="#b42">[43]</ref> contrastive pretraining procedure to bridge the domain gap.</p><p>As illustrated in Fig. <ref type="figure" target="#fig_2">3</ref>(a), both the visual encoder f v and tactile encoder f t share a ResNet backbone initialized from the same checkpoint. f v remains frozen during pretraining, while f t is finetuned. Each encoder is followed by a projection head: g v for vision, and g t for tactile, where g t first concatenates the tactile features with the normalized 7-DOF joint position vector q i to inject robot joint state as global context. At each timestep i, we compute the normalized embeddings v i and t i . We designate v i as the primary positive for t i to align tactile features with the current visual features. However, relying solely on time-aligned contrastive loss neglects temporal dynamics, leading to embeddings that vary abruptly and fail to capture evolving contact patterns. To enforce temporal awareness, a secondary positive v i+1 drawn from the next timestep is introduced. All other entries from negatives in a fixed-size memory bank M. We train f t , g v and g t by minimizing the following contrastive loss:</p><formula xml:id="formula_3">L = - 1 B B i=1 log e v ⊤ i ti/τ + e v ⊤ i+1 ti/τ e v ⊤ i ti/τ + e v ⊤ i+1 ti/τ + j∈Ni e v ⊤ j ti/τ ,<label>(1)</label></formula><p>where B indicates batch size, τ is a learned temperature parameter and N i indexes the negatives.</p><p>Visuo-tactile action chunking transformer. We employ the pretrained tactile encoder to extract tactile representations. As shown in Fig. <ref type="figure" target="#fig_2">3</ref>(b), vision and tactile embeddings are then concatenated and input into the action chunking transformer (ACT) <ref type="bibr" target="#b28">[29]</ref>, which is trained to predict joint positions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS</head><p>We design experiments to answer three key questions: Q1. Can demonstrations be collected efficiently and accurately using FreeTacMan compared to previous setups?</p><p>Q2. Is the in-situ tactile information in FreeTacMan dataset effective for contact-rich tasks policy learning?</p><p>Q3. How does the tactile encoder pretrained on selfcollected visuo-tactile data improve policy learning?</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Dataset</head><p>Enabled by the efficient, precise, and faithful tactile data collection system, we curate a diverse dataset spanning vision, touch, and proprioception modalities, as illustrated in Fig. <ref type="figure">4</ref>. The dataset spans 50 tasks, comprising more than 10k trajectories and over 3000k visuo-tactile image pairs. Collected with high-consistent and high-resolution visuotactile sensors, it enables large-scale tactile pretraining and multimodal policy learning. Furthermore, the dataset covers diverse fundamental tactile capabilities, as shown in Fig. <ref type="figure">4(c</ref>). To ensure dataset quality, every trajectory is replayed in our validation process, providing a robust filter that guarantees the reliability of the data for downstream robot learning. The dataset, along with its structure, data format, and license, is available at our dataset page.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Experimental Setup</head><p>To answer the questions above, we evaluate the effectiveness of FreeTacMan system and the quality of the collected dataset through a diverse set of contact-rich manipulation tasks, shown in Fig. <ref type="figure">5</ref>. 1) Fragile cup. The robot grasps a fragile cup without causing damage and places it stably on a tray. 2) Calligraphy. The robot traces the digit "5" with a calligraphy brush. 3) Texture classification. The robot grasps and identifies one of two cylindrical objects with distinct textures and sorts it into the correct bin. 4) Stamp press. The robot presses a stamp onto paper to produce a clear imprint. 5) USB plug. The robot needs to securely insert a pre-grasped USB plug into a socket (error &lt; 1mm). These tasks collectively represent the four core tactile capabilities of our dataset: force control (fragile cup), hybrid force-position control (USB plug, stamp press), high-acuity tactile perception (texture classification), and dynamic response (calligraphy).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. User Study on Data Collection System</head><p>Procedure. We evaluate the usability of FreeTacMan through a user study including 12 volunteers, with varying experience in data collection. Besides FreeTacMan, users collect demonstrations using two typical methods: primary-replicabased teleoperation (i.e., ALOHA <ref type="bibr" target="#b14">[15]</ref>) and handheld devices (i.e., UMI <ref type="bibr" target="#b15">[16]</ref>). To minimize biases, no device-specific instructions are provided and each participant conducts three trials with each device for each task. The participants are instructed to solve tasks as best they can while avoiding collisions and damage. If a task fails, they will continue from where it is interrupted, and the failure will be recorded.</p><p>Metrics. We record the task success/failure mode, completion time, and any instances of slippage or damage. Three metrics are adopted to quantify the capability of a particular data collection approach, namely completion_rate (fully completed tasks as a percentage of those initiated), collection efficiency (the inverse of data collection time), and an overall score, Completion per Unit Time (CPUT), defined as completion_rate × efficiency.</p><p>Demonstrations could be collected efficiently and accurately using FreeTacMan compared to previous setups (Q1). The results of user study are shown in Fig. <ref type="figure" target="#fig_8">6</ref>, where FreeTacMan consistently yields the top completion rate and efficiency. CPUT score in Fig. <ref type="figure" target="#fig_8">6(c</ref>) highlights the overall advantage of FreeTacMan, gaining 5.05× higher performance than teleoperation and 1.52× higher than UMI.</p><p>For simple tasks like texture classification that don't require accurate force sensing or control, our system and UMI achieve Fig. <ref type="figure" target="#fig_8">6</ref>: User Study on data collection. (a-c) FreeTacMan outperforms ALOHA <ref type="bibr" target="#b14">[15]</ref> and UMI <ref type="bibr" target="#b15">[16]</ref> in terms of completion rate, collection efficiency, and the CPUT score per task. (d) FreeTacMan excels at user experience evaluation as well.    comparable completion rates, while ALOHA performs slightly inferior. In completion time, we have a 2.65× advantage over ALOHA and a 1.22× advantage over UMI. In more complex tasks, such as fragile cup manipulation, where force feedback is necessary to ensure successful grasping and prevent excessive force, primary-replica teleoperation leads to damage-related failures. This suggests that the handheld method provides better force feedback for delicate objects.</p><p>For tasks requiring dynamic force control, such as USB plug and stamp press, ALOHA relies on brute force, barely completing them at the risk of causing damage, while UMI often fails due to the lack of slippage detection. In contrast, FreeTacMan combines both precise force perception and control, resulting in superior accuracy and safety. For high-precision trajectory control (e.g., calligraphy), ALOHA struggles significantly-users often need to manually assist the teaching arm with their other hand, resulting in the longest completion time. While UMI can complete the task, the trajectory smoothness remains inferior to that of FreeTacMan.  data collection system among the three approaches.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Validation on Imitation Learning</head><p>Each task in Fig. <ref type="figure" target="#fig_7">7</ref> is trained and evaluated over 20 trials.  improvements on policy performance (Q2). As illustrated in Table <ref type="table" target="#tab_1">II</ref>, the vision-only baseline achieves low performance across all tasks, with an average success rate of 21%. Without tactile feedback, the robot struggles in tasks requiring fine tactile perception, such as USB plug, calligraphy, and texture classification. When tactile feedback is incorporated naively, i.e., without pretraining, performance improves substantially, with the success rate increasing to 55%. Significant gains are observed in tasks such as fragile cup manipulation (75%) and calligraphy (70%). This highlights the utility of tactile sensing in contact-rich tasks where visual cues alone are insufficient to distinguish subtle features. However, the performance in tasks like USB plug (10%) and texture classification (55%) still lags behind, indicating room for further refinement.</p><p>Tactile inputs enable excellent performance even on unseen objects (Q2). In the texture classification task, we select a texture object with an out-of-distribution color (red) for testing. As shown in Table <ref type="table" target="#tab_3">III</ref>, tactile input achieves 55% accuracy on unseen objects, matching performance on training objects and significantly exceeding the 15% visiononly baseline. Pretraining further increases accuracy to 70%, demonstrating robust generalization.</p><p>Temporal-aware pretraining improves the performance by aligning visual and tactile embeddings (Q3). Incorporating both time-aligned and time-adjacent pairs in CLIP pretraining boosts the average success rate to 71%. As shown in the last line in Table <ref type="table" target="#tab_1">II</ref>, the improvement comes from tasks that demand fine-grained control and the ability to track contact dynamics, such as calligraphy (90%) and stamp (80%). Meaningful gain is witnessed in USB plug (20%). Nevertheless, this 20% success rate highlights the challenge of high-precision tasks, where sub-millimeter deviations lead to failure. This is attributed to limited inverse kinematics accuracy and insufficient modeling of insertion dynamics. Future work will thus explore higher-precision arms and reinforcement learning to better learn contact-rich policies. Overall, these results confirm that our approach aligns tactile and visual embeddings with spatial-temporal context.</p><p>Pretraining demonstrates substantial benefits under data-scarce conditions (Q3). As shown in Fig. <ref type="figure" target="#fig_9">8</ref>, ACT policy with pretrained encoder achieves superior performance with only 50 task-specific demonstrations-55% for cup manipulation, 50% for calligraphy and 60% for texture classification-compared to the visual-only baseline (35%, 20%, and 20%, respectively). With 100 episodes, its performance in cup and stamp tasks (60% each) nearly matches the non-pretrained tactile model (70% and 65%). We further analyze performance discrepancies across task types. Perception-centric tasks like texture classification benefit from the generalized features  of the pre-training, while action-oriented tasks such as cup manipulation and calligraphy require not only robust features but also sufficient task-specific demonstrations to learn effective action strategies.</p><p>Pretraining on FreeTacMan dataset provides robustness against variations among visuo-tactile sensors (Q3). While our main experiments are conducted in an in-domain setting, where training and evaluation use different sensor batches with high consistency, we also evaluate a more challenging out-ofdomain scenario by introducing substantial variations across visuo-tactile sensors. As shown in Table <ref type="table" target="#tab_4">IV</ref>, the pretrained model generalizes well across two distinct sensors, which differ in marker angle (0°vs. 45°) and RGB lighting environment (side vs. bottom). The in-domain and out-of-domain performances remain close on the texture classification task (0.85 vs. 0.75) and identical on the fragile cup task (both 0.8). In contrast, the non-pretrained counterpart performs poorly, particularly in phases requiring fine-grained tactile perception: a drop from 80% to 40% in the tactile-based classification phase, and a catastrophic drop from 70% to 10% in the landing phase (which relies on detecting contact with the table before releasing). These results validate the effectiveness of tactile pretraining for cross-sensor generalization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION</head><p>We present FreeTacMan, a human-centric and robot-free data collection system with in-situ visuo-tactile feedback and recording. An in-situ and modular gripper with visuotactile sensors enables rapid adaptation, and a large-scale highprecision dataset is collected to support contact-rich manipulation policy learning. Experimental results demonstrate that the proposed system outperforms existing methods in multiple aspects, including data collection efficiency, control accuracy, and human-machine interaction experience. Through policy validation, the effectiveness of the collected data and the importance of visuo-tactile pretraining are further confirmed.</p><p>Limitation and future work. While FreeTacMan has demonstrated efficacy across a range of challenging tasks, a few limitations remain. To eliminate dependency on external base stations for submillimeter-level localization, we will develop high-precision visual algorithms for collecting data in the wild. We also plan to extend our system and dataset to dexterous hands and bimanual long-horizon tasks, facilitating study on finer-grained and more complex scenarios.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. ACKNOWLEDGMENTS</head><p>We gratefully acknowledge Huijie Wang for helping to develop the demonstration page, and Zherui Qiu for assisting with the supervision of the user study. We also thank Yixuan Pan, Qingwen Bu, Zhuoheng Li, Jisong Cai, Yuxiang Lu, and Ningbin Zhang for their valuable insights and constructive discussions. Our appreciation also goes to Yingxin Wang, Zhirui Zhang, Xinyu Yang, Fengjie Shen, Taoyuan Huang, and Lekai Chen for their assistance during the data collection. Finally, we extend our sincere gratitude to JAKA for their generous support in the collection of our dataset. This work is in part supported by the JC STEM Lab of Autonomous Intelligent Systems funded by The Hong Kong Jockey Club Charities Trust. This work was also partially supported by the NSFC Grant No.52505029, and the STCSM Grant No.25ZR1401191 and No. 24511103400.</p><p>• Texture classification. This task involves recognizing and sorting two types of cylindrical objects, each covered with distinct industrial-grade surface textures. The robot must grasp an object, identify its texture through visuo-tactile perception, and place it into the correct bin corresponding to the texture type. Tactile sensing provides direct information for surface material recognition. • Stamp press. In the stamping task, the robot needs to use a pre-grasped, spring-loaded stamp to produce a clear and complete imprint onto a sheet of paper laid flat on the table. The task is deemed successful if a clear and complete imprint of the stamp is produced on the paper surface. The stamping task leverages tactile feedback to control contact force during imprinting. • Calligraphy. For the calligraphy brush writing task, the robot must use a pre-grasped calligraphy brush to trace the digit "5" following a guide labeled "202" on a piece of cloth. A success is determined if the resulting written pattern can be visually recognized and interpreted as the number "5". During this task, tactile information assists the robot in both estimating the in-hand brush pose for fine motion control and ensuring the brush-lifting action between the first and the second stroke. Implementation details. We conduct all experiments on a PIPER 6-DOF light-weight robotic arm (AGILE•X Robotics) equipped with our FreeTacMan mounted at the wrist, as shown in Fig. <ref type="figure">11</ref>. The robot is connected to a workstation running Ubuntu 20.04 and ROS Noetic on an NVIDIA RTX 4090 GPU. RGB frames are captured at 30 Hz by HBVCAM fisheye camera and published via ROS topics, and tactile frames from our camera-based tactile sensor are sampled at 30 Hz. Our imitation policy performs inference on the GPU, with policy latency averaging under 20 ms per cycle.</p><p>Evaluation metrics in user study. We provide detailed explanations of the evaluation metrics used for user experience evaluation.</p><p>• Comfort and ease of collection: After completing five tasks with each of the three systems, participants rated how physically comfortable it was to perform the demonstrations on a scale from 1 (very uncomfortable) to 5 (very comfortable). In the same survey, they scored the ease of collection from 1 (very difficult) to 5 (very easy). • Ease of entry: After using all three systems, participants ranked them in order of entry difficulty. We convert these rankings into a normalized score where a lower average rank corresponds to a higher ease-of-entry value. • Control accuracy: Volunteers ordered the three systems by how precisely they could control the gripper during demonstrations. These ranks are normalized so that a lower mean rank indicates higher control fidelity. • Stability and damage prevention: During each demonstration, we logged the number of times the prop slipped from the gripper and the number of times the prop was visibly deformed or damaged. All metric values are normalized, with higher scores indicating better performance, as visualized by the radar chart shown in Fig. <ref type="figure" target="#fig_8">6</ref>(d) in the main paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX V ADDITIONAL EXPERIMENTS</head><p>Evaluation on user study. Evaluation of visuo-tactile modality fusion. To understand how our policy integrates visual and tactile inputs, we extract and visualize both the decoder's cross-attention and the encoder's self-attention maps during inference. After running the model forward, we compute the cross-attention and self-attention via registered forward hooks. Specifically, the cross-attention from the ACT decoder is captured by averaging across heads, resulting in a single importance vector of length S. This vector is then divided into visual and tactile portions, with each reshaped to its spatial layout and upsampled to the original image resolution for overlay. The encoder self-attention is captured from the attention heads, then the averaged self-attention is reshaped and overlaid onto visual and tactile images.  the visual input during the texture classification task. In the first row, we show two snapshots from the vision-only ACT model: the left image is at the initial state of inference, where attention is correctly focused on the target cylindrical object; the right image is after the gripper has lifted the object, the model's attention is diffusely allocated to both the red and blue bins due to the lack of tactile cues. In the second row, we show the corresponding stages for our model with tactile integration: initial attention in the left image is on the target object again, but after lift (right), the model uses tactile feedback to recognize texture and concentrates its attention exclusively on the correct (blue) bin. This comparison demonstrates how tactile information refines the decision of policy during inference. Fig. <ref type="figure" target="#fig_2">13</ref> depicts how the ACT model's decoder crossattention shifts over the tactile image during inference of texture classification. The left image shows the attention map just before the gripper makes contact: since no deformation has happened, attention is broadly distributed over the gel Tactile when Contacting Tactile before Contact Fig. <ref type="figure" target="#fig_2">13</ref>: Attention heatmap on tactile images. We overlay the decoder's cross-attention on tactile images during inference of texture classification. Left: at the initial state, the attention is spread across the gel surface, Right: after contact, the attention focuses on the region of deformation. layer. In contrast, the right image captures the moment immediately after contact, where the model concentrates its attention on the region of deformation that corresponds to the object's surface texture. This dynamic reallocation of attention enables the policy to detect fine-grained tactile cues and infer both texture and object geometry in real time.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: Hardware system. Left: The in-situ gripper in the collection and execution interface respectively, with identical visual and tactile observations. Right: (a) Composition of the sensor. (b) Exploded view of FreeTacMan. (c) The modular design allows for an agile switch between the collection and execution interface. (d) Human-machine interface design.</figDesc><graphic coords="3,61.08,130.07,66.92,65.46" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 :</head><label>3</label><figDesc>Fig. 3: Tactile pretraining and policy learning pipeline. (a) A tactile encoder is pretrained using the self-collected dataset. (b) The pretrained tactile encoder is integrated into an ACT-based policy for downstream tasks such as USB insertion.</figDesc><graphic coords="4,305.48,52.77,246.37,169.99" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 :Fig. 5 :</head><label>45</label><figDesc>Fig. 4: The FreeTacMan dataset. (a) Representative examples illustrating the diversity in both task complexity and tactile context. (b) The dataset covers 50 tasks and features a large-scale collection of data, including more than 10k trajectories and over 3000k visuo-tactile pairs. (c) The dataset enables diverse fundamental tactile capabilities.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head></head><label></label><figDesc>(a) Move to socket (b) Visually align (c) Guide by touch (d) Insert until seated</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Trajectory visualization. We test FreeTacMan on a variety of contact-rich tasks. Videos are available on our website.</figDesc><graphic coords="6,56.01,353.58,91.38,60.25" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Fig. 6 (</head><label>6</label><figDesc>d) summarizes the user experience evaluation. Stability, comfort, ease of collection and entry are assessed via questionnaires and normalized. Stability and damage represent failures of object drops and damage. The results show that FreeTacMan is the most user-friendly and reliable</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 8 :</head><label>8</label><figDesc>Fig.8: Ablation across training episodes. Our pretrained policy, even with small data, outperforms the vision-only policy trained with large amounts of data. Moreover, it approaches the performance of a large-data tactile-only policy.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Fig. 12</head><label>12</label><figDesc>shows the decoder cross-attention overlays on w/ Tactile Intermediate w/o Tactile Intermediate w/o Tactile Initial w/ Tactile Initial</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Fig. 12 :</head><label>12</label><figDesc>Fig. 12: Visual attention heatmaps in texture classification. Cross-attention overlays on the visual input: Left two panels (Vision-only ACT): (a) before grasp and (b) after grasp. Right two panels (Visuo-tactile ACT): (c) before grasp and (d) after grasp.</figDesc><graphic coords="13,179.92,145.20,114.37,85.87" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE II :</head><label>II</label><figDesc>Policy success rates (%) across tasks. Tactile input and pretraining significantly boost imitation learning.</figDesc><table><row><cell>Method</cell><cell>Fragile Cup</cell><cell>Calligraphy</cell><cell>Texture Cls.</cell><cell>Stamp Press</cell><cell>USB Plug</cell><cell>Avg.</cell></row><row><cell>ACT [29] (Vision-only)</cell><cell>35</cell><cell>20</cell><cell>20</cell><cell>30</cell><cell>0</cell><cell>21</cell></row><row><cell>Ours (+ Tactile w/o Pretrain)</cell><cell>75</cell><cell>70</cell><cell>55</cell><cell>65</cell><cell>10</cell><cell>55</cell></row><row><cell>Ours (+ Pretrain)</cell><cell>80</cell><cell>90</cell><cell>85</cell><cell>80</cell><cell>20</cell><cell>71</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head></head><label></label><figDesc>• ACT<ref type="bibr" target="#b28">[29]</ref> (Vision-only): The original ACT uses RGB images from the wrist camera as input only.</figDesc><table /><note><p><p>• Ours (+ Tactile w/o Pretrain): An extended ACT model taking both visual and tactile observations, which are separately encoded by identical backbones without pretraining.</p>• Ours (+ Pretrain): Our full model, where the tactile encoder is pretrained with a multi-positive contrastive objective incorporating both primary and secondary positives. Integration of tactile feedback results in significant</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>TABLE III :</head><label>III</label><figDesc>Comparison in unseen object. Tactile input enables generalization to unseen objects.</figDesc><table><row><cell></cell><cell>Vision</cell><cell>Ours (+ Tactile</cell><cell>Ours</cell></row><row><cell></cell><cell>-only</cell><cell>w/o Pretrain)</cell><cell>(+ Pretrain)</cell></row><row><cell>training object</cell><cell>20%</cell><cell>55%</cell><cell>85%</cell></row><row><cell>unseen object</cell><cell>15%</cell><cell>55%</cell><cell>70%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>TABLE IV :</head><label>IV</label><figDesc>Cross-sensor generalization results. Visuotactile pretraining helps generalization to other visuo-tactile sensor setups. ID: in-domain. OOD: out-of-domain.</figDesc><table><row><cell>Task</cell><cell>Phase</cell><cell cols="2">Ours (+ Tactile w/o Pretrain)</cell><cell cols="2">Ours (+ Pretrain)</cell></row><row><cell></cell><cell></cell><cell>ID</cell><cell>OOD</cell><cell>ID</cell><cell>OOD</cell></row><row><cell></cell><cell></cell><cell>Sensor</cell><cell>Sensor</cell><cell>Sensor</cell><cell>Sensor</cell></row><row><cell>Texture Cls.</cell><cell>Grasp Classify Whole Task</cell><cell>75% 55% 55%</cell><cell>80% 40% 40%</cell><cell>85% 85% 85%</cell><cell>85% 75% 75%</cell></row><row><cell>Fragile Cup</cell><cell>Pick Land Whole Task</cell><cell>80% 75% 75%</cell><cell>70% 10% 10%</cell><cell>80% 80% 80%</cell><cell>80% 80% 80%</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>TABLE VII :</head><label>VII</label><figDesc>Detailed results of user study. FreeTacMan outperforms existing data collection methods across five manipulation tasks. Completion Rate is the fraction of successful demonstrations; Time is the average collection duration; Slip Count and Damage Count record object slips and damages during collection; Performance is an overall metric combining efficiency and reliability.</figDesc><table><row><cell>Task</cell><cell>Method</cell><cell>Complet. Rate</cell><cell>Task Duration (s)</cell><cell>Slip Count</cell><cell>Damage Count</cell><cell>CPUT Score</cell></row><row><cell></cell><cell>ALOHA</cell><cell>0.8611</cell><cell>11.41</cell><cell>5</cell><cell>0</cell><cell>0.0495</cell></row><row><cell>Texture Cls.</cell><cell>UMI</cell><cell>1.0000</cell><cell>3.27</cell><cell>0</cell><cell>0</cell><cell>0.3060</cell></row><row><cell></cell><cell>Ours</cell><cell>1.0000</cell><cell>3.15</cell><cell>0</cell><cell>0</cell><cell>0.3171</cell></row><row><cell></cell><cell>ALOHA</cell><cell>0.5274</cell><cell>11.19</cell><cell>2</cell><cell>14</cell><cell>0.0471</cell></row><row><cell>Fragile Cup</cell><cell>UMI</cell><cell>1.0000</cell><cell>4.19</cell><cell>0</cell><cell>0</cell><cell>0.2386</cell></row><row><cell></cell><cell>Ours</cell><cell>1.0000</cell><cell>3.50</cell><cell>0</cell><cell>0</cell><cell>0.2854</cell></row><row><cell></cell><cell>ALOHA</cell><cell>0.6108</cell><cell>12.63</cell><cell>9</cell><cell>0</cell><cell>0.0483</cell></row><row><cell>USB Plug</cell><cell>UMI</cell><cell>0.2220</cell><cell>5.55</cell><cell>27</cell><cell>0</cell><cell>0.0400</cell></row><row><cell></cell><cell>Ours</cell><cell>0.9722</cell><cell>4.24</cell><cell>2</cell><cell>0</cell><cell>0.2292</cell></row><row><cell></cell><cell>ALOHA</cell><cell>0.5553</cell><cell>14.89</cell><cell>2</cell><cell>0</cell><cell>0.0373</cell></row><row><cell>Calligraphy</cell><cell>UMI</cell><cell>1.0000</cell><cell>5.03</cell><cell>2</cell><cell>0</cell><cell>0.1989</cell></row><row><cell></cell><cell>Ours</cell><cell>1.0000</cell><cell>4.17</cell><cell>0</cell><cell>0</cell><cell>0.2401</cell></row><row><cell></cell><cell>ALOHA</cell><cell>0.7775</cell><cell>8.09</cell><cell>3</cell><cell>2</cell><cell>0.0962</cell></row><row><cell>Stamp Press</cell><cell>UMI</cell><cell>0.5553</cell><cell>3.91</cell><cell>26</cell><cell>0</cell><cell>0.1421</cell></row><row><cell></cell><cell>Ours</cell><cell>1.0000</cell><cell>2.98</cell><cell>1</cell><cell>0</cell><cell>0.3356</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head></head><label></label><figDesc>Table VII reports completion rate, task duration, slip count, damage count and CPUT for each method across five contact-rich tasks. High slip counts indicate poor force and slippage feedback. ALOHA records up to 27 slips (USB plug) and 14 damages (Fragile cup), reflecting its indirect force perception. UMI improves the force feedback and records zero damage events, yet its multilink transmission still permits noticeable slippage in forcesensitive tasks (e.g., 26 slips during Stamp press). In contrast, FreeTacMan limits slips to at most 2 and records zero damage across all tasks, evidencing its high-fidelity, low-latency tactile feedback. As a combined metric of efficiency and reliability, CPUT highlights the overall advantage of FreeTacMan: it achieves scores from 0.2292 (USB plug) to 0.3356 (Stamp press), substantially outperforming ALOHA and UMI. For tasks like stamp press, the CPUT of FreeTacMan reaches 0.3497, which exceeds ALOHA and UMI by nearly 3 times, confirming its advantage under precise contact requirements. Overall, these results indicate that in-situ design of FreeTac-Man improves both the accuracy and efficiency of humanoperated data collection in contact-rich tasks.</figDesc><table><row><cell>• Completion rate: Across all tasks, FreeTacMan achieves</cell></row><row><cell>the highest completion rates, reaching 100% (Texture</cell></row><row><cell>classification, Fragile cup, Stamp press, Calligraphy) or</cell></row><row><cell>near-perfect rates (USB plug). In contrast, ALOHA's rates</cell></row><row><cell>range from 52.74% (Fragile cup) to 86.11% (Texture</cell></row><row><cell>classification), and UMI's range from 22.20% (USB plug)</cell></row><row><cell>to 100% (Texture classification, Fragile cup, Calligraphy).</cell></row><row><cell>This demonstrates that real-time tactile feedback enhances</cell></row><row><cell>the human operator's ability to execute and complete</cell></row><row><cell>precise, contact-rich tasks.</cell></row></table><note><p><p>• Task duration: FreeTacMan demonstrates the shortest task durations, averaging between 2.98s (Stamp press) and 4.24s (USB plug). UMI's times range from 3.27s to 5.55s, while ALOHA's are substantially higher (8.09s to 14.89s). Handheld paradigm outperforms ALOHA in data collection efficiency due to its intuitive feedback, while insitu feedback of FreeTacMan leads to faster data collection.</p>• Slip and damage count: • CPUT:</p></note></figure>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX I HARDWARE DESIGN</head><p>| Supplement to Sec. III-A in the Main paper. Hardware implementation details. The sensor is rigidly connected to the gripper base via a primary threaded hole, bearing the main mechanical load. On the opposite side, a protruding feature fits precisely into a corresponding groove on the gripper base, enabling straightforward plug-in alignment and positioning. Additional constraint is provided by auxiliary screws on the rear side to prevent damage from vibration or impact, further enhancing stability.</p><p>For visual perception, we use a fisheye camera equipped with a 180 • field-of-view lens, capturing video at 30 frames per second with a resolution of 640 × 480 pixels. The tactile sensor is integrated with a camera operating at 30 FPS with a resolution of 640 × 480 pixels. Designed with custom 3Dprinted parts and commercially available standard components, the system achieves a lightweight (157.5g) and compact (145 × 85 × 106mm 3 ) form factor, ensuring portability and reproducibility.</p><p>Seamless integration into robotic platforms. Fig. <ref type="figure">9</ref> illustrates the universal gripper interface with quick-swap mounts compatible with both the Piper and Franka arms, as well as the camera scaffold designed for precise alignment with the wrist-mounted camera to ensure consistent perspective. These components demonstrate the plug-andplay modularity of FreeTacMan, enabling seamless integration across diverse robotic platforms without requiring hardwarespecific modifications.   </p><p>The action space a ∈ A ⊂ R 7 is defined as 6-DoF arm joint position and 1-DoF gripper position. The policy π is learned via imitation learning to map these observations to corresponding actions.</p><p>Details on tactile pretraining. We pretrain the tactile encoder f t and projection head g v , g t using a CLIP-style contrastive loss with multi-positive sampling. Optimization is performed using AdamW with cosine-annealed learning rates, updating only the tactile encoder f t , visual g v , and tactile projection g t while keeping visual encoder f v fixed. We train on the sequence of time-aligned visuo-tactile frames, drawing primary positives from the same timestep and secondary positives from the next frame (with wrap-around). Negatives are sampled from a memory bank of size 4096. Table <ref type="table">V</ref> shows the hyperparameters of pretraining.</p><p>Details on policy learning. We adopt the action chunking transformer (ACT) <ref type="bibr" target="#b28">[29]</ref> architecture to learn visuo-tactile manipulation policies. Both visual and tactile images are 640 × 480 pixels and fed as stacked inputs to the ACT backbones. At each timestep, the model outputs an action chunk of length T , where each action in the chunk specifies a 6-DOF joint action for robot arm plus a 1-DOF gripper action. To integrate our visuo-tactile pipeline, we add our pretrained tactile encoder f t to extract tactile features. The tactile features are concatenated with visual features and input into the transformer encoder of ACT. Table <ref type="table">VI</ref> shows the hyperparameters of policy learning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX IV EXPERIMENTAL SETUP</head><p>| Supplement to Sec. IV-B in the Main paper. Task specification. We present a comprehensive description of each task below.</p><p>• Fragile cup. In this task, the robot is required to grasp a fragile cup from a rack and place it into a tray on the rack. A trial is considered successful if the cup is stably placed within the tray without any damage or visible deformation to the cup. This task is designed to evaluate the role of tactile feedback in delicate object handling. • USB plug. The robot must insert a pre-grasped USB into a specified socket on a power strip for this task. A success is recorded if the USB is inserted to a sufficient depth such that it remains securely connected. Tactile information serves as an additional signal to assist with fine alignment.   </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Neural coding of tactile texture: comparison of spatial and temporal mechanisms for roughness perception</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">E</forename><surname>Connor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">O</forename><surname>Johnson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Neuroscience</title>
+		<imprint>
+			<date type="published" when="1992">1992</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Visual-tactile sensing for in-hand object reconstruction</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Cues for haptic perception of compliance</title>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">M B</forename><surname>Tiest</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Kappers</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Trans. on Haptics</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Dense tactile force estimation using gelslim and inverse fem</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Donlon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICRA</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">RISE: Self-improving robot policy with compositional world model</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-Q</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2602.11075</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">EgoHumanoid: Unlocking in-the-wild loco-manipulation with robotfree egocentric demonstration</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Luo</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2602.10106</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Is diversity all you need for scalable robotic manipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+			<publisher>TRO</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">WholeBodyVLA: Towards unified latent vla for whole-body loco-manipulation control</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Bu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Suo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Peng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICLR</title>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Open X-Embodiment: Robotic learning datasets and RT-X models</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Padalkar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pooley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bewley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khazatsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brohan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICRA</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">AgiBot World Colosseo: A large-scale manipulation platform for scalable and intelligent embodied systems</title>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Bu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Cai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Huang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IROS</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Intelligent robot manipulation requires self-directed learning</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Sima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Chitta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Loquercio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Authorea Preprints</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Learning visuotactile skills with two multifingered hands</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICRA</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">3D-ViTac: Learning fine-grained manipulation with visuo-tactile sensing</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<editor>CoRL</editor>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Reactive Diffusion Policy: Slow-fast visual-tactile policy learning for contact-rich manipulation</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">RSS</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Mobile ALOHA: Learning bimanual mobile manipulation with low-cost whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<editor>CoRL</editor>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Universal Manipulation Interface: In-the-wild robot teaching without in-the-wild robots</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">RSS</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Fast-UMI: A scalable and hardware-independent universal manipulation interface with dataset</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhaxizhuoma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Guan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Liang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CoRL</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Tactileaugmented radiance fields</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Loquercio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Owens</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Touch100k: A large-scale touch-language-vision dataset for touch-centric multimodal representation</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Guan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Meng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Information Fusion</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">In situ studies of chemistry and structure of materials in reactive environments</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Tao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Salmeron</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science</title>
+		<imprint>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">High-resolution in situ structures of mammalian respiratory supercomplexes</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Chai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">ARCap: Collecting high-quality human demonstrations for robot learning with augmented reality feedback</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICRA</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">DexCap: Scalable and portable mocap data collection system for dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Liu</surname></persName>
+		</author>
+		<editor>RSS</editor>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">Bunny-VisionPro: Real-time bimanual dexterous teleoperation for imitation learning</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.03162</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Gello: A general, low-cost, and intuitive teleoperation framework for robot manipulators</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<editor>IROS</editor>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Bi-ACT: Bilateral control-based imitation learning via action chunking with transformer</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Buamanee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kobayashi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Uranishi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Takemura</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note>in AIM</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">ViTaMIn: Learning contact-rich tasks through robot-free visuo-tactile manipulation interface</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.06156</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Agility Meets Stability: Versatile humanoid control with heterogeneous data</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Qiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Chitta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Mai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Bu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICRA</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RSS</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IJRR</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Humanoid robot teleoperation with vibrotactile based balancing feedback</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brygo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Sarakoglou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Garcia-Hernandez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Tsagarakis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">EuroHaptics</title>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">NormalFlow: Fast, robust, and accurate contact-based object 6dof pose tracking with vision-based tactile sensors</title>
+		<author>
+			<persName><forename type="first">H.-J</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kaess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RAL</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">Self-supervised visuo-tactile pretraining to locate and follow garment features</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kerr</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wilcox</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hoque</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ichnowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<editor>RSS</editor>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">A touch, vision, and language dataset for multimodal alignment</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.13232</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">The objectfolder benchmark: Multisensory learning with neural and real objects</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Vtg: A visual-tactile dataset for three-finger grasp</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>An</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RAL</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">VTDexmanip: A dataset and benchmark for visual-tactile pretraining and dexterous manipulation with reinforcement learning</title>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Cui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Ye</surname></persName>
+		</author>
+		<editor>ICLR</editor>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<title level="m" type="main">Touch in the wild: Learning fine-grained manipulation with a portable visuo-tactile gripper</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<editor>NeurIPS</editor>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">MC-Tac: Modular camera-based tactile sensor for robot gripper</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Gu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICIRA</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">A systematic comparison of perceptual performance in softness discrimination with different fingers</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">C</forename><surname>Zoeller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Drewing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Attention, Perception, &amp; Psychophysics</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<monogr>
+		<title level="m" type="main">IKPy</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Manceron</surname></persName>
+		</author>
+		<ptr target="https://github.com/Phylliade/ikpy" />
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Visuo-tactile pretraining for cable plugging</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>George</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Gano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Katragadda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">B</forename><surname>Farimani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICRA</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Learning transferable visual models from natural language supervision</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Radford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hallacy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ramesh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Goh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Sastry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Askell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mishkin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICML</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

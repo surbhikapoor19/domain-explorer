@@ -1,0 +1,1966 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">YUBI: Yielding Universal Bidigital Interface for Bimanual Dexterous Manipulation at Scale</title>
+				<funder>
+					<orgName type="full">AIST</orgName>
+				</funder>
+				<funder ref="#_YzpHMtS">
+					<orgName type="full">New Energy and Industrial Technology Development Organization</orgName>
+					<orgName type="abbreviated">NEDO</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Toyota Motor Corporation</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2026-06-08">8 Jun 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName><forename type="first">Takehiko</forename><surname>Ohkawa</surname></persName>
+							<email>ohkawa.takehiko@airoa.org</email>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+							<affiliation key="aff6">
+								<orgName type="department">Unimanual UR Bimanual UR Bimanual UR Bimanual Franka ELEY</orgName>
+								<orgName type="laboratory">Project Co-Lead</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jumpei</forename><surname>Arima</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Toyota Motor Corporation</orgName>
+							</affiliation>
+							<affiliation key="aff6">
+								<orgName type="department">Unimanual UR Bimanual UR Bimanual UR Bimanual Franka ELEY</orgName>
+								<orgName type="laboratory">Project Co-Lead</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yuki</forename><surname>Noguchi</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Toyota Motor Corporation</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Masatoshi</forename><surname>Tateno</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+							<affiliation key="aff3">
+								<orgName type="institution">The University of Tokyo</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Makoto</forename><surname>Sugiura</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Takuya</forename><surname>Okubo</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kengo</forename><surname>Ikeuchi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+							<affiliation key="aff3">
+								<orgName type="institution">The University of Tokyo</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yuma</forename><surname>Shin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+							<affiliation key="aff4">
+								<orgName type="department">Institute of Science Tokyo</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Hiroki</forename><surname>Nishizawa</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+							<affiliation key="aff5">
+								<orgName type="institution">Waseda University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Naoaki</forename><surname>Kanazawa</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yuki</forename><surname>Wakayama</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Toyota Motor Corporation</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Daiki</forename><surname>Fukunaga</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Toyota Motor Corporation</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Koshi</forename><surname>Makihara</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">National Institute of Advanced Industrial Science and Technology (AIST)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Tomohiro</forename><surname>Motoda</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">National Institute of Advanced Industrial Science and Technology (AIST)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Floris</forename><surname>Erich</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">National Institute of Advanced Industrial Science and Technology (AIST)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yukiyasu</forename><surname>Domae</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">National Institute of Advanced Industrial Science and Technology (AIST)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Tatsuya</forename><surname>Matsushima</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+							<affiliation key="aff3">
+								<orgName type="institution">The University of Tokyo</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yohishiro</forename><surname>Okumatsu</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Toyota Motor Corporation</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kei</forename><surname>Ota</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">AI Robot Association (AIRoA)</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Fine</forename><surname>Control</surname></persName>
+						</author>
+						<title level="a" type="main">YUBI: Yielding Universal Bidigital Interface for Bimanual Dexterous Manipulation at Scale</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-06-08">8 Jun 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">FFA8FB90C2DD65BE0CF2153FA773AA93</idno>
+					<idno type="arXiv">arXiv:2606.10244v1[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>We introduce Yielding Universal Bidigital Interface (YUBI), a finger-aligned gripper designed to enable intuitive, ergonomic, and scalable data collection for bimanual dexterous manipulation. While handheld data collection systems such as Universal Manipulation Interface (UMI) enable affordable data collection, their bulky pistol-grip designs can pose ergonomic and usability challenges for fine-grained, dexterous manipulation tasks. To address this, YUBI presents a distinct design principle: yielding, finger-driven actuation that directly maps human finger movements to gripper jaw motion. Using the YUBI devices, we set up a data collection system with integrated VR-based 6 DoF tracking of the gripper, ensuring high-fidelity trajectory data acquisition. We curate a UMIbased dataset of unprecedented scale: 8434 hours across 1.20M episodes and 119 tasks. Experiments show that YUBI offers advantages over the UMI gripper in versatility for complex bimanual tasks, dexterity, and operational efficiency. A single policy trained on the YUBI dataset transfers across multiple bimanual robots (UR, Franka, and ELEY) simply by mounting the gripper on each platform, confirming that the collected data are directly executable as policy supervision. We release the gripper hardware, data-collection software, and dataset as one integrated stack, offering the open community a reproducible path to large-scale data acquisition for advancing robotic foundation models.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Scaling data collection is fundamental to the progress of robotic foundation models. As demonstrated by the success of large multimodal models, the performance and generalization of Vision-Language-Action (VLA) policies are bounded by the volume and diversity of their training data <ref type="bibr" target="#b0">Black et al. [2024</ref><ref type="bibr" target="#b1">Black et al. [ , 2025]]</ref>; <ref type="bibr" target="#b32">O'Neill et al. [2024]</ref>; <ref type="bibr" target="#b14">Generalist AI [2025]</ref>. Yet, a critical bottleneck remains: while frontier industry labs leverage massive, proprietary datasets to produce the most capable VLA models <ref type="bibr" target="#b15">Generalist AI, Inc. [2026]</ref>; Sunday Inc. <ref type="bibr">[2026]</ref>, the open research community is left without accessible demonstrations at a comparable scale. We set out to close this gap.</p><p>Fundamentally, current data collection systems struggle to supply large-scale dexterous manipulation data at high throughput. Traditional leader-follower teleoperation, while providing high-fidelity robot-space demonstrations, is cost-prohibitive and requires operator expertise, resulting in low data throughput <ref type="bibr" target="#b48">Zhao et al. [2023]</ref>; <ref type="bibr" target="#b43">Wu et al. [2024]</ref>; <ref type="bibr" target="#b2">Buamanee et al. [2024]</ref>. Conversely, imitation learning from human demonstrations offers a more scalable alternative. While raw human demonstration data (e.g., via web videos  or wearable sensors) are available at scale <ref type="bibr" target="#b17">Grauman et al. [2022]</ref>; <ref type="bibr" target="#b33">Punamiya et al. [2026]</ref>; <ref type="bibr" target="#b31">Ohkawa et al. [2023]</ref>, they introduce the challenge of a fundamental embodiment gap between human hands and robotic hardware. Recently, handheld interfaces like Universal Manipulation Interface (UMI) <ref type="bibr" target="#b9">Chi et al. [2024]</ref>; <ref type="bibr">Liu et al. [2025b]</ref>; <ref type="bibr" target="#b49">Zhaxizhuoma et al. [2025]</ref> have emerged as a pivotal medium between humans and robots. These UMI systems bridge the embodiment gap by having operators guide a gripper mechanically identical to the robot's end-effector. This eliminates the need for physical robots during data collection and provides wrist camera views and trajectory data for policy learning. Such UMI-based systems suggest a cost-effective and embodiment-agnostic pathway for large-scale data collection.</p><p>Despite the success of initial handheld designs, scaling to increasingly complex tasks reveals ergonomic and functional bottlenecks, as shown in Table <ref type="table" target="#tab_0">1</ref>. Most existing UMI frameworks use a pistol-grip design, which introduces a mechanical offset between the operator's fingers and the gripper's pinch-point. This offset, combined with the heavy and bulky shell, often obstructs natural hand movements, limiting the manipulability and dexterity of the gripper. Furthermore, the gripper's tracking fidelity remains a hurdle. Unlike SLAM-based tracking in <ref type="bibr" target="#b9">Chi et al. [2024]</ref>; <ref type="bibr">Liu et al. [2025b]</ref>; <ref type="bibr" target="#b22">Lin et al. [2024]</ref>; <ref type="bibr">Liu et al. [2025a]</ref>, recent systems <ref type="bibr" target="#b47">Zeng et al. [2025]</ref>; <ref type="bibr">Xu et al. [2025b]</ref> have incorporated Virtual Reality (VR) systems for high-fidelity gripper tracking by mounting a VR headset on the operator. However, wearing the headset introduces substantial physical strain on the neck, which limits session length and operational efficiency (up to 30 min of continuous use Meta <ref type="bibr">Platforms, Inc. [2026]</ref>).</p><p>To address this, we reinvent the handheld UMI as a finger-aligned interface, called YUBI (Yielding Universal Bidigital Interface) <ref type="foot" target="#foot_0">1</ref> , enabling intuitive and sustained data collection for bimanual dexterous manipulation. As shown in Figure <ref type="figure" target="#fig_0">1</ref>, YUBI introduces yielding, finger-driven actuation, where the gripper aperture follows the operator's natural pinch motion, eliminating the mechanical offset of pistol-grip UMI designs and offering intuitive haptic feedback to the fingers. Additionally, the sharpened fingertip geometry enables precise, fine-grained control with a parallel-jaw gripper (e.g., box assembly and cable insertion). Each YUBI gripper can be fabricated for under $200 USD with 3D printed parts (excluding the Quest 3S tracking system), enabling the reproduction by the research community.</p><p>Combined with the gripper redesign, the YUBI system integrates high-frequency VR sensors directly into each gripper and supports both stationary and portable data collection. This ensures high-fidelity gripper trajectory tracking while mitigating the tracking drift common in SLAM-based systems. To sustain throughput, we attach the VR headset to a stationary camera rig rather than to the operator's head, eliminating physical load. Conversely, a portable setup allows operation beyond tabletop scenarios, such as household tasks, with whole-body motion and locomotion. Our contributions are summarized as follows:</p><p>• We propose YUBI, a novel finger-aligned gripper with yielding jaw actuation designed to collect interaction data for bimanual dexterous tasks.</p><p>• We present a VR-based operation setup for both stationary and portable data collection, enabling highfidelity and sustained data collection.</p><p>• We offer a large-scale dataset for diverse bimanual dexterous manipulation tasks, comprising 8434 hours of interaction data across 1.20M episodes and 119 tasks.</p><p>• We demonstrate the system's efficacy through a comparative user study with the original UMI device, suggesting improved dexterity and operational efficiency.</p><p>• We validate the collected data by training a single policy and deploying it on three bimanual robot platforms, showing that end-effector-space supervision from YUBI transfers across kinematically distinct robot arms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Related Work</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1.">Data Collection Paradigms for Robotic Manipulation</head><p>Robotic manipulation demonstrations are commonly collected through distinct approaches, each exposing a different trade-off between scalability, embodiment alignment, and data quality. Leader-follower teleoperation <ref type="bibr" target="#b48">Zhao et al. [2023]</ref>; <ref type="bibr">Fu et al. [2024b]</ref>; <ref type="bibr" target="#b43">Wu et al. [2024]</ref>; <ref type="bibr" target="#b2">Buamanee et al. [2024]</ref> provides accurate robot-executable trajectories, but requires a physical robot at every collection station and often demands operator training, limiting throughput. Human-centric sources, such as retargeting from human motion <ref type="bibr">Qin et al. [2023]</ref>; <ref type="bibr" target="#b9">Cheng et al. [2024]</ref>; <ref type="bibr">Fu et al. [2024a]</ref> or learning from egocentric videos <ref type="bibr" target="#b17">Grauman et al. [2022]</ref>; <ref type="bibr" target="#b33">Punamiya et al. [2026]</ref>; <ref type="bibr" target="#b26">Luo et al. [2026]</ref>; <ref type="bibr" target="#b31">Ohkawa et al. [2023]</ref>, scale more easily and capture diverse everyday behavior. However, the resulting observations are separated from robot action spaces by a substantial embodiment gap. Large cross-embodiment datasets O' <ref type="bibr">Neill et al. [2024]</ref>; <ref type="bibr">Khazatsky et al. [2024]</ref> and synthetic demonstration generation <ref type="bibr">Mandlekar et al. [2023]</ref> further expand data coverage, but fine-grained, contact-rich bimanual manipulation remains underrepresented.</p><p>Handheld gripper interfaces offer a complementary collection paradigm. Since the operator directly ma-nipulates the same end-effector used by the robot, these systems can acquire robot-compatible gripper poses and visual observations without operating a full robot during demonstration. This work follows the handheld-interface direction, with an emphasis on scalable data collection for precise, two-handed manipulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2.">Hand-Held Gripper Interface</head><p>The Universal Manipulation Interface (UMI) <ref type="bibr" target="#b9">Chi et al. [2024]</ref> introduced a portable pistol-grip device to collect demonstrations at a low cost. Subsequent UMI-style systems improve collection scale and throughput <ref type="bibr">Liu et al. [2025b]</ref>; <ref type="bibr" target="#b49">Zhaxizhuoma et al. [2025]</ref>; <ref type="bibr" target="#b22">Lin et al. [2024]</ref>, add tactile sensing for contact-rich manipulation <ref type="bibr">Liu et al. [2025a]</ref>; <ref type="bibr" target="#b20">Li et al. [2025]</ref>; <ref type="bibr" target="#b21">Liang et al. [2025]</ref>; <ref type="bibr">Xu et al. [2025b]</ref> YUBI is designed around these two bottlenecks: improving operator-side dexterity through a finger-aligned gripper, and supporting sustained collection through VR-based tracking. These choices target scalable acquisition of precise bimanual demonstrations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Method</head><p>YUBI is designed to curate massive, high-quality UMI-based data for bimanual dexterous manipulation tasks. This section presents the design principles of YUBI (Section 3.1) and our setup with an integrated camera and VR rig or a portable extension (Section 3.2). Full system and processing details are found in the supplement.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">YUBI Design</head><p>The design of YUBI aims to shift away from the conventional pistol-grip mechanism used in prior UMI works <ref type="bibr" target="#b9">Chi et al. [2024]</ref>; <ref type="bibr">Liu et al. [2025b]</ref>; <ref type="bibr" target="#b22">Lin et al. [2024]</ref> toward a yielding, finger-aligned actuation scheme.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Limitations of prior UMI grippers:</head><p>Although existing UMI systems have demonstrated successful robot deployment using only handheld devices <ref type="bibr" target="#b9">Chi et al. [2024]</ref>, they have critical limitations when applied to realworld scenarios at scale: limited adaptability to dexterous manipulation tasks and long-duration sessions due to their bulky, heavy interfaces.</p><p>The conventional pistol-grip interface introduces a mechanical offset between the operator's fingers and the gripper's pinch-point, significantly reducing haptic transparency <ref type="bibr" target="#b42">Wu et al. [2026]</ref>. This lack of tactile feedback causes operators to apply excessive gripping force (overcompensation), while mechanical backlash in the gears further hinders fine motor control.</p><p>For the gripper tip design, prior works adopt Fin-Ray-type designs <ref type="bibr" target="#b9">Chi et al. [2024]</ref>; <ref type="bibr" target="#b21">Liang et al. [2025]</ref>; <ref type="bibr">Liu et al. [2025a]</ref>, enabling soft, compliant grasping; however, their deformation characteristics result in poor positional repeatability and insufficient gripping force for heavy-object handling (≥ 2 kg) <ref type="bibr" target="#b44">Xu et al. [2021]</ref>; <ref type="bibr" target="#b20">Li et al. [2025]</ref>. These limitations are particularly critical for real-world assembly tasks, which demand both precise handling of small components (e.g., nuts) and the ability to handle heavy industrial parts.</p><p>Lastly, the device weight induces early fatigue in the operator's wrist; ≈ 780 g in the original UMI gripper and &gt;900 g when integrated with the VR controller <ref type="bibr" target="#b47">Zeng et al. [2025]</ref>; <ref type="bibr">Xu et al. [2025b]</ref>. Such physical</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Operation Setup Task Examples</head><p>Foot Pedal stress introduces trajectory noise and drift in demonstrations, undermining the dataset quality.</p><p>Yielding finger-aligned design: To address the above limitations, we introduce a yielding, finger-driven actuation design into YUBI. Specifically, one gripper jaw is actuated by the thumb, while the opposing jaw is driven by the coordinated motion of the index and middle fingers. Each jaw yields directly to its driving finger, so the gripper aperture follows the operator's natural pinch motion without motor-driven resistance. This configuration mitigates control mismatch and improves haptic transparency, enabling operators to directly leverage their inherent dexterity in manipulation tasks.</p><p>To preserve the precision of finger-driven actuation while targeting a design payload of up to roughly 2 kg, YUBI employs a dimensionally stable gripper design. An integrated support grip serves as a mechanical fulcrum; while the index and middle fingers actuate the jaws, the remaining fingers stabilize the grip to distribute loads across the entire hand. Additionally, the finger geometry is optimized to balance reach against load capacity. By minimizing the moment arm, YUBI ensures the structural stiffness required for heavy objects without sacrificing accessibility to confined spaces.</p><p>To mitigate wrist fatigue caused by previous heavy designs (780-900 g), YUBI adopts a miniaturized gripper architecture and a lightweight camera module, reducing the handheld mass to approximately 319 g (200 g gripper + 119 g VR controller). This reduced weight enables sustained demonstrations over long-duration sessions.</p><p>Overall, YUBI's finger-aligned design resolves the trade-off between dexterous manipulation and heavyobject handling while reducing operator fatigue for sustained data collection. We open-source the full YUBI gripper build with 3D printed parts at under $200 USD per unit (excluding the Quest 3S tracking system).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Robot-transferable motion:</head><p>Beyond ergonomics, the finger-aligned design also shapes operator motion to aid cross-robot transfer. Because the support grip sits below the jaws, the gripper naturally points downward with the hand above the contact point, encouraging overhead approaches rather than lateral sweeps near the table level. The resulting trajectories stay above the workspace, suppressing near-surface lateral motions that robot arms cannot reproduce without collision. This yields demonstrations that transfer more safely across kinematically distinct embodiments.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Operation Setup</head><p>As shown in Figure <ref type="figure" target="#fig_1">2</ref>, we design an operation setup tailored to collect high-quality data where the operator grasps one YUBI device in each hand. For the sake of data quality, we adopt a fixed tabletop setup to operate in a stable environment as a primary option, while supporting a portable setup that brings the YUBI system beyond the tabletop environment. The stationary setup is integrated with VR systems (Quest) for 6 DoF controller tracking, a top-view stereo camera (RealSense) for workspace monitoring, a task user interface (UI) on a laptop, and a foot pedal. These visual observations, trajectories, and gripper signals are transmitted to the laptop in real time.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>YUBI:</head><p>Two YUBI devices are installed on the desk, one for each hand. Each YUBI device is equipped with an onboard wrist camera, a Quest controller, and a magnetic encoder to measure the gripper aperture, tracked at 100, 80, and 100 Hz, respectively. All streams are published as separate topics on a single ROS 2 graph, each timestamped at the source under a shared clock. Design details are found in Section 3.1.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VR-based gripper tracking:</head><p>We use the Meta Quest 3S to track the 6 DoF trajectory of the controller mounted on YUBI, yielding higher tracking fidelity than SLAM-based systems, which are prone to drift, scale ambiguity, and failure under fast motion or textureless environments <ref type="bibr" target="#b3">Cadena et al. [2016]</ref>; <ref type="bibr" target="#b29">Mur-Artal et al. [2015]</ref>. The Quest controllers are tracked by fusing infrared (IR) LED constellation observations from the HMD's inside-out cameras with the controller's onboard IMU. This active-marker + IMU pipeline performs robustly as in <ref type="bibr">Holzwarth et al. [2021]</ref>; <ref type="bibr">Carnevale et al. [2022]</ref>. Unlike the head-worn VR-based UMI systems (e.g., ActiveUMI <ref type="bibr" target="#b47">Zeng et al. [2025]</ref> and exUMI <ref type="bibr">Xu et al. [2025b]</ref>), our setup mounts the heavy headset on the fixed rig. This reduces neck fatigue while ensuring tracking coverage of the controllers from the mounted headset.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Fixed stereo camera:</head><p>We use the RealSense D435, rigidly mounted on the forward-extending frame, to capture the task workspace. This camera provides a stable top-down view of the workspace at 30 Hz (RGB + depth). The observations are used to identify low-quality demonstrations (e.g., mismatch between the text instruction and the operator's action) and provide additional annotations via object detection, tracking, and VLM-based scene descriptions. This stream is only used for data preprocessing.</p><p>Portable YUBI for in-the-wild data collection: While the rig-based setup is our primary configuration for stable data acquisition, the YUBI gripper itself is fully self-contained and can be operated in a portable mode that detaches from the desk rig. This enables data acquisition in environments where a stationary rig is impractical, such as household tasks. We attach the VR head-mounted display (HMD) to the chest and replace the top-view camera with an egocentric fisheye camera, rigidly integrated with the HMD. This enables collection in scenarios involving whole-body motion, e.g., "put the tray in the dishwasher", "put the books away on the bookshelf ", "hang the shirt on a hanger". The data schema is preserved across modes, so portable and tabletop episodes share the same downstream pipeline. We describe the details in the supplement.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Dataset</head><p>Schema: Each recording is stored as a single episode file that includes three synchronized camera streams (two wrist cameras and RealSense), relative poses expressed in the wrist frames, and metadata for the task and sub-action. Each task contains multiple primitive action instructions as shown in the action segment of Figure <ref type="figure" target="#fig_1">2</ref> (avg. 7.99 actions per task). Specifically, we store the translational components t right , t left ∈ ℝ 3 and rotational components r right , r left ∈ ℝ 3 , where rotation is represented as Euler angles. We additionally record the fingertip jaw angle for each hand, 𝑑 right , 𝑑 left ∈ ℝ. All sensor streams are initially recorded in rosbag2 format at their native frequencies and are subsequently converted to the LeRobot format <ref type="bibr" target="#b4">Cadene et al. [2024]</ref>, standardized at 30 Hz.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Statistics:</head><p>As shown in Table <ref type="table" target="#tab_4">2</ref>, we collected YUBI-based manipulation data at scale on 22 desks. The resulting data comprise 8434 hours across 1.20M episodes. Data collection was conducted 24/7 over two months by 179 operators (125 male, 54 female). Our dataset is significantly larger than previous UMI-based datasets, such as the Fast-UMI data (≈ 60 hours and 22 tasks) <ref type="bibr" target="#b49">Zhaxizhuoma et al. [2025]</ref> and the original UMI data (12 hours and 4 tasks) <ref type="bibr" target="#b9">Chi et al. [2024]</ref>. It also features diverse domains and skills across 119 tasks, as shown in Figures <ref type="figure" target="#fig_2">3</ref> and<ref type="figure" target="#fig_3">4</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">YUBI Usability Study</head><p>We recruited a gender-balanced group of 10 operators who had no prior experience using either UMI or YUBI and ran the following user experiments. Dexterity test: To assess the fine-grained dexterity of YUBI, the operators performed a single-attempt pickand-place of six hex nuts (M10-M3, largest to smallest) from a table into a tray. As shown in Figure <ref type="figure">5</ref>, both devices approach the ceiling on large nuts (≥ 94% at M8-M10) but diverge as the diameter shrinks: YUBI leads UMI by +20 and +10 pp at M6 and M5, and by roughly 3× at the smallest M3 nut. These results indicate that YUBI is substantially more adaptable to precision tasks.</p><p>Operational efficiency test: To evaluate efficiency, the operators were instructed to perform five tasks under three conditions: direct hand operation (Hand), <ref type="bibr">UMI Chi et al. [2024]</ref>, and YUBI, with counterbalanced ordering and five trials per condition. As shown in Figure <ref type="figure">6</ref>, YUBI is consistently faster than UMI, with pertask speed-ups from 1.37× (domino arrangement) to 4.19× (phone charging), substantially narrowing the gap to direct hand operation even for precision tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Robot Policy Deployment</head><p>To evaluate whether the YUBI dataset translates into real-world robotic capability, we train a VLA policy on YUBI's wrist data and deploy it across three bimanual robot platforms, UR Universal Robots <ref type="bibr">[2026]</ref>, <ref type="bibr">Franka Franka Robotics [2026]</ref>, and Toyota ELEY <ref type="bibr" target="#b38">Toyota Frontier Research Center [2026]</ref>, each equipped with the YUBI gripper as the end-effector. Since the policies are trained on the gripper end-effector trajectory rather than in a robot-specific joint space, curated datasets can be reused across these robot arms without retargeting. Note that the deployment is only done with the wrist camera and trajectory data, not using the top-view observations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Policy training and inference:</head><p>As our primary policy, we adopt the vision-language-action model 𝜋 0.5 <ref type="bibr" target="#b1">Black et al. [2025]</ref> trained jointly on multiple tasks in the end-effector trajectory action space. Since the action space is the gripper trajectory rather than robot-specific joint commands, a single policy transfers across embodiments without retargeting. The policy is conditioned on a natural-language task instruction together with wrist RGB images at 30 Hz, and predicts relative end-effector poses in action chunks (e.g., 32 steps). At inference, we execute the predicted end-effector trajectory at a downsampled control rate (e.g., 10 Hz) to keep commanded motion within the robot's velocity and acceleration limits, which are tighter than those of the human-collected demonstrations. We also convert the commanded end-effector poses into joint-space targets via a per-robot inverse-kinematics (IK) solver. Details are found in the supplement.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Results:</head><p>We execute 20 times per task and report the success rate in Table <ref type="table" target="#tab_5">3</ref> (see Figure <ref type="figure" target="#fig_5">7</ref> for qualitative examples). Our preliminary study finds that the diffusion policy architecture <ref type="bibr">Chi et al. [2023]</ref> proposed for the original UMI work <ref type="bibr" target="#b9">Chi et al. [2024]</ref> converges quickly and performs well for a simple single-arm task, but struggles to generalize to complex bimanual tasks. This motivates us to leverage the pretrained knowledge of 𝜋 0.5 in our YUBI training setup. We observe that our multi-task VLA policy generalizes across various tasks, including distinct object types such as ball, cup, articulated glasses, differently colored socks, and tape. We further demonstrate successful policy deployment on bimanual dexterity tasks, such as "stack cup pyramid" and "unfold glasses". This confirms that YUBI's gripper-trajectory action space transfers across kinematically distinct robots.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.">Limitations and Discussion</head><p>While YUBI is a novel data collection tool, our study leaves several future directions open. First, submillimeter precision and tactile-sensitive tasks, such as tight cable insertion and fragile material handling, remain challenging; addressing this regime will require dedicated data curation, multi-modal sensing, and </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.">Conclusion</head><p>We present Yielding Universal Bidigital Interface (YUBI), a novel finger-aligned gripper with yielding jaw actuation designed to collect massive, high-quality data for bimanual dexterous tasks. The ergonomic gripper design enables fine control and heavy-object handling while reducing fatigue for sustained data collection. Our operation setup also supports high-fidelity gripper tracking with a decoupled VR system and stable visual observations from the top-view camera. The resulting dataset is the largest to date, comprising 8434 hours of interaction data across 1.20M episodes and 119 distinct tasks. Our user study demonstrates the gripper's advantages in precise grasping and operational efficiency. Furthermore, a multi-task policy trained on the YUBI dataset transfers across three bimanual robot platforms, validating that the collected data are directly executable as policy supervision across kinematically distinct robot arms paired with a common end-effector. By open-sourcing the entire YUBI stack (hardware, software, and dataset), our work offers a scalable and reproducible path toward large-scale, high-fidelity data collection for robotic foundation models.</p><p>Field feedback: Koshi Makihara, Tomohiro Motoda, Floris Erich, and Yukiyasu Domae advised on industrial task definition and on YUBI development and deployment.</p><p>Principal investigators: Kei Ota and Tatsuya Matsushima supervised the project as PIs.   below 10K demonstrations, and most stay below 3K. This is due to limited durability (e.g., fragile tactile pads), costly hardware and sensors, development cost for multi-fingered teleoperation hardware, etc.</p><p>YUBI deliberately targets the orthogonal axis of operational scalability: a lightweight, finger-aligned gripper that is inexpensive to fabricate, durable across thousands of collection hours, and intuitive enough that operators reach productive throughput with minimal onboarding. Beyond the scale itself, our dataset inherently features bimanual data collection essential for skillful tabletop tasks and adaptation to humanoid deployment. The resulting dataset combines the breadth of real-world bimanual dexterous tasks with the scale needed to actually train robotic foundation models on them. Finger-aligned gripper † We define a demo as a single video-language-action pair. YUBI decomposes its 1.20M recording episodes into 6,800K demos via per-episode subaction annotation.</p><p>Figure <ref type="figure" target="#fig_1">12</ref> | Extrinsic calibration process. The ChArUco board is placed in the same position across all data collection desks and captured from all cameras to align the coordinates and reset the board to the world origin.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.2. Data Processing</head><p>Calibration: Since the gripper trajectories have independent origins across different sessions or desk setups, we align them to a shared table frame via a dedicated calibration session, as shown in Figure <ref type="figure" target="#fig_1">12</ref>. We estimate a rigid transformation between the Quest and table coordinates, where a calibration board placed on the table is observed from multiple viewpoints using the wrist-mounted cameras of YUBI and the table-top camera. We then compute the relative transformation between the calibration board (defining the table coordinate system) and the Quest tracking frame. This transformation enables all tracked trajectories to be expressed consistently in the table-centered coordinate system.</p><p>Filtering: We remove defective episodes through a cascade of detectors as follows. (i) We remove episodes shorter than a minimum-duration threshold, which can occur when operators accidentally press the foot pedal. (ii) Stuck-signal detectors flag three freeze patterns: full pose freeze-a pose signal whose standard deviation is at or below numerical precision over the entire episode; partial pose freeze-a contiguous run of frames whose per-frame translation |Δt| stays below a channel-specific noise floor for longer than a duration threshold; and aperture freeze-a gripper whose jaw-angle variance is near zero across the episode. (iii) Kinematic-plausibility detectors additionally drop episodes containing a single-frame translational jump exceeding an implausible velocity threshold given the recording rate, or a rotation increment greater than 90 ∘ within a single frame. (iv) Quest controller tracking can briefly become unreliable when the IR LEDs on a controller are occluded from the rig-mounted HMD (e.g., when the wrist is bent inward). In our tabletop setup such occlusion is rare and short-lived. To keep these segments out of training, we read the per-frame tracking-quality flag that Quest publishes alongside the controller pose to the ROS 2 graph and drop any episode in which the flag indicates a degraded or untracked state for more than a small fraction of frames. This guarantees the released trajectories are free of occlusion-induced drift.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.3. Action-Segmentation Examples</head><p>Each YUBI episode is segmented into multiple primitive action steps that capture the sub-tasks an operator performs within a single recording. The action boundaries are inserted hands-free by foot-pedal events during collection (Section 3.2) and refined in post-processing. Figures 13 to 15 show representative episodes drawn from the 8434 hours of YUBI data. Each panel visualizes the wrist-camera observations together with the textual sub-action labels and their temporal extent on a shared timeline, illustrating the diversity of task structures captured by the dataset, from short pick-and-place sequences to longer assembly and writing tasks composed of several primitive sub-actions per episode.     </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>RGB Videos from Cameras</head><p>Task Instruction </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Status of YUBI Device</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3D Tracking Visualization</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Operation-Setup Details</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.1. Stationary Rig and Task UI</head><p>We provide additional details for the operation setup found in Section 3.2. A laptop is mounted at the center of the frame wall, serving as the central hub of the system and the user interface for task instruction, as shown in Figure <ref type="figure" target="#fig_12">16</ref>. It aggregates all sensor streams while displaying real-time observations, tracking signals, and task information to the operator. A major challenge in bimanual operation is that both hands are occupied by the grippers, leaving no free hand to annotate task transitions and sub-action boundaries through conventional inputs (e.g., buttons, touchscreens, keyboards). To address this, we install a foot pedal under the desk to start/stop action segments and to accept an episode for storage. Operators press the pedal to indicate boundaries between predefined sub-action steps.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.2. Portable Configuration</head><p>Figure <ref type="figure" target="#fig_13">17</ref> illustrates the portable configuration to ship the YUBI data collection to other environments. In portable mode, the operator detaches the YUBI grippers from the desk rig and wears the Quest 3S headset on the chest-mounted belt. The other components are adapted for mobility as follows. The fixed top-view stereo camera is replaced by an egocentric camera mounted on the headset, which captures the workspace from the operator's viewpoint as they move. The foot pedal cannot be used while walking, so subaction transitions are instead triggered by double-clicking the YUBI gripper. The laptop hub is carried in a shoulder bag, while the wrist cameras and gripper hardware remain wired from the hub. The data schema (Section A.2) is preserved across modes, so portable and tabletop episodes share the same downstream pipeline.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Captured scenarios:</head><p>The portable mode unlocks a class of demonstrations that the tabletop rig simply cannot host. These tasks span more than the workspace volume above a desk. Illustrative examples we have recorded include stacking a cup onto a plate, putting away the cooking utensils, putting the tray in the dishwasher and closing it, putting a book away on the bookshelf, putting the remote back on the table, hanging a shirt on a hanger, and folding a shirt. These are routine actions in real kitchens, dining rooms, and bedrooms; capturing them in their actual settings ensures that the visual context, object positions, lighting, and reach requirements all reflect the conditions a deployed robot would encounter. Outlook: We see the operator's whole-body 3D trajectory recorded by the chest-mounted Quest as a natural data source for embodiments beyond fixed-base bimanual arms. Mobile manipulators, wheeled service robots, and humanoid platforms all require coordinated body and end-effector motion in human-scale environments, and the portable YUBI episodes directly provide such paired observations and trajectories. Investigating further lightweight and robust portable systems with YUBI grippers is a promising avenue we leave for future work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Experimental Details</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.1. Usability Test Protocol</head><p>Dexterity test: Figure <ref type="figure" target="#fig_14">18</ref> illustrates the dexterity-test protocol using either YUBI or UMI. To quantitatively evaluate this advantage, we conducted a user study assessing dexterity in grasping objects of varying sizes using nuts. Here, operators were instructed to pick up a nut from a table and place it into a tray. Six standardized hex nut sizes (M10-M3) were prepared, and operators performed the pick-and-place task sequentially from the largest to the smallest. Note that operators had only one attempt per nut. If they failed to grasp or place it, it was counted as a failure, and they proceeded to the next size. A total of 10 operators were recruited with gender balanced, each performing five attempts.</p><p>Figure <ref type="figure">5</ref> compares the success rates of UMI and YUBI. On the larger nuts (M8 and M10), both devices approach the ceiling (≥ 94%). As the diameter decreases, however, the two methods diverge. YUBI maintains a clear margin over UMI at M6 (+20 pp) and M5 (+10 pp), and the gap widens most markedly at the smallest size: on M3 nuts, YUBI achieves a 44% success rate while UMI drops to 14%, a roughly 3× improvement. The sole exception to this trend appears at M4, where YUBI's success rate dips below its own M3 rate. We hypothesize that a geometric mismatch exists between the nut diameter and the fingertip curvature, i.e., a size-specific contact artifact rather than a loss of precision. Indeed, we find that UMI also exhibits the same dip from M6→M5, supporting this interpretation. Overall, these results suggest that YUBI is more adaptable to precision tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Operational efficiency test:</head><p>We further demonstrate that the intuitive design and improved manipulability of YUBI enable faster data collection compared to existing interfaces. We measured the time required to complete a task for five distinct tasks. Each participant was assigned two tasks to use either manual execu- tion (Hand), <ref type="bibr">UMI Chi et al. [2024]</ref>, and YUBI. For each task-device combination, operators completed five trials, and the average completion time was computed across trials. A total of 10 operators were recruited, with gender balanced, resulting in four operators assigned to each task. To mitigate order effects, operators were counterbalanced such that half performed the conditions in the order Hand→UMI→YUBI, while the remaining half followed vice versa.</p><p>Figure <ref type="figure">6</ref> shows the average task completion time of each device on the five evaluation tasks. Across all tasks, YUBI consistently outperforms UMI, with speed-up ratios ranging from 1.37× on the domino arrangement task to 4.19× on the phone-charging task. The results demonstrate that YUBI substantially narrows the efficiency gap toward the human hand compared with UMI, with clear advantages on tasks that require fine and dexterous manipulation, such as connector insertion in the phone-charging task and precise tool control in the whiteboard-writing task.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.2. Robot Platforms</head><p>We deploy YUBI-trained policies on three bimanual robot platforms with distinct kinematics: UR Universal Robots <ref type="bibr" target="#b41">[2026</ref><ref type="bibr">], Franka Franka Robotics [2026]</ref>, and Toyota semi-humanoid ELEY <ref type="bibr" target="#b38">Toyota Frontier Research Center [2026]</ref>. On each platform, we physically replace the robot's native gripper with the YUBI gripper and attach the same wrist camera, so that the deployed end-effector matches the one used during data collection. Since the YUBI gripper is passively finger-driven during data collection, we attach a motor to its actuation gear for deployment, so that the jaw aperture can be driven by an open/close command. The recorded per-hand apertures 𝑑 right , 𝑑 left are then linearly mapped to this motor command.</p><p>Figure <ref type="figure" target="#fig_15">19</ref> shows the resulting end-effector on two of the target platforms. We mount YUBI so that the robot's wrist-flange rotation axis passes straight through the gripper's pinch point, aligned with the fingers' approach direction. With this alignment, a pure wrist roll spins the fingertips in place rather than swinging them around an off-center pivot, and because the fingertips sit on the wrist axis with no lateral offset, the remaining joints are not consumed compensating for that offset. The arm can therefore use its full kinematic range to follow the recorded end-effector trajectory.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.3. Policy Training and Inference</head><p>We fine-tune 𝜋 0.5 on the YUBI demonstrations and evaluate the resulting policy on each deployment task. The post-training data comprise <ref type="bibr">408,</ref><ref type="bibr">275,</ref><ref type="bibr">194,</ref><ref type="bibr">1,</ref><ref type="bibr">903,</ref><ref type="bibr">1,</ref><ref type="bibr">691,</ref><ref type="bibr">3,</ref><ref type="bibr">985</ref> demonstrations for "ball in basket", "stack cup pyramid", "unfold glasses", "pick and place socks", "tape in box", "cup placement", respectively. We use a task-balanced data sampler to avoid overfitting or underfitting to specific tasks. For the experiments using UR, we train 30K iterations with batch size of 256 and action chunk of 16. For the experiment using Franka and ELEY, we train 150K iterations with batch size of 64 and action chunk of 32.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.4. Comparison to Diffusion Policy</head><p>We ablate the 𝜋 0.5 <ref type="bibr" target="#b1">Black et al. [2025]</ref> policy against the diffusion policy (DP) architecture <ref type="bibr">Chi et al. [2023]</ref> originally adopted by <ref type="bibr">UMI Chi et al. [2024]</ref>: a frozen CLIP image and text encoder feeding a diffusionbased action decoder trained from scratch on the YUBI demonstrations to predict relative end-effector action chunks. To keep the comparison fair, both models are trained per task on the corresponding YUBI demonstrations and evaluated under the same protocol on the bimanual UR platform (Table <ref type="table">5</ref>). On the simplest task, ball in basket, both saturate at 20/20. The gap opens on stack cup pyramid (9/20 vs 13/20), where the second placement must be executed under stacking-induced contact, and widens to a categorical failure on unfold glasses (0/20 vs 9/20), the most asymmetric bimanual task in the suite.</p><p>This pattern motivates our choice of 𝜋 0.5 as the primary policy. With the same per-task data, a from-scratch diffusion decoder is sufficient for the easiest task but lacks the prior knowledge required to recover as the task becomes harder. In contrast, 𝜋 0.5 inherits a vision-language-action backbone pretrained on large-scale robot data, which provides a strong inductive bias for visual representations and contact-aware end-effector trajectories. We therefore adopt 𝜋 0.5 throughout this paper and treat DP as a structural lower bound.</p><p>accepted episodes to S3-compatible storage, and a data processing pipeline written in Rust prepares the dataset by converting the recordings into the LeRobot format with the data-filtering cascade of Section A.2. The processed LeRobot dataset will be released on Hugging Face under the CC-BY-NC-SA-4.0 license.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 |</head><label>1</label><figDesc>Figure 1 | Yielding Universal Bidigital Interface (YUBI): Our lightweight, finger-aligned gripper offers intuitive control by mirroring human digital kinematics for dexterous manipulation. Leveraging high-precision VR-based tracking, YUBI facilitates the curation of a large-scale, high-quality bimanual dataset to advance robotic foundation models.</figDesc><graphic coords="2,33.23,107.62,199.12,149.34" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 |</head><label>2</label><figDesc>Figure2| Overview: To ensure massive, high-quality robot manipulation data for scaling robot learning, we collect bimanual YUBI-based demonstrations at 22 desks in parallel from 179 operators. Our operation setups feature (i) a stereo top-view camera for stable workspace observation, (ii) a rig-mounted VR system for 6 DoF gripper tracking where the VR controllers are attached to the YUBI gripper, and (iii) foot pedal-based action segmentation for handsfree control. The collected dataset features diverse 119 tasks that require various skills including assembling bricks and paper boxes, insertion, writing and erasing, folding clothes, and tightening nuts and bolts.</figDesc><graphic coords="5,72.51,146.55,84.94,127.41" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 |</head><label>3</label><figDesc>Figure 3 | Domain distribution: The figure presents the share of the 119 tasks across seven categories (industrial, kitchen, toy, desk work, clothing, appliance, personal care), reflecting YUBI's target scope of precise, heavy, and everyday object handling.</figDesc><graphic coords="6,316.22,89.99,211.31,112.36" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 |</head><label>4</label><figDesc>Figure 4 | Skill distribution: The figure indicates the share of tasks by primary skill type, such as placement, insertion, assembly, sorting, deformation, and tool use. Labels reflect each task's dominant skill; most tasks combine multiple skills in practice.</figDesc><graphic coords="6,62.73,79.06,248.90,139.01" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 |Figure 6 |</head><label>56</label><figDesc>Figure 5 | Dexterity test: Pick-and-place success rate on hex nuts M10-M3 for UMI and YUBI. Error bars show 95% binomial confidence intervals (n=50).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 7 |</head><label>7</label><figDesc>Figure7| Robot deployment results. We successfully deploy the policy trained on the YUBI data across three robots and six tasks.</figDesc><graphic coords="9,141.08,305.68,99.34,55.88" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 9 |</head><label>9</label><figDesc>Figure 9 | Live monitoring of the data-collection site. A web-based dashboard aggregates real-time signals from every active operator station, including per-desk session status, wrist-camera previews, gripper-tracking quality, and cumulative episode counts. This allows operators and supervisors to monitor data-collection progress across all desks in parallel and to identify low-quality sessions or device failures as they occur.</figDesc><graphic coords="15,135.53,79.37,321.45,235.56" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 10 |</head><label>10</label><figDesc>Figure 10 | Numbers of sub-actions for each task: The figure presents the numbers of sub-actions for each of the 119 tasks.</figDesc><graphic coords="15,68.03,375.01,238.79,108.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 11 |</head><label>11</label><figDesc>Figure 11 | Average episode seconds: The figure indicates the average duration in seconds for completing each task.</figDesc><graphic coords="15,316.00,375.06,211.24,95.72" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 13 |</head><label>13</label><figDesc>Figure 13 | Action segmentation examples (1/3). Four representative YUBI episodes, each visualized as a timeline of segmented sub-actions with wrist-camera snapshots of the corresponding task progress.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Figure 14 |</head><label>14</label><figDesc>Figure 14 | Action segmentation examples (2/3). Continued from Figure 13.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Figure 16 |</head><label>16</label><figDesc>Figure 16 | Task UI. A rig-mounted laptop displays the current observations, 3D trajectory information, task and subaction instructions, and per-sensor health status.</figDesc><graphic coords="21,132.20,79.38,330.62,239.04" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Figure 17 |</head><label>17</label><figDesc>Figure 17 | Portable YUBI configuration. The operator wears the Quest headset for 6 DoF controller tracking on the chest, with an egocentric camera replacing the rig-mounted top-view stereo.</figDesc><graphic coords="22,57.05,79.37,171.65,257.47" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_14"><head>Figure 18 |</head><label>18</label><figDesc>Figure18| Dexterity-test protocol. Single-attempt pick-and-place of M10-M3 hex nuts. UMI's bulky jaws occlude small parts and crowd the workspace, whereas YUBI's slim fingertips reach the nut with a pinch-like contact.</figDesc><graphic coords="23,68.03,74.50,459.21,258.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_15"><head>Figure 19 |</head><label>19</label><figDesc>Figure 19 | YUBI gripper mounted on the deployment robots (Left: Franka, Right: ELEY). The robot's native gripper is removed and replaced with the YUBI gripper through a per-robot adapter flange; a motor drives the jaw aperture via the same actuation gear used during data collection. Table 5 | Model ablation on the bimanual UR platform. Success rate (out of 20 rollouts per task) for the diffusionpolicy baseline Chi et al. [2023] and our 𝜋 0.5 Black et al. [2025] policy, each fine-tuned per task on the corresponding YUBI demonstrations. Model Ball in basket Stack cup pyramid Unfold glasses DP Chi et al. [2023] (CLIP Enc.) 20/20 9/20 0/20 𝜋 0.5 Black et al. [2025] 20/20 13/20 9/20</figDesc><graphic coords="24,68.03,79.36,220.42,227.33" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="14,68.03,141.08,459.21,258.31" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="16,159.87,437.13,275.53,275.53" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="25,112.57,80.69,315.36,321.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 |</head><label>1</label><figDesc>Comparative analysis of UMI systems.</figDesc><table><row><cell>Method</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>UMI Chi et al. [2024] FastUMI Zhaxizhuoma et al. [2025] ActiveUMI Zeng et al. [2025] exUMI Xu et al. [2025b] YUBI (Ours)</head><label></label><figDesc></figDesc><table><row><cell>Gripper</cell><cell>Pistol-grip</cell><cell>Pistol-grip</cell><cell>Finger-driven</cell></row><row><cell>Weight</cell><cell>780 g</cell><cell>(≥ 905 g)</cell><cell>319 g</cell></row><row><cell>Ergonomics</cell><cell>(bulky)</cell><cell>(heavy HMD)</cell><cell>(haptic ↑)</cell></row><row><cell>Dexterity</cell><cell></cell><cell></cell><cell></cell></row><row><cell>Tracking</cell><cell>SLAM</cell><cell>VR</cell><cell>VR</cell></row><row><cell>Tracking prec.</cell><cell></cell><cell></cell><cell></cell></row><row><cell>Data size (hrs)</cell><cell>12 / (60)</cell><cell>-/ 5</cell><cell>8434</cell></row><row><cell>#Tasks</cell><cell>4 / 22</cell><cell>6 / 9</cell><cell>119</cell></row></table><note><p>: Superior, : Moderate, : Limited. Parenthesized values are estimates.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head></head><label></label><figDesc>Leveraging this framework, we provide the largest UMI-based dataset for bimanual dexterous manipulation, comprising 8434 hours of data across 1.20M episodes and 119 tasks. Our user study finds that YUBI is adaptable to tasks ranging from daily to industrial scenarios, with improved operational efficiency and task success rates over the original UMI gripper. We further demonstrate the effectiveness of the YUBI dataset by training a single policy network and deploying it on three bimanual robot platforms, namely</figDesc><table /><note><p><p><p><p>UR Universal Robots [2026], Franka Franka Robotics [2026]</p>, and Toyota's semi-humanoid ELEY</p><ref type="bibr" target="#b38">Toyota Frontier Research Center [2026]</ref></p>, each fitted with the YUBI gripper as a common end-effector. To address data scarcity in the open research community, we fully release the YUBI ecosystem, encompassing gripper hardware, data collection software, and our large-scale dataset, empowering the community to reproduce and scale dexterous bimanual manipulation research.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>Table 2 |</head><label>2</label><figDesc>YUBI data statistics.</figDesc><table><row><cell>Statistic</cell><cell>Value</cell></row><row><cell># Episodes</cell><cell>1.20M</cell></row><row><cell># Demos 1</cell><cell>6.80M</cell></row><row><cell>Total duration (hrs)</cell><cell>8434</cell></row><row><cell># Tasks</cell><cell>119</cell></row><row><cell>Avg. sub-action / task</cell><cell>7.99</cell></row><row><cell>Avg. episode duration (s)</cell><cell>39.8</cell></row></table><note><p>1 Total video-language-action triplets, i.e., the sum of sub-actions over all episodes.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>Table 3 |</head><label>3</label><figDesc>Deployment results across embodiments. Success rate (%) of a 𝜋 0.5 -based multi-task policy<ref type="bibr" target="#b1">Black et al. [2025]</ref> over 20 rollouts per task.</figDesc><table><row><cell></cell><cell>Bimanual UR</cell><cell></cell><cell cols="2">Bimanual Franka</cell><cell>ELEY</cell></row><row><cell>Ball in basket</cell><cell>Stack cup pyramid</cell><cell>Unfold glasses</cell><cell>Pick&amp;Place socks</cell><cell>Tape in box</cell><cell>Cup placement</cell></row><row><cell>20/20</cell><cell>13/20</cell><cell>9/20</cell><cell>18/20</cell><cell>18/20</cell><cell>11/20</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>Table 4 |</head><label>4</label><figDesc>Comparison of UMI-style robot manipulation datasets. Track.: gripper tracking method (SLAM-based vs. VR-based). Biman.:all tasks bimanual, all single-arm, mixed. Features: distinctive sensing or embodiment beyond the standard Image+Proprio stream (e.g., Dex hand, Whole-body, Tactile, Audio). Dur.: recording duration in hours.</figDesc><table><row><cell>Project</cell><cell cols="6">Track. #Tasks #Demos Dur. #Envs Biman. Features</cell></row><row><cell>Standard</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>UMI (original) Chi et al. [2024]</cell><cell>SLAM</cell><cell>5</cell><cell cols="2">2.5K 12</cell><cell>34</cell><cell>-</cell></row><row><cell>LEGATO Seo et al. [2025]</cell><cell>SLAM</cell><cell>6</cell><cell>0.9K</cell><cell>-</cell><cell>6</cell><cell>-</cell></row><row><cell cols="2">FastUMI Zhaxizhuoma et al. [2025] SLAM</cell><cell>22</cell><cell cols="2">9.0K (60)</cell><cell>22</cell><cell>-</cell></row><row><cell cols="2">Data Scaling Laws Lin et al. [2024] SLAM</cell><cell>6</cell><cell>24.1K</cell><cell>-</cell><cell>160</cell><cell>-</cell></row><row><cell>FastUMI-100K Liu et al. [2025b]</cell><cell>SLAM</cell><cell>32</cell><cell cols="2">92.8K 0.6K</cell><cell>32</cell><cell>-</cell></row><row><cell>Multi-modality</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>ManiWAV Liu et al. [2024]</cell><cell>SLAM</cell><cell>5</cell><cell>1.0K</cell><cell>-</cell><cell>11</cell><cell>Audio</cell></row><row><cell>exUMI Xu et al. [2025b]</cell><cell>VR</cell><cell>8</cell><cell>1.7K</cell><cell>5</cell><cell>21</cell><cell>Tactile</cell></row><row><cell cols="2">Touch in the Wild Zhu et al. [2026] SLAM</cell><cell>20</cell><cell>2.7K</cell><cell>-</cell><cell>20</cell><cell>Tactile</cell></row><row><cell>UMI-3D Wang [2026]</cell><cell>SLAM</cell><cell>3</cell><cell>4.6K</cell><cell>-</cell><cell>8</cell><cell>LiDAR (point cloud)</cell></row><row><cell>Dex</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>DexUMI Xu et al. [2025a]</cell><cell>SLAM</cell><cell>5</cell><cell>1.8K</cell><cell>-</cell><cell>5</cell><cell>Dex hand, F/T, Tactile</cell></row><row><cell>DexWild Tao et al. [2025]</cell><cell>SLAM</cell><cell>10</cell><cell cols="2">9.5K 33</cell><cell>109</cell><cell>Dex hand</cell></row><row><cell>Bimanual</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>ActiveUMI Zeng et al. [2025]</cell><cell>VR</cell><cell>6</cell><cell>-</cell><cell>-</cell><cell>-</cell><cell>Head pose</cell></row><row><cell>HuMI Nai et al. [2026]</cell><cell>SLAM</cell><cell>5</cell><cell>0.9K</cell><cell>-</cell><cell>11</cell><cell>Whole-body</cell></row><row><cell cols="2">GenRobot Genrobot AI, Inc. [2026] SLAM</cell><cell>5</cell><cell cols="3">790K 13K 10K+</cell><cell>Tactile</cell></row><row><cell>YUBI (Ours)</cell><cell>VR</cell><cell>119</cell><cell cols="2">6,800K  † 8K+</cell><cell>22</cell><cell></cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>YUBI is the Japanese reading of the Kanji character , meaning "finger".</p></note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgments</head><p>This paper is based on results obtained from a project, <rs type="grantNumber">JPNP25015</rs>, commissioned by the <rs type="funder">New Energy and Industrial Technology Development Organization (NEDO)</rs>. The authors gratefully acknowledge the continued support of the <rs type="projectName">AIRoA</rs>, <rs type="funder">Toyota Motor Corporation</rs>, and <rs type="funder">AIST</rs> research teams throughout this work.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funded-project" xml:id="_YzpHMtS">
+					<idno type="grant-number">JPNP25015</idno>
+					<orgName type="project" subtype="full">AIRoA</orgName>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Contributions</head><p>Project leadership: Takehiko Ohkawa and Jumpei Arima co-led the project.</p><p>YUBI hardware: Yohishiro Okumatsu, Yuki Wakayama, Daiki Fukunaga, and Yuki Noguchi designed the YUBI gripper. Makoto Sugiura led YUBI hardware refinement and manufacture, and designed the operationrig system with Takehiko Ohkawa.</p><p>YUBI application software: Jumpei Arima, Yuki Noguchi, Petr Khrapchenkov, Takuya Okubo, Naoaki Kanazawa, Naruya Kondo, and Miki Ma developed the YUBI data-collection software.</p><p>Data infrastructure, curation, and annotation: Petr Khrapchenkov and Masafumi Takahashi built the data pipeline. Takuya Okubo, Masatoshi Tateno, and Hiroyuki Yamada led data analysis and curation. Masatoshi Tateno additionally led video production.</p><p>Robot integration: Takuya Okubo, Tatsuya Kamijo, Yuki Noguchi, Jumpei Arima, and Makoto Sugiura integrated the YUBI gripper with robot platforms and built the policy deployment systems.</p><p>VLA development: Yuki Noguchi and Takehiko Ohkawa led VLA development.</p><p>Policy evaluation: Yuki Noguchi, Hiroki Nishizawa, and Kengo Ikeuchi carried out policy evaluation.</p><p>Operation and task definition: Takehiko Ohkawa managed operations and task definition with Yuma Shin, Jumpei Arima, Masatoshi Tateno, Kengo Ikeuchi, and Masaru Yajima. We additionally thank Kai Itatsu, Toki Go, and Yudai Tsuri for supporting overseas operations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Supplementary Material</head><p>for "YUBI: Yielding Universal Bidigital Interface for Bimanual Dexterous Manipulation at Scale" </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Dataset Details</head><p>Figure <ref type="figure">8</ref> samples wrist-camera frames from across the 8434 hours and 1.20M episodes captured to date, spanning all 119 tasks and 179 operators (125 male, 54 female). The diversity of scenes, objects, hands, and lighting visible in a single grid conveys the breadth of the dataset. Figure <ref type="figure">9</ref> then shows the operational backbone that enabled this scale, a live dashboard that simultaneously monitors all operator stations. By surfacing per-desk session status, camera previews, gripper-tracking quality, and episode counts in real time, the dashboard turns multi-site data collection into a single supervisable process, enabling reliable quality assurance and sustained data collection throughput.</p><p>We further characterize the dataset along two task-level axes. Figure <ref type="figure">10</ref> plots the number of sub-actions per task across the 119 tasks. Most tasks decompose into a handful of primitive sub-actions, while a long tail of compositional tasks (multi-step assembly, sorting of many parts, writing-and-erasing) extends well beyond ten sub-actions per recording. Figure <ref type="figure">11</ref> reports the average episode duration in seconds for each task. Short pick-and-place demonstrations finish in less than a minute, whereas the longest tasks span further, in line with the sub-action distribution above. Together the two figures show that the YUBI dataset spans a wide range of task complexity, from short atomic skills to long, compositional bimanual behaviors.    </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.1. Comparison with Prior UMI-based Datasets</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Open-Source Release</head><p>To support reproduction and community extension, we will release the complete YUBI stack, including hardware, data-collection software, and the curated dataset together with the paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D.1. Hardware</head><p>The hardware release covers every part needed to fabricate the YUBI system end-to-end: STEP CAD assemblies for the YUBI gripper (see Figure <ref type="figure">20</ref>), the robot-mounted gripper (with the DYNAMIXEL-actuated jaw used for deployment), the stationary data-collection desk rig, and the portable collection rig; STL files for every 3D-printable component; a bill of materials in CSV format with sourcing notes; PDF assembly guides of the gripper, and rig builds; and adapter flanges that interface the gripper with each robot platform used in our deployment experiments (Section C). The release is distributed under the CERN Open Hardware Licence v2 (Weakly Reciprocal), permitting both reproduction and downstream modification.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D.2. Software</head><p>The software release contains the operator-side bringup stack used to capture the 8434 hours of demonstrations reported in this paper, distributed under the Apache License 2.0. It is implemented in Python with ROS 2 nodes and ESP32-C6 firmware, and packaged as a multi-container Docker stack. A web application for data collection management, with frontend and backend written in Go and TypeScript, is also included. The release ships drivers and launch configurations for every signal source described in Section 3.2. These cover the wrist cameras, the top-view RealSense or head-mounted USB camera, the gripper encoder firmware, the foot pedal, and the Meta Quest 3S bridge. Per-host calibration and provisioning utilities are also included. A ROS 2 recording backend captures time-synchronized rosbag2 streams and uploads</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">𝜋 0 : A vision-language-action flow model for general robot control</title>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noah</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danny</forename><surname>Driess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adnan</forename><surname>Esmail</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Equi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niccolo</forename><surname>Fusai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lachy</forename><surname>Groom</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karol</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brian</forename><surname>Ichter</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">a vision-language-action model with open-world generalization</title>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noah</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">James</forename><surname>Darpinian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karan</forename><surname>Dhabalia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danny</forename><surname>Driess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adnan</forename><surname>Esmail</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Equi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niccolo</forename><surname>Fusai</surname></persName>
+		</author>
+		<idno>𝜋 0 .5</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Bi-act: Bilateral control-based imitation learning via action chunking with transformer</title>
+		<author>
+			<persName><forename type="first">Thanpimon</forename><surname>Buamanee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Masato</forename><surname>Kobayashi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuki</forename><surname>Uranishi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haruo</forename><surname>Takemura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Advanced Intelligent Mechatronics (AIM)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="410" to="415" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Past, present, and future of simultaneous localization and mapping: Toward the robust-perception age</title>
+		<author>
+			<persName><forename type="first">Cesar</forename><surname>Cadena</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luca</forename><surname>Carlone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Henry</forename><surname>Carrillo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yasin</forename><surname>Latif</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Davide</forename><surname>Scaramuzza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">José</forename><surname>Neira</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ian</forename><surname>Reid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><forename type="middle">J</forename><surname>Leonard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="1309" to="1332" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Lerobot: State-of-the-art machine learning for real-world robotics in pytorch</title>
+		<author>
+			<persName><forename type="first">Remi</forename><surname>Cadene</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Alibert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Soare</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quentin</forename><surname>Gallouedec</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adil</forename><surname>Zouitine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steven</forename><surname>Palma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pepijn</forename><surname>Kooijmans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michel</forename><surname>Aractingi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mustafa</forename><surname>Shukor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dana</forename><surname>Aubakirova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Martino</forename><surname>Russi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Capuano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Caroline</forename><surname>Pascal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jade</forename><surname>Choghari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jess</forename><surname>Moss</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Wolf</surname></persName>
+		</author>
+		<ptr target="https://github.com/huggingface/lerobot" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Virtual reality for shoulder rehabilitation: Accuracy evaluation of Oculus Quest 2</title>
+		<author>
+			<persName><forename type="first">Arianna</forename><surname>Carnevale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ilaria</forename><surname>Mannocchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohamed</forename><surname>Saifeddine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hadj</forename><surname>Sassi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Carli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giovanna</forename><forename type="middle">De</forename><surname>Luca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Umile</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giuseppe</forename><surname>Longo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincenzo</forename><surname>Denaro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Emiliano</forename><surname>Schena</surname></persName>
+		</author>
+		<idno type="DOI">10.3390/s22155511</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="issue">15</biblScope>
+			<biblScope unit="page">2022</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">ARCap: Collecting high-quality human demonstrations for robot learning with augmented reality feedback</title>
+		<author>
+			<persName><forename type="first">Sirui</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kaden</forename><surname>Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karen</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<biblScope unit="page">2025</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Open-TeleVision: Teleoperation with immersive active visual feedback</title>
+		<author>
+			<persName><forename type="first">Xuxin</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jialong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shiqi</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ge</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Robot Learning (CoRL)</title>
+		<meeting>the Conference on Robot Learning (CoRL)</meeting>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Chi</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Siyuan</forename><surname>Feng</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yilun</forename><surname>Du</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenjia</forename><surname>Xu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Cousineau</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Burchfiel</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenjia</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuer</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyuan</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<title level="m">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots. Robotics: Science and Systems XX</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">AirExo: Low-cost exoskeletons for learning whole-arm manipulation in the wild</title>
+		<author>
+			<persName><forename type="first">Hongjie</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Hao-Shu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jieji</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruo</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weiming</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cewu</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title/>
+		<ptr target="https://franka.de/" />
+	</analytic>
+	<monogr>
+		<title level="j">Franka Robotics. Franka research</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<date type="published" when="2026-05-26">2026. 2026-05-26</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">HumanPlus: Humanoid shadowing and imitation from humans</title>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingqing</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qi</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gordon</forename><surname>Wetzstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Robot Learning (CoRL)</title>
+		<meeting>the Conference on Robot Learning (CoRL)</meeting>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Mobile ALOHA: Learning bimanual mobile manipulation with low-cost whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Robot Learning (CoRL)</title>
+		<meeting>the Conference on Robot Learning (CoRL)</meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note>b</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">GEN-0: Embodied foundation models that scale with physical interaction</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">I</forename><surname>Generalist</surname></persName>
+		</author>
+		<ptr target="https://generalistai.com/blog/nov-04-2025-GEN-0" />
+		<imprint>
+			<date type="published" when="2025-11">November 2025</date>
+		</imprint>
+	</monogr>
+	<note>Blog post</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">I</forename><surname>Generalist</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Inc</forename><surname>Generalist Ai</surname></persName>
+		</author>
+		<ptr target="https://generalistai.com/" />
+		<imprint>
+			<date type="published" when="2026">2026</date>
+			<biblScope unit="page" from="2026" to="2030" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">I</forename><surname>Genrobot</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Inc</forename><surname>Genrobot Ai</surname></persName>
+		</author>
+		<ptr target="https://www.genrobot.ai/" />
+		<imprint>
+			<date type="published" when="2026-06-04">2026. 2026-06-04</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Ego4d: Around the world in 3,000 hours of egocentric video</title>
+		<author>
+			<persName><forename type="first">Kristen</forename><surname>Grauman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Westbury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eugene</forename><surname>Byrne</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zachary</forename><surname>Chavis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antonino</forename><surname>Furnari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohit</forename><surname>Girdhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jackson</forename><surname>Hamburger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Miao</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xingyu</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="18995" to="19012" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Comparing the accuracy and precision of SteamVR tracking 2.0 and Oculus Quest 2 in a room scale setup</title>
+		<author>
+			<persName><forename type="first">Valentin</forename><surname>Holzwarth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joy</forename><surname>Gisler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christian</forename><surname>Hirt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andreas</forename><surname>Kunz</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/3463914.3463921</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2021 5th International Conference on Virtual and Augmented Reality Simulations (ICVARS)</title>
+		<meeting>the 2021 5th International Conference on Virtual and Augmented Reality Simulations (ICVARS)</meeting>
+		<imprint>
+			<publisher>ACM</publisher>
+			<biblScope unit="page">2021</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">DROID: A large-scale in-the-wild robot manipulation dataset</title>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Khazatsky</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Pertsch</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Suraj</forename><surname>Nair</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Balakrishna</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Sudeep</forename><surname>Dasari</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Siddharth</forename><surname>Karamcheti</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Soroush</forename><surname>Nasiriany</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Mohan</forename><surname>Kumar Srirama</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Lawrence</forename><surname>Yunliang Chen</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Kirsty</forename><surname>Ellis</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<author>
+			<persName><forename type="first">Chuanyu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chaoyi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daotan</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuyu</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lusong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zecui</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fangchen</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jing</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2511.05858</idno>
+		<title level="m">Vitamin-b: A reliable and efficient visuo-tactile bimanual manipulation interface</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Alltact fin ray: A compliant robot gripper with omni-directional tactile sensing</title>
+		<author>
+			<persName><forename type="first">Siwei</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yixuan</forename><surname>Guan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jing</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongyu</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangjun</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenbo</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Automation Science and Engineering</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Data scaling laws in imitation learning for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Fanqi</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yingdong</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pingyue</forename><surname>Sheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuan</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiacheng</forename><surname>You</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Gao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Thirteenth International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">Vitamin: Learning contact-rich tasks through robot-free visuo-tactile manipulation interface</title>
+		<author>
+			<persName><forename type="first">Fangchen</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuanyu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yihua</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jing</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.06156</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Fastumi-100k: Advancing data-driven robotic manipulation with a large-scale umi-style dataset</title>
+		<author>
+			<persName><forename type="first">Kehui</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhongjie</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pengan</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Song</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xin</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pingrui</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haoming</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinyi</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nieqing</forename><surname>Cao</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2510.08022</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Learning robot manipulation from in-the-wild audio-visual data</title>
+		<author>
+			<persName><forename type="first">Zeyi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Naveen</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Maniwav</surname></persName>
+		</author>
+		<ptr target="https://openreview.net/forum?id=wSWMsjuMTI" />
+	</analytic>
+	<monogr>
+		<title level="m">8th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Being-h0: Vision-language-action pretraining from large-scale human videos</title>
+		<author>
+			<persName><forename type="first">Yicheng</forename><surname>Hao Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wanpeng</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sipeng</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ye</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haoqi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiazheng</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chaoyi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qin</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zongqing</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning (ICML)</title>
+		<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">MimicGen: A data generation system for scalable robot learning using human demonstrations</title>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soroush</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Iretiayo</forename><surname>Akinola</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yashraj</forename><surname>Narang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linxi</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuke</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Robot Learning (CoRL)</title>
+		<meeting>the Conference on Robot Learning (CoRL)</meeting>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Health and safety warnings</title>
+		<ptr target="https://www.meta.com/legal/quest/health-and-safety-warnings/quest-3s/" />
+	</analytic>
+	<monogr>
+		<title level="j">Meta Quest</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="2026" to="2030" />
+			<date type="published" when="2026">2026</date>
+			<publisher>Meta Platforms, Inc</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">ORB-SLAM: A versatile and accurate monocular SLAM system</title>
+		<author>
+			<persName><forename type="first">Raúl</forename><surname>Mur-Artal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M M</forename><surname>Montiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Juan</forename><forename type="middle">D</forename><surname>Tardós</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="1147" to="1163" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<author>
+			<persName><forename type="first">Ruiqian</forename><surname>Nai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Boyuan</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junming</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haodong</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sicong</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zunhao</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yihang</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yingdong</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tong</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuan</forename><surname>Wen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2602.06643</idno>
+		<title level="m">Humanoid manipulation interface: Humanoid whole-body manipulation from robot-free demonstrations</title>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Assemblyhands: Towards egocentric activity understanding via 3d hand pose estimation</title>
+		<author>
+			<persName><forename type="first">Takehiko</forename><surname>Ohkawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kun</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fadime</forename><surname>Sener</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tomas</forename><surname>Hodan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luan</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cem</forename><surname>Keskin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="12999" to="13008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Open x-embodiment: Robotic learning datasets and rt-x models: Open x-embodiment collaboration 0</title>
+		<author>
+			<persName><forename type="first">O'</forename><surname>Abby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abdul</forename><surname>Neill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhiram</forename><surname>Rehman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhishek</forename><surname>Maddukuri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhishek</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abraham</forename><surname>Padalkar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Acorn</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Agrim</forename><surname>Pooley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ajinkya</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Jain</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="6892" to="6903" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">Egoverse: An egocentric human dataset for robot learning from around the world</title>
+		<author>
+			<persName><forename type="first">Ryan</forename><surname>Punamiya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Simar</forename><surname>Kareer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zeyi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Josh</forename><surname>Citron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ri-Zhao</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiongyi</forename><surname>Cai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexey</forename><surname>Gavryushin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiaqi</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Davide</forename><surname>Liconti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lawrence</forename><forename type="middle">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2604.07607</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">AnyTeleop: A general vision-based dexterous robot arm-hand teleoperation system</title>
+		<author>
+			<persName><forename type="first">Yuzhe</forename><surname>Qin</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Yang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Binghao</forename><surname>Huang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Van Wyk</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Su</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Wei</forename><surname>Chao</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Legato: Cross-embodiment imitation using a grasping tool</title>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">Andy</forename><surname>Mingyo Seo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shenli</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuke</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luis</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Sentis</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/LRA.2025.3535182</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="2854" to="2861" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">Sunday robotics | the helpful robotics company</title>
+		<ptr target="https://www.sunday.ai/,2026" />
+		<imprint>
+			<publisher>Sunday Inc</publisher>
+			<biblScope unit="page" from="2026" to="2030" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies</title>
+		<author>
+			<persName><forename type="first">Tony</forename><surname>Tao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohan</forename><surname>Kumar Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jason</forename><forename type="middle">Jingzhou</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="DOI">10.15607/RSS.2025.XXI.075</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems<address><addrLine>LosAngeles, CA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2025-06">June 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<title level="m" type="main">Changing the future through gentle touch</title>
+		<author>
+			<persName><forename type="first">Toyota</forename><surname>Frontier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Research</forename><surname>Center</surname></persName>
+		</author>
+		<ptr target="https://global.toyota/en/mobility/frontier-research/44105171.html" />
+		<imprint>
+			<date type="published" when="2026">2026</date>
+			<biblScope unit="page" from="2026" to="2031" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<ptr target="https://www.universal-robots.com/,2026" />
+		<title level="m">Collaborative robots from universal robots</title>
+		<imprint>
+			<date type="published" when="2026-05-26">2026-05-26</date>
+		</imprint>
+		<respStmt>
+			<orgName>Universal Robots</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">DexCap: Scalable and portable mocap data collection system for dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Haochen</forename><surname>Shi</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Weizhuo</forename><surname>Wang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Ruohan</forename><surname>Zhang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Karen</forename><surname>Liu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m" type="main">Umi-3d: Extending universal manipulation interface from vision-limited to 3d spatial perception</title>
+		<author>
+			<persName><forename type="first">Ziming</forename><surname>Wang</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2604.14089" />
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<monogr>
+		<title level="m" type="main">Freetacman: Robot-free visuo-tactile data collection system for contact-rich manipulation</title>
+		<author>
+			<persName><forename type="first">Longyan</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Checheng</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jieji</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yufei</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ran</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guoying</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongyang</forename><surname>Li</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Gello: A general, low-cost, and intuitive teleoperation framework for robot manipulators</title>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yide</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhongke</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xingyu</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="12156" to="12163" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">6dls: Modeling nonplanar frictional surface contacts for grasping using 6-d limit surfaces</title>
+		<author>
+			<persName><forename type="first">Jingyi</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tamay</forename><surname>Aykut</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daolin</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eckehard</forename><surname>Steinbach</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="2099" to="2116" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Dexumi: Using human hand as the universal manipulation interface for dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">Mengda</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Han</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yifan</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenjia</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linxi</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuela</forename><surname>Veloso</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="437" to="459" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Extensible robot teaching system with actionaware task-agnostic tactile representation</title>
+		<author>
+			<persName><forename type="first">Yue</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Litao</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pengyu</forename><surname>An</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingyu</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong-Lu</forename><surname>Li</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="2536" to="2554" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<title level="m" type="main">Activeumi: Robotic manipulation with active perception from robot-free human demonstrations</title>
+		<author>
+			<persName><forename type="first">Qiyuan</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chengmeng</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jude</forename><surname>St John</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhongyi</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junjie</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guorui</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yichen</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Xu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2510.01607</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">Tony</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems XIX</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Fastumi: A scalable and hardware-independent universal manipulation interface with dataset</title>
+		<author>
+			<persName><forename type="first">Zhaxizhuom</forename><surname>Zhaxizhuoma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kehui</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuyue</forename><surname>Guan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhongjie</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ziniu</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xin</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tianyu</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuai</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pengan</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pingrui</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="3069" to="3093" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Touch in the wild: Learning fine-grained manipulation with a portable visuo-tactile gripper</title>
+		<author>
+			<persName><forename type="first">Xinyue</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Binghao</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunzhu</forename><surname>Li</surname></persName>
+		</author>
+		<ptr target="https://openreview.net/forum?id=WabVVQKTUF" />
+	</analytic>
+	<monogr>
+		<title level="m">The Thirty-ninth Annual Conference on Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,2024 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">CoinFT: A Coin-Sized, Capacitive 6-Axis Force Torque Sensor for Robotic Applications</title>
+				<funder>
+					<orgName type="full">Meta Reality Labs Research, Toyota Research Institute</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Kwanjeong Fellowship</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Hojung</forename><surname>Choi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jun</forename><forename type="middle">En</forename><surname>Low</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Tae</forename><forename type="middle">Myung</forename><surname>Huh</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">University of California Santa Cruz</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Seongheon</forename><surname>Hong</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Gabriela</forename><forename type="middle">A</forename><surname>Uribe</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kenneth</forename><forename type="middle">A W</forename><surname>Hoffmann</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Julia</forename><surname>Di</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Tony</forename><forename type="middle">G</forename><surname>Chen</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="institution">Georgia Institute of Technology</orgName>
+								<address>
+									<region>GA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Andrew</forename><forename type="middle">A</forename><surname>Stanley</surname></persName>
+							<affiliation key="aff3">
+								<orgName type="institution" key="instit1">Reality Labs Research</orgName>
+								<orgName type="institution" key="instit2">Meta Platforms Inc</orgName>
+								<address>
+									<region>WA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mark</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+								<address>
+									<region>CA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">CoinFT: A Coin-Sized, Capacitive 6-Axis Force Torque Sensor for Robotic Applications</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">3E688CBA63D18A8E135B56C88A343687</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Force and Tactile Sensing, Sensor Design, Force Control, Perception for Grasping and Manipulation Fx,y: 2 N Fz: 1 N Mx,y: 100 mN</term>
+					<term>m Mz: 4 mN</term>
+					<term>m Fx: 0.991 Fy: 0.996 Fz: 0.875 Mx: 0.997 My: 0.998 Mz: 0.902 300 mN</term>
+					<term>m Full-scale error: F x: 0.92% F y: 0.83% F z: 1.57% M x: 2.8% M y: 2.1% M z: 3.4% 200 Hz (sampling) &lt;5 Hz 200 mN</term>
+					<term>m Fx: 0.990 Fy: 0.993 Fz: 0.560 Mx: 0.995 My: 0.991 Mz: 0.923 Fx,y: 5 N Fz: 15 N Mx,y: 100 mN</term>
+					<term>m Mz: 80 mN</term>
+					<term>m Fx: 0.983 Fy: 0.983 Fz: 0.998 Mx: 0.988 My: 0.987 Mz: 0.989</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>We introduce CoinFT, a capacitive 6-axis force / torque (F / T) sensor that is compact, light, low-cost, and robust with an average root-mean-squared error of 0.16 N for force and 1.08 mN•m for moment when the input ranges from 0∼14 N and 0∼5 N in normal and shear directions, respectively. CoinFT is a stack of two rigid PCBs with combshaped electrodes connected by an array of silicone rubber pillars. A microcontroller interrogates the electrodes in different subsets in order to enhance sensitivity for measuring 6-axis F / T. The combination of features of CoinFT enables various contact-rich robot interactions across different embodiment domains including drones, robot end-effectors, and wearable haptic devices. We demonstrate the utility of CoinFT through two representative applications: a multi-axial contact-probing experiment in which a CoinFT mounted beneath a hemispherical fingertip measures 6-axis force and torque representative of manipulation scenarios, and a force-control task on a drone. The design, fabrication, and firmware of CoinFT are open-sourced at: <ref type="url" target="https://coin-ft.github.io/">https://coin-ft.github.io/</ref>.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>P RECISE force and torque measurement is vital for robots to perform contact-rich tasks safely and effectively. Tasks such as table wiping <ref type="bibr" target="#b0">[1]</ref>, assembly <ref type="bibr" target="#b1">[2]</ref>, or palpating soft tissue <ref type="bibr" target="#b2">[3]</ref> require the application of force and torque within a specific range-sufficient to complete the task but not excessive, as to cause damage or waste energy. Depending on the application and interaction type, robots performing contact-rich tasks come in various forms, including robotic arms <ref type="bibr" target="#b3">[4]</ref>, grippers <ref type="bibr" target="#b4">[5]</ref>, drones <ref type="bibr" target="#b5">[6]</ref>, and wearable devices <ref type="bibr" target="#b6">[7]</ref>. Therefore, it is highly desirable to develop a compact and low cost solution that can serve a wide variety of applications.</p><p>Extensive research has been dedicated to developing 6axis force / torque (F / T) sensors using various transduction methods <ref type="bibr" target="#b7">[8]</ref>. Commercially available sensors also exist, such as the Gamma™ (ATI Industrial Automation), and 6-axis F / T sensors from MinebeaMitsumi™ or ReSense™. However, these sensors are challenging to adopt across different robotic platforms, particularly those requiring both robustness and small, slim form factors. For example, while commercial sensors can be compact and lightweight, they are often too fragile to reliably withstand impacts from drone crashes or incidental contact on an end-effector. Their thickness also adds unnecessary bulk to haptic devices, making them cumbersome. Additionally, the cost of these sensors can be prohibitive, especially when attempting to sensorize multiple fingers of anthropomorphic robot hands such as the Leap hand <ref type="bibr" target="#b8">[9]</ref>. Other sensors that are robust and more affordable tend to be bulky <ref type="bibr" target="#b9">[10]</ref>, limiting their applicability in compact platforms.</p><p>In this paper, we introduce CoinFT, a capacitive 6-axis F / T sensor the size of a US quarter dollar, weighing 2 g (Fig. <ref type="figure" target="#fig_11">1 (a)</ref>), with a material cost of less than $ 11 (Table <ref type="table" target="#tab_3">II</ref>). CoinFT combines the aforementioned desirable features, unlocking various contact-rich robot interactions in unstructured environments.</p><p>We demonstrate CoinFT's 6-axis sensing capability through a contact-probing experiment, where a 7-DoF robotic arm applies controlled 6-axis F / T on a fingertip-mounted CoinFT. This setup demonstrates CoinFT's suitability for manipulation scenarios while maintaining a compact fingertip-scale form factor.</p><p>Another promising application for CoinFT is on drones performing forceful interactions with the environment. Drones have previously executed contact-rich tasks without force feedback <ref type="bibr" target="#b10">[11]</ref> in controlled scenarios or through careful human teleoperation <ref type="bibr" target="#b5">[6]</ref>. While force sensors have been demonstrated in such tasks, their size, weight, and fragility make them unsuitable for unstructured environments <ref type="bibr" target="#b11">[12]</ref>. CoinFT's design addresses these challenges, making it a viable solution for drones operating in environments where large impulses from contact or crashes are common. Its lightweight nature minimally impacts drone operation time, and its compact size facilitates easy integration into even small drones. In this work, we demonstrate the use of CoinFT on a drone for contact modulation through PID force control and the deployment of objects onto environmental surfaces by applying a controlled range of force.</p><p>The contributions of this paper are as follows:</p><p>• The design, fabrication and characterization of CoinFT and an explanation of the principles it utilizes to achieve its performance. Given the role of forces in contact-rich tasks, significant research has focused on developing multi-axial F / T sensors using diverse transduction methods, including piezoresistive, capacitive, optical, magnetic, and pneumatic techniques <ref type="bibr" target="#b7">[8]</ref>. Among these, piezoresistive approaches have been the most extensively explored, typically involving the attachment of multiple strain gauges to precisely machined structures, commonly designed as cross-beam or parallel structures <ref type="bibr" target="#b7">[8]</ref>. Piezoresistive sensing offers precise measurement capabilities with a high signal-to-noise ratio (SNR), facilitated by strain gauges and circuitry optimized for SNR amplification <ref type="bibr" target="#b12">[13]</ref>. The availability of compact electronics and advanced machining techniques has also enabled the fabrication of compact sensors, which is why commercially available 6-axis F / T sensors predominantly utilize piezoresistive technology (e.g. MinebeaMitsumi™and ReSense™). However, these sensors are often fragile and susceptible to impact, which can result in plastic deformation or even failure of the sensing medium <ref type="bibr" target="#b13">[14]</ref>.</p><p>Capacitive sensing is another widely adopted approach for designing 6-axis F / T sensors, valued for its potential to achieve a compact form factor while maintaining high sensitivity <ref type="bibr" target="#b7">[8]</ref>. Compared to piezoresistive sensors, capacitive sensors can be simpler to fabricate. Multi-axis F / T sensing via capacitive methods is typically achieved in one of two ways. The first uses a single layer of sensing electrodes integrated with specially designed structures that deform to produce distinct signal patterns upon loading <ref type="bibr" target="#b15">[16]</ref>, <ref type="bibr" target="#b18">[19]</ref>, <ref type="bibr" target="#b19">[20]</ref>. However, such single-layer designs often require complex fabrication processes and specialized equipment for custom machining or microstructuring, which limits scalability. The second approach employs multi-layer electrode stacks, where each layer responds to specific subsets of forces and torques to generate distinguishable signal patterns <ref type="bibr" target="#b20">[21]</ref>. While effective, these architectures introduce additional fabrication complexity and can be bulkier, making them less suitable for applications that require compactness. The CoinFT design draws inspiration from multi-layer capacitive architectures but achieves 6-axis capability using a single pair of sensing PCBs (printed circuit boards) through a mode-switching and sampling strategy, as discussed in Section III-A. Optical sensing methods have been employed in the design of multi-axis F / T sensors by controlling the scattering or reflection of light within the system <ref type="bibr" target="#b21">[22]</ref>. These methods can be broadly categorized into light intensity sensing <ref type="bibr" target="#b22">[23]</ref>, sensing based on optical fibers with Fiber Bragg Gratings (FBGs) <ref type="bibr" target="#b23">[24]</ref>, and vision-based techniques. In traditional optical methods, variations in reflected light intensity at multiple locations are converted into measurements of force and torque <ref type="bibr" target="#b22">[23]</ref>. FBGbased sensing employs fibers embedded in areas of higher strain within the sensor body, functioning similarly to strain gauges to precisely measure deformation <ref type="bibr" target="#b23">[24]</ref>. Vision-based tactile sensing involves using a compact camera to observe the deformation of an elastic medium, often a robot fingertip, upon contact <ref type="bibr" target="#b17">[18]</ref>, <ref type="bibr" target="#b24">[25]</ref>, <ref type="bibr" target="#b25">[26]</ref>. A recently popularized approach for force and torque sensing involves monitoring the deformation of specially patterned silicone rubber fingertips and employing data-driven models to infer the applied force and torque <ref type="bibr" target="#b17">[18]</ref>, <ref type="bibr" target="#b26">[27]</ref>, <ref type="bibr" target="#b27">[28]</ref>. Another method involves tracking the movement of a visual cue with a camera to deduce the load <ref type="bibr" target="#b28">[29]</ref>, <ref type="bibr" target="#b29">[30]</ref>. Alternatively, gel deformation patterns can be remotely observed through an optical fiber, enabling the decoupling of the silicone gel from the sensing camera <ref type="bibr" target="#b30">[31]</ref>.</p><p>Other, less explored approaches in the design of multi-axial F / T sensors include piezoelectric <ref type="bibr" target="#b31">[32]</ref>, magnetic <ref type="bibr" target="#b32">[33]</ref>, <ref type="bibr" target="#b33">[34]</ref>, and pneumatic methods <ref type="bibr" target="#b9">[10]</ref>. While piezoelectric effects have been utilized in these sensors, their susceptibility to charge leakage makes them less ideal for measuring static loads. Magnetic sensing techniques, which involve strategically positioning magnets and Hall effect sensors to detect forces and torques across six axes, have also been explored <ref type="bibr" target="#b32">[33]</ref>. However, magnetic sensing is inherently vulnerable to external noise sources, such as the Earth's magnetic field or nearby ferromagnetic objects. Additionally, similar design principles have been applied in pressure sensors, where differential patterns are created using an array of barometers <ref type="bibr" target="#b9">[10]</ref>.</p><p>Among the various 6-axis F/T sensors reported in prior work, Table <ref type="table" target="#tab_1">I</ref> compares representative designs that emphasize compact form factors and relatively low cost, including both research prototypes and commercial devices. CoinFT combines several desirable attributes such as compact and low-profile design, reasonable accuracy across all six axes, mechanical robustness, and affordability, within a single platform. This balance of performance and practicality enables a wide range of robotic applications, including wearable haptic interfaces <ref type="bibr" target="#b6">[7]</ref>, <ref type="bibr" target="#b34">[35]</ref>, <ref type="bibr" target="#b35">[36]</ref>, dexterous manipulation <ref type="bibr" target="#b36">[37]</ref>, <ref type="bibr" target="#b37">[38]</ref>, and drone-based interaction tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Contact Based Interaction of Drones</head><p>As described in Section V-B, one of the motivating applications of CoinFT in this paper is contact force control with a drone or unmanned aerial vehicle (UAV). Research has addressed the problem of allowing drones to interact with their environment through controlled and sustained contact, such as in perching <ref type="bibr" target="#b38">[39]</ref> or performing tasks that require contact modulation <ref type="bibr" target="#b39">[40]</ref>. Studies have investigated various applications, such as maintaining a consistent contact force while changing position using hybrid position-force controllers <ref type="bibr" target="#b40">[41]</ref>, analyzing surface textures by combining load cells with vision-based tactile sensors <ref type="bibr" target="#b11">[12]</ref>, and attaching objects to surfaces with custom-designed mechanisms <ref type="bibr" target="#b41">[42]</ref>. However, the load cells used in these studies, typically commercial 6-axis F / T sensors, present challenges for real-world integration due to their high cost, fragility, and bulky readout electronics. In contrast, CoinFT, with its lightweight, compact design, robustness, and affordability, is ideally suited for drone applications.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. COINFT DESIGN AND FABRICATION</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. CoinFT Design</head><p>CoinFT is a capacitive 6-axis force / torque sensor with a circular sensing area 20 mm in diameter, an overall thickness of approximately 2 mm, and a total weight of 2 g, giving it a footprint comparable to a U.S. quarter-dollar coin (Fig. <ref type="figure" target="#fig_11">1 (a)</ref>). As shown in Fig. <ref type="figure" target="#fig_11">1 (b</ref>) and (c), it consists of two 0.8 mm thick rigid PCBs connected by an array of 127 µm tall cylindrical pillars cast from silicone rubber (TAP ® Silicone RTV Mold-Making System). Solid pillars were selected as they provide favorable sensitivity in both normal and shear directions without compromising bandwidth as some porous dielectrics do <ref type="bibr" target="#b42">[43]</ref>, <ref type="bibr" target="#b43">[44]</ref>. Silicone rubber was chosen as the pillar material because alternatives such as polyurethane exhibit higher viscoelastic damping and reduced bandwidth <ref type="bibr" target="#b44">[45]</ref>- <ref type="bibr" target="#b47">[48]</ref>. The radial density of pillars increases towards the edge of the PCB for improved strength against delamination. We employ a dense array of sub-millimeter pillars to retain sensitivity. Wider structures will increase effective stiffness of the pillar layer, as discussed in Section IV-A.</p><p>Each PCB is multilayered, with four quadrants of a pair of comb-shaped electrodes (Fig. <ref type="figure" target="#fig_11">1 (b)</ref>) on one side and a single electrode for passive shielding on the other side (Fig. <ref type="figure" target="#fig_11">1 (c)</ref>). For the upper sensing layer, the quadrants are arranged to create eight individually addressable electrodes. The lower layer is also patterned in four quadrants, but with two individually addressable electrodes (Fig. <ref type="figure">2</ref>). These electrodes route to the on-board microcontroller (Cypress, PSoC TM 4100S), whose internal analog switches connect each electrode either to the capacitance-to-digital conversion (CDC) module or to a fixed ground or shield potential (Fig. <ref type="figure">2 (a)</ref>). By reconfiguring these connections in firmware, a single pair of PCBs becomes sensitive to 6-axis force and torque, as detailed in Section III-B. A top shield layer made of a 127µm thick fPCB (flexible printed circuit board) is added to provide additional passive shielding from external noise (Fig. <ref type="figure" target="#fig_11">1 (b),</ref><ref type="figure">(c)</ref>). Each PCB layer has alignment tabs on its sides, which are removed during the final stages of fabrication.</p><p>An electronics tab (10 mm × 11 mm) attached to the side of the circular sensing area houses the electronics necessary for capacitance sensing (Fig. <ref type="figure" target="#fig_11">1 (b)</ref>). The microcontroller, with external capacitors, measures and converts capacitance to digital counts using its native capacitance-to-digital conversion (CDC) module with an overall sampling rate of 360 Hz. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Shear Mode Normal Mode</head><p>No Input Shear Force Signals can be acquired by other devices through direct serial communication or USB ports through a serial to USB converter, such as a PSoC TM KitProg2, with a latency of 2 ms on average.</p><formula xml:id="formula_0">X1 X2 X3 X4 Normal Force X1 X2 Y1 Z2 Z1 Z4 Z3 Y2 X3 X4 Y3 Y4 Moment Z2 Z1 Z3 Z4 X1 X2 Y1 Y2 X3 X4 Y3 Y4 Moment Y1 Y2 X4 X3 Y3 Y4 X1 X2 Ground Shield Z1 Z2 Z3 Z4 X1 X2 X3 X4 Y1 Y2<label>Y3</label></formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Working Principle</head><p>CoinFT measures 6-axis force and torque by observing the changes in capacitance signal patterns between the upper sensing layer and the lower sensing layer (Fig. <ref type="figure" target="#fig_0">1</ref>). Capacitance is expressed as:</p><formula xml:id="formula_1">C = εA d<label>(1)</label></formula><p>where C is capacitance, ε is the dielectric constant, A is the overlapping area of the electrodes, and d is the distance between the electrodes. The microcontroller firmware is programmed to switch the pair of rigid PCBs between two different electrode configurations every sampling sequence: Normal Mode and Shear Mode. As shown in Fig. <ref type="figure">2</ref> (a), each electrode is wired to a set of analog switches inside the microcontroller. Toggling these switches connects an electrode to the CDC module through the analog bus, ties it to ground, or drives it as an active shield. Selecting a different switch pattern therefore reconfigures the same physical electrodes into a different logical sensing arrangement with no change in hardware, a technique similar to that employed by Huh et al. <ref type="bibr" target="#b18">[19]</ref>.</p><p>In Normal Mode, electrodes in each quadrant in the upper sensing layer are internally connected to function as a single electrode, effectively reducing the eight electrodes to four: Z1, Z2, Z3, and Z4 (Fig. <ref type="figure">2</ref>). The two electrodes in the lower sensing layer are both reconfigured to connect to ground, leaving the shield inactive in this mode. At the instant depicted in Fig. <ref type="figure">2</ref> (a) for Normal Mode, the Z1 electrodes in the upper right quadrant are tied together and read with respect to ground; the other electrodes are disconnected. Subsequently the Z2, Z3 and Z4 electrodes will be read in the same way to complete Normal Mode readings for F z , M x and M y .</p><p>Referring to <ref type="bibr" target="#b0">(1)</ref>, this design allows the Normal Mode to be sensitive to inputs that change d, such as F z , M x , and M y , but not to changes in A, which result from F x , F y , and M z . Under F z , all Normal Mode electrodes (Z1, Z2, Z3, and Z4) show a rise in signal, while under M x or M y , a differential pattern between pairs of Normal Mode electrodes is created (Fig. <ref type="figure">2 (b)</ref>).</p><p>In Shear Mode, electrodes in the upper sensing layer are kept as independent sensing electrodes (X1, X2, X3, X4, Y 1, Y 2, Y 3, and Y 4), while the electrodes in the lower sensing layer are configured such that the ground and shield electrodes form an alternating pattern (Fig. <ref type="figure">2</ref>). The shield electrode actively mitigates interference from stray capacitance by being excited to the same electrical potential as the sensing electrodes, an innate capability of PSoC TM 4100S. This design allows Shear Mode to be sensitive primarily to shear inputs such as F x , F y , and M z . Under a shear load, the relative position of the upper sensing layer and the lower layer shifts laterally, changing A between a sensing electrode and ground electrode. Due to the negligible capacitance formation between a sensing electrode and a shield electrode, the relative position change results in a differential signal pattern in Shear Mode. At the instant depicted in Fig. <ref type="figure">2</ref> (a) for Shear Mode, the X1 electrodes are read with respect to the alternating ground and shield lines, while the remaining electrodes are disconnected. The X2-X4 and Y1-Y4 electrodes are then read in the same way to complete the Shear Mode scan.</p><p>The comb-shaped electrodes are populated in a way that allows the first and third quadrant of the Shear Mode to be sensitive to loads in the X direction, while the second and fourth quadrants are sensitive to the Y direction. Under torsion (M z ), all four quadrants in Shear Mode show a differential signal pattern. Unlike Normal Mode configuration where there is negligible cross-modal sensitivity by design, there is crosscoupling in Shear Mode configuration. This is resolved in our calibration, as discussed in detail in Section IV-B. The unique signal pattern generated from the Normal and Shear Mode configurations upon loads in different axes makes CoinFT a 6-axis F / T sensor.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Sensor Fabrication</head><p>CoinFT is fabricated using the process illustrated in Fig. <ref type="figure" target="#fig_1">3</ref>. A 127 µm polyimide film pillar mask cut by a UV laser cutter (DPSS Lasers Inc., Samurai UV Marking System) is placed on an acrylic plate using dowel pins for alignment. Vacuum degassed uncured silicone rubber (TAP ® Silicone RTV Mold-Making System) is smeared on the surface of the mask to fill the cavities for pillars (Fig. <ref type="figure" target="#fig_1">3 (a)</ref>). Then, the lower sensing layer PCB, primed using DOWSIL TM PR-1200 RTV Primer for enhanced adhesion, is aligned and placed on the pillar mask. Another acrylic plate is placed on the assembly for equal pressure distribution and a 3.1 kg mass is added for 3 minutes to minimize the thickness of the base layer of the silicone pillars (Fig. <ref type="figure" target="#fig_1">3 (b)</ref>). The 3 kg mass is removed, and the pillar assembly, with a 100 g mass added, is cured inside a pressure chamber for at least 12 hours at approximately 414 kPa to compress any remaining micro-bubbles inside the silicone rubber (Fig. <ref type="figure" target="#fig_1">3 (c)</ref>). Once the acrylic plates and the pillar mask are removed, the pillar layer is complete (Fig. <ref type="figure" target="#fig_1">3  (d),</ref><ref type="figure">(e)</ref>).</p><p>On the upper sensing layer PCB, after the microcontroller and the electrical components are hand-soldered, the sensing area is primed and applied with vacuum degassed uncured silicone rubber (Fig. <ref type="figure" target="#fig_1">3 (f)</ref>). Then, the silicone layer is spincoated at 5000 rpm for 75 seconds to achieve a uniform and thin layer (Fig. <ref type="figure" target="#fig_1">3 (g)</ref>). The pillar layer is attached to the upper sensing layer PCB with a 203 µm polyimide film spacer in between, to control the distance between the two PCBs. A 100 g mass and an acrylic plate are placed on top of the assembly to apply equally distributed pressure, ensuring that the pillars and the spun silicone layer are in contact (Fig. <ref type="figure" target="#fig_1">3</ref> (h)). The assembly is then cured inside a 65 °C oven for 72 hours. After the alignment pins and spacers are removed, the top shield layer fPCB is adhered to the other side of the upper sensing layer PCB using an adhesive (Henkel Corporation,  Loctite 401 Instant Adhesive) (Fig. <ref type="figure" target="#fig_1">3</ref> (i)). A horizontal crosssection of the pillar assembly under a microscope is shown in Fig. <ref type="figure" target="#fig_1">3</ref> (j). The total cost of all components is approximately $11, without scaled production (Table <ref type="table" target="#tab_3">II</ref>).</p><formula xml:id="formula_2">Silicone Rubber (a) (b) (c) (d) (e) (f ) (g) (h) (i) (j)</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. COINFT CHARACTERIZATION</head><p>We characterize CoinFT in four stages. We first develop a finite element analysis (FEA) model of the pillar array and validate it against measured normal force response (Section IV-A). We then calibrate the sensor and report its 6axis accuracy (Section IV-B). We next examine how the pillar geometry can be tuned to trade sensitivity against dynamic range for different applications (Section IV-C). Finally, we characterize operating behavior relevant to deployment, such as mechanical bandwidth, thermal drift and its compensation, and robustness to impact (Section IV-D).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Modeling</head><p>A quantitative analysis using FEA and real sample testing has been conducted to understand the behavior of CoinFT. The FEA involved a structural analysis using ANSYS (Fig. <ref type="figure" target="#fig_2">4</ref> (a)) to investigate the deformation of the pillar array under different loading conditions, and an electrostatics analysis in COMSOL (Fig. <ref type="figure" target="#fig_2">4 (b)</ref>), to study the change in capacitance in the sensing electrodes resulting from pillar deformation. The pillar was modeled using a linear elastic constitutive law with the large deformation option enabled to account for geometric nonlinearities. This choice provided a practical balance between computational cost and model fidelity, as a comparison with a hyperelastic (Neo-Hookean) model showed less than 5% difference in predicted strain within the operating range. The Gent model <ref type="bibr" target="#b48">[49]</ref> was applied to convert the Shore hardness of the silicone rubber into Young's modulus. With the assumption that the silicone rubber is incompressible, the effective Young's modulus of each pillar was derived using a disk model of an elastomer bonded between two plates, as modeled by Haddow and Ogden <ref type="bibr" target="#b49">[50]</ref>, shown in ( <ref type="formula">2</ref>):</p><formula xml:id="formula_3">E e = E(1 + 1 2 η -2 ) (2)</formula><p>where E e is the effective Young's modulus, E is the Young's modulus of the material, and η is the ratio between the height and radius of the pillars. The dielectric constant of the silicone rubber was assumed to be 3.0, a common value for silicone rubber <ref type="bibr" target="#b50">[51]</ref>, while the dielectric constant of air was taken as 1.0. In order to verify the reliability of our FEA model, we compared the real and simulated response of CoinFT to normal force (Fig. <ref type="figure" target="#fig_2">4 (d)</ref>), where the load for the real sample was given up to 10 N at 0.1 Hz. The FEA model closely matched the actual sample response, accurately capturing the stiffening effects due to pillar deformation at higher loads, and effectively representing the behavior of CoinFT (Fig. <ref type="figure" target="#fig_2">4 (c),</ref><ref type="figure">(d)</ref>). The same model was used to study the trends in sensor behavior under shear and torsional loading with varying pillar geometry (Fig. <ref type="figure" target="#fig_2">4</ref> (e), (f)). </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Calibration and Accuracy</head><p>Based on the working principle from Fig. <ref type="figure">2</ref>, CoinFT produces a distinguishable signal pattern from its 12 sensing electrodes (4 Normal Mode, 8 Shear Mode) under different force and torque loads. The simulated sensor response (Fig. <ref type="figure" target="#fig_2">4</ref> (g)-(i)) shows the distinguishable signal patterns under ideal alignment and distance of the upper and lower sensing layer PCBs.</p><p>For sensor calibration, CoinFT is rigidly mounted on a reference sensor (ATI Industrial Automation, Gamma) which provides ground truth force and torque information, while a combination of different loads are given from a human finger. CoinFT and the reference sensor are loaded simultaneously and measure the same applied wrench, so the data-driven calibration directly maps CoinFT's capacitance signals onto the Gamma's force and torque. Because these loads are applied manually at low rates, far slower than the pillar layer's mechanical response (characterized in Section IV-D), transient material dynamics have little effect, and the calibration captures a consistent load-signal relationship.</p><p>Ten trials, each consisting of 35 seconds of data, are used for training, and one additional trial of the same length is reserved for testing. A second-order least-squares regression is employed to map the raw capacitance signals to the corresponding force and torque values. Let X ∈ R 24×N denote the feature matrix containing the first-and second-order capacitance terms from N samples, and let Y ∈ R 6×N denote the corresponding reference forces and torques. The calibration   matrix A ∈ R 6×24 is obtained by solving the normal equation.</p><p>The calibration results on the test set are shown in Fig. <ref type="figure" target="#fig_4">5</ref>, and the root mean square error (RMSE) and R 2 values are provided in Table <ref type="table" target="#tab_3">III</ref>. The noise-free resolution of CoinFT, computed as the RMS of the calibrated output under zero-load conditions, is approximately 20 mN in force and 0.2 mN•m in torque. The 8 Shear Mode electrodes respond to inputs causing change in distance, F z , M x , and M y , between the electrodes and the ground electrode (Fig. <ref type="figure" target="#fig_2">4</ref> (g)). While it is possible to calibrate the sensor using only the Shear Mode electrodes, the redundancy added by the high signal-to-noise ratio (SNR) of the Normal Mode signals significantly increases calibration accuracy, as shown in Table <ref type="table" target="#tab_3">III</ref>. As expected, the increase in accuracy is more significant for F z , M x , and M y .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Sensitivity and Dynamic Range Tuning</head><p>Different robotic applications require varying sensor dynamic range, sensitivity, and accuracy. For instance, fine control of a fingertip-mounted haptic device <ref type="bibr" target="#b35">[36]</ref> requires high sensitivity to small forces within a dynamic range under 4 N in the normal direction, whereas an instrumented probe for ultrasound scans might require sustained loads of 20 ∼ 40 N <ref type="bibr" target="#b51">[52]</ref> and an instrumented tool for physiotherapy manipulation might require 100 ∼ 200 N-with correspondingly less emphasis on sensitivity to small forces <ref type="bibr" target="#b52">[53]</ref>, <ref type="bibr" target="#b53">[54]</ref>. The design of the pillar layer can be adjusted to alter its mechanical properties, meeting the specific requirements of different applications.</p><p>The effect of varying pillar diameter on sensor response is illustrated in Fig. <ref type="figure" target="#fig_2">4 (c)-(f</ref>). Both experimental and FEA results demonstrate a gradual decrease in sensitivity under normal load (Fig. <ref type="figure" target="#fig_2">4 (c),</ref><ref type="figure">(d)</ref>). This reduction in sensitivity is attributed to the stiffening of the pillars as they compress. The constrained lateral deformation of the pillars (Fig. <ref type="figure" target="#fig_2">4 (a)</ref>) increases their stiffness, as described in equation <ref type="bibr" target="#b1">(2)</ref>. Given that the sensitivity of the capacitance change to further compression increases as shown in equation ( <ref type="formula" target="#formula_1">1</ref>) and demonstrated in Fig. <ref type="figure" target="#fig_2">4</ref> (c), we note that the stiffening effect is significant. For instance, the quadratic increase of stiffness and sensitivity of capacitance offset each other at lower displacements, resulting in an approximately linear capacitance-force relationship (Fig. <ref type="figure" target="#fig_2">4 (c),</ref><ref type="figure">(d)</ref>). However, the stiffening effect outweighs the increase in capacitance change with higher deformation, explaining the decrease in sensitivity observed in Fig. <ref type="figure" target="#fig_2">4 (d)</ref>.</p><p>The FEA results also illustrate that the sensitivity to changes in capacitance due to normal and shear forces, as well as torsion, is inversely proportional to the cross-sectional area of the pillar array. Conversely, the dynamic range is proportional to the cross-sectional area of the pillar array.</p><p>Additional mechanical parameters that can be adjusted in the pillar layer include the number of pillars, the material selection to alter the Young's modulus, and the arrangement pattern of the pillars. Notably, the torsional stiffness can be fine-tuned while maintaining consistent normal and shear stiffness by modifying the pillar pattern, as this alters the polar moment of inertia without affecting the overall cross-sectional area of the pillar layer. This capability is particularly valuable for applications such as wearable fingertip haptic devices that require high sensitivity of both forces and torque <ref type="bibr" target="#b54">[55]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Operating Characteristics</head><p>Beyond static accuracy, three characteristics affect CoinFT's behavior in deployment: its mechanical bandwidth, sensitivity to temperature, and tolerance to impact.</p><p>1) Dynamic Response: A frequency response analysis has been conducted to investigate the mechanical bandwidth of CoinFT (Fig. <ref type="figure" target="#fig_5">6</ref>). A dual-mode muscle lever (Aurora Scientific Inc., 309C) has been used to provide a sinusoidal force sweep either in the normal or shear directions from 0 Hz ∼ 120 Hz. The force input ranged from 0 N ∼ 2 N in the normal direction and 0.1 N ∼ 1.1 N in the shear direction. As shown in Fig. <ref type="figure" target="#fig_5">6</ref> (a), the magnitude response of CoinFT in the normal direction is kept above 70.7% (-3 dB) of the input signal across the entire swept frequency. The phase lag is negligible up to 2.5 Hz, and gradually increases with higher frequency input where, at 120 Hz, the phase lag is -34.6 °. The magnitude response in the shear direction (Fig. <ref type="figure" target="#fig_5">6 (b</ref>)) starts to deteriorate at 2.45 Hz and reaches 70.7% (-3 dB) of the input signal at 97 Hz. At that point, the phase delay is -94.2 °. The cause of the phase lag is likely due to the innate hysteresis of silicone rubber material, visible in Fig. <ref type="figure" target="#fig_2">4 (d)</ref>. These results show that the mechanical bandwidth of CoinFT is approximately 97 Hz.</p><p>2) Thermal Effects: We investigated the effect of temperature variation and implemented a compensation method using the on-chip temperature sensor of the PSoC. The thermal drift of the raw capacitance signals from all 12 channels was characterized in a temperature-controlled chamber. Across channels, the baseline capacitance drift was approximately 1-3% per 10 • C. This drift profile was modeled using a second-order polynomial fit, achieving R 2 &gt; 0.9992 for all channels. During inference, temperature compensation was performed by subtracting the predicted baseline drift from the raw capacitance signals prior to force/torque estimation. The ablation results under a no-load condition are shown in Fig. <ref type="figure">7</ref>. With temperature compensation, the residual force error remained below 0.4 N and torque error below 1.5 mN•m, whereas without compensation, a clear temperature-dependent drift was observed in the force readings. 3) Robustness: Many robot applications involve incidental large impulses that can potentially damage commercially available 6-axis F / T sensors. Due to the compliance of the pillar arrays, CoinFT demonstrates reliable robustness against impacts. As shown in Fig. <ref type="figure">8</ref> (a), CoinFT can accurately measure small loads of 1 N, 3 N, and 8 N even after sustaining an impact from a hammer that causes a force reading of 180 N. Such an impact would typically damage commercial sensors like the Gamma (ATI Industrial Automation) used for the CoinFT calibration. This level of robustness enables a broader range of robotic interactions beyond controlled environments, making the integration of 6-axis F / T sensors practical for real-world applications.</p><p>To further quantify the sensor's impact resistance, a controlled drop test was conducted using a 0.53 kg chrome steel ball released from a height of 0.63 m, corresponding to an impact velocity of approximately 3.5 m / s and an impact energy of 3.3 J (Fig. <ref type="figure">8 (b)</ref>). Before and after the ten repeated impacts, the CoinFT calibration was validated under a sinu- performance remained consistent, exhibiting a root-meansquared error of 0.055 N and an R 2 value of 0.982 when compared to the reference force. These results confirm that CoinFT maintains its measurement accuracy and structural integrity under repeated high-energy impacts. While CoinFT exhibits strong robustness under compressive loading, it is less robust in the tensile direction, as excessive tensile stress can cause delamination between the silicone pillars and the PCB substrate. Tensile tests conducted on five CoinFT samples showed an average ultimate tensile strength of 2.84 MPa (143 N) with a standard deviation of 1.21 MPa (61 N). Increasing the pillar diameter can increase the absolute tensile force the sensor can withstand, while improved bonding strategies, such as surface treatments or adhesive modification, are expected to further enhance the ultimate tensile strength.</p><p>V. COINFT DEMONSTRATIONS While numerous 6-axis force/torque sensors have been developed, as discussed in Section II, few achieve a balance of compactness, slim form factor, low cost, accuracy, and robustness. This combination of features enables the broader adoption of F/T sensing across diverse robotic platforms. We demonstrate the versatility of CoinFT through a multi-axial contact probing setup that emulates robot fingertip interactions and an example that motivates its integration on drones.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Multi-axial Sensing for Robot Manipulators</head><p>Dexterous manipulation tasks, such as object handling or tool use, often require accurate multi-axial force/torque feedback, particularly when interactions require significant contact forces for success <ref type="bibr" target="#b55">[56]</ref>. For integration on robot fingers, the sensing module must also maintain a compact and slim form factor to avoid drastically altering the hand geometry.</p><p>To evaluate CoinFT's performance in such settings (e.g. as in <ref type="bibr" target="#b36">[37]</ref>), we mounted a CoinFT beneath a robot fingertip with a hemispherical dome and applied varying force and torque along multiple axes using a 7-DoF robotic arm (Flexiv Rizon 4). As shown in Fig. <ref type="figure" target="#fig_7">9</ref> (a), a reference force/torque sensor (ATI Gamma) was positioned beneath CoinFT to provide groundtruth measurements. The resulting data (Fig. <ref type="figure" target="#fig_7">9 (b)</ref>) demonstrate that CoinFT achieves accuracies listed in Table <ref type="table" target="#tab_6">IV</ref>.</p><p>A CoinFT sample with a pillar diameter of 300 µm was used in this experiment to extend the operational range to forces common in dexterous manipulation; up to 30 N in the normal direction and 10 N in shear. As discussed in Section IV-C, increasing the pillar diameter widens the dynamic range at the cost of reduced sensitivity to smaller forces, while materialdependent characteristics such as mechanical bandwidth remain unchanged. This configuration also increases the tensile limit, improving robustness during manipulation tasks that may involve considerable tensile stresses due to moments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Contact Force Modulation of Aerial Vehicles</head><p>Drones offer unique capabilities for performing contactrich tasks in environments that are difficult or dangerous for humans, such as collecting biological samples from cliffs <ref type="bibr" target="#b5">[6]</ref>   or cleaning vertical surfaces <ref type="bibr" target="#b56">[57]</ref>. However, most drones lack reliable contact sensing due to the fragility, weight, and high cost of conventional force sensors. Without such feedback, maintaining stable contact or regulating interaction forces is challenging, often resulting in unsafe or inconsistent behaviors.</p><p>CoinFT addresses these limitations through its compact (20 mm diameter, 2 mm thickness), lightweight (2 g, or 6.7 g including wiring and electronics), and impact-tolerant design. In this section, we demonstrate that a drone equipped with  CoinFT and a simple PID-based force controller can stably perform contact interactions, such as pressing and attaching a payload onto a surface. This experiment highlights the ease of integrating CoinFT on aerial platforms. Given its low cost and mechanical resilience, the sensor can withstand, or be inexpensively replaced after, crashes that are common in drone operations.</p><p>While only normal force feedback was utilized in this demonstration, CoinFT's 6-axis sensing capability may enable a broader range of aerial manipulation tasks, such as sliding, scraping, or compliant alignment that would not be feasible without multi-axial sensing.</p><p>1) Drone with CoinFT: Our drone is a 127 mm frame quadrotor with an UP Board companion computer and a PixRacer flight controller (Fig. <ref type="figure" target="#fig_9">10</ref>). CoinFT is attached at the distal tip of a custom mount, which is connected in series with the proximal mount through a telescoping mechanism with rubber bands (Fig. <ref type="figure" target="#fig_11">10 (c)</ref>). The compliant element in series helps to reduce impact upon contact and simplify control. CoinFT is connected to the UP Board computer through a USB port. A socket is attached at the top of CoinFT which allows mounting different end-effectors for different tasks, such as a round tip for general contact or a package of electronics (Fig. <ref type="figure" target="#fig_9">10</ref>  parallel to control a strip of LEDs to signal successful package deployment. Pressure sensitive adhesives are attached at the corners on the top side of the package. Since the package is not mechanically attached to the socket, the package will attach to a surface once sufficient pressure provides the necessary adhesion.</p><p>2) Attitude Controller for Contact: To simulate an unstructured environment, we designed a controller for the quadrotor that does not explicitly know the height of a contact surface, thus relying on CoinFT not only to execute force modulation but also to find the contact surface.</p><p>Given that the focus here is control with respect to contact, we simplify the navigation aspect of the control problem by providing the drone with accurate estimates of its pose and orientation via an external motion capture system. We then use this as feedback to track a minimum snap trajectory spline <ref type="bibr" target="#b57">[58]</ref> to a region near the contact surface. We do not provide the drone with the actual height of the contact surface. Instead, our policy will search through a range of heights within which we are confident that the contact surface exists and transform it into a sequence of desired positions (p des ), velocities (v des ) and orientations (q des ), for our controller to track while it searches for contact.</p><p>We interface with the PixRacer at the attitude control level, comprising of a commanded normalized thrust force ( fcmd ) and a commanded orientation (q cmd ). We choose this level of control as it allows us to guarantee that the drone is stationary and perpendicular to the contact surface (through commanded orientation) and gives us direct control of the thrust for force modulation.</p><p>To account for drone flight envelope including both incontact and out-of-contact flight, we use a switching, cascaded PID controller to advance from currently observed states p obs v obs q obs to desired attitude commands u cmd . We start by taking the position and velocity error: e p = p obs -p des , e v = v obs -v des from which we compute a desired force vector while accounting for gravity:</p><formula xml:id="formula_5">F des = -K p e p -K v e v -mg</formula><p>where F des is the desired force, m is the mass of the drone, g is the gravity vector, and (K p , K v ) are positive definite gain matrices that switch between in-contact gains and out-ofcontact gains:</p><formula xml:id="formula_6">K p , K v = K oc p , K oc v if out of contact K ic p , K ic v if in contact</formula><p>Using the quaternion to rotation matrix to basis vector mapping q i ⇐⇒ R i ⇐⇒ x i y i z i on both the desired orientation (q des ) and commanded orientation (q cmd ), we can compute the latter:</p><formula xml:id="formula_7">z cmd = F des ||F des || y cmd = z cmd ×x des || z cmd × x des || x cmd = y cmd ×z cmd</formula><p>To get the commanded normalized thrust force we start by getting a desired normalized thrust ( fdes ). This is done by invoking the quaternion to basis vector mapping to get z obs from q obs and then projecting the desired force vector onto it:</p><formula xml:id="formula_8">f des = F des • z obs fdes = k f f des</formula><p>where k f is the thrust normalization coefficient that can be empirically approximated from prior flights. This is then fed into a state machine (Algorithm 1) for thrust control that switches modes during contact events and tracks desired contact forces using CoinFT feedback. The two key features of the state machine are a linear search function for the contact force and a PID tracking controller. The former enables transitions when the initial desired contact force is large while the latter not only enables us to hold but also track a changing desired contact force. Combined, these allow for more consistent and safer performance. Given an observed force on CoinFT (f oc ), desired force on CoinFT (f dc ) and current time (t cr ) we perform the steps in Algorithm 1 to get the commanded normalized thrust. Assuming compressive force, we use the absolute values of the CoinFT reading in the normal direction.</p><p>The CoinFT feedback data lets us use the state machine to dynamically switch the gain matrices K p , K v where we use the out of contact gains when in FREE state and in contact gains otherwise (Algorithm 1).</p><p>3) Force Controlled Deployment of Objects on Environment Surfaces: To test the designed force controller and perform electronics package delivery tasks, we conducted flight tests. The test setup includes a laser-cut acrylic plate horizontally attached to a structure made of extruded aluminum frames (Fig. <ref type="figure" target="#fig_12">12 (a)</ref>), simulating an environmental surface. The integrated system consists of a ground control station (PC), motion capture system (OptiTrack, NaturalPoint, Inc.), and a drone equipped with a companion computer, flight controller, IMU, e prev ← e curr 20:</p><p>if t cr -t 0 ≥ T then 21:</p><p>break and a CoinFT (Fig. <ref type="figure" target="#fig_10">11</ref>). The proposed attitude controller runs on the companion computer at 20 Hz, providing control inputs to the flight controller, which then converts these inputs into PWM signals for the four motors. The performance of the proposed attitude-based force controller is illustrated in Fig. <ref type="figure" target="#fig_12">12(b)</ref>. A hemispherical contact tip (Fig. <ref type="figure" target="#fig_11">10 (a)</ref>) is mounted on the drone. During the FREE state, the drone ascends until contact is sensed. In the SEARCH state, the thrust is linearly ramped up until a desired contact force is reached, which is initially set by the ground control station. The controller then transitions to the HOLD state, where it tracks a pre-programmed sinusoidal force command. The force controller demonstrates accurate tracking, with an RMS error of 0.1779 N. During flight tests, CoinFT showed no noticeable increase in noise or degradation in signal quality despite the potential electromagnetic interference from the motors <ref type="bibr" target="#b58">[59]</ref>, thanks to its shielding design.</p><p>Using the force controller, the drone can attach electronics packages to environmental surfaces such as a tree branch by applying a range of force-sufficient to complete the task but not sufficient to damage the environment, or expend more energy than required. The electronics package, equipped with pressure-sensitive adhesives and weighing 95 g (Fig. <ref type="figure" target="#fig_11">10 (b</ref>)), is mounted on the drone. Adequate pressure must be applied for the package to adhere securely to a surface. The drone initially hovers below the horizontal surface and ascends until contact is detected. Upon contact, the contact force ramps up to a commanded value of 0.7 N, which registers as approximately 1.7 N in CoinFT due to the package's weight (Fig. <ref type="figure" target="#fig_13">13 (a)</ref>). The drone breaks contact and descends while still sensing approximately 1 N in CoinFT, detecting that the package has not adhered properly (Fig. <ref type="figure" target="#fig_13">13 (b)</ref>). The drone then autonomously increases the desired contact force to 5 N (Fig. <ref type="figure" target="#fig_13">13 (c</ref>)). After applying the higher force, the drone no longer senses the package's weight through CoinFT and sends an ON command to the electronics package via WiFi, activating the LEDs to signal task success (Fig. <ref type="figure" target="#fig_13">13 (d)</ref>). These controlled interactions are valuable for attaching objects, such as sensor packages, to potentially fragile surfaces like tree branches or for performing general force-controlled tasks, such as cleaning windows on tall buildings.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. DISCUSSION &amp; FUTURE WORK</head><p>While this paper demonstrates CoinFT's capabilities in contact probing or drone platforms, the sensor's versatility extends to a wide range of other robotic applications. CoinFT has already been used in wearable haptic devices, where it measures and controls the contact force between the device and the human subject. Sarac et al. <ref type="bibr" target="#b34">[35]</ref> used CoinFT to reveal that people perceive different intensities when the same force is applied in normal versus shear directions. Yoshida et al. <ref type="bibr" target="#b6">[7]</ref> employed CoinFT to ensure consistency in user studies by initializing a haptic device tactor based on contact force rather than position. This approach is crucial for accommodating variations in users' body shapes, as position-based initialization does not consistently deliver uniform haptic feedback.</p><p>CoinFT's slim and compact design also makes it highly suitable for wearable fingertip devices <ref type="bibr" target="#b35">[36]</ref>.</p><p>CoinFT has also been attached to the fingertips of a commercial anthropomorphic robot hand <ref type="bibr" target="#b36">[37]</ref> for learning forceinformed actions from kinesthetic demonstrations. In such a setup, it can sense contact force for controlled, forceful interaction or track the contact point by utilizing force and torque information for intrinsic tactile sensing <ref type="bibr" target="#b59">[60]</ref>. When connected via I 2 C communication, multiple CoinFTs can be integrated to sensorize all fingers at the same 360 Hz sampling rate, enhancing the robot hand's ability to perform fine-manipulation tasks. Its low cost and robustness against incidental impacts make CoinFT particularly desirable for robot hands operating in unstructured and cluttered environments.</p><p>While the current form factor of CoinFT has been designed to showcase its versatility across various robotic platforms such as drones, robot fingertips, and haptic devices, it can be tailored to meet the specific needs of other applications. For example, CoinFT can be made narrower to sensorize compact medical devices <ref type="bibr" target="#b60">[61]</ref>. The tradeoff in this case would be a decrease in sensitivity due to the reduced sensing area. Conversely, CoinFT could be scaled up to fit the form factor of quadruped or humanoid feet, allowing for the measurement of ground reaction forces (GRF). The larger sensing area in this configuration would enable both higher sensitivity and an expanded dynamic range. This would require a careful selection of design parameters to meet the specifications on sensitivity and dynamic range, as discussed in Section IV-C. Moreover, the dual-mode electrode-switching strategy used in CoinFT may also inspire future capacitive tactile sensors for enhancing multi-axial sensitivity, particularly those employing programmable capacitance sensing microcontrollers that permit low-level reconfiguration of electrode connections.</p><p>While CoinFT is versatile and suitable for a wide range of robotic applications, it is not intended as a direct replacement for existing commercial sensors like the Gamma (ATI Industrial Automation). The mechanical bandwidth of CoinFT is an order of magnitude lower than that of the Gamma (1 kHz), making it less capable of detecting highly dynamic contacts. Additionally, the Gamma offers a finer force resolution even with its high dynamic response capabilities.</p><p>Other challenges must be considered when using CoinFT. While shielding has been implemented to prevent the coupling of stray capacitance, the surface-mounted electrodes of the chip remain partially exposed, which can result in imperfect shielding. While elastomer creep can affect signal, its effect is expected to be small in most applications. The silicone rubber used in CoinFT is a tin-cured RTV elastomer with mechanical properties similar to that in <ref type="bibr" target="#b45">[46]</ref>. As noted then, it has low hysteresis and creep in comparison to other elastomers (e.g. urethanes) of similar stiffness. More detailed characterization of similar silicone materials can be found in <ref type="bibr" target="#b46">[47]</ref>, <ref type="bibr" target="#b47">[48]</ref>, <ref type="bibr" target="#b61">[62]</ref>, <ref type="bibr" target="#b62">[63]</ref>. For example, the material in <ref type="bibr" target="#b62">[63]</ref> showed reversible viscoelastic recovery under loads up to 0.5 MPa, which would correspond to ∼32 N on CoinFT-suggesting that no permanent creep or damage occurs after repeated loading. Consequently, in applications that do not sustain a large load for long periods of time, mechanical creep is expected to contribute negligibly to signal drift, and recalibration or sensor replacement will not be required.</p><p>In longer-term deployments, environmental factors beyond temperature, such as humidity, may gradually shift the baseline capacitance signal. In such cases, periodic online re-taring under a known no-load condition can effectively restore measurement accuracy.</p><p>Geometric variations inherent in manual, in-lab fabrication currently necessitate per-sample calibration for each CoinFT prototype. However, transitioning to high-precision massmanufacturing can improve structural consistency, potentially enabling calibration transfer and reducing the requirement for individual unit characterization.</p><p>The current thin PCB is not entirely rigid and could deform out of plane under significant local pressure, potentially reducing calibration accuracy. This issue, however, can be mitigated by using a slightly thicker PCB or bonding a thin layer of stiff material. Despite the limitations, CoinFT remains valuable for many robotic applications where such high precision and bandwidth in a 6-axis F / T sensor are not essential, and where robustness and low cost are prioritized.</p><p>The proposed attitude control strategy is expected to be effective only in the directions where the drone is fully actuated. Through experimentation, we have observed that precise force control in the lateral direction is challenging with a quadrotor due to the coupling between tilt and lateral displacement. However, CoinFT and the proposed controller can be valuable for modulating lateral contact force when using a fully actuated drone <ref type="bibr" target="#b11">[12]</ref>, <ref type="bibr" target="#b40">[41]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VII. CONCLUSION</head><p>In this paper, we introduced CoinFT, a coin-sized capacitive 6-axis F / T sensor composed of a pair of specially designed PCBs connected by an array of silicone rubber pillars. Through a comprehensive characterization, CoinFT has demonstrated a unique combination of compactness, robustness, affordability, and reliable performance. These qualities make it an ideal solution for various robotic applications, including drones, robot hands, and wearable haptic devices, particularly in realworld scenarios where large incidental impulses are common.</p><p>While CoinFT offers considerable versatility, it is not intended as a replacement for commercially available 6-axis F / T sensors, which typically offer a larger dynamic range, finer force resolution, and higher bandwidth. Instead, CoinFT excels in applications where such high-end specifications are not a priority, while low cost and scalable deployment are desirable.</p><p>We demonstrated the utility of CoinFT by a multi-axial contact probing experiment emulating fingertip-scale interactions, and integrating it with a drone to perform force-controlled tasks, such as attaching an electronics package to environmental surfaces. This capability is an example of CoinFT's potential to democratize the use of 6-axis F / T sensors across a broad range of robotic platforms, enabling more widespread adoption in applications that demand robustness and costeffectiveness without sacrificing essential functionality. To promote this use of CoinFT technology, we have published solid models, fabrication instructions and software as an opensource design at <ref type="url" target="https://coin-ft.github.io/">https://coin-ft.github.io/</ref>.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. (a) CoinFT is approximately the size of a U.S. quarter-dollar coin. (b) Exploded view showing two rigid PCBs (upper and lower sensing layers, with eight and two individually addressable sensing electrodes, respectively) connected with an array of silicone rubber pillars. The fPCB top shield layer provides passive shielding. Alignment tabs are removed after assembly. (c) Layer stackup and dimensions of each layer. The overall thickness is ≈ 2 mm.</figDesc><graphic coords="4,236.40,60.92,134.98,208.46" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. The fabrication process of CoinFT. (a) Fresh uncured silicone is spread on a UV laser cut mask that is placed on an acrylic plate with alignment pins. (b) A primed lower sensing layer PCB and an acrylic plate for equal pressure distribution is stacked with a 3.1 kg weight. (c) With a 0.1 kg weight, the assembly is cured inside a pressurized chamber. (d),(e) Once the mask and acrylic plates are removed, the pillar layer is complete. (f) On a primed upper sensing layer PCB, fresh uncured silicone is spread. (g) The silicone layer is made thin and uniform through spin-coating. (h) The lower sensing layer with pillars is assembled with the upper sensing layer through precise distance control by adding spacers. A 0.1 kg weight and an acrylic plate for pressure distribution are added. (i) The top shield layer is attached using an adhesive. (j) A horizontal cross section of the pillar layer shows desirable bonding of the two PCB layers.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>NFig. 4 .</head><label>4</label><figDesc>Fig. 4. CoinFT characterization using FEA. (a) Structural modeling in FEA. (b) Electrostatics modeling in FEA. (c) Raw capacitance change with displacement and corresponding compressive force. Full CoinFT response with varied pillar diameter under (d) normal force (real samples &amp; FEA), (e) shear force (FEA), and (f) torsion (FEA). Raw capacitance response of a half of CoinFT (g) under normal force, (h) shear force, and (i) torsion.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 5 .</head><label>5</label><figDesc>Fig. 5. Comparison of sensor readings between CoinFT and Gamma (ATI Industrial Automation) in (a) Fx, (b) Fy, (c) Fz, (d) Mx, (e) My, (f) Mz.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 6 .</head><label>6</label><figDesc>Fig. 6. CoinFT frequency response in the (a) normal and (b) shear direction.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 7 .Fig. 8 .</head><label>78</label><figDesc>Fig. 7. Effects of temperature variation and its compensation. (a) Drift of raw signals due to temperature change. (b) Temperature compensation using an on-chip temperature sensor.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 9 .</head><label>9</label><figDesc>Fig. 9. Multi-axial contact probing experiment. (a) The 7DoF arm applies force and torque in different axes on a hemispherical fingertip equipped with CoinFT, approximating manipulation scenarios. (b) CoinFT and reference sensor reading comparisons. Refer to Table IV for quantitative evaluation.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 10 .</head><label>10</label><figDesc>Fig. 10. Experimental setup for drones performing contact rich tasks. Different end-effectors be attached to the CoinFT mount, such as (a) a tip for general contact or (b) a package of electronics to be attached on a surface. Compliance is added in series through a (c) telescoping mechanism with pre-tensioned rubber bands to mitigate impact upon contact.</figDesc><graphic coords="11,354.28,193.48,175.48,183.17" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Fig. 11 .</head><label>11</label><figDesc>Fig. 11. System diagram of the integrated drone test setup.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Algorithm 1</head><label>1</label><figDesc>Thrust State Machine and PID Controller 1: Inputs: fdes , f oc , f dc , t cr 2: Outputs: fcmd , S 3: Parameters: Force Increment ∆f , Proportional Gain k p , Integral Gain k i , Derivative Gain k d , Hold Duration T 4: Initialization: 5: e prev ← 0, e dt ← 0, fcmd ← fdes , S ← FREE 6: if S is FREE then 7: fcmd ← fdes 8: if f oc &gt; 0 then 9: S ← SEARCH 10: else if S is SEARCH then 11: fcmd ← fcmd + ∆f 12:if f oc ≥ f dc then 13:f hold ← fcmd , t prev ← t cr , t 0 ← t cr14: S ← HOLD 15: else if S is HOLD then 16: ∆t ← t cr -t prev , e curr ← f oc -f dc 17: P ← k p e curr , I ← I +k i e curr ∆t, D ← k d ecurr-eprev ∆t 18: fcmd ← f hold + P + I + D 19:</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Fig. 12 .</head><label>12</label><figDesc>Fig. 12. Results of the force controller test. (a) The drone ascends until contact is made with the test setup, where it initiates force control. (b) CoinFT readings and commanded force.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Fig. 13 .</head><label>13</label><figDesc>Fig. 13. Drone attaching a package of electronics on environment surfaces using force control. (a) The drone gently presses the package on the horizontal surface. (b) After descending, it still feels the weight of the package through CoinFT. (c) The drone presses the package with a larger force on the surface. (d) Upon descent, it no longer feels the weight of the package. It turns on the package and leaves the scene.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE I COMPARISON</head><label>I</label><figDesc>OF REPRESENTATIVE LOWER-COST 6-AXIS FORCE/TORQUE SENSORS FOR ROBOTIC APPLICATIONS</figDesc><table><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>Accuracy</cell><cell></cell><cell></cell></row><row><cell>Sensor</cell><cell cols="2">Transduction Size [mm]</cell><cell>Mass</cell><cell>Sensing range</cell><cell>(R 2 unless</cell><cell>Bandwidth</cell><cell>Cost</cell><cell>Robustness</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>noted otherwise)</cell><cell></cell><cell></cell></row><row><cell>MinebeaMitsumi™ 6-axis F/T sensor</cell><cell cols="2">Piezoresistive ϕ 9.6 × t 9</cell><cell>3 g</cell><cell>F : 40 N M : 400 mN•m</cell><cell>Full-scale error: ±5%</cell><cell>1 kHz</cell><cell>$1200+</cell><cell>No</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>Fx: 0.937</cell><cell></cell><cell></cell></row><row><cell>Guggenheim et al. [10]</cell><cell>Barometric (MEMS)</cell><cell cols="2">75 × 75 × 30 N/A</cell><cell>Fx,y: 5 N Fz: 12 N M : 3000 mN•m</cell><cell>Fy: 0.909 My: 0.984 Fz: 0.998 Mx: 0.984</cell><cell>50 Hz</cell><cell>$20</cell><cell>Yes</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>Mz: 0.991</cell><cell></cell><cell></cell></row><row><cell>Ouyang et al. [15]</cell><cell>Vision (Fiducial</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell>tracking)</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell cols="2">2.5 kHz (sampling) $100</cell><cell>Yes</cell></row><row><cell>Do et al. [18]</cell><cell>Vision (Raw image)</cell><cell cols="2">32 × 32 × 43 34 g</cell><cell>Fx,y: 5.5 N Fz: 11 N Mz: 50 mN•m Mx,y: 250 mN•m</cell><cell>Mean Avg. Error: M : 0.387 mN•m F : 0.41 N</cell><cell>30 Hz (sampling)</cell><cell>$78</cell><cell>N/A</cell></row><row><cell>CoinFT (this work)</cell><cell>Capacitive</cell><cell>ϕ 20 × t 2</cell><cell>2 g</cell><cell></cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head></head><label></label><figDesc>Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through all electrodes in both modes to complete one full sampling cycle. (b) The first three columns (no input, shear force, moment) show the resulting capacitance patterns in plan view; the last two (normal force, moment) show them in cross-section. Ground and Shield are the two electrodes of the lower sensing layer (see legend). These configurations produce distinct signal patterns under different force and torque inputs.</figDesc><table><row><cell cols="3">Analog bus</cell><cell></cell><cell></cell></row><row><cell cols="2">MCU</cell><cell>Z1</cell><cell></cell><cell></cell></row><row><cell>CDC Module</cell><cell></cell><cell>Z2 Z3 Z4</cell><cell></cell><cell></cell></row><row><cell cols="2">Shield</cell><cell></cell><cell></cell><cell></cell></row><row><cell cols="2">GND</cell><cell></cell><cell></cell><cell></cell></row><row><cell cols="3">MCU X1 X2 X3 X4 Y1 Y2 Y4 Y3 CDC Module</cell><cell></cell><cell></cell></row><row><cell cols="2">Shield</cell><cell></cell><cell></cell><cell></cell></row><row><cell cols="2">GND</cell><cell></cell><cell></cell><cell></cell></row><row><cell>y</cell><cell cols="2">(a)</cell><cell>Upper Sensing Layer</cell><cell>(b)</cell><cell>Lower Sensing Layer</cell></row><row><cell>z</cell><cell></cell><cell>x</cell><cell></cell><cell>Y4</cell></row><row><cell cols="6">Fig. 2. (a) The microcontroller unit (MCU) firmware switches between two electrode configurations (Normal Mode and Shear Mode) using the analog</cell></row><row><cell cols="6">switches, which connect each electrode to the capacitance-to-digital conversion (CDC) module, to ground (GND), or to an active shield. In the instant depicted</cell></row><row><cell cols="3">in the schematic,</cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>TABLE II BILL</head><label>II</label><figDesc>OF MATERIALS (BOM) FOR COINFT</figDesc><table><row><cell>Item</cell><cell cols="3">Quantity Unit Cost [$] Total Cost [$]</cell></row><row><cell>PSoC 4100S</cell><cell>1</cell><cell>3.25</cell><cell>3.25</cell></row><row><cell>Upper sensing Layer PCB</cell><cell>1</cell><cell>2.94</cell><cell>2.94</cell></row><row><cell>Lower sensing layer PCB</cell><cell>1</cell><cell>0.76</cell><cell>0.76</cell></row><row><cell>Shield PCB</cell><cell>1</cell><cell>2.09</cell><cell>2.09</cell></row><row><cell>SMD electronics</cell><cell>6</cell><cell>0.20</cell><cell>1.20</cell></row><row><cell>Molex connector</cell><cell>1</cell><cell>0.69</cell><cell>0.69</cell></row><row><cell>Total</cell><cell></cell><cell></cell><cell>10.93</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head></head><label></label><figDesc>Shear" includes all 12 electrodes in the calibration process, while the "Shear" case uses only 8 electrodes from the Shear Mode. Force errors are reported in N, and moment are reported in mN•m. A CoinFT sample with a pillar diameter of 100 µm was used. RMSE is Root Mean Squared Error.</figDesc><table><row><cell></cell><cell></cell><cell>TABLE III</cell><cell></cell><cell></cell><cell></cell></row><row><cell cols="5">ACCURACY OF COINFT CALIBRATION.</cell><cell></cell></row><row><cell cols="5">Input Range: 0∼5 N Normal, 0∼2 N Shear</cell><cell></cell></row><row><cell></cell><cell>Fx</cell><cell>Fy</cell><cell>Fz</cell><cell>Mx</cell><cell>My</cell><cell>Mz</cell></row><row><cell cols="7">Normal+Shear (RMSE) 0.038 0.040 0.050 0.317 0.306 0.231</cell></row><row><cell>Shear (RMSE)</cell><cell cols="6">0.039 0.040 0.115 0.343 0.323 0.244</cell></row><row><cell>Normal+Shear (R 2 )</cell><cell cols="6">0.994 0.994 0.997 0.995 0.995 0.992</cell></row><row><cell>Shear (R 2 )</cell><cell cols="6">0.993 0.994 0.986 0.994 0.994 0.992</cell></row><row><cell cols="5">Input Range: 0∼14 N Normal, 0∼5 N Shear</cell><cell></cell></row><row><cell></cell><cell>Fx</cell><cell>Fy</cell><cell>Fz</cell><cell>Mx</cell><cell>My</cell><cell>Mz</cell></row><row><cell cols="7">Normal+Shear (RMSE) 0.186 0.134 0.186 1.114 1.322 0.810</cell></row><row><cell>Shear (RMSE)</cell><cell cols="6">0.174 0.129 0.266 1.169 1.587 0.867</cell></row><row><cell>Normal+Shear (R 2 )</cell><cell cols="6">0.983 0.983 0.998 0.988 0.987 0.989</cell></row><row><cell>Shear (R 2 )</cell><cell cols="6">0.979 0.985 0.996 0.986 0.981 0.986</cell></row><row><cell>*"Normal +</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>TABLE IV MULTI</head><label>IV</label><figDesc>-AXIAL SENSING DURING CONTACT PROBING.</figDesc><table><row><cell></cell><cell>Fx</cell><cell>Fy</cell><cell>Fz</cell><cell>Mx</cell><cell>My</cell><cell>Mz</cell></row><row><cell>RMSE</cell><cell>0.108</cell><cell>0.120</cell><cell>0.378</cell><cell>5.669</cell><cell>3.874</cell><cell>0.720</cell></row><row><cell>R 2</cell><cell>0.994</cell><cell>0.995</cell><cell>0.999</cell><cell>0.993</cell><cell>0.996</cell><cell>0.986</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGEMENTS</head><p><rs type="funder">Meta Reality Labs Research, Toyota Research Institute</rs>, and the <rs type="funder">Kwanjeong Fellowship</rs> provided funds to support this work. The authors thank <rs type="person">Claire Chen</rs>, <rs type="person">Kyle Yoshida</rs>, <rs type="person">Crystal Winston</rs>, <rs type="person">Mine Sarac</rs>, and <rs type="person">Alice Wu</rs> for exciting and insightful discussions about CoinFT applications.</p></div>
+			</div>
+			<listOrg type="funding">
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Seed: Series elastic end effectors in 6d for visuotactile tool use</title>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">T</forename><surname>Suh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Pang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mitiguy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alspach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Skill learning for robotic assembly based on visual perspectives and force sensing</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Quan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Autonomous robotic palpation of soft tissue using the modulation of applied force</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Konstantinova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Cotugno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Dasgupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Althoefer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Nanayakkara</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Biomedical Robotics and Biomechatronics</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Whole-arm tactile sensing for beneficial and acceptable contact during robotic assistance</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">M</forename><surname>Grice</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Killpack</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Vaish</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hawke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">C</forename><surname>Kemp</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2013 IEEE 13th International Conference on Rehabilitation Robotics</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Exploratory hand: Leveraging safe contact to facilitate manipulation in cluttered spaces</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Thomasson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Uribe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Collecting critically endangered cliff plants using a drone-based sampling manipulator</title>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">La</forename><surname>Vigne</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Charron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rachiele-Tremblay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rancourt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Nyberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lussier Desbiens</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Scientific Reports</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Design and evaluation of a 3-dof haptic device for directional shear cues on the forearm</title>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">T</forename><surname>Yoshida</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><forename type="middle">A</forename><surname>Zook</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">K</forename><surname>O'malley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Okamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Haptics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Six-axis force/torque sensors for robotics applications: A review</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">Y</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Laws</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">R Y</forename><surname>Baena</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors Journal</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">LEAP hand: Low-cost, efficient, and anthropomorphic hand for robot learning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Robust and inexpensive six-axis force-torque sensors using mems barometers</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Guggenheim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">P</forename><surname>Jentoft</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tenzer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">D</forename><surname>Howe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE/ASME Transactions on Mechatronics</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Aerial grasping and the velocity sufficiency region</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">G</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">A W</forename><surname>Hoffmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">E</forename><surname>Low</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Nagami</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lentink</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Aerial interaction with tactile sensing</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Mousaei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Geng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Scherer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Design principles and considerations for the &apos;ideal&apos; silicon piezoresistive pressure sensor: a focused review</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">S</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">D</forename><surname>Pant</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Microsystem Technologies</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="1213" to="1247" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Flexible tactile sensing based on piezoresistive composites: A review</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Stassi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Cauda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Canavese</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pirri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="5296" to="5332" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Low-cost fiducial-based 6-axis force-torque sensor</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ouyang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Howe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Six-axis force/torque fingertip sensor for an anthropomorphic robot hand</title>
+		<author>
+			<persName><forename type="first">U</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jeong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Do</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Park</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="5566" to="5572" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Compact LED-based displacement sensing for robot fingers</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>El-Azizi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Islam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Piacenza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Kymissis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ciocarlie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Densetact 2.0: Optical tactile sensor for shape and force reconstruction</title>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">K</forename><surname>Do</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Jurewicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kennedy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Dynamically reconfigurable tactile sensor for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">M</forename><surname>Huh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Willcox</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Moon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="2562" to="2569" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Additively manufactured micro-lattice dielectrics for multiaxial capacitive sensors</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Berman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hsiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">E</forename><surname>Root</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ilyn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Stein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Desimone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Bao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Advances</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">40</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Tactile sensing for gecko-inspired adhesion</title>
+		<author>
+			<persName><forename type="first">X</forename><forename type="middle">A</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">A</forename><surname>Suresh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">V</forename><surname>Ulmen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">W</forename><surname>Hawkes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">L</forename><surname>Christensen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Recent progress of optical tactile sensors: A review</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Optics &amp; Laser Technology</title>
+		<imprint>
+			<biblScope unit="volume">176</biblScope>
+			<biblScope unit="page">111040</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Design, development and calibration of a lightweight, compliant six-axis optical force/torque sensor</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Al-Mai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ahmadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Albert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors Journal</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="issue">17</biblScope>
+			<biblScope unit="page" from="7005" to="7014" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Sixdimensional force/torque sensor based on fiber bragg gratings with low coupling</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Industrial Electronics</title>
+		<imprint>
+			<biblScope unit="volume">68</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="4079" to="4089" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Hardware technology of vision-based tactile sensor: A review</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Shan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors Journal</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="issue">22</biblScope>
+			<biblScope unit="page" from="21" to="410" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">The tactip family: Soft optical tactile sensors with 3d-printed biomimetic morphologies</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ward-Cherrier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Pestell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Cramphorn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Winstone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">E</forename><surname>Giannaccini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rossiter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">F</forename><surname>Lepora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Soft Robotics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="216" to="227" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Gelsight: High-resolution robot tactile sensors for estimating geometry and force</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page">2762</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Digitizing touch with an artificial multimodal fingertip</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lambeta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sengul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">R</forename><surname>Most</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sawyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Mercado</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sohn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Taylor</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2411.02479</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">L 3 f-touch: A wireless gelsight with decoupled tactile and threeaxis force sensing</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">K</forename><surname>Jha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Althoefer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="5148" to="5155" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">F-touch sensor: Concurrent geometry perception and multi-axis force measurement</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alomainy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Vitanov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Noh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Althoefer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors Journal</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="4300" to="4309" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Shear, torsion and pressure tactile sensor via plastic optofiber guided imaging</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Baimukashev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Kappassov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">A</forename><surname>Varol</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="2618" to="2625" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Faulttolerant measurement mechanism research on pre-tightened four-point supported piezoelectric six-dimensional force/torque sensor</title>
+		<author>
+			<persName><forename type="first">Y.-J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>-S. Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>-C. Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>-K. Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>-J. Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Mechanical Systems and Signal Processing</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">135</biblScope>
+			<biblScope unit="page">106420</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Low-profile 6-axis differential magnetic force/torque sensing</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">G</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">Hossein</forename><surname>Hadi Hosseinabadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Rangga Pradnyawira</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Nogami</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">E</forename><surname>Salcudean</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Medical Robotics and Bionics</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="992" to="1003" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Deep learning classification of touch gestures using distributed normal and shear force</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Brouwer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">T</forename><surname>Yoshida</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Rognon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Stephens-Fripp</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Okamura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="3659" to="3665" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Perceived intensities of normal and shear skin stimuli using a wearable haptic bracelet</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sarac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">M</forename><surname>Huh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Luca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Okamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="6099" to="6106" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Fourigami: A 4-degree-of-freedom, force-controlled, origami, finger pad haptic device</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">E</forename><surname>Winston</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Jitosho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhakypov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">E</forename><surname>Palmer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Okamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">41</biblScope>
+			<biblScope unit="page" from="4829" to="4842" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">DexForce: Extracting force-informed actions from kinesthetic demonstrations for dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="6416" to="6423" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">In-the-wild compliant manipulation with UMI-FT</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">On aerial robots with grasping and perching capabilities: A comprehensive review</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Meng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Buzzatto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liarokapis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Robotics and AI</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Drone-assisted collection of environmental dna from tree branches for biodiversity monitoring</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Aucone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kirchgeorg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Valentini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pellissier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Deiner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mintchev</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">74</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Active interaction force control for contactbased inspection with a fully actuated aerial vehicle</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Bodie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Brunner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Pantic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Walser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Pfändler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Angst</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Siegwart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Nieto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="709" to="722" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Parsec: An aerial platform for autonomous deployment of self-anchoring payloads on natural vertical surfaces</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Spieler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">X</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Galassi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Uckert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kalantari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Burdick</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Porous dielectric elastomer based flexible multiaxial tactile sensor for dexterous robotic or prosthetic hands</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">M</forename><surname>Huh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Bao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Materials Technologies</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Extending porous silicone capacitive pressure sensor applications into athletic and physiological monitoring</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><forename type="middle">D</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">V</forename><surname>Kirk</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">1119</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Scott blair fractional-type viscoelastic behavior of thermoplastic polyurethane</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pichler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Oberparleiter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lackner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Polymers</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">18</biblScope>
+			<biblScope unit="page">3770</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Dynamic tactile sensing</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ulmen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Human Hand as an Inspiration for Robot Hand Development</title>
+		<imprint>
+			<publisher>Springer International Publishing</publisher>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Elastomer rubbers as deflection elements in pressure sensors: investigation of properties using a custom designed programmable elastomer test rig</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>O'sullivan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Nagle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Mcewen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Casey</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Physics D: Applied Physics</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="issue">15</biblScope>
+			<biblScope unit="page" from="1910" to="1916" />
+			<date type="published" when="2003-07">Jul. 2003</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">The mechanical properties of the rubber elastic polymer polydimethylsiloxane for sensor applications</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">C</forename><surname>Lötters</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Olthuis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">H</forename><surname>Veltink</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Bergveld</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Micromechanics and Microengineering</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="145" to="147" />
+			<date type="published" when="1997-09">Sep. 1997</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">On the relation between indentation hardness and young&apos;s modulus</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">N</forename><surname>Gent</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Rubber Chemistry and Technology</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="896" to="906" />
+			<date type="published" when="1958">1958</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Compression of bonded elastic bodies</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Haddow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ogden</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the Mechanics and Physics of Solids</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="551" to="579" />
+			<date type="published" when="1988">1988</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Characterization of mechanical and dielectric properties of silicone rubber</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">L Y</forename><surname>Chiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Naila</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sadanand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">D</forename><surname>Waldman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sussman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Polymers</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page">1831</biblScope>
+			<date type="published" when="2021-06">Jun. 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">Force-assisted ultrasound imaging system through dual force sensing and admittance robot control</title>
+		<author>
+			<persName><forename type="first">T.-Y</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">K</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Finocchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">H</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">M</forename><surname>Boctor</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International journal of computer assisted radiology and surgery</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="983" to="991" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Forces applied during manual therapy to patients with low back pain</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Chiradejnant</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Latimer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">G</forename><surname>Maher</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of manipulative and physiological therapeutics</title>
+		<imprint>
+			<biblScope unit="volume">25</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="362" to="369" />
+			<date type="published" when="2002">2002</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Multimodal sensing for robotassisted sub-tissue feature detection in physiotherapy palpation</title>
+		<author>
+			<persName><forename type="first">T.-A</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Garcia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Grinberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Di</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Grinberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2026 Design of Medical Devices Conference</title>
+		<meeting>the 2026 Design of Medical Devices Conference</meeting>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">A 4degree-of-freedom parallel origami haptic device for normal, shear, and torsion feedback</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">R</forename><surname>Williams</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Suchoski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chua</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Okamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="3310" to="3317" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<title level="m" type="main">Towards forceful robotic foundation models: a literature survey</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.11827</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<analytic>
+		<title level="a" type="main">Skybot -a novel autonomous window cleaning drone</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Hulaibi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wahid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">A</forename><surname>Saif</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sadeq</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Esmaeili</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kandil</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Electrical</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+		<respStmt>
+			<orgName>Communication and Computer Engineering</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<monogr>
+		<title level="m" type="main">Minimum snap trajectory generation and control for quadrotors</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Mellinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011">2011</date>
+			<publisher>IEEE</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main">Measurements of electromagnetic emission nearby a compact drone</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Watanabe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Aoi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Komatsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tanaka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Nagata</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Asia-Pacific International Symposium on Electromagnetic Compatibility</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<title level="m" type="main">Force and tactile sensing</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Provancher</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<publisher>Springer International Publishing</publisher>
+		</imprint>
+	</monogr>
+	<note>in Springer Handbook of Robotics</note>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main">A modular 3-degrees-of-freedom force sensor for robot-assisted minimally invasive surgery research</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chua</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Okamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page">5230</biblScope>
+			<date type="published" when="2023-05">May 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<analytic>
+		<title level="a" type="main">Creep analysis of silicone for podiatry applications</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Janeiro-Arocas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tarrío-Saavedra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>López-Beceiro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Naya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>López-Canosa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Heredia-García</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Artiaga</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the Mechanical Behavior of Biomedical Materials</title>
+		<imprint>
+			<biblScope unit="volume">63</biblScope>
+			<biblScope unit="page" from="456" to="469" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<analytic>
+		<title level="a" type="main">Study on compressive resistance creep and recovery of flexible pressure sensitive material based on carbon black filled silicone rubber composite</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors and Actuators A: Physical</title>
+		<imprint>
+			<biblScope unit="volume">164</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="207" to="215" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

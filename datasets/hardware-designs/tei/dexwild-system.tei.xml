@@ -1,0 +1,3833 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies</title>
+				<funder>
+					<orgName type="full">Apple Research Award</orgName>
+				</funder>
+				<funder ref="#_xDRyfVc">
+					<orgName type="full">AFOSR</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Tony</forename><surname>Tao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mohan</forename><surname>Kumar Srirama</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jason</forename><forename type="middle">Jingzhou</forename><surname>Liu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Agrim</forename><surname>Gupta</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ajinkya</forename><surname>Jain</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Albert</forename><surname>Tung</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Alex</forename><surname>Bewley</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Alex</forename><surname>Herzog</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Alex</forename><surname>Irpan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Alexander</forename><surname>Khaz- Atsky</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Anant</forename><surname>Rai</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Anchit</forename><surname>Gupta</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Andrew</forename><surname>Wang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Andrey</forename><surname>Kolobov</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Anikait</forename><surname>Singh</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Animesh</forename><surname>Garg</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Aniruddha</forename><surname>Kemb- Havi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Annie</forename><surname>Xie</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Anthony</forename><surname>Brohan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Antonin</forename><surname>Raffin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Archit</forename><surname>Sharma</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Arefeh</forename><surname>Yavary</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Arhan</forename><surname>Jain</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ashwin</forename><surname>Balakrishna</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ayzaan</forename><surname>Wahid</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ben</forename><surname>Burgess-Limerick</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Beomjoon</forename><surname>Kim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Bernhard</forename><surname>Schölkopf</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Blake</forename><surname>Wulfe</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Brian</forename><surname>Ichter</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Cewu</forename><surname>Lu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Charles</forename><surname>Xu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Charlotte</forename><surname>Le</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chenfeng</forename><surname>Xu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Cheng</forename><surname>Chi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chenguang</forename><surname>Huang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Christine</forename><surname>Chan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Christopher</forename><surname>Agia</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chuer</forename><surname>Pan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chuyuan</forename><surname>Fu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Coline</forename><surname>Devin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Danfei</forename><surname>Xu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Daniel</forename><surname>Morton</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Danny</forename><surname>Driess</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Daphne</forename><surname>Chen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dhruv</forename><surname>Shah</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dieter</forename><surname>Büchler</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dinesh</forename><surname>Jayaraman</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dmitry</forename><surname>Kalashnikov</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dorsa</forename><surname>Sadigh</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Edward</forename><surname>Johns</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ethan</forename><surname>Foster</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Fangchen</forename><surname>Liu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Federico</forename><surname>Ceola</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Fei</forename><surname>Xia</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Feiyu</forename><surname>Zhao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Felipe</forename><surname>Vieira Frujeri</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Freek</forename><surname>Stulp</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Gaoyue</forename><surname>Zhou</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Gaurav</forename><forename type="middle">S</forename><surname>Sukhatme</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Gautam</forename><surname>Salho- Tra</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ge</forename><surname>Yan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Gilbert</forename><surname>Feng</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Giulio</forename><surname>Schiavi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Glen</forename><surname>Berseth</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Gregory</forename><surname>Kahn</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Guangwen</forename><surname>Yang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Guanzhi</forename><surname>Wang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Hao</forename><surname>Su</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Hao-Shu</forename><surname>Fang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Haochen</forename><surname>Shi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Henghui</forename><surname>Bao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ben</forename><surname>Heni</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Henrik</forename><forename type="middle">I</forename><surname>Amor</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Hiroki</forename><surname>Christensen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Homanga</forename><surname>Furuta</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Homer</forename><surname>Bharadhwaj</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Hongjie</forename><surname>Walke</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Huy</forename><surname>Fang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Igor</forename><surname>Ha</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ilija</forename><surname>Mordatch</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Isabel</forename><surname>Radosavovic</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jacky</forename><surname>Leal</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jad</forename><surname>Liang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jaehyung</forename><surname>Abou-Chakra</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jaimyn</forename><surname>Kim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jan</forename><surname>Drake</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jan</forename><surname>Peters</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jasmine</forename><surname>Schneider</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jay</forename><surname>Hsu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jeannette</forename><surname>Vakil</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jeffrey</forename><surname>Bohg</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jeffrey</forename><surname>Bingham</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jensen</forename><surname>Wu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jiaheng</forename><surname>Gao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jiajun</forename><surname>Hu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jialin</forename><surname>Wu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jiankai</forename><surname>Wu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jianlan</forename><surname>Sun</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jiayuan</forename><surname>Luo</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jie</forename><surname>Gu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jihoon</forename><surname>Tan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jimmy</forename><surname>Oh</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jingpei</forename><surname>Wu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jingyun</forename><surname>Lu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jitendra</forename><surname>Yang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">João</forename><surname>Malik</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Joey</forename><surname>Silvério</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jonathan</forename><surname>Hejna</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jonathan</forename><surname>Booher</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jonathan</forename><surname>Tompson</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jordi</forename><surname>Yang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Joseph</forename><forename type="middle">J</forename><surname>Salvador</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Junhyek</forename><surname>Lim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kaiyuan</forename><surname>Han</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kanishka</forename><surname>Wang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Karl</forename><surname>Rao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Karol</forename><surname>Pertsch</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Keegan</forename><surname>Hausman</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Keerthana</forename><surname>Go</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ken</forename><surname>Gopalakrishnan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kendra</forename><surname>Goldberg</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kenneth</forename><surname>Byrne</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kento</forename><surname>Oslund</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kevin</forename><surname>Kawaharazuka</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kevin</forename><surname>Black</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kevin</forename><surname>Lin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kiana</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kiran</forename><surname>Ehsani</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kirsty</forename><surname>Lekkala</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Krishan</forename><surname>Ellis</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Krishnan</forename><surname>Rana</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kuan</forename><surname>Srinivasan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kunal</forename><forename type="middle">Pratap</forename><surname>Fang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kuo-Hao</forename><surname>Singh</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kyle</forename><surname>Zeng</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Kyle</forename><surname>Hatch</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Laurent</forename><surname>Hsu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Lawrence</forename><forename type="middle">Yunliang</forename><surname>Itti</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Lerrel</forename><surname>Chen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Li</forename><surname>Pinto</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Liam</forename><surname>Fei-Fei</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><roleName>Linxi "</roleName><forename type="first">Jim</forename><forename type="middle">"</forename><surname>Tan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Lionel</forename><surname>Fan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Lisa</forename><surname>Ott</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Luca</forename><surname>Lee</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Magnum</forename><surname>Weihs</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Marion</forename><surname>Chen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Marius</forename><surname>Lepert</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Masayoshi</forename><surname>Memmel</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Masha</forename><surname>Tomizuka</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mateo</forename><forename type="middle">Guaman</forename><surname>Itkina</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Max</forename><surname>Castro</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Maximilian</forename><surname>Spero</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Michael</forename><surname>Du</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Michael</forename><forename type="middle">C</forename><surname>Ahn</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mingtong</forename><surname>Yip</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mingyu</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Minho</forename><surname>Ding</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mohan</forename><surname>Heo</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mohit</forename><surname>Kumar Srirama</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><roleName>Moo</roleName><forename type="first">Jin</forename><surname>Sharma</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Naoaki</forename><surname>Kim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Nicklas</forename><surname>Kanazawa</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Nicolas</forename><surname>Hansen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Nikhil</forename><forename type="middle">J</forename><surname>Heess</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Niko</forename><surname>Joshi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ning</forename><surname>Suenderhauf</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Norman</forename><forename type="middle">Di</forename><surname>Liu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Nur</forename><surname>Palo</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mahi</forename><surname>Muhammad</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Oier</forename><surname>Shafiullah</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Oliver</forename><surname>Mees</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Osbert</forename><surname>Kroemer</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Pannag</forename><forename type="middle">R</forename><surname>Bastani</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Patrick</forename><forename type="middle">"</forename><surname>Sanketi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">"</forename><surname>Tree</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Patrick</forename><surname>Miller</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Paul</forename><surname>Yin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Peng</forename><surname>Wohlhart</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><roleName>Peter</roleName><forename type="first">David</forename><surname>Xu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Peter</forename><surname>Fagan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Pierre</forename><surname>Mitrano</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Pieter</forename><surname>Sermanet</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Priya</forename><surname>Abbeel</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Qiuyu</forename><surname>Sundaresan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Quan</forename><surname>Chen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Rafael</forename><surname>Vuong</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ran</forename><surname>Rafailov</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ria</forename><surname>Tian</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Roberto</forename><surname>Doshi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Rohan</forename><surname>Mart'in-Mart'in</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Rosario</forename><surname>Baijal</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Rose</forename><surname>Scalise</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Roy</forename><surname>Hendrix</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Runjia</forename><surname>Lin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ruohan</forename><surname>Qian</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Russell</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Rutav</forename><surname>Mendonca</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ryan</forename><surname>Shah</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ryan</forename><surname>Hoque</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Samuel</forename><surname>Julian</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sean</forename><surname>Bustamante</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sergey</forename><surname>Kirmani</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shan</forename><surname>Levine</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sherry</forename><surname>Lin</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shikhar</forename><surname>Moore</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shivin</forename><surname>Bahl</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shubham</forename><surname>Dass</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shubham</forename><surname>Sonawani</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shuran</forename><surname>Tulsiani</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sichun</forename><surname>Song</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Siddhant</forename><surname>Xu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Siddharth</forename><surname>Haldar</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Simeon</forename><surname>Karamcheti</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><surname>Ade</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">4387365DE70FC899A7721581ECEF4536</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Generalize to Unseen Environments Limited Robot Data In-the-Wild Human Data Novel Objects Novel Scenes ️ Cross-Task Cross-Embodiment DexWild Fig. 1: DexWild enables dexterous policies to generalize to new objects, scenes, and embodiments. This is achieved by leveraging large-scale, real-world human embodiment data collected in many scenes and co-trained with a smaller robot embodiment dataset for grounding.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Roboticists have long dreamed of creating robots that can perform tasks with the same dexterity and adaptability as humans. We would like robots to deftly generalize to many different objects, environments, and embodiments-yet this vision of truly versatile robot behaviors remains a formidable challenge. While there have been many breakthroughs in large language models (LLMs) <ref type="bibr" target="#b51">[53,</ref><ref type="bibr" target="#b50">51,</ref><ref type="bibr" target="#b2">3]</ref> and vision language models (VLMs) <ref type="bibr" target="#b23">[24,</ref><ref type="bibr" target="#b47">48]</ref>, the key to their success lies in harnessing vast datasets. In contrast, robotics faces a critical hurdle: large-scale, diverse robot datasets needed to train foundation models do not yet exist.</p><p>In recent years, a key approach to collecting robot datasets has been through teleoperation, which provides high-precision, high-quality action data that a policy can directly train on. <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b52">54]</ref>. However, acquiring this data requires highlytrained human operators working with specialized robot setups. Gathering data in diverse environments presents additional challenges such as physically relocating the robot to each new location. This data collection process is both labor-intensive and expensive, making it difficult to scale to the volume of data needed for dexterous generalization in unseen environments.</p><p>Another approach to scaling robot datasets is to leverage internet-scale video data from platforms like YouTube, which provide vast and diverse visual grounding in real-world environments <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b9">10]</ref>. However, utilizing this data effectively presents significant challenges. First, publicly available videos often lack the fine-grained accuracy needed to capture detailed hand states because vision-based body detection modules are noisy and unreliable. Additionally, these videos are not inherently structured with categorized episodes for task-specific learn-arXiv:2505.07813v2 [cs.RO] 17 May 2026 ing, further complicating their direct application in robotics. <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b0">1,</ref><ref type="bibr" target="#b39">40]</ref>. While some data collection efforts exist with more accurate and structured data, <ref type="bibr" target="#b58">[60,</ref><ref type="bibr" target="#b1">2]</ref>, they do not have enough environment diversity. We seek to collect data with tracking accuracy and environment diversity to enable generalizable dexterous behavior.</p><p>To overcome these barriers, some have explored collecting accurate in-the-wild human demonstrations by equipping users with a wearable gripper that directly maps their hand movements to robot actions <ref type="bibr" target="#b6">[7]</ref>. However, this approach is cumbersome, ill-suited for natural, everyday interactions, and constrains the collected data to a specific embodiment. Other works <ref type="bibr" target="#b53">[55]</ref> propose using dexterous hands and gloves, but they do not scale to in-the-wild environments.</p><p>In this paper, we present DexWild, a system that enables effective learning of robust dexterous manipulation policies through co-training on human and robot demonstrations. Our key contributions include:</p><p>1) Scalable Data Collection System: A novel humanembodiment DexWild-System that enables untrained operators to quickly collect 9,290 demonstrations across 93 diverse environments, achieving 4.6× speedup over conventional robot-based methods 2) Efficient Co-training Framework: An approach that optimally combines human and robot demonstrations, significantly improving policy generalization to achieve 68.5% success rate in novel environments, nearly four times higher than robot-only policies. 3) Strong Cross Embodiment and Cross Task Performance: Our data collection system combined with our co-training framework achieves of 5.8× improvement in cross-embodiment transfer over baselines and effective skill transfer across tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORKS</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Generalization for Imitation Learning</head><p>Learning generalizable policies for robot manipulation has seen rapid progress, driven largely by advances in visual representation learning and imitation learning from large-scale datasets. On the visual side, embodied representation learning has benefited from egocentric datasets such as Ego4D <ref type="bibr" target="#b14">[15]</ref> and EPIC-KITCHENS <ref type="bibr" target="#b9">[10]</ref>, with recent methods <ref type="bibr" target="#b26">[27,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b46">47,</ref><ref type="bibr" target="#b38">39]</ref> leveraging these datasets to train scalable visual encoders. However, these approaches still require substantial downstream robot demonstrations to train control policies.</p><p>In parallel, robot-only demonstration datasets have grown significantly in scale and diversity <ref type="bibr" target="#b20">[21,</ref><ref type="bibr" target="#b7">8,</ref><ref type="bibr" target="#b52">54]</ref>, fueling research in behavior cloning and enabling generalist policy architectures <ref type="bibr" target="#b48">[49,</ref><ref type="bibr" target="#b7">8,</ref><ref type="bibr" target="#b21">22]</ref>. While these policies show impressive performance across many tasks, they often struggle to generalize to unseen object categories, scene layouts, or environmental conditions <ref type="bibr" target="#b24">[25]</ref>. This lack of robustness remains a key limitation of current systems.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Data Generation for Robot Manipulation</head><p>Overcoming the robot data bottleneck has become a central challenge in robot learning.</p><p>One approach leverages internet videos to extract action information. Several works, such as VideoDex <ref type="bibr" target="#b39">[40]</ref> and HOP <ref type="bibr" target="#b41">[42]</ref>, utilize large scale human videos to learn an action prior through retargeting, which they use to bootstrap policy training. Others, such as LAPA <ref type="bibr" target="#b55">[57]</ref>, use unlabelled videos to generate latent action representations that can be used for downstream tasks. While these video-based schemes enjoy vast visual diversity, they typically fall short at capturing the precise, lowlevel motor commands needed for real-world manipulation.</p><p>Simulation enables rapid generation of action data at scale. However, creating diverse, realistic environments for many tasks and addressing the sim-to-real gap is challenging. Recent successes in transferring manipulation policies from simulation <ref type="bibr" target="#b42">[43]</ref> have been confined to tabletop settings and lack the generalization needed for deployment in diverse environments.</p><p>Direct teleoperation on physical robots yields the highest fidelity, but scales poorly. Recent works have shown impressive dexterity and efficient learning in fixed scenarios <ref type="bibr" target="#b57">[59,</ref><ref type="bibr" target="#b54">56,</ref><ref type="bibr" target="#b40">41,</ref><ref type="bibr" target="#b18">19]</ref>, yet collecting enough demonstrations to generalize across diverse scenes quickly becomes prohibitively expensive.</p><p>Recently, there has been a growing body of work that utilizes purpose-collected high quality human embodiment data without the tedious teleoperation. We discuss these approaches in the next section.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Human Action Tracking Systems</head><p>In order to acquire high-quality data from human motions, accurate hand and wrist tracking is of paramount importance. To bypass the complexities of hand pose estimation, several works equip users with handheld robot grippers <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b11">12,</ref><ref type="bibr" target="#b45">46]</ref>. While this approach simplifies retargeting, it constrains users to the specific morphology of the robot gripper, limiting the diversity of captured behavior. Moreover, many of these systems rely on SLAM-based wrist tracking, which can fail in feature-sparse environments or when occlusions occur <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b22">23]</ref>-such as during drawer opening or tool use.</p><p>Other approaches aim to estimate both hand and wrist poses directly from visual input <ref type="bibr" target="#b28">[29,</ref><ref type="bibr" target="#b34">35,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b44">45,</ref><ref type="bibr" target="#b27">28,</ref><ref type="bibr" target="#b19">20,</ref><ref type="bibr" target="#b31">32]</ref>. These methods are easy to deploy and require no instrumentation, but their performance degrades significantly under occlusion-an unavoidable situation in manipulation. Alternative strategies for wrist tracking, such as IMU-based <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b49">50]</ref> and outsidein optical systems <ref type="bibr" target="#b29">[30]</ref>, come with their own limitations: IMUs are lightweight and portable but prone to drift, while optical systems are accurate yet require laborious calibration and controlled environments. DexWild leverages calibrationfree Aruco tracking-significantly improving reliability and minimizing setup time as it requires a single monocular camera.</p><p>While vision-based methods often attempt to track both the wrist and fingers simultaneously, many recent systems decouple the two to improve accuracy. Kinematic exoskeleton gloves can provide high-fidelity joint measurements and even haptic feedback <ref type="bibr" target="#b56">[58]</ref>  use. Instead, DexWild, along with prior works <ref type="bibr" target="#b40">[41,</ref><ref type="bibr" target="#b53">55]</ref>, adopts a lightweight glove-based solution that uses electromagnetic field (EMF) sensing to estimate fingertip positions. This allows for accurate, real-time hand tracking that is robust to occlusions and readily retargetable to a wide range of robot hands.</p><p>III. DEXWILD Many believe that leveraging large, high-quality datasets is the key for creating dexterous robot policies that generalize <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b48">49,</ref><ref type="bibr" target="#b39">40,</ref><ref type="bibr" target="#b10">11]</ref>. We introduce DexWild-System, a user-friendly, high-fidelity platform for efficiently gathering natural human hand demonstrations across diverse real-world settings. Compared to traditional teleoperation-based approaches, DexWild-System enables 4.6× faster data acquisition at scale. Building on this system, we propose DexWild, an imitation learning framework that co-trains on large-scale DexWild-System human demonstrations alongside a small number of robot demonstrations. This approach combines the diversity and richness of human interactions with the grounding of the robot embodiment, enabling policies to robustly generalize across new objects, environments, and embodiments. Figure <ref type="figure">1</ref> displays our high level approach.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Data Collection System</head><p>A scalable data collection system for dexterous robot learning must enable natural, efficient, and high-fidelity collection across diverse environments. To this end, we design DexWild-System: a portable, user-friendly system that captures human dexterous behavior with minimal setup and training. While previous in-the-wild data collection approaches have typically relied on sensorized grippers, we aimed to create a more intuitive hardware interface that mirrors how humans naturally interact with the world. From delicate fine-motor actions to powerful grasps, humans possess dexterity across a wide range of manipulation tasks. By learning from this intrinsic capability, DexWild-System captures rich, diverse data applicable to a broad range of robot embodiments. DexWild-System is designed around three core objectives:</p><p>• Portability: Allow rapid, large-scale data collection across diverse environments without requiring complex calibration procedures. • High Fidelity: Accurately capture fine-grained hand and environment interactions essential for training precise dexterous policies. • Embodiment-Agnostic: Enable seamless retargeting from human demonstrations to a wide variety of robot hands.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Portability:</head><p>To collect data in diverse real-world settings, a system must be portable, robust, and usable by anyone. We design DexWild-System with these goals in mind: it is lightweight, easy to carry, and can be set up in just a few minutes-enabling scalable data collection across many locations.</p><p>As shown in Figure <ref type="figure" target="#fig_0">2</ref>, DexWild-System consists of only three components: a single tracking camera for wrist pose estimation, a battery-powered mini-PC for onboard data capture, and a custom sensor pod comprising a motion-capture glove and synchronized palm-mounted cameras.</p><p>Unlike traditional motion capture systems <ref type="bibr" target="#b58">[60,</ref><ref type="bibr" target="#b12">13,</ref><ref type="bibr" target="#b3">4</ref>, 52] that often rely on complex outside-in tracking setups that require calibration, DexWild-System is truly calibration free, making it versatile for any scenario and foolproof for untrained operators. This is achieved by adopting a relative state-action representation, where each state and action is captured as the relative difference from the previous time step's pose. This eliminates any need for a global coordinate frame, allowing the tracking camera to be freely placed-either egocentrically or exocentrically. Additionally, the palm cameras are rigidly mounted in fixed positions across both human and robot embodiments. This ensures visual observations are aligned across domains, eliminating the need for further calibration at deployment. The external tracking camera, when carefully positioned, can also capture supplementary environmental context useful for learning robust policies.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>High Fidelity:</head><p>To learn dexterous behaviors, fine-grained, nuanced motions must be captured in the training dataset. Although DexWild-System consists of only a few portable components, we make no compromises on data fidelity. Our system is designed to accurately capture both hand and wrist actions, paired with high-quality visual observations.</p><p>For wrist and hand tracking, vision-only methods are easy to setup. However, what they gain in portability, they often lose in accuracy and robustness-yielding noisy pose estimates that degrade policy learning <ref type="bibr" target="#b40">[41,</ref><ref type="bibr" target="#b13">14,</ref><ref type="bibr" target="#b31">32,</ref><ref type="bibr" target="#b6">7]</ref>.</p><p>For hand pose estimation, we use motion capture gloves, which offer high accuracy, low latency, and robustness against occlusions <ref type="bibr" target="#b40">[41]</ref>. For wrist tracking, we mount ArUco markers on the glove and track them using an external camera. This avoids the fragility of SLAM-based wrist tracking, which often fails in feature-sparse environments or during occlusion-heavy tasks (e.g., drawer opening).</p><p>Unlike many datasets that rely on egocentric or distant external cameras, we place two global-shutter cameras directly on the palm. As illustrated in Figure <ref type="figure" target="#fig_0">2</ref>, these stereo cameras capture detailed, localized interaction views with minimal motion blur and a wide field of view. This wide field of view enables policies to operate using only the onboard palm cameras, without any reliance on static viewpoints.</p><p>Embodiment-Agnostic:</p><p>To ensure the longevity and versatility of DexWild data, we aim for it to remain useful across different robot embodiments-even as hardware platforms evolve. Achieving this goal requires careful alignment of both the observation space and the action space between humans and robots.</p><p>We begin by standardizing the observation space. Although our palm-mounted cameras have a wide field of view, we intentionally position them to focus primarily on the environment, minimizing the visibility of the hand itself. Importantly, the camera placement is mirrored between the human and robot hands. As shown in Figure <ref type="figure">3</ref>, this design yields visually consistent observations across embodiments, allowing the policy to learn a shared visual representation that generalizes across both human and robot domains.</p><p>For action space alignment, we build on insights from prior work <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b43">44]</ref>, optimizing robot hand kinematics to match the fingertip positions observed in human demonstrations. We note that this method is general and can work for any robot hand embodiment. It operates with fixed hyperparameters across users and is robust to variations in hand size-eliminating the need for user-specific tuning.</p><p>Collecting data using natural human hands offers benefits beyond ease of use. The diversity in hand morphology across human demonstrators introduces useful variation, which we hypothesize helps policies learn more generalizable grasping strategies-particularly important given the inherent mismatch between human and robot hand kinematics.</p><p>In summary, DexWild is a portable, high quality, humancentric system that can be worn by any operator to collect human data in real-world environments. Next, we explain how Robot Human Fig. <ref type="figure">3</ref>: DexWild aligns the visual observations between humans and robots to bridge the embodiment gap. This incentivizes the model to learn a task-centric rather than embodiment-centric representation.</p><p>we use the data collected by DexWild to enable dexterous policies to generalize to in-the-wild scenarios.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Training Data Modalities and Preprocessing</head><p>Generalization in dexterous manipulation demands both scale and embodiment grounding. With this goal, DexWild collects two complementary datasets: a large-scale human demonstration dataset D H using DexWild-System, and a smaller teleoperated robot dataset D R . Human data offers broad task diversity and ease of collection in real-world settings, but lacks embodiment alignment. Robot data, while limited in scale, provides crucial grounding in the robot's action and observation spaces. To harness the strengths of both, we co-train policies using a fixed ratio of human and robot data within a batch, (w h , w r )-balancing diversity with embodiment grounding to enable robust generalization during deployment.</p><p>At each training iteration, we sample a batch consisting of transitions x h and x r from D H and D R , respectively, according to the co-training weights. Each transition x i at timestep i contains:</p><p>• Observation o i : An observation at a given timestep consists of two synchronized palm camera images I pinky and I thumb captured at the current timestep, as well as a sequence of historical states, sampled at a step size up a given horizon H, comprising of {∆p i , ∆p i-step , ..., ∆p i-H }. Each ∆p consists of relative historical end-effector positions. • Action a i:i+n-1 : An action chunk of size n that includes actions {a i , a i+1 , . . . , a i+n-1 }, where a i is the action at the current timestep. Specifically, a i is a 26-dimensional vector consisting of: a arm : A 9-dimensional vector describing relative endeffector position (3D) and orientation (6D). a hand : A 17-dimensional vector describing the finger joint position targets of the robot hand. This data is directly used to train any robot hand to perform dexterous manipulation in a human-like way in any environment. We validate this approach on five representative tasks. Please see videos of these tasks on our website at <ref type="url" target="https://dexwild.github.io">https://dexwild.github.io</ref> </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Spray Bottle</head><note type="other">Florist Clothes Folding Toy Cleanup Pouring</note><p>For bimanual tasks, the observation and action spaces are duplicated, and the inter-hand pose is appended to the observation to facilitate coordination. While our retargeting procedure brings human and robot trajectories into a shared action space, a few additional steps are necessary to make the human and robot datasets compatible for joint training:</p><p>• Action Normalization: The actions of human and robot data are normalized separately to account for inherent distribution mismatches. • Demo Filtering: Since human demonstrations are collected by untrained operators in uncontrolled environments, we apply a heuristic-based filtering pipeline to automatically detect and remove low-quality or invalid trajectories. This filtering step significantly improves dataset quality without manual labeling.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Policy Training</head><p>Through the careful design of our hardware, observation, and action interfaces, we are able to train dexterous robot policies using a simple behavior cloning (BC) objective <ref type="bibr" target="#b30">[31,</ref><ref type="bibr" target="#b36">37,</ref><ref type="bibr" target="#b35">36]</ref>. To effectively learn from our multimodal, diverse data, our training pipeline leverages large-scale pre-trained visual encoders and shows strong performance across different policy architectures.</p><p>Visual Encoder: Training on DexWild data exposes our policy to significant visual diversity-across scenes, objects, and lighting-requiring an encoder that generalizes well to such variability. To address this, we adopt a pre-trained Vision Transformer (ViT) backbone, which has shown superior performance over ResNet-based encoders on in-the-wild manipulation tasks <ref type="bibr" target="#b15">[16,</ref><ref type="bibr" target="#b22">23]</ref>. Pre-trained ViTs, especially those trained on large internet-scale datasets, are particularly effective at extracting rich, transferable features <ref type="bibr" target="#b26">[27,</ref><ref type="bibr" target="#b32">33,</ref><ref type="bibr" target="#b46">47,</ref><ref type="bibr" target="#b10">11]</ref>, making them well-suited for our setting.</p><p>Policy Class: While several imitation learning architectures have been proposed recently <ref type="bibr" target="#b57">[59,</ref><ref type="bibr" target="#b5">6]</ref>, we adopt a diffusionbased policy. Diffusion models are particularly well-suited for dexterous manipulation, as they can capture multi-modal action distributions more effectively than alternatives such as Gaussian Mixture Models (GMMs) or transformers. This capability becomes increasingly important in DexWild, where demonstrations are collected from multiple humans with diverse strategies, resulting in inherently multi-modal behaviors. As the dataset scales, modeling this variability becomes critical for robust policy learning. Specifically, DexWild uses a diffusion U-Net model <ref type="bibr" target="#b5">[6]</ref> to generate action chunks.</p><p>Concretely, the training procedure is outlined in Algorithm 1. Update policy parameters θ 14: end while An important finding in our training framework is that tuning the human-to-robot data weighting significantly affects realworld performance. We discuss these effects in Section V-A.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTS</head><p>Our experimental evaluation encompasses extensive realworld deployment across diverse environments and robots, utilizing both human demonstrations and robot teleoperation data. Below, we outline our data collection process, experimental setup, and evaluation tasks. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Scaling up Data Collection</head><p>Our hardware system was deployed to 10 untrained users to collect data across a wide range of real-world environments. These settings included indoor and outdoor locations, day and night conditions, crowded cafeterias and quiet study areas, with varied tables, objects, and lighting setups. The collectors themselves varied in hand sizes and demonstration styles, enabling us to learn from a wide distribution of environments and interactions.</p><p>We constructed two datasets through our collection efforts: D H (human-collected data) and D R (robot-collected data). The human dataset D H comprises 9,290 demonstrations across five tasks: 3,000 demonstrations from 30 different environments for each of the Spray Bottle and Toy Cleanup tasks, 621 trajectories from 6 environments for the Pour task, 1,545 demonstrations from 15 environments for the Florist task, and 1,124 demonstrations from 12 environments for the Clothes Folding task.</p><p>The robot dataset D R includes 1,395 demonstrations: 388 for Spray Bottle, 370 for Toy Cleanup, 111 for Pour, 236 for Florist, and 290 for Clothes Folding tasks. Robot data was collected using an xArm and LEAP hand V2 Advanced. Our training and test objects are detailed in Figure <ref type="figure" target="#fig_3">5</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Evaluation Tasks</head><p>We evaluate our approach on five diverse manipulation tasks, each designed to assess specific aspects of dexterous manipulation: functional grasping, long-horizon planning, crosstask transfer, bimanual coordination, and deformable object manipulation. A task visualization is provided in Figure <ref type="figure" target="#fig_1">4</ref>.</p><p>In the Spray Bottle task, the robot grasps a spray bottle by the handle and sprays a target cloth, testing functional grasping and affordance understanding. In Toy Cleanup, the robot picks up scattered toys and places them in a bin, evaluating generalization and long-horizon planning. The Pouring task involves tilting a bottle to pour into a container, demonstrating skill transfer from the spray bottle task. In Bimanual Florist, the robot hands over a flower between its arms and inserts it into a vase, testing precise bimanual coordination. Finally, in Bimanual Clothes Folding, the robot uses both hands to fold a clothing item, assessing manipulation of deformable objects. Full task specifications and scoring criteria for all tasks are provided in Appendix VII-A. These tasks systematically evaluate DexWilds functional grasping capabilities, generalization across object types, transferal of skills across tasks, coordination between arms, and adaptability to deformable objects. Success requires the policy to adapt to varying object properties, environmental conditions, and task constraints.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Evaluation Environments</head><p>For robot experiments, we employed an xArm robot and Franka system, both equipped with either LEAP hand or LEAP hand V2 Advanced <ref type="bibr" target="#b37">[38,</ref><ref type="bibr" target="#b40">41]</ref>. Unless explicitly mentioned, xArm and LEAP hand V2 Advanced was used. We evaluate our approach across three scenarios:</p><p>1) In-Domain: Environments where robot training data was collected, testing with novel objects 2) In-the-Wild: Environments present in DexWild but absent from robot training data 3) In-the-Wild Extreme: Unseen environments absent from both datasets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. ANALYSIS AND RESULTS</head><p>In our evaluations, we seek to investigate the following key questions:</p><p>1) How effectively does DexWild leverage human data to achieve strong in-the-wild performance? 2) Does DexWild enable policy transfer across tasks and robot embodiments? 3) Does policy performance scale effectively with increasing amounts of DexWild-System data? Please see videos of our results at <ref type="url" target="https://dexwild.github.io">https://dexwild.github.io</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Zero Shot In the Wild Policies w/ DexWild</head><p>DexWild enables strong policy generalization in novel scenes. We evaluate policies in environments with increasing novelty to assess their generalization. As shown in Figure <ref type="figure" target="#fig_4">6</ref>, policies trained exclusively on robot data perform well in indomain settings (64.7% success rate) but degrade significantly in more challenging scenarios-in-the-wild (28.5%) and inthe-wild extreme (22.0%). This 36-point performance drop suggests that robot-only policies overfit to environment-specific features and fail to develop robust, transferable representations. In contrast, policies trained only on human data learn highlevel object affordances and approach objects reliably, even in complex scenes. However, without robot-specific action grounding, they struggle to execute precise manipulation, resulting in poor performance across all scenarios (3.6% indomain, 7.3% in-the-wild).</p><p>To combine the strengths of both modalities, we adopt a co-training strategy-jointly training on both robot and human data-a method validated in prior works <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b48">49,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b19">20,</ref><ref type="bibr" target="#b31">32]</ref>. This encourages the policy to learn task-relevant features rather than overfitting to specific embodiments or environments. We experiment with different robot-to-human data ratios (1:1 to 1:5) per training batch. Our empirical analysis reveals that a 1:2 ratio yields optimal performance across all scenarios:</p><p>1) In Domain: 79.8% vs. 64.7% (robot-only) 2) In-the-wild: 75.1% vs. 28.5% (robot-only) 3) In-the-wild Extreme: 62.7% vs. 22.0% (robot-only) Interestingly, increasing the human data ratio further (e.g., 1:5) degrades performance (54.5% in-domain, 50.9% in-thewild), indicating that robot data remains essential for grounding fine-grained control.</p><p>DexWild extends to complex bimanual coordination tasks. To evaluate whether DexWild generalizes beyond singlearm tasks, we test it on bimanual tasks that demand precise coordination between two hands. We compare co-trained policies (1:2 ratio) against robot-only policies in in-the-wild extreme settings. DexWild policies achieve a strong 68.1% average success rate, compared to just 13% for the robotonly baseline. Even when failures occur, DexWild policies exhibit meaningful attempts at task execution-while robotonly policies often produce erratic or unstructured behavior.</p><p>These results demonstrate that DexWild not only enables robust generalization across environments but also scales to more complex manipulation behaviors.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Robust Cross-Task and Cross-Embodiment Generalization</head><p>DexWild enables transfer of low-level skills across tasks. Many manipulation tasks share foundational motor skills-such as lifting, orienting, and rotating objects-which opens the door to skill reuse across related tasks. For example, opening a microwave and opening a cupboard both involve similar coordination and control. We evaluate this form of cross-task transfer using the pouring task, which shares many motion primitives with the spray task. Crucially, we use no robot data for pouring and instead combine human (DexWild-System) demonstrations of pouring with robot demonstrations from spraying. This setup enables zero-shot generalization to pouring in in-the-wild extreme environments. Using a 1:2 robot-to-human co-training ratio, our policy achieves a 94% success rate, far exceeding policies trained with only robot (0%) or only human data (11%).</p><p>DexWild enables transfer across robot embodiments. Since DexWild data is not tied to any specific embodiment, it naturally supports cross-platform transfer. This prolongs the value of our data, as collecting platform-specific data for every new robot is resource-intensive and impractical. We test two transfer scenarios in in-the-wild extreme scenes:</p><p>• Cross-arm: Transferring from an xArm to a Franka Panda arm. We achieve a 37.5% success rate, compared to 4.5% for the robot-only baseline-an 8.3× improvement. • Cross-hand: Transferring from the LEAP Hand V2 Advanced to the original LEAP Hand. We achieve 65.3% success versus 13.3% for the baseline, showing that DexWild generalizes not only across arms, but across dexterous hands as well.</p><p>These results, shown in Figure <ref type="figure" target="#fig_5">7</ref>, demonstrate that DexWild enables zero-shot generalization to new tasks and hardware embodiments without any additional robot-specific data, making it an efficient and general framework for dexterous policy learning on many robots.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Scalability of DexWild</head><p>Policy performance scales with dataset size. To understand how data scale impacts policy performance in the wild, we randomly sample subsets of the full human dataset at varying sizes and evaluate the resulting policies. We fix the size of the robot dataset. As shown in Figure <ref type="figure" target="#fig_5">7</ref>, there is a clear positive correlation between dataset size and average task performance-rising from 28.7% at 20% dataset size to 67.8% with the full dataset, marking a 2.36× improvement. Interestingly, the learning curve is nonlinear, with especially steep gains in the 25-50% range, suggesting a critical threshold where the policy begins to reliably learn generalizable behaviors. Importantly, performance continues to improve all the way to 100% data usage, indicating that the system has not yet plateaued. This suggests that even more capable policies could be learned with continued data collection.</p><p>DexWild-System enables fast and scalable data collection. Given the observed benefits of scaling, we evaluate the data collection efficiency of DexWild-System via a comparative user study measuring demonstrations per hour. As shown in Figure <ref type="figure" target="#fig_6">8</ref>, DexWild-System achieves an average collection rate of 201 demos/hour across five representative tasks-nearly matching the rate of demonstrations collected using bare hands and 4.6× faster than a traditional robot teleoperation system based on Gello <ref type="bibr" target="#b40">[41,</ref><ref type="bibr" target="#b54">56]</ref>, which achieves just 43 demos/hour.</p><p>We identify three key limitations of Gello-based collection that our system overcomes:</p><p>1) Lack of haptic feedback: Operators cannot feel objects, making fine manipulation difficult for certain tasks. 2) Scene reset: Resetting the environment is cumbersome and often requires a second operator or pauses in data collection. 3) Hardware setup overhead: Robots are heavy and require time-consuming setup at each new location, whereas DexWild-System is portable and can be set up in minutes. DexWild not only demonstrates strong scaling trends with increasing data volume, but also offers a practical and efficient path to collecting diverse, high-quality data at scale-crucial for real-world generalization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Spray</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSION AND LIMITATIONS</head><p>We introduce DexWild, a scalable framework for learning dexterous manipulation policies that effectively generalize to new tasks, environments, and robot embodiments. We introduce DexWild-System, a portable, human-centric data collection device that significantly accelerates dataset creation (4.6× faster than conventional robot teleoperation). We propose DexWild cotraining method, which leverages large scale human demonstrations alongside minimal robot data to achieve robust generalization-reaching a success rate of 68.5% in completely unseen environments, nearly four times higher than methods using robot data only. Furthermore, DexWild's embodimentagnostic design enables strong cross-embodiment and cross-task transfer capabilities, reducing the need for robot-specific data.</p><p>Despite these strengths, several limitations remain that motivate future research: First, our approach still depends on a limited number of teleoperated robot data to bridge the gap between human and robot actions. Future work could explore improved retargeting or online policy adaptation to remove the need for teleoperated data. Next, because humans typically perform these tasks successfully, their demonstrations seldom include error recovery-causing trained policies to struggle to recover from unexpected failures. Adding recovery examples or adaptive strategies could boost real-world robustness. Finally, our method uses only visual and kinematic data, which limits its performance in contact-rich tasks. Incorporating tactile or haptic sensing could improve the handling of delicate interactions.</p><p>In summary, DexWild represents a significant step toward scalable, generalizable robot manipulation policies. Our results highlight the promise of leveraging human interaction data at scale, offering an exciting avenue toward truly dexterous and versatile robots operating in diverse, real-world environments.</p><p>Videos, code, and hardware instructions are available on our website at <ref type="url" target="https://dexwild.github.io">https://dexwild.github.io</ref> VII. APPENDIX Videos of our results, code to recreate our system, and hardware instructions are available on our website at <ref type="url" target="https://dexwild.github.io">https: //dexwild.github.io</ref> </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Detailed Task Description and Scoring Criteria:</head><p>We evaluate five dexterous manipulation tasks, each designed to assess different capabilities such as functional grasping, long-horizon planning, precision, bimanual coordination, and deformable object manipulation. Each task is scored according to a structured rubric based on discrete completion milestones.</p><p>The task scoring criteria are designed to quantify the performance of different robot tasks based on specific completion milestones. Each task has a set of defined actions with corresponding point values. Higher scores are assigned to more complex or functionally successful actions, while partial completions and failed attempts receive lower scores. This structured scoring system allows for consistent evaluation and comparison of task performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Spray Bottle</head><p>This task evaluates functional grasping and affordance understanding. The robot must grasp a spray bottle and orient it to spray over a target cloth.</p><p>-0.00: Nothing -0.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Data Collection Procedure</head><p>To deploy DexWild-System with untrained data collectors, we provide a one-page instruction sheet outlining the task, object setup, and system startup/shutdown. DexWild-System includes three core components: a wrist-tracking camera, a battery-powered mini-PC for onboard data capture, and a custom sensor pod with a motion-capture glove and palmmounted cameras. At a new site, users simply wear the mocap glove and power on the mini-PC with a provided power bank. For egocentric tracking, a headstrap holds the tracking camera; for exocentric tracking, we provide a collapsible tripod. Once booted, users launch our custom desktop app and control recording via a Bluetooth clicker or foot pedal. The UI (Fig. <ref type="figure" target="#fig_7">9</ref>) shows sensor status, SLAM recording, and data capture indicators, along with buttons to view the tracking camera feed and delete the last episode. Collectors gather 100 episodes per location. After the day is finished, we upload the data to our remote machine for processing.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Downstream Data Processing</head><p>Each episode is stored in its own folder, with subfolders organizing individual actions and observations. SVO recordings from the Zed Mini camera-used for SLAM and wrist pose tracking-are saved separately, with each file covering five episodes. To begin data processing, we use the Zed SDK to decode these SVO files, reconstruct the camera's motion, and perform ArUco cube tracking and wrist pose estimation using both the left image and stereo depth data. We then apply a filtering pipeline to assess tracking quality; episodes are discarded if the wrist pose cannot be reliably tracked for more than 75% of the duration. Next, we compute the action distribution and clip outliers outside the 2nd and 97th percentiles. We smooth the trajectories using interpolation and Gaussian filtering to ensure fluid motion. Hand motions are then retargeted using inverse kinematics in PyBullet, following the method in <ref type="bibr" target="#b40">[41]</ref>. The entire pipeline is parallelized using Ray for efficiency.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Behavior Cloning Policy Architecture and Training Hyper-Parameters</head><p>Our behavior cloning policy takes as input RGB images and relative state history. We obtain tokens for the image observation via a ViT and tokens for relative states via linear layers. The weights of ViT is initialized from the Soup 1M model from <ref type="bibr" target="#b10">[11]</ref>. We decide to include relative states as we found it greatly increases the robustness of the policy, and enables smoother motions. In particular, for bimanual tasks, we find that including the interhand pose (pose of left hand relative to right hand) greatly increases success rate in tasks like Florist We implement both Action Chunking Transformer <ref type="bibr" target="#b57">[59]</ref> and Diffusion U-Net <ref type="bibr" target="#b5">[6]</ref> as policy classes, which output a sequence of actions. The network outputs actions which consists of relative end effector actions and absolute hand joint angles.</p><p>We list the hyper-paramaters that we used for policy training using behavior-cloning in this Table V</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Low Level Motion Control</head><p>For optimal smoothness of our policies and safety, we employ a Riemannian Motion Policy (RMP) <ref type="bibr" target="#b33">[34]</ref> implemented in Isaac Lab <ref type="bibr" target="#b25">[26]</ref>, where the RMP dynamically generates jointspace targets given end effector targets. RMP also has the added benefit of incorporating real-time collision avoidance, preventing self-collision between the arms and a set table height. Although our policies does not rely on RMP to prevent collisions, the peace of mind is appreciated.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Comparing Policy Classes</head><p>Does DexWild work with different behavior cloning policy classes? Table <ref type="table">I</ref> compares the performance of ACT and Diffusion-across both the In-the-Wild and In-the-Wild Extreme settings. Each policy is evaluated in a robot-only setting and a co-trained (1:2) setting using the DexWild dataset. Notably, Diffusion policies benefit more from DexWild cotraining, achieving the highest scores in all tasks, including substantial improvements on the Pour task where the policy must generalize across tasks. These results suggest that DexWild co-training enables stronger generalization, especially when paired with expressive policy architectures like Diffusion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>G. Cross Hand Extended Results</head><p>Does DexWild generalize across different robot hands? Table <ref type="table">II</ref> reports LEAP Hand performance under both In the Wild and In the Wild Extreme conditions. In every case, DexWild co-training substantially outperforms the robot-only baseline. These results highlight the effectiveness of DexWild in cross embodiment generalization even when using a completely different robot hand.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>H. Scaling Extended Results</head><p>Does DexWild improve as more DexWild data is added? Table <ref type="table">III</ref> shows steady gains as we scale from 0% to 100% of the DexWild dataset. Performance increases steadily with more human demonstrations, with a notable jump between 25% and 50% of the dataset. These results demonstrate that DexWild enables scalable learning, where even comparably smaller data scales yields substantial gains, and additional data continues to enhance generalization</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. Cotraining Extended Results</head><p>How does DexWild react to different cotraining ratios? Table <ref type="table">IV</ref>  </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: Left: DexWild efficiently capture high-fidelity data using an individual's own hands across various environments. Right: Robot hands are equipped with cameras aligned with the human cameras. We test DexWild on two distinct robot hands and robot arms.</figDesc><graphic coords="3,369.73,169.90,243.93,182.91" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: Using DexWild-System, humans can effortlessly collect accurate data with their own hands across a wide range of environments.</figDesc><graphic coords="5,48.96,134.22,81.72,64.97" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Algorithm 1 3 : 5 :observation oi 6 : 7 : 9 : 10 :</head><label>13567910</label><figDesc>DexWild Imitation Learning Procedure Require: Human dataset DH , Robot dataset DR, Co-training weights {ω h , ωr} 1: Initialize policy π θ with ViT encoder ϕvit 2: while not converged do Sample a batch of transitions {x h }, {xr} from DH , DR using weights {ω h , ωr} 4: for each transition xi in the batch do Extract Encode images: Zi = ϕvit(oi) Extract ground truth action chunk ai:i+n-1 = {ai, . . . , ai+n-1} 8: Sample noise scale t ∼ U(1, T ) Add noise ϵt ∼ N (0, σt) to ai:i+n-1 Predict noise εθ = π θ (Zi, ai:i+n-1 + ϵt, t) 11:Compute diffusion loss L θ = ∥ϵt -εθ ∥</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: We collect data using a diverse set of objects across categories. Spray Bottle Task -25 Train, 11 Test; Toy Cleanup Task -64 Train, 9 Test; Pour Task -35 Train, 5 Test; Florist Task -6 Train, 2 Test; Clothes Folding Task -17 Train, 6 Test.</figDesc><graphic coords="6,481.88,109.05,79.09,59.91" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: How does co-training help with scaling up in the wild performance? We evaluate our policy across three scenarios: (a) In-Domain scenes where robot training data was collected but with novel objects, (b) In-the-Wild scenes present in DexWild but not in robot data, and (c) In-the-Wild Extreme scenes absent from both datasets. Displayed ratio is Robot:Human.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Left: Cross-Task Performance -Evaluating DexWild on the pour task using robot data exclusively from the spray task. Middle: Cross-Embodiment Performance -Testing DexWild policy on the Original LEAP hand and a Franka robot arm. Right: Scaling Performance -Demonstrating improved DexWild performance as dataset size increases. Displayed ratio is Robot:Human.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 8 :</head><label>8</label><figDesc>Fig. 8: DexWild-System offers 4.6× improvement over robot data collection speed and nearly matches the human bare hands data collection speed.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 9 :</head><label>9</label><figDesc>Fig. 9: DexWild-System features a simple and easy-to-use interface for deployment by untrained data collectors.</figDesc><graphic coords="13,318.25,54.00,238.51,181.35" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head></head><label></label><figDesc>groups all three raw metrics: (a) In-Domain, (b) Inthe-Wild, and (c) In-the-Wild Extreme. All evaluations were run on xArm + LEAP Hand V2 Advanced.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head></head><label></label><figDesc>, but are bulky and uncomfortable for long-term</figDesc><table><row><cell cols="2">Human Demonstration Setup</cell><cell>Robot Setup</cell><cell></cell></row><row><cell></cell><cell></cell><cell>DexWild Camera Tracking Camera Mini-PC Mocap Glove</cell><cell></cell></row><row><cell>Egocentric</cell><cell>Exocentric</cell><cell>Franka Panda</cell><cell>xArm</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENTS</head><p>We would like to thank <rs type="person">Yulong Li</rs>, <rs type="person">Hengkai Pan</rs>, and <rs type="person">Sandeep Routray</rs> for thoughtful discussions. We'd also like to thank <rs type="person">Andrew Wang</rs> for setting up compute and <rs type="person">Yulong Li</rs> for helping with robot system setup. Lastly, we'd like to express thanks to <rs type="person">Hengkai Pan</rs>, <rs type="person">Andrew Wang</rs>, <rs type="person">Adam Kan</rs>, <rs type="person">Ray Liu</rs>, <rs type="person">Mingxuan Li</rs>, <rs type="person">Lukas Vargas</rs>, <rs type="person">Jose German</rs>, <rs type="person">Laya Satish</rs>, <rs type="person">Sri Shasanka Madduri</rs> for helping collect data. This work was supported in part by <rs type="funder">AFOSR</rs> <rs type="grantNumber">FA9550-23-1-0747</rs> and <rs type="funder">Apple Research Award</rs>.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_xDRyfVc">
+					<idno type="grant-number">FA9550-23-1-0747</idno>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0" />			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Affordances from human videos as a versatile representation for robotics</title>
+		<author>
+			<persName><forename type="first">Shikhar</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russell</forename><surname>Mendonca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lili</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Unnat</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<author>
+			<persName><forename type="first">Prithviraj</forename><surname>Banerjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sindi</forename><surname>Shkodrani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pierre</forename><surname>Moulon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shreyas</forename><surname>Hampali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shangchen</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fan</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linguang</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jade</forename><surname>Fountain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Edward</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Selen</forename><surname>Basol</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2411.19167</idno>
+		<title level="m">Hot3d: Hand and object tracking in 3d from egocentric multi-view videos</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Language models are few-shot learners</title>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Mann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nick</forename><surname>Ryder</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Melanie</forename><surname>Subbiah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jared</forename><forename type="middle">D</forename><surname>Kaplan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Prafulla</forename><surname>Dhariwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arvind</forename><surname>Neelakantan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pranav</forename><surname>Shyam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Girish</forename><surname>Sastry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Amanda</forename><surname>Askell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in neural information processing systems</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1877" to="1901" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Dexycb: A benchmark for capturing hand grasping of objects</title>
+		<author>
+			<persName><forename type="first">Yu-Wei</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Xiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pavlo</forename><surname>Molchanov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ankur</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Tremblay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yashraj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Narang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Umar</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stan</forename><surname>Iqbal</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Birchfield</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="9044" to="9053" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Open-television: Teleoperation with immersive active visual feedback</title>
+		<author>
+			<persName><forename type="first">Xuxin</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jialong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shiqi</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ge</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.01512</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Chi</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Siyuan</forename><surname>Feng</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yilun</forename><surname>Du</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenjia</forename><surname>Xu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Cousineau</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Burchfiel</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems</meeting>
+		<imprint>
+			<biblScope unit="page" from="2023" to="2025" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Universal manipulation interface: Inthe-wild robot teaching without in-the-wild robots</title>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenjia</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuer</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyuan</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE International Conference on Robotics and Automation</title>
+		<meeting>the IEEE International Conference on Robotics and Automation</meeting>
+		<imprint/>
+	</monogr>
+	<note>ICRA), 2024. 2, 4</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">O'</forename><surname>Abby</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Abdul</forename><surname>Neill</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Abhinav</forename><surname>Rehman</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Abhiram</forename><surname>Gupta</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Abhishek</forename><surname>Maddukuri</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Abhishek</forename><surname>Gupta</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Abraham</forename><surname>Padalkar</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Acorn</forename><surname>Lee</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Pooley</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Soroush</forename><surname>Guist</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Nasiriany</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Schaal</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>Welker</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Subramanian</forename><surname>Tian</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Sudeep</forename><surname>Ramamoorthy</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Suneel</forename><surname>Dasari</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Sungjae</forename><surname>Belkhale</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Suraj</forename><surname>Park</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Suvir</forename><surname>Nair</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Takayuki</forename><surname>Mirchandani</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Tanmay</forename><surname>Osa</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Tatsuya</forename><surname>Gupta</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Tatsuya</forename><surname>Harada</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Ted</forename><surname>Matsushima</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Xiao</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Tianhe</forename><surname>Kollar</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Tianli</forename><surname>Yu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Todor</forename><surname>Ding</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Davchev</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Travis</forename><surname>Zhao</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Trevor</forename><surname>Armstrong</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Trinity</forename><surname>Darrell</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Vidhi</forename><surname>Chung</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Vikash</forename><surname>Jain</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Kumar</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Vanhoucke</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Wenxuan</forename><surname>Zhan</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Wolfram</forename><surname>Zhou</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xi</forename><surname>Burgard</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangyu</forename><surname>Chen</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Chen</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xinghao</forename><surname>Wang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xinyang</forename><surname>Zhu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xiyuan</forename><surname>Geng</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xu</forename><surname>Liu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Xuanlin</forename><surname>Liangwei</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yansong</forename><surname>Li</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yao</forename><surname>Pang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yecheng</forename><surname>Lu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Jason</forename><surname>Ma</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yejin</forename><surname>Kim</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yevgen</forename><surname>Chebotar</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yifan</forename><surname>Zhou</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yifeng</forename><surname>Zhu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yilin</forename><surname>Wu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Ying</forename><surname>Xu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yixuan</forename><surname>Wang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yonatan</forename><surname>Bisk</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yongqiang</forename><surname>Dou</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yoonyoung</forename><surname>Cho</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Youngwoon</forename><surname>Lee</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yuchen</forename><surname>Cui</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yue</forename><surname>Cao</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yueh-Hua</forename><surname>Wu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yujin</forename><surname>Tang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yuke</forename><surname>Zhu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yunchu</forename><surname>Zhang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yunfan</forename><surname>Jiang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yunshuang</forename><surname>Li</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yunzhu</forename><surname>Li</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yusuke</forename><surname>Iwasawa</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Yutaka</forename><surname>Matsuo</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Zehan</forename><surname>Ma</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Zhuo</forename><surname>Xu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Jeff</forename><surname>Zichen</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Zichen</forename><surname>Cui</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><surname>Zhang</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">Open X-Embodiment Collaboration</orgName>
+			</affiliation>
+		</author>
+		<imprint/>
+	</monogr>
+	<note>Zipeng Fu, and Zipeng Lin. Open X-Embodiment: Robotic learning datasets and RT-X models, 2023. 1, 2, 3, 7</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Hybrid tracking of human operators using imu/uwb data fusion by a kalman filter</title>
+		<author>
+			<persName><forename type="first">Juan</forename><surname>Antonio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Corrales</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francisco</forename><forename type="middle">A</forename><surname>Candelas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fernando</forename><surname>Torres</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 3rd ACM/IEEE international conference on Human robot interaction</title>
+		<meeting>the 3rd ACM/IEEE international conference on Human robot interaction</meeting>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+			<biblScope unit="page" from="193" to="200" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Epic-kitchens: A large-scale dataset for recognizing, anticipating, and retrieving handobject interactions</title>
+		<author>
+			<persName><forename type="first">Dima</forename><surname>Damen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hazel</forename><surname>Doughty</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giovanni</forename><forename type="middle">Maria</forename><surname>Farinella</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sanja</forename><surname>Fidler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antonino</forename><surname>Furnari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Evangelos</forename><surname>Kazakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Davide</forename><surname>Moltisanti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Munro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Toby</forename><surname>Perrett</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Will</forename><surname>Price</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Wray</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the European Conference on Computer Vision (ECCV)</title>
+		<meeting>the European Conference on Computer Vision (ECCV)</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page">2</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">An unbiased look at datasets for visuomotor pre-training</title>
+		<author>
+			<persName><forename type="first">Sudeep</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohan</forename><surname>Kumar Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Unnat</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhinav</forename><surname>Gupta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023. 2, 3, 5, 14</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Lerrel Pinto, and Nur Muhammad Mahi Shafiullah. Robot utility models: General policies for zero-shot deployment in new environments</title>
+		<author>
+			<persName><forename type="first">Haritheja</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Norihito</forename><surname>Naka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zijin</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seungjae</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julian</forename><surname>Mehu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aaron</forename><surname>Edsinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chris</forename><surname>Paxton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumith</forename><surname>Chintala</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Arctic: A dataset for dexterous bimanual handobject manipulation</title>
+		<author>
+			<persName><forename type="first">Zicong</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Omid</forename><surname>Taheri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dimitrios</forename><surname>Tzionas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Muhammed</forename><surname>Kocabas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuel</forename><surname>Kaufmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><forename type="middle">J</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Otmar</forename><surname>Hilliges</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="12943" to="12954" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Open-television: An open-source immersive teleoperation system with stereo visual feedback</title>
+	</analytic>
+	<monogr>
+		<title level="m">Authors from UC San Diego and MIT</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">The Robot Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Ego4d: Around the world in 3,000 hours of egocentric video</title>
+		<author>
+			<persName><forename type="first">Kristen</forename><surname>Grauman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Ryoo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aljoša</forename><surname>Smolić</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minh</forename><surname>Vo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page">2</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">UMI on legs: Making manipulation policies mobile with manipulation-centric whole-body controllers</title>
+		<author>
+			<persName><forename type="first">Huy</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yihuai</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2024 Conference on Robot Learning</title>
+		<meeting>the 2024 Conference on Robot Learning</meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Dexpilot: Vision-based teleoperation of dexterous robotic hand-arm system</title>
+		<author>
+			<persName><forename type="first">Ankur</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jacky</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Wei</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qian</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stan</forename><surname>Birchfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nathan</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="9164" to="9170" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Toward general-purpose robots via foundation models: A survey and meta-analysis</title>
+		<author>
+			<persName><forename type="first">Yafei</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quanting</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vidhi</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Francis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jay</forename><surname>Patrikar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikhil</forename><surname>Keetha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seungchan</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yaqi</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tianyi</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhibo</forename><surname>Zhao</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2312.08782</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<author>
+			<persName><forename type="first">Aadhithya</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhuoran</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yinlong</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Irmak</forename><surname>Guzey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siddhant</forename><surname>Haldar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumith</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lerrel</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.07870</idno>
+		<title level="m">OPEN TEACH: A versatile teleoperation system for robotic manipulation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Egomimic: Scaling imitation learning via egocentric video</title>
+		<author>
+			<persName><forename type="first">Simar</forename><surname>Kareer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dhruv</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ryan</forename><surname>Punamiya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pranay</forename><surname>Mathur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuo</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Judy</forename><surname>Hoffman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danfei</forename><surname>Xu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Khazatsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Suraj</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sudeep</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siddharth</forename><surname>Karamcheti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soroush</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohan</forename><surname>Kumar Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lawrence</forename><surname>Yunliang Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kirsty</forename><surname>Ellis</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.12945</idno>
+		<title level="m">A large-scale in-the-wild robot manipulation dataset</title>
+		<imprint>
+			<date type="published" when="2007">2024. 1, 2, 7</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<author>
+			<persName><forename type="first">Jin</forename><surname>Moo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siddharth</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ted</forename><surname>Karamcheti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Suraj</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rafael</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ethan</forename><surname>Rafailov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Grace</forename><surname>Foster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pannag</forename><surname>Lam</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Sanketi</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2406.09246</idno>
+		<title level="m">An open-source vision-language-action model</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Data scaling laws in imitation learning for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Fanqi</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yingdong</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pingyue</forename><surname>Sheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chuan</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiacheng</forename><surname>You</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Gao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<date type="published" when="2005">2024. 2, 5</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Visual instruction tuning</title>
+		<author>
+			<persName><forename type="first">Haotian</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chunyuan</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingyang</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong Jae</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NeurIPS</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danfei</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Josiah</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soroush</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohun</forename><surname>Kulkarni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Silvio</forename><surname>Savarese</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuke</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Roberto</forename><surname>Martín-Martín</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2108.03298</idno>
+		<title level="m">What matters in learning from offline human demonstrations for robot manipulation</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Orbit: A unified simulation framework for interactive robot learning environments</title>
+		<author>
+			<persName><forename type="first">Mayank</forename><surname>Mittal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Calvin</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qinxi</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingzhou</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikita</forename><surname>Rudin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Hoeller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jia</forename><surname>Lin Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ritvik</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunrong</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hammad</forename><surname>Mazhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Buck</forename><surname>Babich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gavriel</forename><surname>State</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Hutter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Animesh</forename><surname>Garg</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/LRA.2023.3270034</idno>
+		<ptr target="http://dx.doi.org/10.1109/LRA.2023.3270034.14" />
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<idno type="ISSN">2377-3774</idno>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="3740" to="3747" />
+			<date type="published" when="2023-06">June 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<author>
+			<persName><forename type="first">Suraj</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aravind</forename><surname>Rajeswaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2203.12601</idno>
+		<title level="m">R3M: A universal visual representation for robot manipulation</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">5</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Pavlakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dandan</forename><surname>Shan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ilija</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Angjoo</forename><surname>Kanazawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Fouhey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Hamer</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Reconstructing hands in 3d with transformers</title>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Pavlakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dandan</forename><surname>Shan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ilija</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Angjoo</forename><surname>Kanazawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Fouhey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Comparative abilities of microsoft kinect and vicon 3d motion capture for gait analysis</title>
+		<author>
+			<persName><forename type="first">Alexandra</forename><surname>Pfister</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Alexandre</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shaw</forename><surname>West</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jack</forename><surname>Bronner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noah</forename><surname>Adam</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of medical engineering &amp; technology</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="274" to="280" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Alvinn: An autonomous land vehicle in a neural network</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Dean</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pomerleau</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in neural information processing systems</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<date type="published" when="1988">1988</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<author>
+			<persName><forename type="first">Ri-Zhao</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shiqi</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuxin</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chaitanya</forename><surname>Chawla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jialong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tairan</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ge</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><forename type="middle">J</forename><surname>Yoon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ryan</forename><surname>Hoque</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lars</forename><surname>Paulsen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ge</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jian</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sha</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guanya</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2503.13441</idno>
+		<title level="m">Humanoid policy human policy</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Real-world robot learning with masked visual pre-training</title>
+		<author>
+			<persName><forename type="first">Ilija</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tete</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>James</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Trevor</forename><surname>Darrell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">CoRL</title>
+		<imprint>
+			<biblScope unit="issue">5</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<author>
+			<persName><forename type="first">Nathan</forename><forename type="middle">D</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan</forename><surname>Issac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Kappler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stan</forename><surname>Birchfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dieter</forename><surname>Fox</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/1801.02854.14" />
+		<title level="m">Riemannian motion policies</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Frankmocap: A monocular 3d whole-body pose estimation system via regression and integration</title>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Rong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Takaaki</forename><surname>Shiratori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hanbyul</forename><surname>Joo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+		<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="1749" to="1759" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">A reduction of imitation learning and structured prediction to no-regret online learning</title>
+		<author>
+			<persName><forename type="first">Stéphane</forename><surname>Ross</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Geoffrey</forename><surname>Gordon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Drew</forename><surname>Bagnell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the fourteenth international conference on artificial intelligence and statistics</title>
+		<meeting>the fourteenth international conference on artificial intelligence and statistics</meeting>
+		<imprint>
+			<publisher>JMLR Workshop and Conference Proceedings</publisher>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="page" from="627" to="635" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Is imitation learning the route to humanoid robots?</title>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Schaal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Trends in cognitive sciences</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="233" to="242" />
+			<date type="published" when="1999">1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Leap hand: Low-cost, efficient, and anthropomorphic hand for robot learning</title>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Ananye</forename><surname>Agarwal</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="page" from="2023" to="2026" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Videodex: Learning dexterity from internet videos</title>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shikhar</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of The 6th Conference on Robot Learning</title>
+		<editor>
+			<persName><forename type="first">Karen</forename><surname>Liu</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Dana</forename><surname>Kulic</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Jeff</forename><surname>Ichnowski</surname></persName>
+		</editor>
+		<meeting>The 6th Conference on Robot Learning</meeting>
+		<imprint>
+			<date type="published" when="2023-12-18">18 Dec 2023</date>
+			<biblScope unit="volume">205</biblScope>
+			<biblScope unit="page" from="654" to="665" />
+		</imprint>
+	</monogr>
+	<note>Proceedings of Machine Learning Research</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Videodex: Learning dexterity from internet videos</title>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shikhar</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">3</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Bimanual dexterity for complex tasks</title>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yulong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiahui</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohan</forename><surname>Kumar Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ray</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haoyu</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Russell</forename><surname>Mendonca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">8th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024. 2, 3, 4, 6, 8, 14</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m" type="main">Hand-object interaction pretraining from videos</title>
+		<author>
+			<persName><forename type="first">Gaurav</forename><surname>Himanshu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antonio</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carmelo</forename><surname>Loquercio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jane</forename><surname>Sferrazza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haozhi</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Malik</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2409.08273.2" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<monogr>
+		<author>
+			<persName><forename type="first">Ritvik</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ankur</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nathan</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2412.01791</idno>
+		<title level="m">Dextrah-rgb: Visuomotor policies to grasp anything with dexterous hands</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<title level="m" type="main">Robotic telekinesis: Learning a robotic hand imitator by watching humans on youtube</title>
+		<author>
+			<persName><forename type="first">Aravind</forename><surname>Sivakumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Robotic telekinesis: Learning a robotic hand imitator by watching humans on youtube</title>
+		<author>
+			<persName><forename type="first">Aravind</forename><surname>Sivakumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenneth</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">RSS</title>
+		<imprint>
+			<biblScope unit="issue">2</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Grasping in the wild: Learning 6dof closedloop grasping from low-cost demonstrations</title>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Johnny</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Funkhouser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="issue">2</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">HRP: Human affordances for robotic pre-training</title>
+		<author>
+			<persName><forename type="first">Mohan</forename><surname>Kumar Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sudeep</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shikhar</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhinav</forename><surname>Gupta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems<address><addrLine>Delft, Netherlands</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005">2024. 2, 5</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<author>
+			<persName><forename type="first">Andreas</forename><surname>Steiner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">André Susano</forename><surname>Pinto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Tschannen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Keysers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiao</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yonatan</forename><surname>Bitton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexey</forename><surname>Gritsenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthias</forename><surname>Minderer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anthony</forename><surname>Sherbondy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shangbang</forename><surname>Long</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyang</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Reeve</forename><surname>Ingle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Emanuele</forename><surname>Bugliarello</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sahar</forename><surname>Kazemzadeh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Mesnard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ibrahim</forename><surname>Alabdulmohsin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lucas</forename><surname>Beyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaohua</forename><surname>Zhai</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2412.03555</idno>
+	</analytic>
+	<monogr>
+		<title level="m">A Family of Versatile VLMs for Transfer</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">2</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Octo: An open-source generalist robot policy</title>
+		<author>
+			<persName><surname>Om Team</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ghosh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mees</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hejna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Luo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems<address><addrLine>Delft, Netherlands</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Upper limb motion tracking with the integration of imu and kinect</title>
+		<author>
+			<persName><forename type="first">Yushuang</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoli</forename><surname>Meng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dapeng</forename><surname>Tao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dongquan</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Feng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neurocomputing</title>
+		<imprint>
+			<biblScope unit="volume">159</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="207" to="218" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<author>
+			<persName><forename type="first">Hugo</forename><surname>Touvron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thibaut</forename><surname>Lavril</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gautier</forename><surname>Izacard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xavier</forename><surname>Martinet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marie-Anne</forename><surname>Lachaux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Timothée</forename><surname>Lacroix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Baptiste</forename><surname>Rozière</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Naman</forename><surname>Goyal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Hambro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Faisal</forename><surname>Azhar</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2302.13971</idno>
+		<title level="m">Open and efficient foundation language models</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">Attention is all you need</title>
+		<author>
+			<persName><surname>Vaswani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Bridgedata v2: A dataset for robot learning at scale</title>
+		<author>
+			<persName><forename type="first">Homer</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abraham</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jin</forename><surname>Moo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Max</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chongyi</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tony</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Philippe</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quan</forename><surname>Hansen-Estruch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andre</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vivek</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kuan</forename><surname>Myers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page">2</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Dexcap: Scalable and portable mocap data collection system for dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haochen</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weizhuo</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruohan</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karen</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems (RSS)</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page">3</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<title level="m" type="main">Gello: A general, low-cost, and intuitive teleoperation framework for robot manipulators</title>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yide</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhongke</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xingyu</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Abbeel</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008">2023. 2, 8</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<author>
+			<persName><forename type="first">Seonghyeon</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joel</forename><surname>Jang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Byeongguk</forename><surname>Jeon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sejune</forename><surname>Joo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianwei</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Baolin</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Reuben</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Wei</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bill</forename><surname>Yuchen Lin</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.11758</idno>
+		<title level="m">Latent action from videos</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<title level="m" type="main">Doglove: Dexterous manipulation with a low-cost open-source haptic force feedback glove</title>
+		<author>
+			<persName><forename type="first">Han</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Songbo</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhecheng</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huazhe</forename><surname>Xu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2502.07730</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<analytic>
+		<title level="a" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">Tony</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vikash</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems (RSS)</title>
+		<meeting>Robotics: Science and Systems (RSS)</meeting>
+		<imprint>
+			<date type="published" when="2023">2023. 2, 5, 14</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main">Freihand: A dataset for markerless capture of hand pose and shape from single rgb images</title>
+		<author>
+			<persName><forename type="first">Christian</forename><surname>Zimmermann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Duygu</forename><surname>Ceylan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jimei</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bryan</forename><surname>Russell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Max</forename><surname>Argus</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Brox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+		<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">3</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

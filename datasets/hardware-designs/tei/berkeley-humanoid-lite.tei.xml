@@ -1,0 +1,1234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Demonstrating Berkeley Humanoid Lite: An Open-source, Accessible, and Customizable 3D-printed Humanoid Robot</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Yufeng</forename><surname>Chi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Qiayuan</forename><surname>Liao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Junfeng</forename><surname>Long</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xiaoyu</forename><surname>Huang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sophia</forename><surname>Shao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Borivoje</forename><surname>Nikolic</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zhongyu</forename><surname>Li</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Koushil</forename><surname>Sreenath</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of California</orgName>
+								<address>
+									<settlement>Berkeley</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Demonstrating Berkeley Humanoid Lite: An Open-source, Accessible, and Customizable 3D-printed Humanoid Robot</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">52556ADCB193E8D97CF4F9C5F320816A</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:11+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Despite significant interest and advancements in humanoid robotics, most existing commercially available hardware remains high-cost, closed-source, and non-transparent within the robotics community. This lack of accessibility and customization hinders the growth of the field and the broader development of humanoid technologies. To address these challenges and promote democratization in humanoid robotics, we demonstrate Berkeley Humanoid Lite, an open-source humanoid robot designed to be accessible, customizable, and beneficial for the entire community. The core of this design is a modular 3D-printed gearbox for the actuators and robot body. All components can be sourced from widely available e-commerce platforms and fabricated using standard desktop 3D printers, keeping the total hardware cost under $5,000 (based on U.S. market prices). The design emphasizes modularity and ease of fabrication. To address the inherent limitations of 3D-printed gearboxes, such as reduced strength and durability compared to metal alternatives, we adopted a cycloidal gear design, which provides an optimal form factor in this context. Extensive testing was conducted on the 3D-printed actuators to validate their durability and alleviate concerns about the reliability of plastic components. To demonstrate the capabilities of Berkeley Humanoid Lite, we conducted a series of experiments, including the development of a locomotion controller using reinforcement learning. These experiments successfully showcased zero-shot policy transfer from simulation to hardware, highlighting the platform's suitability for research validation. By fully open-sourcing the hardware design, embedded code, and training and deployment frameworks, we aim for Berkeley Humanoid Lite to serve as a pivotal step toward democratizing the development of humanoid robotics. All resources are available at <ref type="url" target="https://lite.berkeley-humanoid.org">https://lite.berkeley-humanoid.org</ref>.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Humanoid robotics has gained substantial attention in research and industry, yet its accessibility remains a significant challenge. Most existing humanoid platforms are either commercial products with closed-source designs, high costs, and limited customizability, or research prototypes that require specialized manufacturing processes, making them inaccessible to the broader robotics community. This restricts innovation, as researchers, educators, and hobbyists face barriers in developing, modifying, and testing new ideas. Without affordable and customizable platforms, progress in fields such as reinforcement learning for bipedal locomotion, human-robot interaction, and robotic manipulation is hindered. Therefore, addressing the lack of open-source, cost-effective, and easily Developing an open-source, cost-effective, and fully functional humanoid robot presents several challenges. First, humanoid robots require complex actuation mechanisms to achieve smooth and stable locomotion. While highperformance actuators exist, they are often expensive and proprietary, limiting accessibility. Prior research has explored various actuator designs, including planetary gear systems, belt-driven actuators, and quasi-direct drives, each with tradeoffs in cost, efficiency, and complexity. However, few solutions provide both affordability and reliability while maintaining open-source availability. Second, fabrication and assembly constraints further complicate accessibility. Many researchoriented humanoid platforms rely on CNC machining, laser cutting, or custom-milled components, which demand specialized manufacturing facilities. Open-source alternatives attempt to lower this barrier by utilizing 3D printing. Finally, it remains difficult to ensure durable real-world performance. Humanoid robots must withstand continuous operational stresses while maintaining precise motion control. The use of 3D-printed components, while improving accessibility, introduces durability concerns due to material limitations such as reduced stiffness and wear over time. Thus, designing a humanoid platform that balances accessibility, modularity, and long-term reliability remains an open challenge in robotics research.</p><p>To address these challenges, we introduce Berkeley Humanoid Lite, an open-source, mid-scale humanoid robot platform designed for accessibility, affordability, and customizability. Our approach leverages 3D-printed cycloidal gear actuators, which balance cost-effectiveness with sufficient mechanical robustness, reducing dependency on expensive, proprietary actuators. By optimizing the actuator design and employing widely available components, our platform ensures that researchers and hobbyists can build and modify the robot without requiring specialized manufacturing facilities. To enhance fabrication accessibility, we focus on modular and scalable design principles. All structural components can be 3D-printed using standard desktop printers, and all electronic and mechanical parts can be sourced from common online vendors. This approach significantly lowers the barriers to entry for constructing and maintaining a humanoid robot, making it feasible for a wider range of users. Furthermore, we demonstrate the real-world viability of our platform through experiments in locomotion and teleoperation. By implementing a reinforcement learning-based locomotion controller, we achieve zero-shot policy transfer from simulation to hardware, validating the effectiveness of our actuator design in dynamic tasks. Additionally, the teleoperation system enables real-time manipulation tasks, further showcasing the robot's adaptability for research and education. By making the hardware design, embedded system code, and training frameworks fully opensource, we aim to democratize humanoid robotics research. Our contribution is to provide an accessible, customizable, and cost-effective platform, encouraging broader participation in humanoid development and innovation.</p><p>The main contributions of this work are summarized as follows: <ref type="bibr" target="#b0">(1)</ref> We introduce a humanoid robot platform that is accessible and customizable. <ref type="bibr" target="#b1">(2)</ref> We demonstrate the platform's capability for locomotion and whole-body control tasks. <ref type="bibr" target="#b2">(3)</ref> We provide a fully open-source hardware and software stack with accompanying detailed instructions, enabling researchers and enthusiasts worldwide to replicate, customize, and improve upon our platform.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORKS</head><p>Our focus is on open-source, accessible, and customizable actuators for robotics applications, as well as robot platforms that can be easily adopted by academic labs and research groups.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Actuators</head><p>Actuators play a crucial role in robotic platforms, directly impacting performance, efficiency, and capabilities. Various design configurations have been explored to optimize robotic actuators. Katz <ref type="bibr" target="#b13">[14]</ref> developed a fully open-source, highperformance, proprioceptive actuator, including a custom motor driver for quadrupedal robots. Their design utilizes an offthe-shelf motor and a planetary gear component set, requiring modifications to both the motor and gears, along with a custom aluminum housing. Gealy et al. <ref type="bibr" target="#b9">[10]</ref> employed belt reduction systems as modular actuators for the arm. Similarly, Kau et al. <ref type="bibr" target="#b14">[15]</ref> demonstrated promising results in quadrupedal robotics by utilizing belt drive and ODrive <ref type="bibr" target="#b23">[25]</ref> as the motor controller, however, their design features a low gear ratio and lacks modularity. In addition, Grimminger et al. <ref type="bibr" target="#b11">[12]</ref> and Wüthrich et al. <ref type="bibr" target="#b38">[39]</ref> presented a series of open-source works incorporating belt reduction and custom motor drivers for small-scale legged robots. Urs et al. <ref type="bibr" target="#b35">[36]</ref> introduced a 3D-printed planetary gearbox combined with the Moteus [23] motor driver, though their approach requires a resin 3D printer. Azocar et al. <ref type="bibr" target="#b3">[4]</ref> developed fully open-source actuators with planetary gearing for prosthetic applications, but their method necessitates CNC machining. Furthermore, Roozing and Roozing <ref type="bibr" target="#b29">[30]</ref> investigated the design considerations for manufacturing cycloidal gearboxes using Fused Deposition Modeling (FDM) 3D printing. In a subsequent study, Roozing and Roozing <ref type="bibr" target="#b30">[31]</ref> proposed a non-pinwheel design, optimizing the form for 3D-printed actuators. Their research highlights the feasibility of integrating 3D-printed cycloidal drives into actuators, paving the way for low-cost, accessible, and reliable robotic systems.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Humanoids</head><p>Existing humanoid robot platforms generally fall into three categories: commercial proprietary systems, research lab designs, and open-source community projects.</p><p>Commercial platforms-such as Agility Robotics' Digit <ref type="bibr" target="#b0">[1]</ref>, Fourier Intelligence's GR1 <ref type="bibr" target="#b8">[9]</ref>, Westwood Robotics' THEMIS <ref type="bibr" target="#b1">[2]</ref>, OpenLoong FXV2750 <ref type="bibr" target="#b24">[26]</ref>, and NAO H25 <ref type="bibr" target="#b22">[24]</ref>-are engineered for robust execution. However, their substantial price tag renders them largely inaccessible to most research groups and the broader robotics community. Although lower-cost alternatives like Unitree's H1 <ref type="bibr" target="#b34">[35]</ref> and G1 <ref type="bibr" target="#b33">[34]</ref> are available, their closed-source architecture restricts user modifications and complicates repairs, limiting customization for research applications.</p><p>Research labs have also been developing in-house humanoid robots that offer high degrees of freedom (DoF) and substantial torque, serving as advanced platforms for investigating humanoid robot control <ref type="bibr" target="#b12">[13,</ref><ref type="bibr" target="#b21">22,</ref><ref type="bibr" target="#b25">27]</ref>. More recently, smaller-scale robots-such as Berkeley Humanoid <ref type="bibr" target="#b19">[20]</ref>, MIT Humanoid <ref type="bibr" target="#b31">[32]</ref>, Wukong <ref type="bibr" target="#b37">[38]</ref> and many others <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b32">33,</ref><ref type="bibr" target="#b39">40,</ref><ref type="bibr" target="#b40">41]</ref>-have been introduced with a focus on agile locomotion. Although these platforms achieve high performance and are well-suited for reinforcement learning applications, their limited production quantities typically confine their use to a few institutions. Furthermore, these designs often depends on advanced manufacture techniques such as CNC machining and laser cutting, which are only available at select academic institutes. Expensive components are also used which restricts adaptability and broader adoption. As a result, the need for specialized manufacturing facilities and expertise significantly limits the accessibility of these platforms to the wider research community and hobbyists.</p><p>Open-source community projects offers a more accessible alternative. However, many still depend on custom parts that requires CNC manufacturing <ref type="bibr" target="#b26">[28]</ref>. Other projects, such as the Poppy Humanoid <ref type="bibr" target="#b15">[16]</ref>, OP3 <ref type="bibr" target="#b27">[29]</ref>, and NimbRo-OP2 <ref type="bibr" target="#b7">[8]</ref>, take advantage of 3D printing and utilize servo motors as the joints. This approach lowers the manufacturing barrier by enabling fabrication with desktop 3D printers. Nevertheless, servos typically lack backdrivability and exhibit high reflected inertia, making them slower and less suitable for scaling up to mid-scale or larger humanoid platforms.</p><p>To address these challenges, we introduce Berkeley Humanoid Lite, a modular, mid-scale humanoid robot platform that emphasizes both accessibility and customization. Berkeley Humanoid Lite is designed to lower the barrier to entry, enabling a broader community of researchers and hobbyists to engage in humanoid robotics research and innovation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. SYSTEM DESIGN</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Overview</head><p>The Berkeley Humanoid Lite is a mid-scale humanoid robot platform that is designed with accessibility and customizability in mind. The main components of the robot are shown in Figure <ref type="figure" target="#fig_1">2</ref>. The robot weighs 16 kg and stands 0.8 m tall. Two sizes of actuators, each incorporating a 3D-printed cycloidal gearbox, directly drive the joints in the legs and arms. The torso is built with aluminum extrusions to support mounting additional components, and a cellphone-grade IMU is positioned near the center of the torso. High-speed and low-latency communication between the actuators, the IMU, and the controller is crucial to achieve smooth motion. An Intel N95 mini PC located at the center of the torso serves as the low-level control computer. Each limb's joint actuators are connected via a 1 Mbps CAN 2.0 bus and the four buses interface to the computer through USB-CAN adapters. The IMU is connected over USB through an Arduino microcontroller. The communication rate to both the actuators and IMU is configured to be 250 Hz. RL-based locomotion policies are also deployed on the same computer, with details provided in Section V-A.</p><p>The robot is powered by an onboard 6S 4000 mAh Lithium Polymer (LiPo) battery that provides approximately 30 minutes of operation. Tethering to an external power supply is also supported for extended testing sessions.</p><p>Apart from the non-standard structural parts, which are printed on a common desktop 3D printer, all components can be purchased from major online vendors in multiple countries. These design choices reflect the goal of creating an accessible and customizable humanoid platform.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Performance Factor</head><p>To be able to benchmark against other robots and illustrate our focus on accessibility and customizability while maintaining sufficient performance, we adopt the quantitative performance metric proposed by Shi et al. <ref type="bibr" target="#b32">[33]</ref>, with a minor modification. Specifically, we normalize the metric by the number of joints, and define the performance factor as the average peak torque of all actuated DoFs, normalized by the robot's height and weight:</p><formula xml:id="formula_0">p = 1 N hmg N i=1 |τ max i |,<label>(1)</label></formula><p>where N denotes the number of actuated DoFs, h and mg represent the height and weight of the robot, and |τ max i | represents the maximum torque of the i-th joint motor. To incorporate cost-effectiveness into consideration, the performance- per-dollar is then defined as the performance factor divided by the cost or selling price of the robot:</p><formula xml:id="formula_1">φ = p cost .<label>(2)</label></formula><p>As shown in Fig. <ref type="figure" target="#fig_2">3</ref>, our platform achieves a high performance factor with a cost lower than $5000.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Design Towards Accessibility</head><p>A key priority in developing Berkeley Humanoid Lite is to make the hardware platform accessible to a wide range of users. To realize this goal, the design process emphasizes widely available components, straightforward fabrication methods, and overall cost control.</p><p>1) Component Availability: Many open-source robot designs depend on specialized components, such as custom thrust bearings or high-performance motor drivers, which can be difficult to source. In contrast, Berkeley Humanoid Lite relies on parts from commonly used online marketplaces, notably Amazon and Taobao (AliExpress), for most offthe-shelf elements. Electronic components are obtained from reputable suppliers such as Digikey and Mouser. By selecting parts that are broadly available in multiple countries, Berkeley Humanoid Lite minimizes supply barriers and ensures that users can acquire necessary materials without extensive lead times or geographic restrictions.</p><p>2) 3D Printing: Recent advances in desktop 3D printing technology have made Fused Deposition Modeling (FDM) more accessible and reliable. Accordingly, Berkeley Humanoid Lite employs FDM to fabricate all non-standard structural parts. Polylactic Acid (PLA) is selected as the filament material for its robust mechanical properties and favorable printing characteristics. Although 3D-printed plastic parts introduce challenges-such as lower material strength, manufacturing variances, and anisotropic properties-Berkeley Humanoid Lite mitigates these concerns by adopting cycloidal gearboxes in its actuators. Cycloidal gears distribute loads over multiple teeth and accommodate the limited resolution of desktop 3D printers more effectively than planetary gears, thus enhancing reliability <ref type="bibr" target="#b29">[30]</ref>. As shown in Figure <ref type="figure" target="#fig_3">4</ref>, additional reinforcements, such as through-screws and embedded brass hex stands, help prevent failures along layer boundaries and bolster overall load capacity. Certain subcomponents are merged into single  3D prints to reduce weight and avoid potential stress concentrations around fasteners. To maintain compatibility with standard desktop machines, every part is designed to fit within a 200 mm × 200 mm × 200 mm build volume.</p><p>3) Low Cost: We detail the component costs in the United States and China to illustrate the affordability of Berkeley Humanoid Lite. Tables I and II summarize the expenses for the two actuator designs, while Table III presents the total cost for the assembled robot. Beyond raw materials, the time for building and repairing the robot also factors into overall expense. For Berkeley Humanoid Lite, most off-the-shelf parts ship within a week in both the United States and China, custom parts can be printed within a week, and the entire robot can be assembled in about three days. Broken actuators can also be easily swapped out and repaired. These considerations minimize repair downtime and lower the barrier to entry for constructing and maintaining a mid-scale humanoid robot.</p><p>As a concrete example, for the 6512 actuator, we chose the widely available 6811ZZ ball bearing to define the overall actuator size. The M6C12 150KV BLDC drone motor from MAD Components is used to drive the actuator, which strikes a good balance between availability, performance, and cost. We then opted for the B-G431B-ESC1 as the motor driver, favoring its affordability and ready availability at Mouser and Digikey. Although alternatives like the Moteus Controller [23], ODrive <ref type="bibr" target="#b23">[25]</ref>, or VESC <ref type="bibr" target="#b36">[37]</ref> can also be used, we prioritized cost-effectiveness and consistent supply. The housing, cycloidal gear, input shaft, and output shaft are all 3D printed, with a brass hex stand embedded in the input shaft to boost stiffness and improve torque transfer from the motor to the cycloidal disks.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Design Towards Customization</head><p>In addition to accessibility, Berkeley Humanoid Lite is designed to be highly customizable. Different research objectives and tasks may require variations in robot dimensions and joint configurations, and the flexibility of 3D printing makes it straightforward to adapt the robot's morphology to suit specific needs.</p><p>1) Flexible Configurations: Since each joint in Berkeley Humanoid Lite is driven by a self-contained actuator with no additional linkages, adjusting the link length between adjacent joints is straightforward. As illustrated in Figure <ref type="figure" target="#fig_4">5</ref>, extending the leg links with carbon fiber tubes transforms Berkeley Humanoid Lite into an adult-scale platform. Joint orders are also easily interchangeable: while most humanoid robots use three consecutive revolute joints at the hip to approximate a ball joint, variations in joint arrangement and orientation can significantly influence range of motion, power consumption, and efficiency <ref type="bibr" target="#b41">[42,</ref><ref type="bibr" target="#b42">43]</ref>. Figure <ref type="figure" target="#fig_4">5</ref> also illustrates an alternative hip configuration that is commonly employed in other humanoids. By streamlining these modifications, Berkeley Humanoid Lite enables rapid prototyping and comparative evaluation of different hip designs on real hardware.</p><p>2) Different Morphologies: Berkeley Humanoid Lite's actuators require only power and CAN communication, which allows each CAN bus to support up to 64 devices. This benefit makes it easy to reconfigure the robot into a variety of morphologies. Figure <ref type="figure" target="#fig_5">6</ref> highlights examples of a quadruped, a biped, a Centaur-like arrangement, and a mobile base platform, illustrating how the 3D-printed structure and self-contained actuators can be adapted for diverse robotic designs with minimal changes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. ACTUATOR EVALUATION</head><p>A reliable actuator is fundamental to the robot's overall performance. To assess the capabilities of our proposed design, we conducted a set of experiments under conditions identical to those on the robot, including a 24 V power supply, identical position PD gains, and matching position, torque, and current bandwidth configurations. For further verification, we cross-validated the outcomes obtained with our custom motor controller and firmware against those produced by an off-theshelf Moteus Controller.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Power Efficiency</head><p>To evaluate the actuator's power efficiency, we employed a custom dynamometer stand (Figure <ref type="figure" target="#fig_6">7</ref>). The actuator under test was operated in torque-control mode, while a secondary damping actuator-run in velocity-control mode-held the system at a constant rotational speed. Torque produced by the primary actuator was measured with two load cells. An electrical-power measurement board logged the supply voltage and current, from which electrical input power was calculated. Mechanical output power was obtained by multiplying the measured torque by the measured rotational velocity. Mechanical efficiency is defined as the ratio of the measured  mechanical power to the absolute value of the product of the commanded torque and velocity, which represents the efficiency of the cycloidal gear reducer. Total efficiency was defined as the ratio of the measured mechanical power to the electrical input power, thereby reflecting the overall actuator efficiency, which includes motor copper losses, driver electrical losses, and mechanical losses.</p><p>We tested the actuator across three different speeds that correspond to its typical operating range on the robot. Each torque and speed command was maintained for one second prior to measurement to minimize transient effects. As shown in Figure <ref type="figure" target="#fig_7">8</ref>, the measured efficiency trends align with previous findings <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b35">36]</ref>, demonstrating a decline in efficiency at higher torque and speed settings. The gearbox exhibits a mechanical efficiency of approximately 90% across most operating conditions. However, at high torque and velocity, efficiency decreases due to heat generation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Transmission Stiffness</head><p>We characterized the actuator's transmission stiffness by rigidly fixing the output shaft relative to the actuator housing and measuring motor displacement under a range of static torques. The torque command was gradually ramped from 0 Nm to 20 Nm and back in both directions. A linear fit was then applied to the data collected from 4 Nm to 10 Nm, and the inverse of the slope yielded a stiffness of approximately 319.49 Nm/rad (Figure <ref type="figure" target="#fig_8">9</ref>). This profile shape is consistent with previous measurements of 3D-printed cycloidal reducers reported by Roozing and Roozing <ref type="bibr" target="#b30">[31]</ref>, who measured a substantially higher stiffness of about 1468 Nm/rad for a similar 3D-printed cycloidal reducer. The observed reduction in stiffness is likely attributable to the lower strength of PLA compared to the carbon fiber reinforced polyamide (PA-CF) material used in that study. Mechanical efficiency is calculated as the ratio between the measured mechanical power to the product of the commanded torque and velocity, whereas total efficiency is defined as the ratio of the measured mechanical power to the electrical input power. The results indicate that, under most operating conditions, the gearbox maintains high efficiency. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Durability</head><p>A primary concern for any 3D-printed actuator is its operational lifespan. We conducted a 60-hour durability test in which the actuator repeatedly lifted a pendulum (0.5 kg, 0.5 m) through a range of -45 degrees to +90 degrees at a frequency of 0.5 Hz. At one-hour intervals for the first 12 hours-and every 12 hours thereafter-we paused the test to measure both efficiency (using the same dynamometer stand) and backlash.</p><p>As shown in Figure <ref type="figure" target="#fig_0">10</ref>, efficiency initially declined but later returned to near its original level, aligning with observations reported by Urs et al. <ref type="bibr" target="#b35">[36]</ref>. Although backlash increased slightly as the 3D-printed parts experienced wear, it remained within acceptable limits throughout the 60-hour test.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Consistency Across Units</head><p>The performance might vary across actuator parts printed under different environment conditions and with different printers. To demonstrate the consistency of our design, we performed the efficiency evaluation on six actuators printed on two different 3D printers. The efficiency and torque tracking error, shown in Figure <ref type="figure" target="#fig_0">11</ref>, are consistent across units. The torque error remains within ±0.5 N m throughout the operating range. This confirms low inter-sample variance and confirms that the actuator design is robust across different fabrication sources.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Position Tracking Accuracy</head><p>Gear-backlash is the dominant steady-state source of position error in our actuator stack. Therefore, we evaluate the position tracking accuracy of individual actuator modules by measuring backlash on six freshly printed 6512 actuators. The maximum observed backlash was 0.0229 rad with a standard deviation of 0.0042 rad.</p><p>To evaluate the system-level performance, we assembled five actuators into a 5-DoF serial arm and commanded it to reach four spatial targets (Figure <ref type="figure" target="#fig_1">12</ref>). Each target was repeated 100 times while the end-effector pose was captured by the SteamVR-based motion-tracking setup described in  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. EXPERIMENTS</head><p>In this section, we evaluate Berkeley-Humanoid's ability to perform standard tasks of interest in humanoid robotics research. To this end, we conduct experiments in two key domains: locomotion and manipulation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Legged Locomotion</head><p>Our design serves as a robust platform for investigating humanoid robot locomotion. Notably, we achieve a direct simto-real transfer of an Isaac Gym-trained policy to the physical robot without relying on additional state estimation methods. We formulate the locomotion task as a Partially Observed Markov Decision Process (POMDP) and use a standard Proximal Policy Optimization (PPO) algorithm to learn a control  During deployment, the multi-layer perception (MLP) policy runs onboard the robot at 25 Hz. Figure <ref type="figure" target="#fig_12">14</ref> shows snapshots of the robot walking in the bipedal configuration under the trained reinforcement learning policy that follows user-specified velocity commands. Notably, the experiment utilized only 30% of the actuator's torque limit, suggesting that the actuators are operating well within their capacity. This observation implies that the same actuator design could support a larger humanoid robot-such as the example presented in the previous section-without compromising performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Teleoperated Manipulation</head><p>The two 5-DOF arms and integrated grippers enable the robot to serve as an effective platform for bimanual manipulation research. To demonstrate its capabilities, we implemented a teleoperation system that leverages a motion capture setup built with SteamVR base stations and controllers. This system provides real-time tracking of the global position and orientation of the operator's hand. The SteamVR tracking system was chosen for its broad support within the OpenXR ecosystem and its cost-effectiveness. However, our open-source software stack is designed for flexibility and can be readily adapted to incorporate alternative tracking solutions, such as Apple Vision Pro, Meta Quest, OptiTrack, or Xsens, to suit a variety of research needs. Our setup is shown in Figure <ref type="figure" target="#fig_2">13</ref>.</p><p>Our teleoperation system offers two distinct operational modes: Headless Mode and VR Mode, providing flexibility for diverse user needs and environments. Both modes leverage a unified inverse kinematics (IK) pipeline based on the Pink and Pinocchio library <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b5">6,</ref><ref type="bibr" target="#b6">7]</ref>. Headless mode facilitates a "third-person" perspective, ideal for users without access to a VR display. In this configuration, the system interprets the position and orientation changes of controllers relative to the global coordinate frame. This allows the operator to intuitively control the robot by observing its actions from an external viewpoint, similar to controlling a character in a video game. In addition, the user can engage and disengage anytime, allowing for comfortable adjustment of their gesture. VR mode delivers an immersive, first-person control experience. It directly maps the position and orientation changes of controllers within the user's local coordinate frame to the robot's local coordinate frame. This "body-ownership" approach enables operators to perform manipulations as naturally as they would with their own hands in a real-world setting, fostering a strong sense of presence and control. Both modes utilize the same robust IK solver built upon the Pink and Pinocchio library <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b5">6,</ref><ref type="bibr" target="#b6">7]</ref>. This ensures consistent and reliable translation of the desired end-effector poses into corresponding robot joint configurations, regardless of the chosen operational mode. As shown in Figure <ref type="figure" target="#fig_13">15</ref>, we are able to use this setup to (a) write with a marker (b) unpack and pack a box, (c) solve a Rubik's Cube, and (d) pick and place blocks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Potential Applications</head><p>We further discuss potential extensions of Berkeley Humanoid Lite's components, particularly in engineering education and animatronics. Given its open-source and accessible modular design, we anticipate a broader range of applications emerging with contributions from the robotics community.</p><p>1) Education: The 3D-printed actuator is an effective teaching tool for engineering education. In mechatronics classrooms, its accessibility enables students to gain hands-on experience with motor actuator components, including gear reduction, the motor, and its driver board. Notably, the 6512 actuator is already utilized in the UC Berkeley MECENG 102B class to demonstrate the working principle of a cycloidal drive. Its open-source and easily fabricated design allows students to experiment with different gear types beyond cycloidal gears or use modular actuators to build their own robots. In control courses, students can develop their own FOC algorithms based on motor models or use the actuator to create an inverted pendulum testbed for controller evaluation. In robotics courses, they can conduct hands-on experiments with existing robots to implement class-taught algorithms, such as motion planning, reinforcement learning, or imitation learning. The system's Fig. <ref type="figure" target="#fig_5">16</ref>. An anime-style head is integrated into the robot, enabling it to embody expressive and visually appealing anime characters while enhancing its overall aesthetic and potential for engaging human-robot interaction. modular, accessible, and easily repairable design also benefits instructors, allowing for quick replacement of broken parts. Beyond higher education, this platform can also inspire and engage middle and high school students in robotics.</p><p>2) Animatronics: Due to its modularity and lightweight design, the Berkeley Humanoid Lite can also serve as an animatronics platform for entertainment, as demonstrated in Figure <ref type="figure" target="#fig_5">16</ref>. By refining its form to enhance expressiveness-incorporating features such as cuteness and vividness <ref type="bibr" target="#b2">[3]</ref>-the robot can achieve a more engaging and visually appealing presence. Moreover, employing body motion design techniques inspired by animation can generate expressive movements, which the physical robot can execute using the control methods detailed in <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b18">19]</ref>. With its low cost, ease of fabrication and straightforward repairability, Berkeley Humanoid Lite presents a promising platform for entertainment applications, particularly in settings aimed at young audiences.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. LIMITATIONS</head><p>One limitation of this work is the insufficient study of thermal effects on the 3D-printed structure during prolonged operation, which could impact both mechanical strength and overall system reliability. Future iterations will include more rigorous thermal testing and structural refinements to address these concerns. Beyond the robot morphologies presented in this work, there are more potential new morphologies that can be explored and made openly available.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VII. CONCLUSION</head><p>In this work, we introduced an affordable, mid-scale humanoid robot platform that significantly lowers the barriers to entry for researchers, educators, and hobbyists alike. By leveraging 3D-printed cycloidal actuators, off-the-shelf components, and a fully open-source hardware and software stack, we demonstrated that effective humanoid systems need not rely on proprietary, high-cost solutions. We evaluated the reliability and versatility of the 3D-printed actuators and demonstrated the ability of the robot platform to perform locomotion and teleoperation tasks. By sharing all design files, control algorithms, and manufacturing details, we hope to democratize access to humanoid robot hardware, fostering broader participation in humanoid-robotics research and accelerating innovations in this critical domain.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VIII. ACKNOWLEDGMENT</head><p>We would like to thank Lydia Liu, Widyadewi Soedarmadji, and Daniel Wong for the early-stage project explorations. We would also like to thank Alex Hao and Ted Zhang for providing help on supporting the experiments. We are grateful to Chengyi Lux Zhang for the generous assistance. Finally, we appreciate the helpful discussions from all members of Hybrid Robotics Group and SLICE lab. This work is supported in part by NSF 2303735 for POSE, in part by NSF 2238346 for CAREER, in part by the Robotics and AI Institute. K. Sreenath has financial interest in the Robotics and AI Institute. He and the company may benefit from the commercialization of the results of this research.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. Berkeley Humanoid Lite. An open-source, accessible, and customizable bipedal humanoid robot platform.</figDesc><graphic coords="1,337.08,205.47,200.82,277.11" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 .</head><label>2</label><figDesc>Fig. 2. Main components and key dimensions of the limbs of the Berkeley Humanoid Lite.</figDesc><graphic coords="3,71.53,52.83,230.17,177.87" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. Comparison between existing robot platforms. Y-axis shows the performance factor p defined in (1), representing the average peak torque normalized by the weight and height of the robot. A higher performance-perdollar φ, defined in (2), indicates better cost-effectiveness, and open-source hardware and software platform enables customization towards specific user requirements.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4. Exploded and cross-sectional views of the 6512 actuator. All of the components are either 3D-printed or sourced from online marketplaces.</figDesc><graphic coords="4,54.98,44.89,154.78,109.46" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 5 .</head><label>5</label><figDesc>Fig. 5. An alternative adult-sized robot configuration with 7 degrees-offreedom leg and dexterous hand. Carbon fiber tubes that are also available from online vendors are used to increase the length of the legs to match an average adult. Colors are used to show joint orientation (green: thigh pitch; red: abduction; blue: thigh rotation).</figDesc><graphic coords="5,209.77,297.99,80.04,102.81" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 6 .</head><label>6</label><figDesc>Fig. 6. With minimal modifications, the modular joint actuators can be arranged to form different robot morphologies. Example forms include quadruped (top-left), biped (top right), Centaur-like (bottom-left), and mobile base (bottom-right).</figDesc><graphic coords="5,321.84,54.00,231.33,185.89" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 7 .</head><label>7</label><figDesc>Fig. 7. Power efficiency test setup. Two load cells are used to directly measure the torque of the actuator under test, while another actuator acts as a damper, absorbing the mechanical energy produced by the actuator under test.</figDesc><graphic coords="6,43.72,39.23,265.23,199.15" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 8 .</head><label>8</label><figDesc>Fig.8. Efficiency of the 6512 actuator (top), and the 5010 actuator (bottom). Mechanical efficiency is calculated as the ratio between the measured mechanical power to the product of the commanded torque and velocity, whereas total efficiency is defined as the ratio of the measured mechanical power to the electrical input power. The results indicate that, under most operating conditions, the gearbox maintains high efficiency.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Fig. 9 .</head><label>9</label><figDesc>Fig.9. Transmission stiffness measurement. The output of a 6512 actuator was fixed while the motor's command torque was gradually increased. The rotor position was recorded, yielding a mean stiffness of 319 N m.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 10 .Fig. 11 .</head><label>1011</label><figDesc>Fig. 10. Average total efficiency and backlash measured during the 60-hour durability test of the 6512 actuator. The efficiency remains stable throughout the test, while backlash progressively increases due to wear.</figDesc><graphic coords="7,323.77,227.74,227.11,240.58" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Fig. 12 .Fig. 13 .</head><label>1213</label><figDesc>Fig. 12. (Left) The 5-DoF arm is commanded to reach four spatial position targets. (Right) End-effector position variance over 100 repetitions of the reaching task.</figDesc><graphic coords="7,311.97,54.01,125.52,125.52" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Fig. 14 .</head><label>14</label><figDesc>Fig. 14. Snapshot of the robot in biped configuration walking forward with a trained RL policy. The robot is able to track a user commanded velocity.</figDesc><graphic coords="8,48.96,203.48,128.42,80.61" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Fig. 15 .</head><label>15</label><figDesc>Fig. 15. Snapshot of teleoperated manipulation experiments, including four tasks: writing, unpacking and packing, picking and placing blocks, and solving Rubik's Cube.</figDesc><graphic coords="8,48.96,444.01,128.42,79.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="9,324.53,54.00,225.93,343.58" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I BILL</head><label>I</label><figDesc>-OF-MATERIALS (BOM) OF THE 6512 ACTUATOR</figDesc><table><row><cell>Item</cell><cell>Cost (US)</cell><cell>Cost (China)</cell></row><row><cell>M6C12 BLDC Drone Motor</cell><cell>$129</cell><cell>$124</cell></row><row><cell>B-G431B-ESC1 Motor Driver</cell><cell>$19</cell><cell>$23</cell></row><row><cell>AS5600 Position Encoder</cell><cell>$3</cell><cell>$1</cell></row><row><cell>Bearings</cell><cell>$23</cell><cell>$4</cell></row><row><cell>Fasteners</cell><cell>$5</cell><cell>$1</cell></row><row><cell>3D Printed Parts</cell><cell>$4</cell><cell>$1</cell></row><row><cell>Misc (Cables, Connectors)</cell><cell>$5</cell><cell>$3</cell></row><row><cell>Total</cell><cell>$188</cell><cell>$157</cell></row><row><cell cols="2">All values are rounded to the nearest dollar.</cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE II BILL</head><label>II</label><figDesc>-OF-MATERIALS (BOM) OF THE 5010 ACTUATOR</figDesc><table><row><cell>Item</cell><cell>Cost (US)</cell><cell>Cost (China)</cell></row><row><cell>5010 BLDC Drone Motor</cell><cell>$84</cell><cell>$62</cell></row><row><cell>B-G431B-ESC1 Motor Driver</cell><cell>$19</cell><cell>$23</cell></row><row><cell>AS5600 Position Encoder</cell><cell>$3</cell><cell>$1</cell></row><row><cell>Bearings</cell><cell>$18</cell><cell>$3</cell></row><row><cell>Fasteners</cell><cell>$4</cell><cell>$1</cell></row><row><cell>3D Printed Parts</cell><cell>$3</cell><cell>$1</cell></row><row><cell>Misc (Cables, Connectors)</cell><cell>$5</cell><cell>$3</cell></row><row><cell>Total</cell><cell>$136</cell><cell>$94</cell></row><row><cell cols="2">All values are rounded to the nearest dollar.</cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE III BILL</head><label>III</label><figDesc>-OF-MATERIALS (BOM) OF A HUMANOID ROBOT</figDesc><table><row><cell>Item</cell><cell>Cost (US)</cell><cell>Cost (China)</cell></row><row><cell>Mini PC</cell><cell>$129</cell><cell>$223</cell></row><row><cell>USB-CAN Adapters (4x)</cell><cell>$68</cell><cell>$43</cell></row><row><cell>USB Hubs (2x)</cell><cell>$36</cell><cell>$11</cell></row><row><cell>BNO085 IMU</cell><cell>$13</cell><cell>$12</cell></row><row><cell>6S LiPo Battery</cell><cell>$70</cell><cell>$81</cell></row><row><cell>6512 Actuators (10x)</cell><cell>$1,880</cell><cell>$1,563</cell></row><row><cell>5010 Actuators (12x)</cell><cell>$1,632</cell><cell>$1,130</cell></row><row><cell>Grippers (2x)</cell><cell>$72</cell><cell>$44</cell></row><row><cell>Aluminum Extrusions</cell><cell>$39</cell><cell>$3</cell></row><row><cell>3D Printed Components</cell><cell>$200</cell><cell>$84</cell></row><row><cell>Misc. Structural Components</cell><cell>$50</cell><cell>$14</cell></row><row><cell>Misc. Electronic Components</cell><cell>$123</cell><cell>$28</cell></row><row><cell>Total</cell><cell>$4,312</cell><cell>$3,236</cell></row><row><cell cols="2">All values are rounded to the nearest dollar.</cell><cell></cell></row></table></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<ptr target="https://agilityrobotics.com/products/digit" />
+		<title level="m">Agility Robotics. Meet digit: The newest robot from agility robotics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2024" to="2035" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Development and Real-Time Optimization-based Control of a Full-sized Humanoid for Dynamic Walking and Running</title>
+		<author>
+			<persName><forename type="first">Min</forename><surname>Sung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ahn</forename></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+		<respStmt>
+			<orgName>University of California, Los Angeles</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">From Anime To Reality: Embodying An Anime Character As A Humanoid Robot</title>
+		<author>
+			<persName><forename type="first">Mohammed</forename><surname>Al-Sada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pin-Chu</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chang</forename><forename type="middle">Chieh</forename><surname>Chiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tito</forename><forename type="middle">Pradhono</forename><surname>Tomo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yamen</forename><surname>Mhd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tetsuya</forename><surname>Saraiji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tatsuo</forename><surname>Ogata</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Nakajima</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/3411763.3451543</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Extended Abstracts of the 2021 CHI Conference on Human Factors in Computing Systems</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="1" to="5" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Design and characterization of an open-source robotic leg prosthesis</title>
+		<author>
+			<persName><forename type="first">Luke</forename><forename type="middle">M</forename><surname>Alejandro F Azocar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Levi</forename><forename type="middle">J</forename><surname>Mooney</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elliott</forename><forename type="middle">J</forename><surname>Hargrove</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Rouse</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">th IEEE International Conference on Biomedical Robotics and Biomechatronics (Biorob)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018. 2018</date>
+			<biblScope unit="page" from="111" to="118" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<author>
+			<persName><forename type="first">Stéphane</forename><surname>Caron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yann</forename><surname>De Mont-Marin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Budhiraja</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hyeon</forename><surname>Seung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ivan</forename><surname>Bang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Simeon</forename><surname>Domrachev</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Nedelchev</surname></persName>
+		</author>
+		<ptr target="https://github.com/stephane-caron/pink" />
+		<title level="m">Python inverse kinematics based on Pinocchio</title>
+		<meeting><address><addrLine>Pink</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Pinocchio: fast forward and inverse dynamics for poly-articulated systems</title>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florian</forename><surname>Valenza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Mansard</surname></persName>
+		</author>
+		<ptr target="https://stack-of-tasks.github.io/pinocchio" />
+		<imprint>
+			<date type="published" when="2015">2015-2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">The Pinocchio C++ library -A fast and flexible implementation of rigid body dynamics algorithms and their analytical derivatives</title>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Carpentier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guilhem</forename><surname>Saurel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gabriele</forename><surname>Buondonno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Mirabel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florent</forename><surname>Lamiraux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Olivier</forename><surname>Stasse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Mansard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Symposium on System Integrations (SII)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">NimbRo-OP2: Grown-up 3D printed open humanoid platform for research</title>
+		<author>
+			<persName><forename type="first">Grzegorz</forename><surname>Ficht</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Allgeuer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hafez</forename><surname>Farazi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sven</forename><surname>Behnke</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE-RAS 17th International Conference on Humanoid Robotics (Humanoids)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="669" to="675" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">GR-1</title>
+		<author>
+			<persName><surname>Fourier</surname></persName>
+		</author>
+		<ptr target="https://www.fftai.com/products-gr1" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2024" to="2035" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Quasidirect drive for low-cost compliant robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>David V Gealy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brent</forename><surname>Mckinley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Phillip</forename><forename type="middle">R</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Greg</forename><surname>Downey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Allan</forename><surname>Balke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Menglong</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rachel</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anthony</forename><surname>Thomasson</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Sinclair</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="437" to="443" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Design and control of a bipedal robotic character</title>
+		<author>
+			<persName><forename type="first">Ruben</forename><surname>Grandia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Espen</forename><surname>Knoop</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><forename type="middle">A</forename><surname>Hopkins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Georg</forename><surname>Wiedebach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jared</forename><surname>Bishop</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steven</forename><surname>Pickles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Müller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Moritz</forename><surname>Bächer</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2501.05204</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">An open torque-controlled modular robot architecture for legged locomotion research</title>
+		<author>
+			<persName><forename type="first">Felix</forename><surname>Grimminger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Avadesh</forename><surname>Meduri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Majid</forename><surname>Khadiv</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julian</forename><surname>Viereck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuel</forename><surname>Wüthrich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maximilien</forename><surname>Naveau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Berenz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steve</forename><surname>Heim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Felix</forename><surname>Widmaier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Flayols</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="3650" to="3657" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Humanoid robot HRP-5P: An electrically actuated humanoid robot with high-power and wide-range joints</title>
+		<author>
+			<persName><forename type="first">Kenji</forename><surname>Kaneko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hiroshi</forename><surname>Kaminaga</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Takeshi</forename><surname>Sakaguchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuuji</forename><surname>Kajita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mitsuharu</forename><surname>Morisawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Iori</forename><surname>Kumagai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fumio</forename><surname>Kanehiro</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1431" to="1438" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">A low cost modular actuator for dynamic robots</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Benjamin</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Katz</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+		<respStmt>
+			<orgName>Massachusetts Institute of Technology</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">PhD thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Stanford doggo: An open-source, quasi-directdrive quadruped</title>
+		<author>
+			<persName><forename type="first">Nathan</forename><surname>Kau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aaron</forename><surname>Schultz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Natalie</forename><surname>Ferrante</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Patrick</forename><surname>Slade</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International conference on robotics and automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="6309" to="6315" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Rapid morphological exploration with the Poppy humanoid platform</title>
+		<author>
+			<persName><forename type="first">Matthieu</forename><surname>Lapeyre</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steve</forename><forename type="middle">N</forename><surname>'guyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexandre</forename><surname>Le Falher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pierre-Yves</forename><surname>Oudeyer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2014 IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2014">2014</date>
+			<biblScope unit="page" from="959" to="966" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Empirical characterization of a high-performance exteriorrotor type brushless DC motor and drive</title>
+		<author>
+			<persName><forename type="first">Hee</forename><surname>Ung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen-Wen</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elliott</forename><forename type="middle">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Rouse</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="8018" to="8025" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<author>
+			<persName><forename type="first">Junheng</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junchao</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Omar</forename><surname>Kolt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manas</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quan</forename><surname>Nguyen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2312.11868</idno>
+		<title level="m">Dynamic Loco-manipulation on HEC-TOR: Humanoid for Enhanced ConTrol and Open-source Research</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Animated cassie: A dynamic relatable robotic character</title>
+		<author>
+			<persName><forename type="first">Zhongyu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christine</forename><surname>Cummings</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Koushil</forename><surname>Sreenath</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="3739" to="3746" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Berkeley humanoid: A research platform for learning-based control</title>
+		<author>
+			<persName><forename type="first">Qiayuan</forename><surname>Liao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bike</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuanyu</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoyu</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhongyu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Koushil</forename><surname>Sreenath</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.21781</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Design and control of a miniature bipedal robot with proprioceptive actuation for dynamic behaviors</title>
+		<author>
+			<persName><forename type="first">Yeting</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junjie</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingwen</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoguang</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Taoyuanmin</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dennis</forename><surname>Hong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="8547" to="8553" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Humanoid robot LOLA</title>
+		<author>
+			<persName><forename type="first">Sebastian</forename><surname>Lohmeier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Buschmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Heinz</forename><surname>Ulbrich</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2009 IEEE International Conference on robotics and automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="775" to="780" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Nao H25</surname></persName>
+		</author>
+		<ptr target="http://doc" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">25</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">ODrive Robotics: High Performance Motor Control</title>
+		<author>
+			<persName><forename type="first">Odrive</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://odriverobotics.com" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="2025" to="2026" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">The universal humanoid robot FXV2750</title>
+		<author>
+			<persName><surname>Openloong</surname></persName>
+		</author>
+		<ptr target="https://www.openloong.org.cn/en/developer/robot" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2024" to="2035" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Mechanical design of humanoid robot platform KHR-3 (KAIST humanoid robot 3: HUBO)</title>
+		<author>
+			<persName><forename type="first">Ill-Woo</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jung-Yup</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jungho</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jun-Ho</forename><surname>Oh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">5th IEEE-RAS International Conference on Humanoid Robots</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2005">2005. 2005</date>
+			<biblScope unit="page" from="321" to="326" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">The design of the iCub humanoid robot</title>
+		<author>
+			<persName><forename type="first">Alberto</forename><surname>Parmiggiani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Maggiali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lorenzo</forename><surname>Natale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Nori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Schmitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikos</forename><surname>Tsagarakis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jose</forename><forename type="middle">Santos</forename><surname>Victor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Becchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giulio</forename><surname>Sandini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giorgio</forename><surname>Metta</surname></persName>
+		</author>
+		<idno type="DOI">10.1142/S0219843612500272</idno>
+	</analytic>
+	<monogr>
+		<title level="j">International journal of humanoid robotics</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">04</biblScope>
+			<biblScope unit="page">1250027</biblScope>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">OP3 E-Manual</title>
+		<author>
+			<persName><surname>Robotis</surname></persName>
+		</author>
+		<ptr target="https://emanual.robotis.com/docs/en/platform/op3/introduction/" />
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Accessed</surname></persName>
+		</author>
+		<imprint>
+			<biblScope unit="page" from="2025" to="2029" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">3D-printable low-reduction cycloidal gearing for robotics</title>
+		<author>
+			<persName><forename type="first">Wesley</forename><surname>Roozing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Glenn</forename><surname>Roozing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="1929" to="1935" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Experimental comparison of pinwheel and non-pinwheel designs of 3D-printed cycloidal gearing for robotics</title>
+		<author>
+			<persName><forename type="first">Wesley</forename><surname>Roozing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Glenn</forename><surname>Roozing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="7091" to="7098" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Design and development of the mit humanoid: A dynamic and robust research platform</title>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Saloutos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elijah</forename><surname>Stanger-Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yanran</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><surname>Chignoli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sangbae</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE-RAS 22nd International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<author>
+			<persName><forename type="first">Haochen</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weizhuo</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karen</forename><surname>Liu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2502.00893</idno>
+		<title level="m">Toddlerbot: Open-source ml-compatible humanoid platform for loco-manipulation</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">Unitree G1 -Humanoid Robot</title>
+		<author>
+			<persName><forename type="first">Unitree</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.unitree.com/g1" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2024" to="2035" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<title level="m" type="main">Unitree H1 -Universal Humanoid Robot</title>
+		<author>
+			<persName><forename type="first">Unitree</forename><surname>Robotics</surname></persName>
+		</author>
+		<ptr target="https://www.unitree.com/h1.Ac-cessed" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2024" to="2035" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Design and characterization of 3d printed, open-source actuators for legged locomotion</title>
+		<author>
+			<persName><forename type="first">Karthik</forename><surname>Urs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Challen</forename><forename type="middle">Enninful</forename><surname>Adu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elliott</forename><forename type="middle">J</forename><surname>Rouse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Talia</forename><forename type="middle">Y</forename><surname>Moore</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="1957" to="1964" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<ptr target="https://vesc-project.com" />
+		<title level="m">Benjamin Vedder and the VESC Project Community. VESC Project -Open Source ESC</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="2025" to="2026" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Hybrid bipedal locomotion based on reinforcement learning and heuristics</title>
+		<author>
+			<persName><forename type="first">Zhicheng</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wandi</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anhuan</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yifeng</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qiuguo</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Micromachines</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page">1688</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<author>
+			<persName><forename type="first">Manuel</forename><surname>Wüthrich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Felix</forename><surname>Widmaier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Felix</forename><surname>Grimminger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joel</forename><surname>Akpo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shruti</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vaibhav</forename><surname>Agrawal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bilal</forename><surname>Hammoud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Majid</forename><surname>Khadiv</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Miroslav</forename><surname>Bogdanovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Berenz</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2008.03596</idno>
+		<title level="m">An open-source robot for learning dexterity</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main">The duke humanoid: Design and control for energy efficient bipedal locomotion using passive dynamics</title>
+		<author>
+			<persName><forename type="first">Boxi</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bokuan</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jacob</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Scutari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Boyuan</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2409.19795</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<monogr>
+		<title level="m" type="main">Design of a highly dynamic humanoid robot</title>
+		<author>
+			<persName><forename type="first">Taoyuanmin</forename><surname>Zhu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+		<respStmt>
+			<orgName>University of California, Los Angeles</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Influence of hip joint axes change of orientation on power distribution in humanoid motion</title>
+		<author>
+			<persName><forename type="first">Maja</forename><surname>Zorjan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Hugel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pierre</forename><surname>Blazevic</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The 5th International Conference on Automation, Robotics and Applications</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="page" from="271" to="276" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Influence of rotation of humanoid hip joint axes on joint power during locomotion</title>
+		<author>
+			<persName><forename type="first">Maja</forename><surname>Zorjan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Hugel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pierre</forename><surname>Blazevic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Branislav</forename><surname>Borovac</surname></persName>
+		</author>
+		<idno type="DOI">10.1080/01691864.2015.1013057</idno>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Robotics</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="707" to="719" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

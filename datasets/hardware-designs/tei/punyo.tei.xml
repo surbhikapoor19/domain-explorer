@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Soft-bubble grippers for robust and perceptive manipulation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2020-04-28">28 Apr 2020</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Naveen</forename><surname>Kuppuswamy</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Toyota Research Institute</orgName>
+								<address>
+									<addrLine>One Kendall Square Building 600</addrLine>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Alex</forename><surname>Alspach</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Toyota Research Institute</orgName>
+								<address>
+									<addrLine>One Kendall Square Building 600</addrLine>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Avinash</forename><surname>Uttamchandani</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Toyota Research Institute</orgName>
+								<address>
+									<addrLine>One Kendall Square Building 600</addrLine>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sam</forename><surname>Creasey</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Toyota Research Institute</orgName>
+								<address>
+									<addrLine>One Kendall Square Building 600</addrLine>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Takuya</forename><surname>Ikeda</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Toyota Research Institute</orgName>
+								<address>
+									<addrLine>One Kendall Square Building 600</addrLine>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Russ</forename><surname>Tedrake</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Toyota Research Institute</orgName>
+								<address>
+									<addrLine>One Kendall Square Building 600</addrLine>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Soft-bubble grippers for robust and perceptive manipulation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2020-04-28">28 Apr 2020</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">E80814B0E601BCBCB8ACD4EDDDDC69D6</idno>
+					<idno type="arXiv">arXiv:2004.03691v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>soft-robotics</term>
+					<term>robot manipulation</term>
+					<term>tactile sensing</term>
+					<term>shear sensing</term>
+					<term>visuotactile</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Manipulation in cluttered environments like homes requires stable grasps, precise placement and robustness against external contact. We present the Soft-bubble gripper system with a highly compliant gripping surface and dense-geometry visuotactile sensing, capable of multiple kinds of tactile perception. We first present various mechanical design advances and a fabrication technique to deposit custom patterns to the internal surface of the sensor that enable tracking of shearinduced displacement of the manipuland. The depth maps output by the internal imaging sensor are used in an in-hand proximity pose estimation framework -the method better captures distances to corners or edges on the manipuland geometry. We also extend our previous work on tactile classification and integrate the system within a robust manipulation pipeline for cluttered home environments. The capabilities of the proposed system are demonstrated through robust execution multiple real-world manipulation tasks. A video of the system in action can be found here.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Incorporating mechanical compliance, or softness, into manipulators has been observed to be beneficial in making grasping more robust <ref type="bibr" target="#b0">[1]</ref>. However, many in-home tasks necessitate not just robust picking, but precise placement, e.g. dishwasher loading, liquid container handling, and shelf stacking. Although compliance can somewhat mitigate inaccuracies in pregrasp pose estimation and object shape variations, variability in the post-grasp state may adversely impact task success. This problem is further exacerbated in highly cluttered home environments with visual occlusions, tight spatial constraints, and unforeseen contacts. Augmenting compliant end effectors with tactile perception capabilities might help compensate for variability in the post-grasp state of manipulands and for unexpected disturbances. To address these challenges, we present the highly compliant Soft-bubble gripper system which integrates multiple tactile perception capabilities in order to enable robust manipulation in tightly constrained environments.</p><p>While progress has been made in tactile sensing techniques, open questions remain on the ideal design for soft or compliant surfaces as well as on what kind of perception they should enable. For manipulation in cluttered environments, tactile sensing should enable at least a few of the following capabilities: manipuland pose estimation (to estimate postgrasp pose), manipuland external force estimation (to estimate both expected and unexpected forces), slip detection, object classification (e.g. to compensate for occlusion when grasping The Soft-bubbles <ref type="bibr" target="#b1">[2]</ref>, <ref type="bibr" target="#b2">[3]</ref> combine a highly compliant manipulation surface with dense geometry sensing. Mechanically, they achieve robust grasps since they are highly deformable, are easy to build due to their air-filled membrane design, and are fairly durable. They are also closely related to other visuotactile sensors reported in literature <ref type="bibr" target="#b3">[4]</ref>, with the key difference that the generated depth maps are directly measured by the internal imaging sensor and are not inferred. Some notable limitations on the prior iterations of the Soft-bubbles were their large form factor and an inability to track shear forces on the contact surface. This meant they could neither be used for human-scale object manipulation nor compensate for externally induced shear. Meaningfully co-designing the mechanical and perceptual aspects of these sensors for a robust manipulation pipeline was an open question -one which is directly tackled in this paper.</p><p>We present four key contributions to the Soft-bubble technology that combine to allow for robust manipulation of realworld, human-scale objects in a cluttered home environment: (A) Design and fabrication techniques for a smaller parallel gripper form factor, leveraging modifications of the previously used time-of-flight (ToF) camera system (B) Techniques for adding high-density internal markers to the bubble surface that enable dense optical flow pattern tracking for estimating shear-induced membrane displacement (C) An optimization-based proximity pose estimation framework that is inspired by current state-of-the-art depth tracking methods. (D) Integrated tactile classification, using simultaneous images and an automated ground-truth labeling pipeline</p><p>We demonstrate the capabilities of the Soft-bubble gripper system through various tasks that test its sensing effectiveness, robustness to uncertainty, as well as its efficacy in human-robot interaction and antagonism. We conclude with observations on the performance, the gripper's limitations, and a discussion of future work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>The contributions presented in this paper cover four key areas and the related work for each is summarized in this section.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Compliant Gripper Design</head><p>In contrast to most compliant gripper designs, which are based on solid materials <ref type="bibr" target="#b0">[1]</ref>, the Soft-bubbles use an air-filled deformable structure such as those reported in Kim et al <ref type="bibr" target="#b4">[5]</ref>. They are also a high-resolution visuotactile sensor, like GelSight <ref type="bibr" target="#b5">[6]</ref>, <ref type="bibr" target="#b6">[7]</ref>, and GelSlim <ref type="bibr" target="#b7">[8]</ref>, which is advantageous for precision manipulation. The air-inflated latex membrane structure of the Soft-bubble has multiple mechanical benefits. (i) a large degree of compliance through a combination of pneumatic effects and membrane elasticity<ref type="foot" target="#foot_0">foot_0</ref> , (ii) the resulting higher friction at the contact patch leads to better grasps, (iii) they are potentially more robust to wear-and-tear from longterm use.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Shear Estimation</head><p>Estimating shear and/or slip from visuotactile sensing has been investigated <ref type="bibr" target="#b8">[9]</ref>, particularly for ensuring stable and sensitive grasps that are robust to unforeseen external contacts. A popular approach has been to embed uniform visual markers either on the contacting surface or within the the sub-surface material. Methods have also been proposed for decomposing this shear information into tangential and torsional components <ref type="bibr" target="#b9">[10]</ref>.</p><p>However, due to the large deformations and ellipsoidal form factor of the Soft-bubbles , such uniform markers result in shear tracking errors. Therefore we developed a pseudorandom pattern deposition technique that enables dense optical flow processing for shear-deformation tracking.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. In-hand Pose Estimation</head><p>The problem of estimating the post-grasp pose of a manipuland within an end effector's grasp has been attempted both with and without the use of tactile sensors. State-of-theart methods for tracking known object geometries using depth sensors typically leverage probabilistic filters that account for unforeseen occlusions <ref type="bibr" target="#b10">[11]</ref>. One application of tactile sensing has been to improve the stability of the filter under contact by collapsing the state to a contact manifold <ref type="bibr" target="#b11">[12]</ref>. Algorithms such as DART overcome some of the intractability issues in filter-based tracking by solving an optimization problem and can also deal with articulated objects <ref type="bibr" target="#b12">[13]</ref>; more accurate extensions have been proposed that account for physical nonpenetration constraints when in contact with known surfaces <ref type="bibr" target="#b13">[14]</ref>.</p><p>In the case of visuotactile sensors, the rendered depth maps can be of sufficiently high resolution to be used directly for inhand pose estimation <ref type="bibr" target="#b14">[15]</ref>. Direct depth registration methods such as Iterative Closest Point (ICP) can be employed for local pose estimation <ref type="bibr" target="#b1">[2]</ref> given a sufficiently close initial guess that can either be learned <ref type="bibr" target="#b15">[16]</ref> or be obtained from methods that can compute the contact-patch resulting from contact with a tactile sensor <ref type="bibr" target="#b2">[3]</ref>. Also, external depth sensor information can be fused with tactile depth <ref type="bibr" target="#b16">[17]</ref>.</p><p>The proximity pose estimator we present in this paper is closely related to optimization-based methods like DART using visuotactile sensors <ref type="bibr" target="#b16">[17]</ref> due to their robustness against initialization -we propose some strategies to improve the smoothness of the cost function. The deformations of the Soft-bubbles under stable grasp capture enough of the object geometry to enable an optimization-based pose estimator from tactile information alone, as presented in this paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Tactile Classification</head><p>Tactile material and object classification is an interesting use case for tactile sensors <ref type="bibr" target="#b17">[18]</ref> since it enables recognition of the object that is being grasped even when it is occluded from other vision sensing. As in <ref type="bibr" target="#b1">[2]</ref>, we use a ResNet18 architecture <ref type="bibr" target="#b18">[19]</ref> image classifier; we now train and infer on concatenated images simultaneously combining individual depth or IR images from each of the sensors. An automatic labelling pipeline was developed for generating sufficient quantities of labelled images.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. MECHANICAL DESIGN</head><p>Our previous Soft-bubble prototype was relatively large with a single sensor used as an end effector <ref type="bibr" target="#b1">[2]</ref>. The new Softbubble fingers, as seen in Fig. <ref type="figure" target="#fig_1">2</ref>, have been designed to both task-based and perceptual requirements. In order to achieve tasks in constrained domestic environments, the Soft-bubbles are designed to be attached to a standard parallel gripper, to interact with human-scale objects, and to fit into tight household spaces (e.g. a sink or dish washer). Perceptually driven improvements include the use of a shorter range depth sensor, interchangeable "bubble modules," as well as a method for adding visually trackable patterns to a bubble's internal surface.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Internal Depth Sensor</head><p>For shorter-range depth sensing (as compared to the off-theshelf picoflexx), a prototype ToF depth sensor from PMD with a shorter imager-emitter baseline was used. This shorter baseline allows for more consistent illumination of the deformable bubble membrane at closer distances, and therefore permits more accurate depth measurements. As seen in Fig. <ref type="figure">3</ref>, the internal ToF sensor is angled relative to the contact surface, with a working range of 4-11 cm. Depth measurements are more accurate near the upper bound of this range. The angled ToF depth sensor maximizes field of view (FOV) and depth measurement accuracy at the center and tips of the fingers where contact happens most, while minimizing the overall gripper width. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Bubble Modules</head><p>A modular design allows for quick swapping of bubbles. Bubbles may be exchanged for various reasons including the replacement of a damaged module, switching mechanical properties like membrane thickness, or swapping internal patterning based on the needs of the perception system. The modules consist of a plain or patterned latex membrane, a clear acrylic backing plate, a ring that mounts the membrane onto the acrylic, threaded inserts, and a tube fitting for inflation and pressure sensing. An exploded view of this cartridge can be seen in Fig. <ref type="figure">4</ref>. The components are sealed together using CA glue. The sensor electronics remain mounted to the gripper, while the bubble cartridge can be removed and replaced using four screws.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Printed Patterning</head><p>The various patterns seen in Fig. <ref type="figure">5</ref> are script-generated with parameters controlling dot density (dots/mm 2 ), minimum Fig. <ref type="figure">3</ref>: An angled, short-range ToF depth sensor (blue) maximizes FOV (red) and depth measurement accuracy while minimizing overall gripper width. All dimensions in mm. Fig. <ref type="figure">4</ref>: Assembled and exploded views of bubble module components including latex membrane, clear acrylic plate, ring that mounts the membrane onto the acrylic, threaded inserts, tube fitting and tube. The red surface is where CA glue is applied during assembly to seal the module. and maximum dot diameter, and pattern randomness. These patterns are output as vector files for laser cutting adhesivebacked stencils. These stencils are adhered to plain sheet latex, a thin layer of balloon screen printing ink is painted over the stencil, then the stencil is removed while the ink is still wet. This method can be used to apply patterns of single and multiple colors.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Construction and Durability</head><p>A batch of Bubble-sensor fingers can be inexpensively assembled in as little as two hours with no more than a FDM printer, laser cutter, scissors, glue and a paint brush; there is no casting, as we use off-the-shelf sheet latex for the membrane. In long-running experiments, we were able to operate the Fig. <ref type="figure">5</ref>: Experimental bubble modules and stencils with a variety of pseudorandom printed internal dot patterns for shear tracking, with dots in both black and gray.</p><p>Soft-bubbles for over 100 hours before the first failure -a puncture from the sharp edge of a manipuland. This type of failure is simple to recover from. When a puncture occurs, the surrounding area is lightly sanded then cleaned. A small patch is cut from latex, then both the patch and area surrounding puncture are thinly painted with rubber cement, allowed to dry for a few seconds, then the patch applied. After a few minutes, the bubble can be re-inflated with negligible effect on the associated tactile sensing capabilities. In the event that a bubble can not be patched, the module is then swapped out for a backup bubble. We are currently exploring techniques to improve the durability and the mean time to failure.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. PROXIMITY POSE ESTIMATION</head><p>As mentioned in Sec. II, our approach to pose estimation of known objects is closely related to optimization-based methods for tracking on point-clouds <ref type="bibr" target="#b12">[13]</ref>, <ref type="bibr" target="#b13">[14]</ref>, <ref type="bibr" target="#b16">[17]</ref> with a few modifications. In our prior work <ref type="bibr" target="#b1">[2]</ref>, <ref type="bibr" target="#b2">[3]</ref>, we observed that quality and resolution of the pair of images produced by the Soft-bubbles on contact are more than sufficient to enable tracking of manipuland pose. Here, we focus on a method that is more robust to estimator initialization -this is vital in the case of manipulating in cluttered environments where a priori guesses on in-hand state may be poor or non-existent.</p><p>Consider the scenario presented in Fig. <ref type="figure" target="#fig_2">6</ref>. There is a rigid object O with an associated geometry reference frame G that is held between two Soft-bubbles mounted on the fingers of a robot gripper. There is a frame C i associated with each of the Soft-bubbles and the gripper in turn has a tool frame T associated with it. The single-shot in-hand pose estimation problem is to estimate G X T (t), for a known object geometry (where G X T ∈ SE3), when the object is under a stable grasp (the object is not slipping) using available sensor measurements Y (t).</p><p>As previously suggested by Schmidt et al <ref type="bibr" target="#b12">[13]</ref>, signed distance functions (SDF) are a convenient parameterization of the object geometry since they can overcome the difficulty in finding point-pair correspondences between the reference geometry and the sensed point-clouds. However, the nonsmoothness of the SDF gradients on geometries with sharp edges or corners can prove detrimental to the optimization.</p><p>Therefore, we extend the notion of the SDF to a more generic scalar proximity field that exhibits smooth gradients outside a given geometry even when sharp corners or edges are present. This can be defined as the function φ, a scalar field that is specified for a given geometry with an associated reference frame G that maps any point P that is specified in a frame C to a scalar value c as in,</p><formula xml:id="formula_0">φ( G X C C p P ) = c, C p P ∈ R 3 , c ∈ R 1 ,<label>(1)</label></formula><p>where the notation C p P denotes a position vector p between C and P, and G X C denotes the transform between C and G.</p><p>By convention c ≥ 0 outside the geometry, c &lt; 0 inside and c = 0 at the boundary. It is desirable that the gradients for a proximity field are well-defined and smooth for all G p P ∈ R 3 .</p><p>For smooth surfaces, similar to SDFs, the gradient satisfies the Eikonal equation ∇φ = 1. However, it is important that the smoothness is also guaranteed outside a geometry which can be ensured by considering the nearest corner distance along with the nearest surface distance as depicted in Fig. <ref type="figure" target="#fig_3">7</ref> for the cylinder case. Then, given a point-cloud measurement</p><formula xml:id="formula_1">T p Q seti = [ T p Q 0 , . . . , T p Q N ]</formula><p>that is specified in the end effector frame T , the problem in its simplest form can be posed as a nonlinear optimization given by,</p><formula xml:id="formula_2">θ * = argmin θ N i=0 φ( G X T (θ) T p i Q ) 2 , s.t. : θ ∈ SE(3),<label>(2)</label></formula><p>where θ is the chosen parameterization of the pose G X T , for a 7-dimensional vector composed of the three translational coordinates and four rotational coordinates (represented by the quaternion). We use a unit-norm constraint on the the quaternion part of θ.</p><p>Here, we specifically focus on analytic proximity fields for cylinders which we develop to ensure smoothness of ∇φ outside the geometry. This function can be defined in the following manner:</p><p>Given a cylindrical geometry of height h and radius r, with the height along the z-axis, and the half-height at the origin of G, consider a slab δ sl consisting of the planar projection of the cylinder, then the proximity field φ can be defined as, φ( G p P ) = max(δ sl , 0 2 ) 2 + vmax(min(δ s l, 0 2 )), <ref type="bibr" target="#b2">(3)</ref> where the cylinder slab function δ sl is defined by,</p><formula xml:id="formula_3">δ sl = |d| -b, d = [ G p P (x, y) 2 , G p P (z)] T , b = [r, h/2] T ,</formula><p>where the operators max and min are the binary operators returning the maximum and minimum of a pair of scalar values and vmax denotes the operator that return the max value among the components of a given vector, x, y, and z denote the components of G p P and the modulus operation |d| is elementwise. Fig. <ref type="figure" target="#fig_3">7b</ref> illustrates the field at some points outside the cylinder.</p><p>This algorithm possesses several advantages from the perspective of implementation and efficiency. First, the analytical form of the proximity fields for several basic primitive shapes can be easily derived and thus efficiently computed. Second, similar to SDFs, multiple primitive proximity fields can be aggregated for complex geometries and the gradients can be analytically computed. We use automatic differentiation to efficiently compute the gradients, and solve the constrained nonlinear optimization in Eq. 2 using SNOPT <ref type="bibr" target="#b19">[20]</ref>.</p><p>For Soft-bubbles we compute a concatenated grasp pointcloud T p Q seti from the two individual point-clouds by using gripper dimensions and the joint-encoder measurements from the parallel gripper. In practice, the speed and accuracy of this proximity pose optimization were greatly enhanced by cropping this point-cloud to only include the contact-patch (similar to our earlier work <ref type="bibr" target="#b2">[3]</ref>). For the results shown in this paper, since we only test shapes that are convex, we used a more naive contact patch filter that utilized a difference image generated with respect to a reference configuration of the bubbles when they are free from contact. The various stages of this entire pipeline can be seen in Fig. <ref type="figure" target="#fig_4">8</ref>. In practice, the contact patch point-cloud size is typically around 10K points; the pose-estimation computation frequency tends to be around 0.5Hz -1Hz on a standard multicore processor system using parallelization of computation of Eq. 2.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. SHEAR DEFORMATION ESTIMATION</head><p>Incorporating a pseudorandom dot pattern on the interior of the bubble surface (Fig. <ref type="figure">5</ref>) allows us to extract tangential displacement in the plane orthogonal to the applied gripper force (P membrane ).</p><p>As shown in Sec. III, the image sensor providing IR images is angled to look at the membrane. We extract a vector field using dense optical flow via the Gunner Farnebacks algorithm <ref type="bibr" target="#b20">[21]</ref>. Since tracking algorithms can have difficulties handling sudden changes, we instead focus on the relative sheardisplacement problem of comparing two images: a reference I t=0 and a later image I t=n . The reference image is taken after the gripper has achieved a stable grasp of the target object. The second I t=n image is the latest from the camera. The output is vector V for each pixel of the image that indicates an estimate of the displacement of that patch in pixels. To extract the tangential displacement vector s, we sum the vector field on the image by s = n i=0, vi∈ V v i , where s is the tangential displacement, v i is the vector value at pixel i, n is the pixel number of input image. The output relative shear displacement is then represented by the normalized form s/ s .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. TACTILE OBJECT CLASSIFICATION</head><p>As described above, the ToF sensors in the bubbles provide both depth and IR over independent channels. We implemented a classifier that can utilize either of these streams from both cameras. Each camera's resolution is 224 × 176. Only stable grasps are used for training and inference -we compute if a grasp is stable using thresholds on the bubble pressure differential as well as the finger velocity. This eliminates confounding issues like image blur. The images from both bubbles are then concatenated (as in Fig. <ref type="figure" target="#fig_5">9</ref>) and down-sampled into a 224 x 224 image. ResNet18 was used as the network architecture and both training and inference pipelines were implemented with pytorch.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Automatic Labelling Pipeline</head><p>In contrast to our previous classifier <ref type="bibr" target="#b1">[2]</ref>, we observed that when using images from two Soft-bubbles to classify objects during manipulation, it is important to collect training images of a sufficient diversity of valid stable grasps per class. Further, any unique geometric features of an object (e.g. handle of a mug, cap of a bottle) need to be sufficiently represented in the training data. Initial training attempts using human-generated grasp configurations resulted in insufficient samples of object geometries in poses the robot might grasp, resulting in poor classifier performance when tested on the robot. To mitigate these issues, we built an automatic labeling pipeline. One or more objects were placed into the robot's workspace and the robot was commanded to repeatedly pick up objects using the same grasp generator that is used in our object sorting control pipeline (antipodal grasps on the object computed using an external depth sensor <ref type="bibr" target="#b21">[22]</ref>) and then drop them randomly. Once a stable grasp is obtained, collecting about one minute of data (600 training samples) for each object was found to be sufficient for training.</p><p>This pipeline can generate 50 grasps (30K training samples) autonomously within 1.5 hours. We trained on three classes of objects (see Fig. <ref type="figure" target="#fig_6">10</ref>). The training converged in about 45 epochs using stochastic gradient descent with a validation accuracy of ≥ 99% (validated on a separate random samples of 30% of the labelled data). For both training and inference we utilized a dual GPU Intel Xeon workstation. More rigorous analysis of the number of grasps required are ongoing and out of the scope of this paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VII. EXPERIMENTS</head><p>To demonstrate robust manipulation we deployed the Softbubble gripper and the presented tactile perception techniques in a cluttered indoor scenario. The experimental setup consisted of a fixed-base manipulator in a realistic kitchen setup with counters, a sink, and a dishwasher. The setup and the various tasks that we demonstrated can be seen in this video.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Robot and Task Setup</head><p>The bubble fingers were mounted on a parallel Schunk WSG 50 gripper attached to a KUKA iiwa arm. A set of six Intel RealSense D415 cameras were employed for external (visual) perception of the sink-scene; three cameras pointed into the sink at a downward angle, an additional two cameras facing the counter-top and one final camera tracking the three racks (using fiducial markers) and the door of the dishwasher. The following objects were used: plastic mugs, plastic PET bottles (acting as refuse in the sink), and wine glasses. An OptiTrack motion capture system was used for validating the in-hand pose estimation.</p><p>Depth images from the RealSense cameras were fused to generate a combined point cloud of the scene within the sink. Grasp poses were identified on objects either by an anti-podal grasp generation pipeline <ref type="bibr" target="#b21">[22]</ref> or by a naive blob centroid location.</p><p>Motion planning was implemented using a combination of sampling-based and optimization-based techniques <ref type="bibr" target="#b22">[23]</ref>. The robot's actions were scripted in the form of a set of parameterized closed-loop primitives. Real-time control ran over Ethernet/IP using KUKA's FRI interface, and the software framework used a mixture of tools written in C++ and Python. The Drake simulation and control toolbox <ref type="bibr" target="#b23">[24]</ref> was used for the kinematic computations within the control and planning stack. The collision detection in planning and control used the FCL collision library (through Drake). All of the perception, planning, and control software was running on one Intel Xeon workstation under Ubuntu 18.04. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Task 1: Dish loading with recycling separation</head><p>In this task the robot autonomously reaches into the sink, grasps objects, and classifies them as either a valid dish (e.g. mugs) or recycling (e.g. PET bottles). The limit on the objects selected was due to our existing dish-loading pipeline, not fundamental limitations of Soft-bubbles . Valid dishes must be placed within the dishwasher and recycling dumped in a bin. screen</p><p>The images seen in Fig. <ref type="figure" target="#fig_6">10</ref> depict some of the different classes of objects that we tested on the dish-loading setup during the post-grasp tactile classification stage.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Task 2: Pose Estimation Under Antagonism</head><p>We analyzed the performance of the proximity pose optimizer for cylindrical mugs by equipping the manipuland with active motion capture markers. For an arbitrarily chosen in-hand pose, the pose estimates computed were compared against the motion capture output. Since the proximity field we use here is that of a cylinder, the pose-estimates can be considered reliable only for contact with cylindrical surfaces. The peak range of the offset in the seed from the ground-truth pose, which still exhibited stable convergence, was observed to be ±30 degrees in pitch and roll directions. We used either the pre-grasp pose estimated by our vision system (when available) or seeded it with a cardinal pose. Once a stable grasp was achieved, we initialized our pose optimization with the previous estimated pose for continuous tracking.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Task 3: Shear-based Manipuland Release and Handover</head><p>We implemented a closed-loop controller that monitors the shear forces on a manipuland relative to an initial stable grasp. By comparing it to a threshold we implemented automated placing or handover of the manipuland. This was demonstrated with two tasks. In the first we hand a fragile object (wine glass with liquid) to a human as seen in Fig. <ref type="figure" target="#fig_1">12</ref>. The second is an autonomous blind stacking of wine glasses where the robot has no notion of the geometry of the objects or the stacking surface. This latter task can be seen in this video link.</p><p>The thresholds used are dependent on the post-grasp contact patch size and geometry. Future work will involve using the contact patch estimator and pressure sensor data to improve shear sensing accuracy for more diverse objects.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VIII. CONCLUSIONS AND DISCUSSION</head><p>In this paper, we present the Soft-bubble gripper system, which combines a highly compliant gripping surface and visuotactile sensing in the form factor of a parallel gripper. The tactile sensing capability of the gripper enables multiple forms of perception; in multiple real-world tasks, we demonstrated in-hand pose-estimation, shear-deformation estimation and tactile classification, within a robust manipulation pipeline.</p><p>As seen in our results, the combination of Soft-bubbles and tactile perception can be valuable for solving manipulation problems in cluttered environments. The Soft-bubble fingers are affordable, compliant, easy to construct and mechanically robust. In addition, the perception methods presented are computationally efficient enough to enable closed-loop, realtime control of complex tasks. The proximity field method used in our pose estimation framework is a novel contribution that is promising for achieving tractable depth-based tracking.</p><p>Soft-bubbles still have room for improvement. Our current implementation is limited in size due to the minimum range Fig. <ref type="figure" target="#fig_1">12</ref>: Video frames from a shear-based manipuland handover task with a liquid filled fragile manipuland (wine-glass). The shear displacement estimator's display output (computed from one of the Soft-bubble fingers) is overlaid on the top right of each panel: (left) Before handover, showing the nominal configuration. From this point on, shear is computed relative to this configuration. (center) At the onset of handover, when a human exerts forces to take the manipuland from the robot, relative shear displacement increases until a threshold on the norm of the magnitude. (right) Condition immediately after release; there is residual relative shear seen with respect to the pre-handover condition.</p><p>of custom ToF sensors that are difficult to source, so we are working on customized ToF cameras designed specifically for short-range depth sensing.</p><p>Algorithmically, we are working on enhancements to both shear displacement estimation and pose tracking. Our current shear displacement tracking is based on tracking visual features with the IR channel. By incorporating the depth channel from the ToF camera we hope to have the Soft-bubble act more like a full low-cost force-torque sensor. Our pose estimator is being expanded to handle other geometric primitives (e.g. frustrums).</p><p>Lastly, we are investigating more challenging applications for the Soft-bubble technology, including tool use and enabling physical interaction between humans and robots.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 :</head><label>1</label><figDesc>Fig. 1: Top: Highly compliant Soft-bubble parallel gripper on a robot arm grasping an object. Bottom-left: In-hand pose estimate during this interaction; Bottom-right: Shear-induced displacements tracked on the interior of this sensor.</figDesc><graphic coords="1,311.98,156.86,251.06,235.72" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: The Soft-bubble gripper is designed to manipulate household objects in tight spaces. All dimensions in mm.</figDesc><graphic coords="3,337.08,294.37,200.83,171.37" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: The end-effector and manipuland geometry frames for the in-hand pose estimation problem. The shaded region in green represents the point-cloud corresponding to each of the Soft-bubble sensors.</figDesc><graphic coords="4,349.64,50.54,175.74,136.93" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: Proximity field gradients illustrated on a 2D projection of a cylinder geometry; (a) signed-distance fields without corner correction and (b) proximity fields with corner correction.</figDesc><graphic coords="5,315.33,165.59,120.50,93.14" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 8 :</head><label>8</label><figDesc>Fig. 8: The various stages of the in-hand pose estimation pipeline. (a) A plastic mug being grasped in the Soft-bubble gripper system. (b) The concatenated point-cloud produced from the depth images from each Soft-bubble sensor computed in the gripper frame. (c) The contact-patch filtered concatenated point-cloud (d) The estimated in-hand mug pose from the proximity pose estimator.</figDesc><graphic coords="5,439.18,165.59,120.50,93.14" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 9 :</head><label>9</label><figDesc>Fig. 9: An instance of an automatically labelled training sample for the plastic mug; Top: the concatenated depth image; Bottom: the concatenated IR image.</figDesc><graphic coords="6,311.98,152.91,251.06,96.39" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 10 :</head><label>10</label><figDesc>Fig. 10: Some of the grasped objects from the dish loading task and their corresponding Soft-bubble IR images. In each of these cases, the object class was correctly identified with a probability p &gt; 0.95; (a) plastic PET tea-bottle, (b) square form-factor plastic alcohol bottle, (c) plastic mug, and (d) an alternative grasp utilized on a bottle similar to that in (b).</figDesc><graphic coords="7,52.31,143.10,120.51,86.58" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 11 :</head><label>11</label><figDesc>Fig. 11: Mugs grasped in two different poses and their corresponding in-hand pose-estimates; Top: An upside down mug; Bottom: Grasped mug being perturbed. The pose estimator runs at 1-2 Hz and can track these kinds of perturbations.</figDesc><graphic coords="7,315.33,50.54,120.51,241.01" type="bitmap" /></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>Typically, the deformations exhibited by Soft-bubbles are at least an order of magnitude greater than GelSight or GelSlim (multiple cm vs multiple mm on human-scale objects like mugs)</p></note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Soft manipulators and grippers: A review</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hughes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Culha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Giardina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Guenther</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rosendo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Iida</surname></persName>
+		</author>
+		<idno type="DOI">10.3389/frobt.2016.00069</idno>
+		<ptr target="https://www.frontiersin.org/article/10.3389/frobt.2016.00069" />
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Robotics and AI</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page">69</biblScope>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Softbubble: A highly compliant dense geometry tactile sensor for robot manipulation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alspach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hashimoto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019">2019. 2019</date>
+			<publisher>IEEE</publisher>
+			<biblScope unit="page" from="597" to="604" />
+		</imprint>
+	</monogr>
+	<note>RoboSoft</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Fast model-based contact patch and pose estimation for highly deformable dense-geometry tactile sensors</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Castro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Phillips-Grafflin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alspach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Tactile image sensors employing camera: A review</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shimonomura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">18</biblScope>
+			<biblScope unit="page">3933</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">3d printed soft skin for safe human-robot interaction</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Alspach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Yamane</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IROS</title>
+		<imprint>
+			<biblScope unit="page" from="2419" to="2425" />
+			<date type="published" when="2015">2015</date>
+			<publisher>IEEE</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">GelSight: High-resolution robot tactile sensors for estimating geometry and force</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page">2762</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Design of a Fully Actuated Robotic Hand With Multiple Gelsight Tactile Sensors</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wilson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2002.02474</idno>
+		<idno>arXiv: 2002.02474</idno>
+		<ptr target="http://arxiv.org/abs/2002.02474" />
+		<imprint>
+			<date type="published" when="2020-02">Feb. 2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">GelSlim: A high-resolution, compact, robust, and calibrated tactilesensing finger</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Donlon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1803.00628</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Active clothing material perception using tactile sensing and deep learning</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Mo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICRA</title>
+		<imprint>
+			<biblScope unit="page" from="1" to="8" />
+			<date type="published" when="2018-05">May 2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Effective estimation of contact force and torque for vision-based tactile sensor with helmholtz-hodge decomposition</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Kan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">A</forename><surname>Tse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<ptr target="http://arxiv.org/abs/1906.09460" />
+	</analytic>
+	<monogr>
+		<title level="j">CoRR</title>
+		<imprint>
+			<date type="published" when="1906">1906.09460. 2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Depth-based object tracking using a robust gaussian filter</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Issac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wüthrich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">G</forename><surname>Cifuentes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Trimpe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Schaal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2016 IEEE International Conference on Robotics and Automation (ICRA</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="608" to="615" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Pose estimation for contact manipulation with manifold particle filters</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">C</forename><surname>Koval</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Dogar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">S</forename><surname>Pollard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">S</forename><surname>Srinivasa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IROS</title>
+		<imprint>
+			<biblScope unit="page" from="4541" to="4548" />
+			<date type="published" when="2013">2013</date>
+			<publisher>IEEE</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Dart: Dense articulated real-time tracking</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Schmidt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">A</forename><surname>Newcombe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<meeting><address><addrLine>Berkeley, CA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+			<biblScope unit="volume">2</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Depth-based tracking with physical constraints for robot manipulation</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Schmidt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hertkorn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Newcombe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Marton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Suppa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2015 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="119" to="126" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Localization and manipulation of small parts using gelsight tactile sensing</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Platt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Roscup</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Srinivasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2014">2014. 2014</date>
+			<biblScope unit="page" from="3988" to="3993" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Tactile mapping and localization from high-resolution tactile imprints</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bauza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Canal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1904.10944</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Tracking objects with point clouds from vision and touch</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Izatt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Mirano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICRA</title>
+		<imprint>
+			<biblScope unit="page" from="4000" to="4007" />
+			<date type="published" when="2017">2017</date>
+			<publisher>IEEE</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Recent progress on tactile object recognition</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Di</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Advanced Robotic Systems</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="page" from="7" to="2017" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Deep residual learning for image recognition</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="770" to="778" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Snopt: An sqp algorithm for large-scale constrained optimization</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">E</forename><surname>Gill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Murray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Saunders</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM review</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="99" to="131" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Two-frame motion estimation based on polynomial expansion</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Farneback</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SCIA</title>
+		<imprint>
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Grasp pose detection in point clouds</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gualtieri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Saenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Platt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="1455" to="1473" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">An architecture for online affordance-based perception and whole-body planning</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Fallon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kuindersma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Karumanchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Antone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">P</forename><surname>D'arpino</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Deits</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Dicicco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fourie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Koolen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Marion</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Posa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Valenzuela</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K.-T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Iagnemma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Teller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="229" to="254" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">Drake: Model-based design and verification for robotics</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Drake</forename><forename type="middle">Development</forename><surname>Team</surname></persName>
+		</author>
+		<ptr target="https://drake.mit.edu" />
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

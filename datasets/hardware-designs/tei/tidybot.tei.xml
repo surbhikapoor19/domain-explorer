@@ -1,0 +1,3077 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">TidyBot++: An Open-Source Holonomic Mobile Manipulator for Robot Learning</title>
+				<funder ref="#_2Yz9Xtm">
+					<orgName type="full">National Science Foundation</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Sloan Foundation</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Swerve Drive Specialties</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Princeton School of Engineering</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Stanford Institute for Human-Centered Artificial Intelligence</orgName>
+					<orgName type="abbreviated">HAI</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Jimmy</forename><surname>Wu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Princeton University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">William</forename><surname>Chong</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Robert</forename><surname>Holmberg</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="department">Dexterity</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Aaditya</forename><surname>Prasad</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yihuai</forename><surname>Gao</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Oussama</forename><surname>Khatib</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Szymon</forename><surname>Rusinkiewicz</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Princeton University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jeannette</forename><surname>Bohg</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">TidyBot++: An Open-Source Holonomic Mobile Manipulator for Robot Learning</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">1BB84DE508FE7AAD21081532A1E4134A</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>mobile manipulation</term>
+					<term>imitation learning</term>
+					<term>holonomic drive</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Exploiting the promise of recent advances in imitation learning for mobile manipulation will require the collection of large numbers of human-guided demonstrations. This paper proposes an open-source design for an inexpensive, robust, and flexible mobile manipulator that can support arbitrary arms, enabling a wide range of real-world household mobile manipulation tasks. Crucially, our design uses powered casters to enable the mobile base to be fully holonomic, able to control all planar degrees of freedom independently and simultaneously. This feature makes the base more maneuverable and simplifies many mobile manipulation tasks, eliminating the kinematic constraints that create complex and timeconsuming motions in nonholonomic bases. We equip our robot with an intuitive mobile phone teleoperation interface to enable easy data acquisition for imitation learning. In our experiments, we use this interface to collect data and show that the resulting learned policies can successfully perform a variety of common household mobile manipulation tasks.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Imitation learning from real-world data is starting to show very promising results in robotics for both fixed-arm robots <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b1">2,</ref><ref type="bibr" target="#b2">3,</ref><ref type="bibr" target="#b3">4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b5">6,</ref><ref type="bibr" target="#b6">7]</ref> and mobile manipulators <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b8">9,</ref><ref type="bibr" target="#b9">10,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b11">12,</ref><ref type="bibr" target="#b12">13,</ref><ref type="bibr" target="#b13">14,</ref><ref type="bibr" target="#b14">15,</ref><ref type="bibr" target="#b15">16,</ref><ref type="bibr" target="#b16">17,</ref><ref type="bibr" target="#b17">18,</ref><ref type="bibr" target="#b18">19,</ref><ref type="bibr" target="#b19">20,</ref><ref type="bibr" target="#b20">21]</ref>. However, one key bottleneck is the availability of data. Unlike in natural language processing, which can train on readily-available data from the internet, real-world data for training robot policies is much harder to come by. As a result, scaling data collection of robotic tasks has become a high-interest research direction. Recent efforts have collected large robot learning datasets to address this <ref type="bibr" target="#b21">[22,</ref><ref type="bibr" target="#b22">23,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b24">25,</ref><ref type="bibr" target="#b25">26,</ref><ref type="bibr" target="#b26">27]</ref>. These datasets were largely collected on fixed-arm robot setups. However, to bring robots to their full potential, mobility is important as it will enable many more tasks in realistic household settings <ref type="bibr" target="#b7">[8]</ref>.</p><p>We believe that one reason there are so few data collection and learning efforts in mobile manipulation is the lack of suitable research hardware. Existing commercial options for mobile bases are often tailored towards industrial or warehouse use cases, and may be ill-suited for household environments due to their large size. They are also often expensive and are typically subject to kinematic constraints.</p><p>In this work, we propose an open-source design for a mobile base designed to carry a robot arm sized for use in household environments. In addition to being inexpensive, flexible, and easy to assemble, our base is holonomic: able to independently move in any of the three degrees of freedom (DoFs) on the ground plane-(x, y, θ)-at any time. We argue that this is an important advantage for more intuitive teleoperation, and greatly increases the ease of acquiring large amounts of training data for real-world imitation learning.</p><p>Nonholonomic robots, such as differential drive (wheelchair-like) or Ackermann drive (car-like) platforms, have constrained degrees of freedom in their motion. The most notable consequence of this is that they cannot move sideways. For example, cars cannot directly drive sideways into a street-side parking spot and must execute a multi-step parallel-parking maneuver. In contrast, holonomic robots have no kinematic constraints and can simultaneously and independently control all three degrees of freedom. An example of a holonomic vehicle common in everyday life is an office chair, which can be smoothly pushed or rotated in arbitrary directions. This is enabled by the design of the caster wheels (Fig. <ref type="figure" target="#fig_1">2</ref>), which have an offset between the vertical axis of the swivel mechanism and the roll axis of the wheel. This offset is a crucial design feature of casters and is what makes the office chair fully holonomic. It creates a lever arm that causes the wheel to trail behind the vertical axis of the swivel as the chair moves, automatically aligning the wheels to the direction of movement. Without a caster offset, the vehicle would be omnidirectional (capable of moving in any direction) but still nonholonomic, as the wheels have to be manually aligned to face the direction of desired motion before the vehicle can begin moving. Overall, holonomic drive is preferred for maximum maneuverability.</p><p>Our holonomic base uses a powered-caster drive mechanism <ref type="bibr" target="#b27">[28]</ref>. It is driven by four motorized casters, and can be thought of as a motorized office chair. The ability to steer all four wheels makes the base omnidirectional, and the caster offset makes the base holonomic, allowing it to instantaneously accelerate in any direction as it does not need to first align the wheels to the direction of motion.</p><p>A holonomic mobile base enables easier teleoperation and kinesthetic teaching for collecting imitation learning data. Everyday tasks such as opening doors and cabinets often require sideways motions of the mobile base to improve the workspace of the arm during execution. This useful motion is not immediately available with a differential drive base. Instead, the robot has to replan vehicle trajectories to satisfy nonholonomic constraints, which costs extra motion and time with no added value to the task. A holonomic mobile base, on the other hand, can be much more reactive. It can be moved arbitrarily in any direction no matter the current configuration, allowing an operator to make fine adjustments to the positioning of the base.</p><p>A holonomic base is also useful for policy learning and inference. Recent real-robot imitation learning works have converged on the use of position representations, as they are more stable and less noisy compared to velocities. However, a nonholonomic mobile base can only be controlled in velocity mode <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b15">16]</ref>. A holonomic base, on the other hand, can be directly commanded to go to a task space position (x, y, θ) in a repeatable manner, as it can independently control all DOFs with no constraints. In our experiments, we show that we can indeed train high-performing policies for our robot across several mobile manipulation tasks in a real apartment home. Additionally, we show that policies can be learned more easily with data collected from a holonomic base compared to a nonholonomic one.</p><p>To facilitate easy data collection with our new mobile manipulator, we also develop a mobile phone teleoperation interface. The interface uses the WebXR API <ref type="bibr" target="#b28">[29]</ref> to stream the real-time 6-DoF pose of the mobile phone to a computer, which maps the phone motion to corresponding motions of the mobile base or arm via low-level control. WebXR is supported on most modern Android and iOS phones, so our interface does not require purchase of a separate teleoperation device. In our experiments, we use this teleoperation interface to collect data for training our policies.</p><p>Our holonomic mobile base is low-cost ($5-6k USD) and designed from the ground up to optimize for mobile manipulation research productivity. We will fully open source all aspects of this system, including the hardware design, mobile phone teleoperation interface, policy learning setup, and lowlevel controller. We will also create a documentation webpage for the mobile base, including bill of materials (BOM), a hardware assembly guide with videos, and 3D CAD files. We believe these components can help democratize access to highly maneuverable mobile manipulators, increase ease and practicality of mobile manipulation data collection, and improve research reproducibility by providing a standardized and reusable robot platform.</p><p>Our key contributions in this work are thus: <ref type="bibr" target="#b0">(1)</ref> an open-source design for a holonomic mobile manipulator, (2) a mobile phone teleoperation interface for easily collecting data with the mobile manipulator, and (3) demonstration that our system is capable of learning policies. Please see our project page at <ref type="url" target="http://tidybot2.github.io">http://tidybot2.github.io</ref> for documentation, code, and qualitative videos of our robot in action.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head><p>Mobile manipulation hardware platforms. Recently, there has been an increased interest in equipping manipulation robots with mobility to demonstrate their full potential for a variety of tasks-especially in domestic settings <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b29">30,</ref><ref type="bibr" target="#b30">31,</ref><ref type="bibr" target="#b31">32,</ref><ref type="bibr" target="#b32">33,</ref><ref type="bibr" target="#b33">34,</ref><ref type="bibr" target="#b34">35,</ref><ref type="bibr" target="#b35">36,</ref><ref type="bibr" target="#b36">37,</ref><ref type="bibr" target="#b37">38,</ref><ref type="bibr" target="#b38">39,</ref><ref type="bibr" target="#b39">40,</ref><ref type="bibr" target="#b40">41]</ref>. These works utilize a number of different mobile bases which we compare to our base in more detail in Tab. 1. For example, several projects use the Tiago mobile manipulator, and learn policies with a combination of RL, simulation, and human motion transfer <ref type="bibr" target="#b41">[42,</ref><ref type="bibr" target="#b42">43,</ref><ref type="bibr" target="#b43">44,</ref><ref type="bibr" target="#b29">30,</ref><ref type="bibr" target="#b44">45]</ref>. Tiago is holonomic through its use of mecanum wheels, but the wheel comes with a few drawbacks. Due to the multiple small rollers on the wheel, the contact point with the ground is discontinuous leading to vibrations during operation. They also provide less traction and have poorer ability to traverse door thresholds and other inevitable household clutter compared to a conventional wheel. Another common category of bases uses differential drive, which prevents them from freely navigating every degree of freedom <ref type="bibr" target="#b45">[46,</ref><ref type="bibr" target="#b35">36,</ref><ref type="bibr" target="#b7">8]</ref>. An example of such a robot is Everyday Robots' mobile manipulator, which often appears in Google's robot learning papers as a scalable mobile manipulator platform <ref type="bibr" target="#b35">[36,</ref><ref type="bibr" target="#b46">47,</ref><ref type="bibr" target="#b47">48]</ref>. This robot is neither open source nor purchasable by the public.</p><p>While the above works use wheeled bases, several works attach a robot arm to a quadruped and utilize the combined system as a mobile manipulator capable of traversing terrains that wheeled robots cannot access <ref type="bibr" target="#b34">[35,</ref><ref type="bibr" target="#b36">37,</ref><ref type="bibr" target="#b48">49,</ref><ref type="bibr" target="#b49">50]</ref>. Though this combination expands the set of navigable environments, these quadrupeds are nonholonomic since they are kinematically constrained by the orientation and placement of their limbs and feet. Data collection for mobile manipulation. To address the lack of robotics data for learning manipulation policies, several works have developed data collection platforms. The majority of these platforms are built for fixed-arm setups <ref type="bibr" target="#b50">[51,</ref><ref type="bibr" target="#b51">52,</ref><ref type="bibr" target="#b24">25,</ref><ref type="bibr" target="#b52">53]</ref>. For example, the DROID dataset <ref type="bibr" target="#b24">[25]</ref> was collected on a standardized setup with an arm mounted on a portable table. The authors use an  Oculus controller to teleoperate the robot. However, this controller must remain in view of four IR receivers which can lead to unexpected motion if the controller moves out of view and back. Similar to our work, RoboTurk <ref type="bibr" target="#b50">[51,</ref><ref type="bibr" target="#b53">54]</ref> used a mobile phone to teleoperate fixed-base robot arms which is a much more flexible solution and does not require purchasing a dedicated teleoperation device. However, their system suffers from drift as they only rely on IMU measurements and do not use the camera. MART <ref type="bibr" target="#b52">[53]</ref> and MOMART <ref type="bibr" target="#b54">[55]</ref>, which extend RoboTurk to multi-arm and mobile manipulation, respectively, suffer from similar shortcomings and have not been demonstrated on real robots. In our work, we use the WebXR API <ref type="bibr" target="#b28">[29]</ref>, which combines IMU data with visual odometry based on the phone's camera to mitigate drift. TeleMoMa <ref type="bibr" target="#b44">[45]</ref> is a teleoperation framework that supports multiple teleoperation interfaces and three commercially-available, high-cost robots (for a detailed comparison to our low-cost base, see Tab. 1). One of the supported teleoperation devices is a mobile phone app based on ARKit, similar to what we use. Our interface is based on WebXR, which leverages ARKit on iPhone but works on Android as well.</p><p>There are several works that propose data collection devices that are hand-held by the human demonstrator <ref type="bibr" target="#b51">[52,</ref><ref type="bibr" target="#b10">11]</ref> but in this case the demonstrator does not get direct feedback on whether a demonstration is kinematically feasible by the robot. Of those approaches, Dobb•E <ref type="bibr" target="#b10">[11]</ref> proposes a low-cost reacher-grabber stick with a mounted iPhone to record data. The authors then train visuomotor policies on this data that are deployed on a differential drive Stretch robot <ref type="bibr" target="#b45">[46]</ref>. Mobile ALOHA <ref type="bibr" target="#b7">[8]</ref> is a dual-arm mobile manipulation platform capable of performing an impressive array of household tasks. However, the robot's differential drive base and large footprint limits its maneuverability, and the arms are not able to reach the ground. Furthermore, the teleoperator is strapped to the back of the platform far away from the end effectors, which can make it hard to teleoperate precise actions. For our system, the teleoperator can freely walk around the scene and get very close when precision is required.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Hardware Design</head><p>We designed this mobile base concept from the ground up to optimize for mobile manipulation research productivity. It is simple, low-cost ($5-6k), and modular (Fig. <ref type="figure" target="#fig_3">3</ref>). The core is the drive system, which is based on readily available components from the FIRST Robotics Competition (FRC) <ref type="bibr" target="#b55">[56]</ref> ecosystem. A basic frame built out of aluminum T-slot extrusions carries the four motorized caster modules that are powered through a fused power distribution panel by a sealed lead acid (SLA) battery. There are many similar components in the FRC ecosystem that could be used to build similar systems. The large and active community of FRC users and vendors ensures that components are well-documented and readily available.</p><p>Our drive system is derived from a set of SDS MK4 swerve modules <ref type="bibr" target="#b56">[57]</ref> widely used in FRC. The swerve modules are very similar to a caster, with a wheel that can be actively steered and driven, except they have no caster offset and thus create a nonholonomic base. The modules use two motors with integrated encoders and CAN bus controllers, one for steering and one for driving. Additionally, there is an absolute encoder mounted directly to the steering axis to measure the steer position, and thereby eliminate the need for a startup homing motion. A USB-to-CAN adapter is used to communicate with the motors and encoders through CAN bus.</p><p>We modify the MK4 swerve module to create a holonomic base design by introducing a caster offset using a minimal number of modifications to the stock swerve module: 2 custom 3D-printed wheel mounts and a custom machined shaft. The wheel mounts can be printed with PLA filament on a standard FDM 3D printer, and the shaft can be easily ordered from online machining services like Xometry using our provided CAD file and specifications. All other parts of the off-the-shelf kit are directly reused.</p><p>To complete our mobile manipulator, we add a mini PC (Intel NUC) and the Kinova Gen3 arm. Power for compute, manipulation, and peripherals is provided by a high-capacity (768 Wh), fastcharging (0-100% in 70 minutes) portable power station (camping battery) with AC power outlets. The portable power station (8.6 kg) and SLA battery (6 kg) serve as counterweights to prevent the base from tipping over. Note that it would be possible to build electrical circuitry to use only one battery for more space efficiency, but we opted for separate batteries as it provides more flexibility and makes setup much easier.</p><p>Our open-source design is highly customizable: the frame can be easily modified to support mounting of different arms or even multiple arms, and many additional sensors such as cameras, microphones, etc., can be easily mounted and powered, to suit the research being done. For our low-level controller, we model the kinematics of the mobile base largely following the formulation of the powered-caster vehicle (PCV) in Holmberg and Khatib <ref type="bibr" target="#b27">[28]</ref>, which describes the mapping between the joint space and the operational space (x, y, θ) of the base.</p><p>Each caster module is modeled with two revolute joints: a steer joint and a roll joint. The steer joint determines the wheel's steering angle, while the roll joint measures the wheel's rotational movement. We have an incremental encoder in each motor, as well as an absolute encoder on the steer axis of each caster. With these encoder readings, we can calculate the joint positions and velocities using gearbox kinematics.</p><p>The main difference from the original PCV formulation <ref type="bibr" target="#b27">[28]</ref> is that instead of a single caster offset b, our caster module has a two-dimensional offset: a traditional longitudinal b x offset as well as a small lateral b y offset (Fig. <ref type="figure" target="#fig_4">4</ref>). This mainly comes as a byproduct of our design criteria to minimize the number of custom parts needed. It would be possible to have no lateral offset b y by designing more custom parts, or designing a new caster from scratch, but this would significantly lower the accessibility of our design, as creating custom parts requires detailed design work and is very costly to manufacture at low quantities.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Design principles</head><p>Our holonomic mobile base is specifically designed and optimized for robot learning research. This objective shapes our key design principles: Research flexibility. We would like users to be able to customize the robot to meet their own specific needs. The frame is designed using standard aluminum T-slot extrusions, providing flexibility to easily adjust the dimensions and shape of the frame. We use a portable power station (camping battery) with four AC power outlets, providing flexibility to power other kinds of robot arms as well as computers of various operating voltages. Reliable and easily-sourced parts. One challenge with building a mobile robot for research is the sourcing of parts such as motors, encoders, gears, and custom machined parts, which can be time consuming and costly. We design our drive system mainly using parts sourced from suppliers of the FIRST robotics competition (FRC) <ref type="bibr" target="#b55">[56]</ref> for high schoolers. are the same parts used by over 80,000 competition participants each year. Due to the popularity of the competition, the components are standardized and readily available for purchase from online vendors, and can be ordered online and typically delivered within a week. These parts are very reliable, as they have been battle-tested in the strenuous conditions of competition (125 lb robots moving at high speeds with frequent collisions), and core software components such as CAN drivers, motor control, and battery monitoring are all included. Our caster module design contains only three easily-obtained custom parts as described in Sec. 3.1. The top and bottom plates of the frame are laser-cut acrylic, which can be made with a laser cutter or directly ordered using an online service. All other components of the mobile base can be readily purchased from online retailers such as Amazon.</p><p>Easy assembly and repair. Our holonomic mobile base design is easy to assemble and can be put together in 1 to 2 days. Putting together the T-slot extrusion frame is the most time-consuming part of the process and takes around 6 hours. Each of the four caster modules can be assembled in less than 30 minutes using only hand tools, and subsequently installed on the frame. The custom wheel mounts for the casters can be 3D printed across 2 days. All electrical wiring can be done in less than 30 minutes and requires no soldering. For repairs, all parts can be easily removed from the frame in a modular fashion, including the caster modules. The robot does not need to be shipped back to a manufacturer when parts break. Instead, replacement parts can be purchased online and directly swapped out for the broken ones.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Specifications</head><p>In Tab. 1, we compare our holonomic base with other mobile bases and mobile manipulators commonly used in research. This includes the Stretch mobile manipulator from Hello Robot, the Tracer and Ranger Mini 2.0 AGVs from AgileX, the Husky AGV from Clearpath, and the Fetch and Tiago mobile manipulators. Our mobile base is maximally maneuverable, performant, and flexible, while also having the lowest cost. Note that while the Tiago is holonomic, it uses mecanum wheels which make the robot vibrate as it moves.</p><p>Dimensions. Our robot has a small footprint (54 x 50 cm), enabling it to navigate in household environments, including narrow doorways and hallways. The top of the mobile base is approximately 37.5 cm above the ground. This height allows the mounted arm to comfortably reach down towards the ground and up towards tabletops and countertops. Note that these dimensions can be easily customized to accommodate other arms.</p><p>Weight. The mobile base weighs 75 lb (34 kg). We mount a Kinova Gen3 7-DoF arm on top that weighs 27 lb (12 kg) including its mounting plate and power supply unit. Payload. To get a rough idea of the robot's maximum payload, we loaded 270 lb (122 kg) of weight plates onto the mobile base, for a total weight of 345 lb (156 kg). Even with this amount of weight, we found that the motors showed no signs of struggle. For a conservative estimate of a maximum payload suitable for long-term use, we halve the weight and use 60 kg as our estimate. This indicates that our design can comfortably support the weight of many other arms, as long as the frame is redesigned appropriately for securely mounting the arm. Note also that the payload may vary depending on the terrain (we conducted our test on a hard floor).</p><p>Runtime. We power the robot arm and compute using a portable power station with 768 Wh of capacity, which we found can handle 8 hours of continuous teleoperation runtime. For the motors, since they boot nearly instantly upon connection to power, the SLA battery powering the motors can be easily hotswapped during use if the voltage gets low. Traversability. Our mobile base works on various indoor floor surfaces ranging from hard floor to high pile carpet, and can traverse many common floor obstacles such as door thresholds, floor mats, and elevator gaps. While not intended for outdoor use, we found during transport of our robot that it can handle many outdoor floor obstacles as well, such as bumpy sidewalks, steel construction plates, loading ramps (inclination 6.5 degrees), and speed bumps. Odometry. To evaluate the odometry accuracy of the mobile base, we use motion capture with submillimeter accuracy to measure the pose of the base while driving it in several path shapes. Overall, we find the odometry quality to be quite high, with translation drift of less than 1 cm per meter of distance traveled, and rotation drift of less than 1 deg per 360 deg of rotation. This means that base movements are highly repeatable, as our holonomic base can be controlled in position mode to accurately reach goal poses (x, y, θ) using odometry feedback.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Experiments</head><p>In these experiments, we aim to show (i) that our teleoperation interface can collect useful demonstration data to successfully train policies for a variety of household mobile manipulation tasks, and (ii) that holonomic drive offers advantages over differential drive for both teleoperation and policy learning. For qualitative videos of autonomous policy rollouts and teleoperation, please see our project page at <ref type="url" target="http://tidybot2.github.io">http://tidybot2.github.io</ref>. We used our phone teleoperation interface to collect demonstrations for the 6 tasks shown in Tab. 2. We collected 100 demonstrations for the shorter open fridge task and 50 for all others. Data collection for each task took between 1 and 2 hours for 50 episodes, including overhead for environment resets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Imitation learning</head><p>We then used the data to train a diffusion policy <ref type="bibr" target="#b0">[1]</ref> for each task. We trained each policy for 500 epochs and evaluated them by running 10 episodes of policy rollouts. Success rates are shown in Tab. 2. Note that while diffusion policies are typically trained using 200 to 300 demonstrations, we found that 50 was already sufficient for the robot to learn to complete the task successfully. Performance can likely be further improved with more data. These results show that our system is capable of learning high-performing policies for useful tasks in real homes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Differential drive comparison</head><p>To further highlight the advantages of holonomic drive over nonholonomic, we conduct a head-tohead comparison on the wipe countertop task. We collect 50 demonstrations of the task with our base operating in differential drive mode. We implement this by applying the appropriate nonholonomic constraints to the desired base pose and then computing a velocity command to send to the base. In the wipe countertop task, the differential drive robot is forced to take a less efficient path as it is subject to nonholonomic constraints. Fig. <ref type="figure">5</ref> shows a representative pair of paths from the demonstration data (path begins at the origin), illustrating the greater efficiency enabled by a holonomic base when compared to differential drive. Across all demonstrations for this task, the differential drive base travels on average 4.03 m (average episode duration 65.2 s), whereas the holonomic base travels only 2.03 m (average episode duration 27.4 s).</p><p>We then train a diffusion policy using the differential drive data and compare the resulting policy with the holonomic one from before. To ensure a fair comparison, the differential drive policy was trained under identical conditions (50 demonstrations and 500 epochs). While the holonomic base can perform the task with 9/10 success rate, we find that the differential drive policy only achieves 4/10 success rate.</p><p>Qualitatively, we find that the differential drive policy does not learn the task as effectively, even though it was given the same number of demonstrations. The main failure mode is that it frequently skips over portions of the countertop rather than wiping. We believe this is because the learning problem is strictly harder in the case of differential drive. The policy not only has to learn the wiping action, it also has to learn a complicated sideways moving strategy similar to parallel parking, whereas the holonomic policy can directly move the base sideways. Additionally, the differential drive maneuvers cause the camera's view to swerve from side to side, reducing its quality, while the holonomic base can maintain a stable, forward-facing camera view.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Limitations</head><p>One limitation of our mobile base is that it does not backdrive very well due to high steering friction in the caster modules, which can be attributed to the combination of high steer gear ratio (12.8) and small caster offset (14 mm). We confirmed that with the steer gearing removed, the base can indeed backdrive smoothly. The base could be made more easily backdrivable with further mechanical modifications using custom machined parts, but this would come at the cost of reducing the accessibility of the open-source design.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusion</head><p>In this paper, we proposed an open-source design for a mobile manipulator with an inexpensive, robust, and flexible holonomic base. The design uses powered-caster wheel modules, which makes the base holonomic and therefore more maneuverable than commonly used nonholonomic designs. With our easy-to-use mobile phone teleoperation interface, we showed that many household mobile manipulation tasks become easy to demonstrate on our robot. Additionally, we showed that the data collected with our interface can be used to train high-performing policies on a variety of tasks. We hope that the open-source release of this mobile base design and teleoperation interface will enable the robot learning community to easily collect large quantities of mobile manipulation data that will form the basis for policy learning.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: We develop an open-source mobile manipulator with a holonomic base (left), and show that it can perform a variety of household tasks in a real apartment home (right).</figDesc><graphic coords="1,320.12,500.08,89.10,66.83" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: A simplified illustration of caster wheels on a holonomic base.</figDesc><graphic coords="2,306.00,316.78,197.96,106.07" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Our mobile base is designed to be modular and easily reconfigurable. It has very few components and can be assembled in 1 to 2 days.</figDesc><graphic coords="4,109.48,73.48,144.41,108.31" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Isometric and top views of a simplified caster, showing the caster offsets b x and b y , wheel radius r, steer and roll joints ϕ and ρ, and caster module placement (h, β) from the base origin.</figDesc><graphic coords="5,428.20,347.94,70.58,90.93" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head></head><label></label><figDesc>Figure 5:  In the wipe countertop task, the differential drive robot is forced to take a less efficient path as it is subject to nonholonomic constraints.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head></head><label></label><figDesc>set up new circuitry for power supply and voltage conversion. Additionally, we open source the entire control stack, all the way down to low-level control with motor velocity commands. This means researchers can have full control and are not limited to the API functionality exposed by a manufacturer's proprietary software stack.</figDesc><table><row><cell></cell><cell></cell><cell></cell><cell></cell><cell>Yes</cell><cell>Yes</cell><cell>No</cell><cell>No</cell></row><row><cell>Footprint (cm)</cell><cell cols="2">50x54 33x34</cell><cell>57x69</cell><cell>50x74</cell><cell cols="3">67x99 51x56 54x54</cell></row><row><cell>Weight</cell><cell cols="2">34 kg 24.5 kg</cell><cell>30 kg</cell><cell>63 kg</cell><cell cols="3">50 kg 113 kg 70 kg</cell></row><row><cell>Payload</cell><cell>60 kg</cell><cell>10 kg</cell><cell>100 kg</cell><cell>80 kg</cell><cell>75 kg</cell><cell>-</cell><cell>-</cell></row><row><cell cols="2">Maximum speed 1 m/s</cell><cell>-</cell><cell>1.6 m/s</cell><cell>1.5 m/s</cell><cell>1 m/s</cell><cell>1 m/s</cell><cell>1 m/s</cell></row><row><cell>Runtime</cell><cell>8 h</cell><cell>2-5 h</cell><cell>4 h</cell><cell>7-8 h</cell><cell>3 h</cell><cell>9 h</cell><cell>8-10 h</cell></row><row><cell>Cost</cell><cell>$5.4k</cell><cell>$25k</cell><cell>$7.6k</cell><cell>$13k</cell><cell>$20k</cell><cell cols="2">$100k $100k</cell></row><row><cell>out needing to</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row></table><note><p>Components can be simply plugged in directly, with-</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2</head><label>2</label><figDesc></figDesc><table><row><cell cols="2">: Imitation learning results</cell></row><row><cell>Task</cell><cell>Success rate</cell></row><row><cell>Open fridge</cell><cell>10/10</cell></row><row><cell>Wipe countertop</cell><cell>9/10</cell></row><row><cell>Load dishwasher</cell><cell>7/10</cell></row><row><cell>Take out trash</cell><cell>10/10</cell></row><row><cell>Load laundry</cell><cell>7/10</cell></row><row><cell>Water plant</cell><cell>6/10</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" xml:id="foot_0"><p>8th Conference on Robot Learning (CoRL 2024), Munich, Germany.</p></note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgments</head><p>We would like to thank <rs type="person">Kevin Zakka</rs>, <rs type="person">Yixuan Huang</rs>, <rs type="person">Kevin Lin</rs>, <rs type="person">Zi-ang Cao</rs>, <rs type="person">Jingyun Yang</rs>, <rs type="person">Rika Antonova</rs>, <rs type="person">Marion Lepert</rs>, <rs type="person">Sophie Lueth</rs>, <rs type="person">Haoyu Xiong</rs>, <rs type="person">Huy Ha</rs>, <rs type="person">Cheng Chi</rs>, <rs type="person">Philipp Wu</rs>, <rs type="person">Fred Shentu</rs>, and <rs type="person">Zhongke Yi</rs> for fruitful technical discussions. We thank <rs type="person">Rajat Kumar Jenamani</rs>, <rs type="person">Rishabh Madan</rs>, and the <rs type="institution">Cornell EmPRISE Lab</rs> for open sourcing their compliant controller for the Kinova arm. We would also like to thank <rs type="person">Zi-ang Cao</rs>, <rs type="person">Rika Antonova</rs>, and <rs type="person">Haoyu Xiong</rs> for extensive hardware assistance, as well as <rs type="person">Rika Antonova</rs> and <rs type="person">Zipeng Fu</rs> for lending hardware. We are especially grateful towards the <rs type="institution">FIRST Robotics Competition (FRC) community</rs> for developing the rich ecosystem that made this project feasible. For extensive product and logistics support, we would like to thank <rs type="person">Mandy Gove</rs>, <rs type="person">Cory Ness</rs>, <rs type="person">Omar Zrien</rs>, <rs type="person">Jacob Caporuscio</rs>, and <rs type="person">Dalton Smith</rs> from <rs type="institution">CTR Electronics</rs>; <rs type="person">Ranjit Chahal</rs> and <rs type="person">Harvey Rico</rs> from WestCoast Products; and <rs type="person">John Rigsby</rs> from <rs type="funder">Swerve Drive Specialties</rs>. The work was supported in part by the <rs type="funder">Stanford Institute for Human-Centered Artificial Intelligence (HAI)</rs>, <rs type="funder">Princeton School of Engineering</rs>, the <rs type="funder">Sloan Foundation</rs>, and the <rs type="funder">National Science Foundation</rs> under <rs type="grantNumber">ECCS-2143601</rs>.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_2Yz9Xtm">
+					<idno type="grant-number">ECCS-2143601</idno>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems</meeting>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Learning fine-grained bimanual manipulation with low-cost hardware</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.13705</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Shentu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.13037</idno>
+		<title level="m">Gello: A general, low-cost, and intuitive teleoperation framework for robot manipulators</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Anandkumar</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Mimicplay</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2302.12422</idno>
+		<title level="m">Long-horizon imitation learning by watching human play</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Scaling up and distilling down: Language-guided robot skill acquisition</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="3766" to="3777" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Surgical robot transformer (srt): Imitation learning for surgical tasks</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Schmidgall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Deguet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kobilarov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Krieger</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.12998</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">Z</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lidard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">L</forename><surname>Ankile</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Simeonov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Agrawal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Majumdar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Simchowitz</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2409.00588</idno>
+		<title level="m">Diffusion policy policy optimization</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Mobile aloha: Learning bimanual mobile manipulation with low-cost whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno>arXiv</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Consistency policy: Accelerated visuomotor policies via consistency distillation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Prasad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.03181</idno>
+		<title level="m">Behavior generation with latent actions</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Misra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.16098</idno>
+		<title level="m">On bringing robots home</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kembhavi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ehsani</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2312.06639</idno>
+		<title level="m">Harmonic mobile manipulation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<author>
+			<persName><forename type="first">H</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Naka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mehu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Edsinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Paxton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2409.05865</idno>
+		<title level="m">Robot utility models: General policies for zero-shot deployment in new environments</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Nomad: Goal masked diffusion policies for navigation and exploration</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sridhar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Glossop</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="63" to="70" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Spoc: Imitating shortest paths in simulation enables effective navigation and manipulation in the real world</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ehsani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hendrix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Salvador</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Weihs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K.-H</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">P</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herrasti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="16238" to="16250" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Mendonca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.14403</idno>
+		<title level="m">Adaptive mobile manipulation for articulated objects in the open world</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Pushing the limits of cross-embodiment learning for manipulation and navigation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Glossop</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bhorkar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sadigh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.19432</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Wetzstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2406.10454</idno>
+		<title level="m">Humanplus: Humanoid shadowing and imitation from humans</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Open-television: Teleoperation with immersive active visual feedback</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.01512</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Rt-sketch: Goal-conditioned imitation learning from hand-drawn sketches</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sundaresan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kirmani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Stark</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hausman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.10353</idno>
+		<title level="m">Umi on legs: Making manipulation policies mobile with manipulation-centric whole-body controllers</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Bridgedata v2: A dataset for robot learning at scale</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hansen-Estruch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Myers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Rh20t: A robotic dataset for learning diverse skills in one-shot</title>
+		<author>
+			<persName><forename type="first">H.-S</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">RSS 2023 Workshop on Learning for Task and Motion Planning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">X</forename><surname>-E. Collaboration</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>O'neill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rehman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Maddukuri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Padalkar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pooley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Tung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bewley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Irpan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khazatsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kolobov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Garg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kembhavi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Raffin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Yavary</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wahid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burgess-Limerick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Schölkopf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Wulfe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Le</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Agia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Devin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Morton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Driess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Büchler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kalashnikov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sadigh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Johns</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Foster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Ceola</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">V</forename><surname>Frujeri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Stulp</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">S</forename><surname>Sukhatme</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Salhotra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Schiavi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berseth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Kahn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-S</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Bao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">B</forename><surname>Amor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">I</forename><surname>Christensen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Furuta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Mordatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Leal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Abou-Chakra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Drake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Peters</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bingham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Oh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Silvério</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hejna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Booher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tompson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Salvador</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Lim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Rao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Go</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Byrne</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Oslund</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Kawaharazuka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ehsani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Lekkala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ellis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Rana</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Srinivasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">P</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K.-H</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Itti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">J</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Ott</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Weihs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lepert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Memmel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tomizuka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Itkina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G</forename><surname>Castro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Spero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ahn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">C</forename><surname>Yip</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Heo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">K</forename><surname>Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kanazawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hansen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Heess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">J</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Suenderhauf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">D</forename><surname>Palo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Mees</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Kroemer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Bastani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">R</forename><surname>Sanketi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">T</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wohlhart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">D</forename><surname>Fagan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mitrano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sermanet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sundaresan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Rafailov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Doshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Mart'in-Mart'in</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Baijal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Scalise</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hendrix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Mendonca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Shah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hoque</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Julian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bustamante</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kirmani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Moore</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dass</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sonawani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Haldar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Karamcheti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Adebola</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Guist</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Schaal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Welker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ramamoorthy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Belkhale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mirchandani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Osa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Harada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Matsushima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Davchev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Armstrong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Darrell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Chung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Vanhoucke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Burgard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Geng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liangwei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Pang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">J</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chebotar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bisk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Cui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-H</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Iwasawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Matsuo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2310.08864" />
+	</analytic>
+	<monogr>
+		<title level="j">Z. J. Cui, Z. Zhang, Z. Fu, and Z. Lin. Open X-Embodiment</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note>Robotic learning datasets and RT-X models</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khazatsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Karamcheti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">K</forename><surname>Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ellis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">D</forename><surname>Fagan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hejna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Itkina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lepert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">J</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">T</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Belkhale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dass</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Memmel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zhan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">B</forename><surname>Hatch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mercat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rehman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">R</forename><surname>Sanketi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Simpson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">R</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Wulfe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">H</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Yavary</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Agia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Baijal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G</forename><surname>Castro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Chung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Drake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">P</forename><surname>Foster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">A</forename><surname>Herrera</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Heo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jackson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Le</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Maddukuri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mirchandani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Morton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>O'neill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Scalise</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Seale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Son</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Tran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">E</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Bastani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berseth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Jayaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Lim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Martín-Martín</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ramamoorthy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sadigh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">C</forename><surname>Yip</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kollar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.12945</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note>Droid: A large-scale in-the-wild robot manipulation dataset</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">M</forename><surname>Team</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ghosh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Walke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Mees</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dasari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hejna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kreiman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2405.12213</idno>
+		<title level="m">An open-source generalist robot policy</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Pertsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Karamcheti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Balakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nair</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Rafailov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Foster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Lam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sanketi</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2406.09246</idno>
+		<title level="m">An open-source vision-language-action model</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Development and control of a holonomic mobile robot for mobile manipulation tasks</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Holmberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Khatib</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="1066" to="1074" />
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">Webxr device api</title>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">W W</forename><surname>Group</surname></persName>
+		</author>
+		<ptr target="https://www.w3.org/TR/webxr/" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Robot learning of mobile manipulation with reachability behavior priors</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Jauhri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Peters</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chalvatzaki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="8399" to="8406" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Fully autonomous real-world reinforcement learning with applications to mobile manipulation</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Orbik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">M</forename><surname>Devin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">H</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berseth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Levine</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">5th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<author>
+			<persName><forename type="first">N</forename><surname>Yokoyama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Clegg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Truong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Undersander</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T.-Y</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Arnaud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Batra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rai</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.00410</idno>
+		<title level="m">Asc: Adaptive skill coordination for robotic mobile manipulation</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Tidybot: Personalized robot assistance with large language models</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Antonova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lepert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Rusinkiewicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Funkhouser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Autonomous Robots</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="1087" to="1102" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Ntfields: Neural time fields for physics-informed robot motion planning</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">H</forename><surname>Qureshi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Eleventh International Conference on Learning Representations</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<title level="m" type="main">Learning generalizable feature fields for mobile manipulation</title>
+		<author>
+			<persName><forename type="first">R.-Z</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Atanasov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Scherer</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.07563</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ahn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chebotar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Cortes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>David</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hausman</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2204.01691</idno>
+		<title level="m">Do as i can, not as i say: Grounding language in robotic affordances</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.16967</idno>
+		<title level="m">Visual whole-body control for legged loco-manipulation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<author>
+			<persName><forename type="first">P</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Orru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Paxton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.12202</idno>
+		<title level="m">Ok-robot: What really matters in integrating open-knowledge models for robotics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Rma: Rapid motor adaptation for legged robots</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics: Science and Systems</title>
+		<imprint>
+			<biblScope unit="volume">XVII</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Equivact: Sim (3)-equivariant visuomotor policies beyond rigid object manipulation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Antonova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Guibas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="9249" to="9255" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<monogr>
+		<title level="m" type="main">Equibot: Sim (3)-equivariant diffusion policy for generalizable and data efficient learning</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>-A. Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Antonova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.01479</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Albardaner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">S</forename><surname>Miguel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>García</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Dalmau</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.07091</idno>
+		<title level="m">Sim-to-real gap in rl: Use case with tiago and isaac sim/gym</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Human to robot wholebody motion transfer</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Arduengo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Arduengo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Colomé</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lobo-Prat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Torras</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE-RAS 20th International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="299" to="305" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Analysis of tiago robot for autonomous navigation applications</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">K</forename><surname>Megalingam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">S</forename><surname>Naick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">K</forename><surname>Manoharan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Sivananthan</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICESC51422.2021.9532735</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2021 Second International Conference on Electronics and Sustainable Communication Systems (ICESC)</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="257" to="261" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dass</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Ai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Stone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Abbatematteo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Martin-Martin</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.07869</idno>
+		<title level="m">Telemoma: A modular and versatile teleoperation system for mobile manipulation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<title level="m" type="main">Stretch open-source mobile manipualtor</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Robot</surname></persName>
+		</author>
+		<ptr target="https://hello-robot.com/stretch-3-product" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<monogr>
+		<title level="m" type="main">Rt-1: Robotics transformer for real-world control at scale</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Carbajal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chebotar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dabis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Herzog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hsu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2212.06817</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<author>
+			<persName><forename type="first">D</forename><surname>Driess</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S</forename><surname>Sajjadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lynch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Chowdhery</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wahid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tompson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2303.03378</idno>
+		<title level="m">Palm-e: An embodied multimodal language model</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Deep whole-body control: Learning a unified policy for manipulation and locomotion</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">6th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Gireesh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.15459</idno>
+		<title level="m">Gamma: Graspability-aware mobile manipulation policy learning based on online grasping pose fusion</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Roboturk: A crowdsourcing platform for robotic skill learning through imitation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Garg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Booher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Spero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Tung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Emmons</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Orbay</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="879" to="893" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pan</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+			<affiliation>
+				<orgName type="collaboration">RSS</orgName>
+			</affiliation>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Robotics: Science and Systems</title>
+		<meeting>Robotics: Science and Systems</meeting>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Learning multi-arm manipulation through collaborative teleoperation</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Tung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Martín-Martín</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Savarese</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA48506.2021.9561491</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="9212" to="9219" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Nasiriany</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Kulkarni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Savarese</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Martín-Martín</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2108.03298</idno>
+		<title level="m">What matters in learning from offline human demonstrations for robot manipulation</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">Error-aware imitation learning from teleoperation data for mobile manipulation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Tung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kurenkov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Savarese</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Martín-Martín</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="1367" to="1378" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<analytic>
+		<title level="a" type="main">For Inspiration and Recognition of Science and Technology)</title>
+		<author>
+			<persName><surname>First</surname></persName>
+		</author>
+		<ptr target="https://www.firstinspires.org/robotics/frc" />
+	</analytic>
+	<monogr>
+		<title level="m">FIRST robotics competition</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">D</forename><surname>Specialties</surname></persName>
+		</author>
+		<ptr target="https://www.swervedrivespecialties.com/products/mk4-swerve-module" />
+		<title level="m">Mk4 swerve module</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

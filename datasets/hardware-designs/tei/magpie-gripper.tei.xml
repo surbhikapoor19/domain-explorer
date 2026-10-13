@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A versatile robotic hand with 3D perception, force sensing for autonomous manipulation</title>
+				<funder ref="#_JxdC34r">
+					<orgName type="full">National Science Foundation</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2024-02-08">8 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName><forename type="first">Nikolaus</forename><surname>Correll</surname></persName>
+							<email>ncorrell@colorado.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">University of Colorado Boulder</orgName>
+								<address>
+									<postCode>80309-0430</postCode>
+									<settlement>Boulder</settlement>
+									<region>Colorado</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dylan</forename><surname>Kriegman</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">University of Colorado Boulder</orgName>
+								<address>
+									<postCode>80309-0430</postCode>
+									<settlement>Boulder</settlement>
+									<region>Colorado</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Stephen</forename><surname>Otto</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">University of Colorado Boulder</orgName>
+								<address>
+									<postCode>80309-0430</postCode>
+									<settlement>Boulder</settlement>
+									<region>Colorado</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">James</forename><surname>Watson</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">University of Colorado Boulder</orgName>
+								<address>
+									<postCode>80309-0430</postCode>
+									<settlement>Boulder</settlement>
+									<region>Colorado</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">A versatile robotic hand with 3D perception, force sensing for autonomous manipulation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-08">8 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">2E2668EB8092233B0817574E2D48B016</idno>
+					<idno type="arXiv">arXiv:2402.06018v1[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>We describe a force-controlled robotic gripper with built-in tactile and 3D perception. We also describe a complete autonomous manipulation pipeline consisting of object detection, segmentation, point cloud processing, force-controlled manipulation, and symbolic (re)-planning. The design emphasizes versatility in terms of applications, manufacturability, use of commercial off-the-shelf parts, and open-source software. We validate the design by characterizing force control (achieving up to 32N, controllable in steps of 0.08N), force measurement, and two manipulation demonstrations: assembly of the Siemens gear assembly problem, and a sensor-based stacking task requiring replanning. These demonstrate robust execution of long sequences of sensor-based manipulation tasks, which makes the resulting platform a solid foundation for researchers in task-andmotion planning, educators, and quick prototyping of household, industrial and warehouse automation tasks.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Autonomous manipulation remains a challenge in digitizing and automating value streams from manufacturing to recycling. These tasks include picking, placing, assembly/disassembly, and packing. They involve a large variety of compliance, for example when tightening a metal nut vs. grasping a delicate raspberry. Often, tasks of varying dexterity and compliance need to be combined, requiring a highly versatile hardware and software system. Implementing such a system is difficult. Commercially available grippers have limited capabilities, particularly the absence of torque control, and therefore lack of active compliance <ref type="bibr" target="#b0">[1]</ref>. Integration with vision systems is not straightforward; wrist-mounted, tabletop, and palm-mounted cameras can be occluded at different times during operation. Finally, software frameworks such as ROS take considerable effort to commission and maintain, which is often unnecessary in particular when the goal is to investigate only one aspect of a manipulation pipeline such as vision or high-level reasoning. In this paper, we present a lightweight manipulation architecture geared at researchers, educators, and hobbyists, that is able to perform a wide variety of multi-step manipulation tasks, while being simple to manufacture and affordable (Figure <ref type="figure" target="#fig_0">1</ref>).</p><p>The "gold standard" in manipulation is the human hand, which is able to perform an extensive range of tasks, including tool usage and in-hand manipulation <ref type="bibr" target="#b12">[13]</ref>. Prominent designs in this category are the "ShadowHand" that is able to manipulate a Rubik's cube <ref type="bibr" target="#b1">[2]</ref>, the RBO hand <ref type="bibr" target="#b3">[4]</ref>, and the Pisa/IIT hand <ref type="bibr" target="#b6">[7]</ref>. These three examples also span a large spectrum of degrees of freedom from 24 (ShadowHand) to the underactuated Pisa hand which has 19 joints driven by only a single actuator. Benchmarking an end-effector design is a challenging problem and subject to research. It is difficult to disentangle grasp planning from perception <ref type="bibr" target="#b2">[3]</ref>, robot arm from end-effector performance <ref type="bibr" target="#b18">[19]</ref>, and versatility from specialization, e.g. cloth manipulation <ref type="bibr" target="#b15">[16]</ref> or warehouse picking <ref type="bibr" target="#b9">[10]</ref>.</p><p>One way to evaluate the capability of a hand design is to subject it to a wide variety of household tasks <ref type="bibr" target="#b21">[22]</ref> that overlap with upper-limb prosthetic applications. In such a test, underactuated designs such as the Pisa hand <ref type="bibr" target="#b4">[5]</ref> and a 100year old claw design that has only a single actuated finger <ref type="bibr" target="#b19">[20]</ref> have outperformed all other designs in <ref type="bibr" target="#b21">[22]</ref>. Although the Pisa hand's compliance is advantageous when operating scissors, e.g., a simple mechanical design is intriguing due to its manufacturability, robustness, and simpler control <ref type="bibr" target="#b13">[14]</ref> while still being highly versatile.</p><p>Although versatility is not important in conventional automation using highly specialized end-effectors such as during warehouse picking or assembly of the same part, versatility will become critical for recovering from errors or when a task not only requires picking, but precise placement, e.g. during packing.</p><p>In previous work, we have designed an industrial-grade robotic gripper following these design principles that integrated 3D perception, force control and computation <ref type="bibr" target="#b11">[12]</ref> to pick up items as small as a washer and as large as a commercial toner cartridge. The system is gentle enough to handle a strawberry, and strong enough to tighten a nut. In this paper, we describe a design with much-improved manufacturability by relying on commercial, off-the-shelf motors and cameras, forgoing costly custom integration of computation and cabling. Although sacrificing ruggedness and stand-alone capability, this design can be manufactured at a fraction of the cost (around $460 in parts including camera), and less than half of the weight (414g), allowing operation on a wide range of robotic arms, while requiring only a 3D printer and off-theshelf parts such as stand-offs and bearings.</p><p>Based on experience with a wide range of robotic competitions ranging from warehouse picking <ref type="bibr" target="#b9">[10]</ref>, household automation <ref type="bibr" target="#b19">[20]</ref>, robotic assembly <ref type="bibr" target="#b23">[24]</ref> and mobile manipulation <ref type="bibr" target="#b20">[21]</ref>, we have developed a perception and planning pipeline that combines recent advances in low-cost 3D perception with deep learning for instance-segmentation, and conventional planning.</p><p>Here, the emphasis of our architecture is to robustly deal with sequencing hundreds of behaviors based on visual and tactile cues. The software stack is released under the MIT License 1 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. DESIGN</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Hardware</head><p>Our design is driven by the requirement to perform assembly tasks involving parts as small as M3 nuts driven by the robotic assembly domain <ref type="bibr" target="#b23">[24]</ref> and household tasks as in <ref type="bibr" target="#b21">[22]</ref>. Trading strength and size for manufacturability and cost, we designed the system to pick up 88% of the items in the YCB benchmark <ref type="bibr" target="#b5">[6]</ref>, excluding the hammer, the power drill, the pan, and other large objects. With this, we were able to specify the gripper aperture and motor strength, assuming a conservative friction coefficient of µ = 0.4 and a safety factor of 1.5.</p><p>1 <ref type="url" target="https://github.com/correlllab/MAGPIE">https://github.com/correlllab/MAGPIE</ref> The 4-bar linkage design (Figure <ref type="figure" target="#fig_1">2</ref>) provides a maximal field of view for the palm-mounted camera (Intel RealSense D405), providing a maximum aperture of w = 106.24mm. All pieces have been 3D printed using PLA. Although PLA printed parts have lesser stiffness than Delrin or ABS sheets, laser cutters are not available to most educators and hobbyists. All links use M5 bearings that are press-fitted into openings in the PLA material and M3 screws as the axis. We found using bearings to greatly reduce friction, while press-fitting reduces play and thereby increases the accuracy of the mechanism.</p><p>The AX-12 servo motors (Robotis, Korea) have a stalltorque τ of 1.5Nm. The AX-12's digital interface allows setting and measuring the actual motor torque via current control, thereby enabling compliant control and detecting objects within the gripper. Independently controlling the fingers helps to prevent the gripper to get stuck when one of its fingers is impeded, e.g. when picking items from clutter, as well as grasping objects off center <ref type="bibr" target="#b11">[12]</ref>.</p><p>The Intel RealSense camera has an operational range from 7cm to 50cm with a field of view of 87 o × 58 o and a resolution of 1280 × 720. It can detect objects as small as 0.1mm, making it ideal for in-hand perception applications. The camera is mounted in the palm <ref type="bibr" target="#b11">[12]</ref>, allowing the hand to see an object until contact is made, minimizing distortion and occlusion, when compared to wrist-and table-mounted cameras. Figure <ref type="figure">6</ref> (center), shows a snapshot through the camera, with only minimal occlusion by the fingers.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Software</head><p>Our grasping pipeline follows the outline described in <ref type="bibr" target="#b10">[11]</ref>: objects are detected from RGB camera images using pixelwise segmentation based on Yolo v5<ref type="foot" target="#foot_0">foot_0</ref> . Segmentation masks are then used to isolate 3D point cloud information from individual objects. We determine the orientation of the point cloud using principal component analysis (PCA), compute a grasp pose based on the object's bounding box, and use an inverse kinematics solver from Peter Corke's robotic toolbox <ref type="bibr" target="#b8">[9]</ref> to move the robotic arm to the desired pose. Together, these components create a robust pipeline in which individual elements can be replaced for research or education. All of the behaviors are embedded into Behavior Tree (BT) <ref type="bibr" target="#b7">[8]</ref> nodes that allow for robust engineering of multi-state robot controllers.</p><p>In order to be able to manage long task sequences comprising hundreds of steps, e.g. as required during assembly of complex mechatronics <ref type="bibr" target="#b23">[24]</ref>, our planner automatically generates BTs from a high-level task description of the scene in PDDL 2.1 <ref type="bibr" target="#b14">[15]</ref>, which can be efficiently solved by the AI planning framework FastDownward <ref type="bibr" target="#b16">[17]</ref> that we interface via py2PDDL <ref type="bibr" target="#b17">[18]</ref>. Here, the planning problem is populated from the Yolo v5 object recognition pipeline after every step and the plan is recomputed to catch potential execution failures. Here, spatial relationships between objects (e.g. "on top") are hard-coded. This framework is illustrated in Figure <ref type="figure">6</ref>, showing  an example of successful task completion despite errors during execution by continuous replanning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. EVALUATION</head><p>a) Hardware: In order to test the torque-controlling ability of the servo, we measure the force at the finger as a function of the dimensionless Dynamixel settings in the range of 0-1023. A force gauge (Shimpo FGV-10XY) was locked into a vice to hold it securely for all measurements. The force gauge gives an error of ±.2%. The force increases linearly (R 2 = .995, y = 0.0316x-3.0194) from 0 to 9N at "400" and then increases to 32N following a second-degree polynomial function (R 2 = .999). In the linear regime, we are able to change force in increments of 0.08N.</p><p>We also demonstrate the gripper's ability to sense force/torque. Figure <ref type="figure">4</ref> shows the force profile for the right ('Motor 1') and the left ('Motor 2') finger vs. gripper aperture as the gripper closes on the mustard container from the YCB dataset. The container was placed off-center, with the right motor making contact first. Instead of moving the mustard, the finger remains in position until the second finger makes contact. We observe minimal torques while moving the finger, with Motor 1 having more friction than Motor 2 due to variations in manufacturing.</p><p>To demonstrate the precision and accuracy of the design, we perform a robotic assembly task with tight tolerances (&lt; 0.5mm). Snapshots of the task are shown in Figure <ref type="figure">5</ref>. Precision and accuracy of grasping the elements from a known position on the kitting mat (modeling the industrial assembly challenge requirements from <ref type="bibr" target="#b23">[24]</ref>) is sufficient to reliably assemble all parts into a functioning mechanical system. The open-loop assembly task succeeded 8 out of 10 trials; with one failure each due to an angular misalignment of the small peg and the large gear becoming jammed on the large peg. These results motivate a sensor-based re-planning approach such as described in <ref type="bibr" target="#b24">[25]</ref>.</p><p>b) Software: We evaluated the system using a towerassembly task using three colored, wooden cubes from <ref type="bibr" target="#b5">[6]</ref>.</p><p>Figure <ref type="figure">6</ref> shows snapshots of the experiment, a view of the camera image, the resulting labeled 3D objects, and the corresponding PDDL domain. FastDownward automatically generates a plan, which our system translates into a behavior tree to execute the necessary steps. Running this loop once corresponds to the classical sense-plan-act approach. Updating the PDDL domain and replanning accordingly allows for more sophisticated behavior, including reacting to changes in the environment or recovering from errors in execution. We ran a single step, moving one block from one tower to another, 50 times. Of the 42 successful attempts, 30 were completed at the first trial, 6 required two trials, and 3, 2, and 1 experiments required 3, 4, and 6 trials. The other 8 failed in a way that could not be recovered with this simple program, for example when a block was moved out of the field of view of the hand.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. DISCUSSION AND CONCLUSION</head><p>The proposed design exceeds the capabilities of <ref type="bibr" target="#b11">[12]</ref> in terms of perception and in the dimensions of objects that can be picked up. Yet, 3D-printed PLA plastics cannot reach the level of stiffness and accuracy that a sheet-metal-based design can, which is a disadvantage when grasping very small pieces, such as an M3 screw that requires exact alignment of the fingers.</p><p>The current design requires three external cables that need to be routed along a robotic arm: a USB 3.1 connection for the camera, a USB 2.0 connection for the motor control board, and a power cable that can provide up to 3A at 12V (36W). All of these could be met by a single USB-C PD connection, in particular when 5V to 12V step-up circuits with sufficient power are available.</p><p>The emphasis on the software pipeline is to demonstrate modularity (via the BT framework and STRIPS planner), rather than performance on specific subtasks. Indeed, components such as object detection could be easily tuned to achieve 100% one-shot success rate in the tower assembly task. Failure has been instructive as it will be pervasive in autonomous settings, and remain a problem if it occurs with a non-zero Fig. <ref type="figure">4</ref>. Gripper grasping the mustard container from the YCB dataset from an off-center position (left). Limiting torque during approach prevents the mustard from moving as the right finger makes contact. Dashed vertical lines indicate contact by the right finger, contact with both fingers, and opening (from left to right). Fig. <ref type="figure">5</ref>. Demonstration of accuracy and precision by reliably assembling the "Siemens gear assembly problem" <ref type="bibr" target="#b22">[23]</ref> with sub-millimeter accuracy requirements. Fig. <ref type="figure">6</ref>. Snapshots from a tower construction task that is solved by continuous replanning. The robot accidentally hits the tower (1) while placing the blue block (2), which fails as the tower has moved (3), the robot re-analyzes the scene (4), and places the blue block <ref type="bibr" target="#b4">(5)</ref>. Point cloud and image data are used for object identification and segmentation, resulting into a labeled scene that gets parsed into a PDDL 2.1 problem description and solved by FastDownward. The plan is repeated until the problem is solved.</p><p>probability. Here, we are particularly interested in reasoning under uncertainty and generating high-level plans for recovery from error using semantic domain knowledge. For example, when an object moves outside of the robot's field of view, the robot could search for it and move objects out of the way if it has to. We plan to further explore this in the future by interfacing PDDL descriptions with large language models to (1) generate problem descriptions from image/3D data, (2) generate PDDL descriptions from natural language, and (3) use domain knowledge to increase the robot's reasoning abilities. Finally, we are interested in building upon this design to perform better on heavy items by adding a thumb, operating tools such as a power-drill by adding an additional degree of freedom to one finger, and fast picking by adding a suction cup.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. All-in-one manipulation architecture that emphasizes manufacturability, active compliance, robust execution, and versatility. A light-weight software architecture combines object detection, segmentation, point cloud processing, with planning, inference and execution, creating a platform for research in task-and-motion planning for complex manipulation problems.</figDesc><graphic coords="1,337.08,185.51,200.86,236.32" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 .</head><label>2</label><figDesc>Fig. 2. Torque Diagram to Calculate Estimated Force on the Object.</figDesc><graphic coords="2,111.72,54.00,125.53,156.69" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. Left: CAD Drawings of the gripper from the top (A), bottom (B), and exploded view (C). Each motor independently actuates a finger, providing independent torque-based control. The camera is integrated into the palm. Right: Bill of Materials with approximated cost. PLA with a cost of $0.05 per cm 2 .</figDesc><graphic coords="3,49.74,55.86,246.86,179.97" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="4,72.92,54.00,462.68,162.87" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="4,48.96,367.87,514.09,122.45" type="bitmap" /></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_0"><p>https://github.com/ultralytics/yolov5</p></note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGEMENTS</head><p>This work has been supported by a grant by the <rs type="funder">National Science Foundation</rs> "<rs type="projectName">USDA-NIFA NRI INT: Autonomous Restoration and Revegetation of Degraded Ecosystems</rs>".</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funded-project" xml:id="_JxdC34r">
+					<orgName type="project" subtype="full">USDA-NIFA NRI INT: Autonomous Restoration and Revegetation of Degraded Ecosystems</orgName>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Soft robotics</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Albu-Schaffer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Eiberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Grebenstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Haddadin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Ott</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wimbock</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wolf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hirzinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="20" to="30" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Learning dexterous in-hand manipulation</title>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">M</forename><surname>Andrychowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chociej</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Jozefowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mcgrew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pachocki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Petron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Plappert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ray</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="3" to="20" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Benchmarking protocol for grasp planning algorithms</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bekiroglu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Marturi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Roa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">J M</forename><surname>Adjigble</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Pardi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Grimm</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Balasubramanian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Stolkin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="315" to="322" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bhatt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sieler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Puhlmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Brock</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2201.11503</idno>
+		<title level="m">Surprisingly robust in-hand manipulation: An empirical study</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Advanced grasping with the pisa/iit softhand</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bonilla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">D</forename><surname>Santina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rocchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Luberto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Santaera</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Farnioli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Piazza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Bonomo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brando</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Raugi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotic Grasping and Manipulation: First Robotic Grasping and Manipulation Challenge, RGMC 2016, Held in Conjunction with IROS 2016</title>
+		<meeting><address><addrLine>Daejeon, South Korea</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2016">October 10-12, 2016. 2018</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="19" to="38" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Yale-cmuberkeley dataset for robotic manipulation research</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Calli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bruce</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Walsman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Konolige</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Srinivasa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="261" to="268" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Adaptive synergies for the design and control of the pisa/iit softhand</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G</forename><surname>Catalano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Grioli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Farnioli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Serio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Piazza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bicchi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="768" to="782" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Behavior trees in robotics and AI: An introduction</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Colledanchise</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Ögren</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<publisher>CRC Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Not your grandmother&apos;s toolbox-the robotics toolbox reinvented for python</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Corke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Haviland</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="11357" to="11363" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Analysis and observations from the first amazon picking challenge</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">E</forename><surname>Bekris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Berenson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Brock</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Causo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hauser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Okada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rodriguez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Romano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">R</forename><surname>Wurman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Automation Science and Engineering</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="172" to="188" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Hayes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Heckman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Roncone</surname></persName>
+		</author>
+		<title level="m">troduction to Autonomous Robots: Mechanisms, Sensors, Actuators, and Algorithms</title>
+		<imprint>
+			<publisher>Mit Press</publisher>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Systems, devices, components, and methods for a compact robotic gripper with palm-mounted sensing, grasping, and computing devices and components</title>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">J</forename><surname>Correll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">K</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">US Patent</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page">295</biblScope>
+			<date type="published" when="2021">Oct. 19 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">The elliott and connolly benchmark: A test for evaluating the in-hand dexterity of robot hands</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Coulson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Majidi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">S</forename><surname>Pollard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE-RAS 20th International Conference on Humanoid Robots (Humanoids)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="238" to="245" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Simplified grasping and manipulation with dextrous robot hands</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">S</forename><surname>Fearing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Journal on Robotics and Automation</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="188" to="195" />
+			<date type="published" when="1986">1986</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Pddl2.1: An extension to pddl for expressing temporal planning domains</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Fox</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Long</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of artificial intelligence research</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="page" from="61" to="124" />
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Benchmarking bimanual cloth manipulation</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Garcia-Camacho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lippi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">C</forename><surname>Welle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Antonova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Varava</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Borras</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Torras</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Marino</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Alenya</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1111" to="1118" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">The fast downward planning system</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Helmert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Artificial Intelligence Research</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="page" from="191" to="246" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">R</forename><surname>Karem</surname></persName>
+		</author>
+		<ptr target="https://github.com/remykarem/py2pddl" />
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Benchmarking cluttered robot pick-and-place manipulation with the box and blocks test</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">S</forename><surname>Morgan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">G</forename><surname>Bircher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">M</forename><surname>Alladkani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gandhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Calli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Dollar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="454" to="461" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Manipulation using the &quot;utah&quot; prosthetic hand: The role of stiffness in manipulation</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Segil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotic Grasping and Manipulation: First Robotic Grasping and Manipulation Challenge</title>
+		<meeting><address><addrLine>Daejeon, South Korea</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2016-10-10">2016. October 10-12, 2016. 2018</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="107" to="116" />
+		</imprint>
+	</monogr>
+	<note>Conjunction with IROS 2016</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Mobile manipulation hackathon: Moving into real world applications</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Roa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Dogar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pages</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Vivas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Morales</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gorner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rosell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Foix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Memmesheimer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="112" to="124" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Robotic grasping and manipulation competition: task pool</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Falco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">R</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">D</forename><surname>Engeberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Pollard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Roa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotic Grasping and Manipulation: First Robotic Grasping and Manipulation Challenge, RGMC 2016, Held in Conjunction with IROS 2016</title>
+		<meeting><address><addrLine>Daejeon, South Korea</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2016">October 10-12, 2016. 2018</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="1" to="18" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">A practical approach to insertion with variable socket position using deep reinforcement learning</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Vecerik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Sushkov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Barker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Rothörl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hester</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Scholz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 international conference on robotics and automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="754" to="760" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Robots assembling machines: learning from the world robot summit 2018 assembly challenge</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Von Drigalski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Schlette</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Rudorfer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">C</forename><surname>Triyonoputro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tsuji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Watanabe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Robotics</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">7-8</biblScope>
+			<biblScope unit="page" from="408" to="421" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Autonomous industrial assembly using force, torque, and rgb-d sensing</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Watson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Correll</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advanced Robotics</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">7-8</biblScope>
+			<biblScope unit="page" from="546" to="559" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

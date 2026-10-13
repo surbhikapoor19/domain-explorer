@@ -1,0 +1,4223 @@
+{
+  "9dtact": [
+    {
+      "type": "methodology_step",
+      "value": "Collect a dataset consisting of approximately 100,000 image-force pairs from 175 complex objects.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Train a neural network to regress the 6D force from the collected image-force pairs.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Introduce 9DTact, a compact, robust, low\u2011cost vision\u2011based tactile sensor that provides accurate 3D shape reconstruction.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Enable generalizable 6D force estimation without auxiliary markers or patterns on the gel surface.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Open\u2011source the hardware and software of 9DTact along with a comprehensive video tutorial.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "novelty_claim",
+      "value": "First to achieve 6D force estimation using the optical and deformable properties of a translucent gel without auxiliary markers or patterns.",
+      "confidence": "medium",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "OV5647 camera with 160\u00b0 field of view",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Raspberry Pi Zero CSI port",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CSI-to-USB transformation board",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "LED board with eight LEDs arranged rectangularly",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CN5711 integrated circuit for LED current regulation",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "5V USB power port for LED board",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Sensor base 3D printed with black nylon (HP3DHR-PA12)",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Four M2 heat-set threaded inserts in sensor base",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Sensor shell 3D printed with white nylon (FS3300PA)",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Transparent gel layer made of Hongye Jie\u00ae 9345 silicone (mixing ratio 1:1, shore A hardness 45)",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_0",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "translucent Posilicone\u00ae DRSGJ02 silicone (mixing ratio: 1:1, shore A hardness 5)",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_1",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Smooth-On\u00ae Ecoflex 00-30 silicone (mixing ratio: 1:1, shore 00 hardness 30) with black silicone pigment",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_1",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "M3 screws and nuts (eight pairs) used to attach acrylic mold to base board",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_1",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "heat-set threaded inserts (four) used to attach base board to sensor shell",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_1",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "silicone cures in 6 hours at 25\u202f\u00b0C",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_4_1",
+      "section": "B. Details of the Components",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "The 9DTact sensor size is 32.5mm\u00d725.5mm\u00d725.5mm",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_5_0",
+      "section": "C. Conclusion and Comparison of the Sensor Design",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "9DTact is approximately 22% the size of the DTact sensor [1]",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_5_0",
+      "section": "C. Conclusion and Comparison of the Sensor Design",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Building a 9DTact only costs about $15, which includes two reusable molds",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_5_0",
+      "section": "C. Conclusion and Comparison of the Sensor Design",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "9DTact has the smallest dimension-to-sensing area (D/A) ratio among the sensors listed in Table I",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_5_0",
+      "section": "C. Conclusion and Comparison of the Sensor Design",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "9DTact sensor with a calibration board featuring a cylinder array and frame fitting into the sensor shell",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_6_0",
+      "section": "B. Camera Calibration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Image resolution is cropped from 640\u202f\u00d7\u202f480 to 460\u202f\u00d7\u202f345 after rectification",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_6_0",
+      "section": "B. Camera Calibration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "9DTact achieves lower mean absolute error (MAE) of 0.0462\u202fmm compared to DTact's MAE of 0.0476\u202fmm",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_7_0",
+      "section": "C. Improvements of 3D Shape Reconstruction",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "9DTact reconstruction precision: mean absolute error (MAE) = 0.0462\u202fmm, standard deviation = 0.0304\u202fmm",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_7_0",
+      "section": "C. Improvements of 3D Shape Reconstruction",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "DTact reconstruction precision: mean absolute error (MAE) = 0.0476\u202fmm, standard deviation = 0.0352\u202fmm",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_7_0",
+      "section": "C. Improvements of 3D Shape Reconstruction",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Reconstructing the 6D force from a dense deformation representation captured by a hyper-elastic gel sensor.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_8_0",
+      "section": "A. Dense Deformation Representation",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "Leveraging deep convolutional neural networks to estimate 6D force from the dense deformation representation, instead of using numerical methods such as iFEM.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_8_0",
+      "section": "A. Dense Deformation Representation",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "scene_description",
+      "value": "175 CAD models with various geometric shapes from the Thingi10K dataset, 3D-printed with black resin material",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_9_0",
+      "section": "B. Data Collection and Splitting",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "BOTA MiniONE Pro 6-axis F/T sensor",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_9_0",
+      "section": "B. Data Collection and Splitting",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Replace the input image's three channels with the darker image (contact geometry), the brighter image, and the grayscale reference image",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_10_0",
+      "section": "C. Details of the Neural Network",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Select Densenet as the neural network for predicting the 6D force",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_11_0",
+      "section": "Brighter channel",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Modify the output channel of the fully connected layer to 6",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_11_0",
+      "section": "Brighter channel",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Train two models on datasets split using the two splitting methods with the training configuration in Table IV",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_11_0",
+      "section": "Brighter channel",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Train Resnet and ViT models (performed worse than Densenet)",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_11_0",
+      "section": "Brighter channel",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Proposed dense deformation representation that provides comprehensive deformation information",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_11_0",
+      "section": "Brighter channel",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Absolute mean error of 0.307\u202fN for forces and 0.006\u202fN\u00b7m for torques in standard validation.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_12_0",
+      "section": "D. Results of 6D Force Estimation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Absolute mean error of 0.370\u202fN for forces and 0.0077\u202fN\u00b7m for torques in object\u2011based validation.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_12_0",
+      "section": "D. Results of 6D Force Estimation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Reported RMSE of 0.62\u202fN in [2] and MAE of 0.41\u202fN in [17] for normal and tangential force estimation in other studies.",
+      "confidence": "high",
+      "paper_id": "9dtact",
+      "chunk_id": "9dtact_mid_12_0",
+      "section": "D. Results of 6D Force Estimation",
+      "rhetorical_role": "result"
+    }
+  ],
+  "airexo-2": [
+    {
+      "type": "hardware_detail",
+      "value": "AirExo-2 exoskeleton with stronger mechanical structure and improved calibration",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "RISE-2 outperforms prior imitation policies in both in-domain and generalization settings",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "RISE-2 matches the performance of teleoperated-data-trained policies using only in-the-wild demonstrations",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "RISE-2 surpasses teleoperated baselines under equivalent data collection time",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "dual-arm platform (excluding the camera) priced at $600, upgraded with aluminum profiles for structural robustness and motion tracking precision, 1:1 scale and kinematic isomorphism with the robotic arm, includes a mobile base",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_2_0",
+      "section": "AirExo-2: Efficiently Collecting and Adapting In-the-Wild Demonstrations",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Sparse encoder E_s maps a depth image D and camera intrinsics K to sparse geometric features F_g and seed point coordinates C_g, using a ResNet-like architecture built on MinkowskiEngine for efficient sparse feature extraction.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Dense encoder E_d processes the color image I, depth map D, and intrinsics K into a dense semantic feature map F_s and reference 3D coordinates C_s by applying 2D adaptive average pooling on the point cloud generated from D and K.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Dense encoder E_d is implemented using DINOv2 fine-tuned with LoRA to enhance robustness and adaptability.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Spatial Aligner fuses geometric features from the sparse encoder and semantic features from the dense encoder by upsampling F_s to match image resolution, projecting onto the point cloud, and downsampling to align with seed points.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Action generator maps the fused features from the Spatial Aligner to robot actions.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "RISE-2 is a generalizable policy that integrates 3D spatial perception with 2D semantic features for robust robotic manipulation.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "RISE-2 inherits the sparse 3D encoder from RISE but removes color input to focus purely on geometric features.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "RISE-2 adopts a dense 2D encoder compatible with 2D foundation models, providing highly generalizable visual representations across diverse tasks and domains.",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_4_0",
+      "section": "RISE-2: A Generalizable Policy for Learning from In-the-Wild Demonstrations",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "scene_description",
+      "value": "Serve Steak task (challenging, long-horizon, contact-rich) evaluated with 50 in-the-wild demonstrations",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_7_0",
+      "section": "Method",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Collect Toys task used for ablation on visual adaptors and user study",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_7_0",
+      "section": "Method",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "RISE-2 policy achieves 50% overall success rate on the Serve Steak task using 50 in-the-wild demonstrations",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_7_0",
+      "section": "Method",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Performance of RISE-2 with AirExo-2 demonstrations shows only a slight drop compared to policy trained on teleoperated demonstrations",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_7_0",
+      "section": "Method",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "RISE-2 without visual adaptors still performs comparably to RISE [102] with adaptors",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_7_0",
+      "section": "Method",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "AirExo-2 system only supports parallel grippers as end-effectors",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_9_0",
+      "section": "Limitations and Future Works",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "European standard aluminum profiles used for structural links",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_9_0",
+      "section": "Limitations and Future Works",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Outer shell 3D-printed using PLA-CF (carbon fiber-reinforced PLA)",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_9_0",
+      "section": "Limitations and Future Works",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Hollow Rotating Disc and Side-Mounted Encoder (H5) design for joint angle sensing",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_9_0",
+      "section": "Limitations and Future Works",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Intel RealSense D415 camera",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_10_0",
+      "section": "Mobile Data Collection Platform (H3).",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "mobile aluminum profile stand",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_10_0",
+      "section": "Mobile Data Collection Platform (H3).",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "methodology_step",
+      "value": "two-stage calibration process",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_11_0",
+      "section": "A.2 Calibration",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Initial Calibration: manually adjusting the joints to approximate the zero position using specialized 3D-printed tools and reading the encoder values, obtaining {qleft_calib, qright_calib}",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_11_0",
+      "section": "A.2 Calibration",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Initial Calibration: attaching an ArUco calibration marker board with a known position on the base and performing optical calibration using OpenCV, obtaining T_camera_marker",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_11_0",
+      "section": "A.2 Calibration",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "proposing a two-stage calibration process for aligning joint zero positions and determining the transformation between the global camera and the AirExo-2 base",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_11_0",
+      "section": "A.2 Calibration",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "RTX 2060 SUPER GPU",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_14_0",
+      "section": "A.4 Discussions",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Collect 50 teleoperated demonstrations for RISE-2 policy evaluation",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Collect 50 in-the-wild demonstrations for AirExo-2 system evaluations",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Generate uniformly distributed test positions randomly before each task evaluation",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Evaluate each policy over 20 consecutive trials per task (10 trials for Serve Steak task)",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Use each of the 5 novel backgrounds for 4 evaluation trials to assess background variation generalization",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Proposed AirExo-2 system for collecting and adapting in-the-wild demonstrations",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "RISE-2 is compared against ACT, Diffusion Policy, CAGE, RISE, and \u03c00 using consistent evaluation methods and success rates",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Policies except \u03c00 run on a workstation with an NVIDIA RTX 2060 SUPER GPU; \u03c00 runs on a server with an NVIDIA A100 GPU",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_15_0",
+      "section": "C Experiments Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Recent work [102] demonstrated that using only a global camera enables a 3D imitation policy to outperform 2D multi-view image-based policies",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_16_0",
+      "section": "C.2 Action Accuracy Analysis Details",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "AirExo-2 data collection system with custom connectors fitting holes spaced 2 cm apart",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_16_0",
+      "section": "C.2 Action Accuracy Analysis Details",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "RISE achieves good zero-shot performance, though with a slightly larger drop compared to RISE-2",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_17_0",
+      "section": "C.4 Additional Experiment Results",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "AirExo-2",
+      "confidence": "high",
+      "paper_id": "airexo-2",
+      "chunk_id": "airexo-2_mid_17_0",
+      "section": "C.4 Additional Experiment Results",
+      "rhetorical_role": "result"
+    }
+  ],
+  "aloha": [
+    {
+      "type": "methodology_step",
+      "value": "The policy predicts the target joint positions for the next k timesteps instead of a single step.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_0_1",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Temporal ensembling queries the policy more frequently and averages across overlapping action chunks.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_0_1",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Action chunking policy is implemented with Transformers.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_0_1",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "The policy is trained as a conditional VAE (CVAE) to capture variability in human data.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_0_1",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "A low-cost teleoperation system that enables high\u2011precision, rich\u2011contact fine manipulation tasks.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_0_1",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "A novel imitation learning algorithm called Action Chunking with Transformers (ACT).",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_0_1",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Demonstrated learning of six fine manipulation skills directly in the real world with 80\u201190% success from only 10 minutes or 50 demonstration trajectories.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_0_1",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "building a high-performance teleoperation system",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "novel imitation learning algorithm that drastically improves previous methods on fine manipulation tasks",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "reduce the effective horizon of tasks through action chunking, i.e., predicting an action sequence instead of a single action, and then ensemble across overlapping action chunks to produce accurate and smooth trajectories",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "proposed action\u2011chunking approach for high\u2011dimensional visual observations in fine manipulation",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "ViperX 6-DoF robot arms",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Dynamixel motors",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "WidowX robot",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "3D printed \"see-through\" fingers",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "3D-printed \"handle and scissor\" mechanism",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "working payload of 750g for ViperX arm",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "span of 1.5m for ViperX arm",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "accuracy of 5-8mm for ViperX arm",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "cost of around $5600 for ViperX robot",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "cost of $3300 for WidowX robot",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_2_0",
+      "section": "III. ALOHA: A LOW-COST OPEN-SOURCE HARDWARE SYSTEM FOR BIMANUAL TELEOPERATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "contribution",
+      "value": "Action Chunking with Transformers (ACT) \u2013 a novel algorithm to leverage data collected by ALOHA",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_3_0",
+      "section": "IV. ACTION CHUNKING WITH TRANSFORMERS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "novelty_claim",
+      "value": "We therefore develop a novel algorithm, Action Chunking with Transformers (ACT)",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_3_0",
+      "section": "IV. ACTION CHUNKING WITH TRANSFORMERS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Collect human demonstrations using ALOHA and record the joint positions of the leader robots as actions",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_3_0",
+      "section": "IV. ACTION CHUNKING WITH TRANSFORMERS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Compose observations from current joint positions of follower robots and the image feed from 4 cameras",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_3_0",
+      "section": "IV. ACTION CHUNKING WITH TRANSFORMERS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Train ACT to predict the sequence of future actions given the current observations",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_3_0",
+      "section": "IV. ACTION CHUNKING WITH TRANSFORMERS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Track the predicted target joint positions with a low\u2011level, high\u2011frequency PID controller inside Dynamixel motors",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_3_0",
+      "section": "IV. ACTION CHUNKING WITH TRANSFORMERS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "At test time, load the policy with the lowest validation loss and roll it out in the environment",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_3_0",
+      "section": "IV. ACTION CHUNKING WITH TRANSFORMERS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "single 11G RTX 2080 Ti GPU",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_8_0",
+      "section": "left).",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "two simulated fine manipulation tasks in MuJoCo",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_9_0",
+      "section": "V. EXPERIMENTS",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "six real\u2011world tasks with ALOHA",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_9_0",
+      "section": "V. EXPERIMENTS",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Objects are placed randomly along a 15\u202fcm white reference line in real\u2011world tasks or uniformly in 2D regions in simulated tasks.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_10_1",
+      "section": "A. Tasks",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Transparent or translucent objects include a Ziploc bag, tape, and both the lid and body of a condiment cup, which are hard to perceive with depth cameras.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_10_1",
+      "section": "A. Tasks",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Low\u2011contrast objects on a black tabletop such as a black velcro cable tie and a black Slide Ziploc.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_10_1",
+      "section": "A. Tasks",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Clearance is around 5\u202fmm in the insertion phase.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_10_1",
+      "section": "A. Tasks",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "The Ziploc bag is dropped from approximately 5\u202fcm above the table to randomize deformation.",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_10_1",
+      "section": "A. Tasks",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Learning to avoid gripper collisions during mid-air handover and handling variability in handover positions across demonstrations",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_11_0",
+      "section": "B. Data Collection",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "ACT outperforms the second best algorithm by a large margin on each task",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_12_0",
+      "section": "C. Experiment Results",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "ACT outperforms the best previous method in success rate by 59%, 49%, 29%, and 20% for the two simulated tasks with scripted or human data",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_12_0",
+      "section": "C. Experiment Results",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "ACT achieves 88% final success rate on the real-world task Slide Ziploc",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_12_0",
+      "section": "C. Experiment Results",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "ACT achieves 96% final success rate on the real-world task Slot Battery",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_12_0",
+      "section": "C. Experiment Results",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "final success rate of prior methods remains low, below 30%",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_12_0",
+      "section": "C. Experiment Results",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "contribution",
+      "value": "Action chunking to mitigate compounding errors",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_13_0",
+      "section": "VI. ABLATIONS",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Temporal ensembling to better handle non-Markovian demonstrations",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_13_0",
+      "section": "VI. ABLATIONS",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Training the policy as a conditional VAE to model noisy human demonstrations",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_13_0",
+      "section": "VI. ABLATIONS",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Mitigating compounding errors in sequential decision making",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_13_0",
+      "section": "VI. ABLATIONS",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Handling non-Markovian demonstrations",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_13_0",
+      "section": "VI. ABLATIONS",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Necessity of high-frequency control in ALOHA",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_13_0",
+      "section": "VI. ABLATIONS",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Success rate improves from 1% at k = 1 to 44% at k = 100",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_14_0",
+      "section": "A. Action Chunking and Temporal Ensembling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Slight performance dip observed at k = 200 and k = 400",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_14_0",
+      "section": "A. Action Chunking and Temporal Ensembling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "ACT significantly outperforms previous methods that only predict single-step actions",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_14_0",
+      "section": "A. Action Chunking and Temporal Ensembling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "ACT still outperforms both augmented baselines (BC-ConvMLP and VINN) with sizable gains",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_14_0",
+      "section": "A. Action Chunking and Temporal Ensembling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "BC-ConvMLP benefits from temporal ensembling with a 4% gain",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_14_0",
+      "section": "A. Action Chunking and Temporal Ensembling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "ACT benefits from temporal ensembling with a 3.3% gain",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_14_0",
+      "section": "A. Action Chunking and Temporal Ensembling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "VINN shows a performance drop when temporal ensembling is added",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_14_0",
+      "section": "A. Action Chunking and Temporal Ensembling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "threading a zip cable tie (fine-grained task requiring millimeter-level precision and closed-loop visual feedback)",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_15_0",
+      "section": "B. Training with CVAE",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "un-stacking two plastic cups (fine-grained task requiring millimeter-level precision and closed-loop visual feedback)",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_15_0",
+      "section": "B. Training with CVAE",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "opening a translucent condiment cup and slotting a battery",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_16_0",
+      "section": "VII. LIMITATIONS AND CONCLUSION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "80-90% success rate with around 10 minutes of demonstrations",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_16_0",
+      "section": "VII. LIMITATIONS AND CONCLUSION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "tasks beyond capability such as buttoning up a dress shirt",
+      "confidence": "medium",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_16_0",
+      "section": "VII. LIMITATIONS AND CONCLUSION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Intel RealSense (4 calibrated units) used to capture point cloud of a human hand",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_17_0",
+      "section": "A. Comparing ALOHA with Prior Teleoperation Setups",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Allegro hand mounted to a KUKA LBR iiwa7 R800",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_17_0",
+      "section": "A. Comparing ALOHA with Prior Teleoperation Setups",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "UR10 robot used to mount two dexterous hands in the Shadow Teleoperation System",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_17_0",
+      "section": "A. Comparing ALOHA with Prior Teleoperation Setups",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "parallel jaw grippers used in ALOHA's bimanual setup",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_17_0",
+      "section": "A. Comparing ALOHA with Prior Teleoperation Setups",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Step 1: sample tuples of RGB images and joint positions together with the corresponding action sequence as prediction target",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_19_0",
+      "section": "C. Detailed Architecture Diagram",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Step 2: infer style variable z using the CVAE encoder (process [CLS] token, embedded joint positions, embedded action sequence through a transformer encoder and predict mean and variance of z's diagonal Gaussian distribution)",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_19_0",
+      "section": "C. Detailed Architecture Diagram",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Step 3: predict action sequence using the CVAE decoder (policy) by feeding image features from ResNet18, joint positions, and z into a transformer encoder and decoder with cross\u2011attention",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_19_0",
+      "section": "C. Detailed Architecture Diagram",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "At test time, discard the CVAE encoder and use the CVAE decoder as the policy, setting z to a zero vector (mean of the unit Gaussian prior) to obtain deterministic outputs",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_19_0",
+      "section": "C. Detailed Architecture Diagram",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "scene_description",
+      "value": "Threading zip cable tie task: hole measures 4mm x 1.5mm, cable tie measures 0.8mm x 3.5mm, initially lying flat on the table",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_21_0",
+      "section": "E. User Study Details",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Unstacking cup task: two single-use plastic cups with 2.5mm clearance when stacked",
+      "confidence": "high",
+      "paper_id": "aloha",
+      "chunk_id": "aloha_mid_21_0",
+      "section": "E. User Study Details",
+      "rhetorical_role": "result"
+    }
+  ],
+  "aloha-2": [
+    {
+      "type": "problem_addressed",
+      "value": "The need to significantly scale up data collection on the ALOHA platform, including more robots, more hours of data per robot, and greater diversity of data, while expanding the range of manipulation tasks and improving user ergonomics and system robustness.",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_0_0",
+      "section": "ALOHA 2",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "Creation of a new low\u2011friction rail design for both leader and follower grippers to improve ergonomics, responsiveness, latency, and force output.",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_0_0",
+      "section": "ALOHA 2",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "Upgrade of grip tape material on gripper fingers to improve durability and grasping of small objects.",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_0_0",
+      "section": "ALOHA 2",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "Development of a passive gravity compensation mechanism using off\u2011the\u2011shelf components that improves durability over the original rubber\u2011band system.",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_0_0",
+      "section": "ALOHA 2",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "Simplification of the workcell frame while maintaining camera mounting rigidity, allowing space for human\u2011robot collaboration and props.",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_0_0",
+      "section": "ALOHA 2",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "Use of smaller Intel RealSense D405 cameras with custom 3D\u2011printed mounts, providing a larger field of view, depth, global shutter, and reduced footprint for the follower arms.",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_0_0",
+      "section": "ALOHA 2",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "XL430-W250-T leader gripper motor",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_1_0",
+      "section": "Hardware Leader Grippers (The device the human holds in their hands)",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "XC430-W150-T lower\u2011friction leader gripper motor",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_1_0",
+      "section": "Hardware Leader Grippers (The device the human holds in their hands)",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "low\u2011friction linear rail design for leader gripper",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_1_0",
+      "section": "Hardware Leader Grippers (The device the human holds in their hands)",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "spring loaded trigger design for leader gripper",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_1_0",
+      "section": "Hardware Leader Grippers (The device the human holds in their hands)",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "3D printed carbon fiber nylon follower gripper fingers and structure",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_1_0",
+      "section": "Hardware Leader Grippers (The device the human holds in their hands)",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "polyurethane gripping tape applied to inside of follower gripper fingers",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_1_0",
+      "section": "Hardware Leader Grippers (The device the human holds in their hands)",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "tape strips applied to outside of follower gripper fingers for increased traction",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_1_0",
+      "section": "Hardware Leader Grippers (The device the human holds in their hands)",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "operators insert shapes into corresponding holes in a box during teleoperation sessions",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_2_0",
+      "section": "Gravity Compensation",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "4 RealSense D405 cameras",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_4_0",
+      "section": "Cameras",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Ensuring downstream robotic learning pipelines receive complete, high\u2011quality teleoperation data by logging sensor streams and shutting down sessions with missing data.",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_5_0",
+      "section": "Teleoperation",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Implementation of a ROS2\u2011based teleoperation software stack that logs leader/follower joint positions at 50\u202fHz, records operator metadata, and includes ergonomic features such as low\u2011friction grippers, passive gravity compensation, swappable finger attachments, adjustable chairs, and prescribed rest",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_5_0",
+      "section": "Teleoperation",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "scene_description",
+      "value": "Objects from the Google Scanned Objects Dataset used in simulation tasks",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_6_0",
+      "section": "Simulation",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "ViperX robots with wrist cameras mounted on an aluminum extrusion frame",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_6_0",
+      "section": "Simulation",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Aloha 2 WidowX leader setup (leader arms) used for teleoperation",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_6_0",
+      "section": "Simulation",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Follower arm gripper modeled as a position\u2011controlled linear actuator with equality constraint between fingers",
+      "confidence": "high",
+      "paper_id": "aloha-2",
+      "chunk_id": "aloha-2_mid_6_0",
+      "section": "Simulation",
+      "rhetorical_role": "experimental_setup"
+    }
+  ],
+  "anyskin": [
+    {
+      "type": "hardware_detail",
+      "value": "AnySkin touch sensor (magnetic-field based, improved fabrication, self-adhering attachment)",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "ReSkin magnetic-field based touch sensor",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Biotac high-end tactile sensor",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Magnetizing skins post-curing using a pulse magnetizer.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_3_0",
+      "section": "III. ANYSKIN: COMPONENTS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Introducing physical separation between magnetic elastomer and magnetometer circuit.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_3_0",
+      "section": "III. ANYSKIN: COMPONENTS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Utilizing finer magnetic particles to achieve a more uniform particle distribution.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_3_0",
+      "section": "III. ANYSKIN: COMPONENTS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Implementing a self-aligning design for reduced variability in the positioning of elastomers and circuitry.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_3_0",
+      "section": "III. ANYSKIN: COMPONENTS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Key design and fabrication changes to improve durability, repeatability, and replaceability of the tactile skin.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_3_0",
+      "section": "III. ANYSKIN: COMPONENTS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Use of a pulse magnetizer to magnetize skins post-curing, enabling more uniform magnetic particle distribution and stronger magnetic fields.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_3_0",
+      "section": "III. ANYSKIN: COMPONENTS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Magnetic particles and elastomer are mixed in specified ratios",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_4_0",
+      "section": "IV. ANYSKIN: FABRICATION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "The resulting mixture is poured into the molds",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_4_0",
+      "section": "IV. ANYSKIN: FABRICATION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Cured skins are magnetized",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_4_0",
+      "section": "IV. ANYSKIN: FABRICATION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "The shape of the fingertip-skin assembly is designed to be triangular to improve reachability",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_4_0",
+      "section": "IV. ANYSKIN: FABRICATION",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Separating the magnetizing process from the curing process allows the skins to cure undisturbed and maintain a more uniform distribution of magnetic particles.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_7_0",
+      "section": "C. Magnetization",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Using a pulse magnetizer after curing provides a far stronger magnetic field than the sandwich of grid magnets, resulting in skins with stronger magnetic fields and larger separations between magnetic skin and magnetometer circuitry.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_7_0",
+      "section": "C. Magnetization",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "a pressure of 29mm of Hg/in is applied in the vacuum chamber",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_8_0",
+      "section": "D. Magnetic elastomer fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "the pressure is held for 10 minutes before releasing the vacuum",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_8_0",
+      "section": "D. Magnetic elastomer fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "the molds are allowed to rest for 16 hours before opening",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_8_0",
+      "section": "D. Magnetic elastomer fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Kinova Jaco arm",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_11_0",
+      "section": "B. Slip Detection",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Onrobot RG-2 gripper with integrated AnySkin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_11_0",
+      "section": "B. Slip Detection",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "set of 40 daily objects (30 for training, 10 for evaluation) with varying shapes, weights and materials",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_11_0",
+      "section": "B. Slip Detection",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Users find it significantly faster and easier to replace AnySkin than DIGIT or ReSkin (both screw\u2011adhered and sticker\u2011adhered) according to a user study with 10 non\u2011expert users.",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_12_0",
+      "section": "C. Ease of replaceability",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "X-Arm 7DOF robot",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Meta Quest 3 with joystick controller",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "AnySkin sensor attached to fingertip",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "plain silicone tip on other fingertip",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "four cameras (three fixed to frame, one egocentric on robot wrist)",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "Plug insertion task: robot grasps plug and inserts into first socket on a socket strip",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "Card swiping task: target object is a card machine with varied configurations",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "USB insertion task: target object is a USB port with varied configurations",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "Three precise manipulation tasks with held-out configurations of target objects as shown in Fig.\u202f6",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_0",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Visuotactile policies trained with ReSkin drop 43% when the skin is replaced, while AnySkin policies only drop 13% under the same condition",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_1",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Policies trained using the DIGIT sensor show poor success rate and no significant gap between original and swapped DIGIT skins",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_1",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "96 demonstration trajectories were collected for the plug insertion task for each sensor",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_1",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Success rates are reported from 10 evaluations across three seeds for each setting",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_1",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "DIGIT sensor",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_1",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "ReSkin sensor",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_1",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "AnySkin sensor",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_13_1",
+      "section": "D. Replaceability in Policy Learning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "contribution",
+      "value": "AnySkin, a new magnetic tactile sensor that is versatile, self-adhering and improves signal consistency across different instances of the skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_14_0",
+      "section": "VI. CONCLUSION AND LIMITATIONS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "novelty_claim",
+      "value": "AnySkin is the first sensor to demonstrate zero-shot generalization of visuotactile policies to new instances of the tactile skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_14_0",
+      "section": "VI. CONCLUSION AND LIMITATIONS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "AnySkin is the first step towards ensuring that large datasets of tactile data can be collected and effectively used for training useful, generalizable models",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_14_0",
+      "section": "VI. CONCLUSION AND LIMITATIONS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Potential integration of AnySkin into large\u2011scale data collection tools such as UMI or the Stick",
+      "confidence": "medium",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_14_0",
+      "section": "VI. CONCLUSION AND LIMITATIONS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "novelty_claim",
+      "value": "AnySkin inherits drawbacks of the ReSkin sensor but is positioned as the first tactile sensor moving toward first\u2011class citizen status in robotics",
+      "confidence": "medium",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_14_0",
+      "section": "VI. CONCLUSION AND LIMITATIONS",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Plug Insertion success rate 1.7 \u00b1 0.6 with cameras only",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Plug Insertion success rate 6.7 \u00b1 1.5 with cameras + original skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Card Swiping success rate 2.0 \u00b1 1.0 with cameras only",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Card Swiping success rate 7.0 \u00b1 1.7 with cameras + original skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "USB Insertion success rate 1.7 \u00b1 1.2 with cameras only",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "USB Insertion success rate 5.7 \u00b1 1.5 with cameras + original skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "AnySkin achieves 6.7 \u00b1 1.5 versus ReSkin 6.0 \u00b1 1.7 in Plug Insertion with cameras + skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "AnySkin achieves 6.7 \u00b1 1.5 versus DIGIT 2.3 \u00b1 0.6 in Plug Insertion with cameras + skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "ReSkin achieves 6.0 \u00b1 1.7 versus DIGIT 2.3 \u00b1 0.6 in Plug Insertion with cameras + skin",
+      "confidence": "high",
+      "paper_id": "anyskin",
+      "chunk_id": "anyskin_mid_18_0",
+      "section": "Table 4: TABLE III : - Success rates (out of 10) for policies when swapping out tactile skins. All statistics",
+      "rhetorical_role": "result"
+    }
+  ],
+  "berkeley-humanoid-lite": [
+    {
+      "type": "hardware_detail",
+      "value": "3D-printed cycloidal gear actuators",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Intel N95 mini PC located at the center of the torso",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_4_0",
+      "section": "A. Overview",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "cellphone-grade IMU positioned near the center of the torso",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_4_0",
+      "section": "A. Overview",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "actuators with 3D-printed cycloidal gearbox (two sizes) driving leg and arm joints",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_4_0",
+      "section": "A. Overview",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "1 Mbps CAN 2.0 bus connecting limb joint actuators",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_4_0",
+      "section": "A. Overview",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "USB-CAN adapters interfacing four CAN buses to the computer",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_4_0",
+      "section": "A. Overview",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Arduino microcontroller connecting the IMU over USB",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_4_0",
+      "section": "A. Overview",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "onboard 6S 4000 mAh Lithium Polymer (LiPo) battery",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_4_0",
+      "section": "A. Overview",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "platform achieves a high performance factor with a cost lower than $5000",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_5_0",
+      "section": "B. Performance Factor",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "24 V power supply",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_8_0",
+      "section": "IV. ACTUATOR EVALUATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "custom motor controller and firmware",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_8_0",
+      "section": "IV. ACTUATOR EVALUATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "off-the-shelf Moteus Controller",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_8_0",
+      "section": "IV. ACTUATOR EVALUATION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "The gearbox exhibits a mechanical efficiency of approximately 90% across most operating conditions",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_9_0",
+      "section": "A. Power Efficiency",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Transmission stiffness measured as approximately 319.49 Nm/rad (from linear fit of data 4\u201110\u202fNm)",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_10_0",
+      "section": "B. Transmission Stiffness",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Stiffness is lower than the 1468 Nm/rad reported by Roozing and Roozing for a similar 3D\u2011printed cycloidal reducer",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_10_0",
+      "section": "B. Transmission Stiffness",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "torque error remains within \u00b10.5 N\u00b7m throughout the operating range",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_12_0",
+      "section": "D. Consistency Across Units",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Maximum observed backlash was 0.0229 rad with a standard deviation of 0.0042 rad.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_13_0",
+      "section": "E. Position Tracking Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Each of the four spatial targets was repeated 100 times for evaluation.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_13_0",
+      "section": "E. Position Tracking Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Six freshly printed 6512 actuators were tested individually; five actuators were assembled into a 5-DoF serial arm.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_13_0",
+      "section": "E. Position Tracking Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "End-effector pose captured by a SteamVR-based motion-tracking setup.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_13_0",
+      "section": "E. Position Tracking Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "utilized only 30% of the actuator's torque limit",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_15_0",
+      "section": "A. Legged Locomotion",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Leverages a motion capture setup built with SteamVR base stations and controllers to provide real-time tracking of the operator's hand position and orientation.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_16_0",
+      "section": "B. Teleoperated Manipulation",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Uses a unified inverse kinematics (IK) pipeline based on the Pink and Pinocchio library to translate desired end\u2011effector poses into robot joint configurations.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_16_0",
+      "section": "B. Teleoperated Manipulation",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Headless Mode interprets position and orientation changes of controllers relative to the global coordinate frame for third\u2011person control.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_16_0",
+      "section": "B. Teleoperated Manipulation",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "VR Mode directly maps position and orientation changes of controllers within the user's local coordinate frame to the robot's local coordinate frame (body\u2011ownership approach).",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_16_0",
+      "section": "B. Teleoperated Manipulation",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Provides a teleoperation system with two distinct operational modes (Headless and VR) that share a robust IK solver built on Pink and Pinocchio.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_16_0",
+      "section": "B. Teleoperated Manipulation",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Open\u2011source software stack designed for flexibility, allowing easy integration of alternative tracking solutions such as Apple Vision Pro, Meta Quest, OptiTrack, or Xsens.",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_16_0",
+      "section": "B. Teleoperated Manipulation",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "6512 actuator",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_17_0",
+      "section": "C. Potential Applications",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "3D-printed actuator",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_17_0",
+      "section": "C. Potential Applications",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "anime-style head integrated into the robot",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_17_0",
+      "section": "C. Potential Applications",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "limitation",
+      "value": "insufficient study of thermal effects on the 3D-printed structure during prolonged operation, which could impact mechanical strength and overall system reliability",
+      "confidence": "high",
+      "paper_id": "berkeley-humanoid-lite",
+      "chunk_id": "berkeley-humanoid-lite_mid_18_0",
+      "section": "VI. LIMITATIONS",
+      "rhetorical_role": "limitation"
+    }
+  ],
+  "coinft": [
+    {
+      "type": "scene_description",
+      "value": "multi-axial contact-probing experiment with CoinFT mounted beneath a hemispherical fingertip",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "force-control task on a drone",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_coarse_abstract",
+      "section": "Abstract",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "contact-probing experiment with a 7-DoF robotic arm applying controlled 6-axis force/torque on a fingertip-mounted CoinFT sensor",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "potential application on drones performing forceful interactions with the environment",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "CoinFT sensor size is comparable to a US quarter dollar",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "CoinFT sensor weight is 2 g",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "CoinFT material cost is less than $11",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Gamma\u2122 sensor from ATI Industrial Automation",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "6-axis force/torque sensors from MinebeaMitsumi\u2122",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "6-axis force/torque sensors from ReSense\u2122",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Leap hand anthropomorphic robot hand",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "contribution",
+      "value": "CoinFT is a capacitive 6-axis force/torque sensor with a circular sensing area 20\u202fmm in diameter, ~2\u202fmm thickness and 2\u202fg weight, providing a footprint comparable to a U.S. quarter coin",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_2_0",
+      "section": "A. CoinFT Design",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Microcontroller firmware switches the pair of rigid PCBs between Normal Mode and Shear Mode every sampling sequence.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_4_0",
+      "section": "B. Working Principle",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "In Normal Mode, electrodes in each quadrant of the upper sensing layer are internally connected to function as a single electrode (Z1\u2011Z4) and the lower sensing layer electrodes are reconfigured to ground.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_4_0",
+      "section": "B. Working Principle",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Normal Mode readings are performed sequentially for Z1, Z2, Z3, and Z4 to obtain Fz, Mx, and My.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_4_0",
+      "section": "B. Working Principle",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "In Shear Mode, upper sensing layer electrodes remain independent (X1\u2011X4, Y1\u2011Y4) while lower layer electrodes are configured as an alternating ground\u2011shield pattern.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_4_0",
+      "section": "B. Working Principle",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "The shield electrode is driven to the same potential as the sensing electrodes to mitigate stray capacitance using the PSoC\u2122 4100S capability.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_4_0",
+      "section": "B. Working Principle",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "UV laser cutter (DPSS Lasers Inc., Samurai UV Marking System)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "silicone rubber (TAP \u00ae Silicone RTV Mold-Making System)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "primer (DOWSIL TM PR-1200 RTV Primer)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "adhesive (Henkel Corporation, Loctite 401 Instant Adhesive)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "3.1 kg mass applied for 3 minutes to minimize silicone pillar base thickness",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "100 g mass added during curing in pressure chamber at ~414 kPa for at least 12 hours",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "silicone layer spincoated at 5000 rpm for 75 seconds",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "assembly cured in 65\u202f\u00b0C oven for 72 hours",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "total cost of all components is approximately $11 without scaled production",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_5_0",
+      "section": "C. Sensor Fabrication",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "hyperelastic (Neo-Hookean) model showed less than 5% difference in predicted strain within the operating range compared to the linear elastic model",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_7_0",
+      "section": "A. Modeling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "real sample was loaded up to 10\u202fN at 0.1\u202fHz",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_7_0",
+      "section": "A. Modeling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "dielectric constant of the silicone rubber was assumed to be 3.0",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_7_0",
+      "section": "A. Modeling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "dielectric constant of air was taken as 1.0",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_7_0",
+      "section": "A. Modeling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "FEA performed using ANSYS; electrostatics analysis performed using COMSOL",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_7_0",
+      "section": "A. Modeling",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CoinFT sensor with 12 sensing electrodes (4 Normal Mode, 8 Shear Mode)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_8_0",
+      "section": "B. Calibration and Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Reference sensor: ATI Industrial Automation Gamma",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_8_0",
+      "section": "B. Calibration and Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Noise\u2011free resolution of CoinFT is approximately 20\u202fmN in force and 0.2\u202fmN\u00b7m in torque",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_8_0",
+      "section": "B. Calibration and Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Calibration used ten trials of 35\u202fseconds each for training and one additional 35\u2011second trial for testing",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_8_0",
+      "section": "B. Calibration and Accuracy",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "high sensitivity to small forces within a dynamic range under 4\u202fN in the normal direction",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_9_0",
+      "section": "C. Sensitivity and Dynamic Range Tuning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "instrumented probe for ultrasound scans might require sustained loads of 20\u202f\u223c\u202f40\u202fN",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_9_0",
+      "section": "C. Sensitivity and Dynamic Range Tuning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "instrumented tool for physiotherapy manipulation might require 100\u202f\u223c\u202f200\u202fN",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_9_0",
+      "section": "C. Sensitivity and Dynamic Range Tuning",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Dual-mode muscle lever Aurora Scientific Inc., model 309C",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "On-chip temperature sensor of the PSoC",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Gamma 6-axis force/torque sensor from ATI Industrial Automation (used for calibration)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Mechanical bandwidth of CoinFT is approximately 97\u202fHz",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Magnitude response in normal direction stays above 70.7% (-3\u202fdB) across 0\u2013120\u202fHz",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Phase lag is negligible up to 2.5\u202fHz and reaches -34.6\u00b0 at 120\u202fHz in normal direction",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Magnitude response in shear direction reaches 70.7% (-3\u202fdB) at 97\u202fHz",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Phase delay in shear direction is -94.2\u00b0 at 97\u202fHz",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Baseline capacitance drift is approximately 1\u20133% per 10\u202f\u00b0C across channels",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Drift model achieves R\u00b2 > 0.9992 for all channels",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "With temperature compensation, residual force error remains below 0.4\u202fN",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "With temperature compensation, torque error remains below 1.5\u202fmN\u00b7m",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "CoinFT can accurately measure loads of 1\u202fN, 3\u202fN, and 8\u202fN after a hammer impact of 180\u202fN",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_10_0",
+      "section": "D. Operating Characteristics",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Flexiv Rizon 4 7-DoF robotic arm",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_11_0",
+      "section": "A. Multi-axial Sensing for Robot Manipulators",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "ATI Gamma reference force/torque sensor",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_11_0",
+      "section": "A. Multi-axial Sensing for Robot Manipulators",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CoinFT sensing module mounted beneath robot fingertip",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_11_0",
+      "section": "A. Multi-axial Sensing for Robot Manipulators",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "CoinFT sample with pillar diameter of 300 \u00b5m used to extend operational range to up to 30 N normal force and 10 N shear force",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_11_0",
+      "section": "A. Multi-axial Sensing for Robot Manipulators",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "127 mm frame quadrotor",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_0",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "UP Board companion computer",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_0",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "PixRacer flight controller",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_0",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CoinFT sensor (20 mm diameter, 2 mm thickness, 2 g weight, 6.7 g including wiring and electronics)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_0",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "pressing and attaching a payload onto a surface",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_0",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "unstructured environment simulated by a controller that does not know the height of the contact surface",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_0",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Search through a range of heights within which the contact surface is assumed to exist and transform it into a sequence of desired positions (p_des), velocities (v_des) and orientations (q_des) for the controller to track.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Interface with the PixRacer at the attitude control level, commanding a normalized thrust force (f_cmd) and a commanded orientation (q_cmd).",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Use a switching, cascaded PID controller to advance from observed states (p_obs, v_obs, q_obs) to desired attitude commands (u_cmd).",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Compute position and velocity error (e_p = p_obs - p_des, e_v = v_obs - v_des) and use them to compute a desired force vector accounting for gravity with gain matrices (K_p, K_v) that switch between in-contact and out-of-contact gains.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Compute commanded orientation by mapping quaternion to rotation matrix and basis vectors for both desired orientation (q_des) and commanded orientation (q_cmd).",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Compute commanded normalized thrust force by obtaining desired normalized thrust (f_des), projecting the desired force vector onto the observed z-axis (z_obs) derived from q_obs, and applying a thrust normalization coefficient (k_f).",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Feed the normalized thrust into a state machine (Algorithm 1) for thrust control that switches modes during contact events and tracks desired contact forces using CoinFT feedback.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Linear search function for the contact force within the state machine to enable transitions when the initial desired contact force is large.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "PID tracking controller within the state machine to hold and track a changing desired contact force.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Integration of CoinFT feedback into a state machine that dynamically switches gain matrices (K_p, K_v) between FREE and in-contact states for force-modulated aerial contact.",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_12_1",
+      "section": "B. Contact Force Modulation of Aerial Vehicles",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "scene_description",
+      "value": "wearable haptic devices measuring contact force between device and human subject",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_13_0",
+      "section": "VI. DISCUSSION & FUTURE WORK",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "fingertip devices attached to a commercial anthropomorphic robot hand for learning force-informed actions",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_13_0",
+      "section": "VI. DISCUSSION & FUTURE WORK",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "drone platforms using CoinFT for contact probing",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_13_0",
+      "section": "VI. DISCUSSION & FUTURE WORK",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "compact medical devices where CoinFT could be made narrower",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_13_0",
+      "section": "VI. DISCUSSION & FUTURE WORK",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "quadruped or humanoid feet for measuring ground reaction forces",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_13_0",
+      "section": "VI. DISCUSSION & FUTURE WORK",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Gamma sensor (ATI Industrial Automation)",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_13_0",
+      "section": "VI. DISCUSSION & FUTURE WORK",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "multi-axial contact probing experiment emulating fingertip-scale interactions",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_14_0",
+      "section": "VII. CONCLUSION",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "drone performing force\u2011controlled tasks, such as attaching an electronics package to environmental surfaces",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_14_0",
+      "section": "VII. CONCLUSION",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Microcontroller unit (MCU) Z1",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CDC Module Z2",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CDC Module Z3",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CDC Module Z4",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "MCU pins X1, X2, X3, X4",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "MCU pins Y1, Y2, Y3, Y4",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Analog switches for Normal Mode and Shear Mode",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Active shield connected via analog switches",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_16_0",
+      "section": "Table 2: Z1 is being read in Normal Mode while X1 is being read in Shear Mode. The firmware cycles through al",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Normal+Shear RMSE: Fx 0.038, Fy 0.040, Fz 0.050, Mx 0.317, My 0.306, (presumably) Mz 0.231 for input range 0\u20135\u202fN Normal, 0\u20132\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Shear RMSE: Fx 0.039, Fy 0.040, Fz 0.115, Mx 0.343, My 0.323, (presumably) Mz 0.244 for input range 0\u20135\u202fN Normal, 0\u20132\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Normal+Shear R\u00b2: Fx 0.994, Fy 0.994, Fz 0.997, Mx 0.995, My 0.995, (presumably) Mz 0.992 for input range 0\u20135\u202fN Normal, 0\u20132\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Shear R\u00b2: Fx 0.993, Fy 0.994, Fz 0.986, Mx 0.994, My 0.994, (presumably) Mz 0.992 for input range 0\u20135\u202fN Normal, 0\u20132\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Normal+Shear RMSE: Fx 0.186, Fy 0.134, Fz 0.186, Mx 1.114, My 1.322, (presumably) Mz 0.810 for input range 0\u201314\u202fN Normal, 0\u20135\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Shear RMSE: Fx 0.174, Fy 0.129, Fz 0.266, Mx 1.169, My 1.587, (presumably) Mz 0.867 for input range 0\u201314\u202fN Normal, 0\u20135\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Normal+Shear R\u00b2: Fx 0.983, Fy 0.983, Fz 0.998, Mx 0.988, My 0.987, (presumably) Mz 0.989 for input range 0\u201314\u202fN Normal, 0\u20135\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Shear R\u00b2: Fx 0.979, Fy 0.985, Fz 0.996, Mx 0.986, My 0.981, (presumably) Mz 0.986 for input range 0\u201314\u202fN Normal, 0\u20135\u202fN Shear",
+      "confidence": "high",
+      "paper_id": "coinft",
+      "chunk_id": "coinft_mid_18_0",
+      "section": "Table 4: Shear\" includes all 12 electrodes in the calibration process, while the \"Shear\" case uses only 8 ele",
+      "rhetorical_role": "result"
+    }
+  ],
+  "craft-hand": [
+    {
+      "type": "hardware_detail",
+      "value": "CRAFT hand, a tendon-driven anthropomorphic hand, fully 3D-printed with rigid PLA finger segments and soft TPU finger joints",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "costs under $600",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "weighs 800\u202fg",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_0_0",
+      "section": "I. INTRODUCTION",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "DLR-HIT Hand II",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Allegro Hand",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "LEAP Hand",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "D'Manus",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Shadow Hand",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "RUKA hand",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "ORCA Hand",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_1_0",
+      "section": "II. RELATED WORK",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "contribution",
+      "value": "Mechanical implementation of the hybrid design principle for a teleoperable anthropomorphic hand (CRAFT Hand).",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Assign three actuators to each finger to control (i) coupled flexion of the PIP and DIP joints, (ii) abduction/adduction of the MCP joint, and (iii) flexion/extension of the MCP joint.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Use a single tendon driving both PIP and DIP joints through a bidirectional TPU linkage that couples them with equal rotation.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Employ rolling contact joints at the PIP and DIP locations instead of pin joints for predictable motion and accurate modeling.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Integrate passive elastic bands to return PIP and DIP joints to neutral when tendon tension is released.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Use a cylindrical snap\u2011fit interface at the MCP joint for simplified assembly and breakage protection.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Design both MCP flexion/extension and abduction/adduction tendons to be backdrivable, allowing external forces to drive the transmission in reverse.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Implement modular finger design with metal dowel pins for easy swapping without disassembly or rewiring.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_2_0",
+      "section": "III. KINEMATIC DESIGN",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "The need for a reliable mapping between a human operator's hand movements and the robot hand, including calibration to robot joint limits and integration with vision\u2011based teleoperation for data collection and simulation\u2011based reinforcement learning.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_3_0",
+      "section": "IV. TELEOPERATION AND SIMULATION SUPPORT",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "A joint\u2011wise calibration procedure that aligns each operator's biological hand range (measured with HaMeR) to the CRAFT robot hand's joint limits, combined with a vision\u2011based teleoperation framework (using a single RGB camera, FrankMocap for wrist pose, and HaMeR for finger pose) to collect demonst",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_3_0",
+      "section": "IV. TELEOPERATION AND SIMULATION SUPPORT",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "Provision of URDF and XML files compatible with common simulators and a modeling approach that replaces soft\u2011body physics with equality\u2011constrained rolling\u2011contact joints treated as revolute joints to preserve kinematics while maintaining computational efficiency.",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_3_0",
+      "section": "IV. TELEOPERATION AND SIMULATION SUPPORT",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "CRAFT withstands 15.29\u202fN pull\u2011out force, nearly double the 8.67\u202fN measured for the LEAP hand",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Average current consumption of CRAFT is approximately 50% lower than that of LEAP during a one\u2011hour hold of a 5\u202flb dumbbell",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Pull\u2011out force: CRAFT 15.29\u202fN, LEAP 8.67\u202fN",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Mean joint angle tracking error remains below 0.01\u202frad for both CRAFT and LEAP over one hour of repeated grasp\u2011and\u2011release",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Holding test load: 5\u202flb dumbbell grasped for one hour",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "Motor current limit: 600\u202fmA",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "CRAFT hand using Dynamixel XL330\u2011M288\u2011T motors",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "LEAP hand assembled with Dynamixel XL330\u2011M288\u2011T motors (instead of the 4\u00d7 expensive Dynamixel XC330\u2011M288\u2011T)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "ArUco markers attached to the finger for deflection angle tracking",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_5_0",
+      "section": "A. Structural Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Five test objects: a ball (rigid), a wine glass (large and fragile), an egg (low\u2011friction and fragile), a raspberry (small and deformable), and a frito chip (extremely delicate)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_6_0",
+      "section": "B. Teleoperation Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "The rigid LEAP hand showed lower success rate and longer completion time than CRAFT on the ball grasping task",
+      "confidence": "medium",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_6_0",
+      "section": "B. Teleoperation Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "10 trials were run for each hand with different participants",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_6_0",
+      "section": "B. Teleoperation Tests",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "picking up a plush toy (soft object)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_8_0",
+      "section": "D. Whole Arm Teleopration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "wiping a whiteboard with a sponge (compliance during sustained surface contact)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_8_0",
+      "section": "D. Whole Arm Teleopration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "twisting a key (contact\u2011rich scenario with torque)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_8_0",
+      "section": "D. Whole Arm Teleopration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "picking up a raspberry (precision grasp of small item)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_8_0",
+      "section": "D. Whole Arm Teleopration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "handling an egg (low\u2011friction fragile object)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_8_0",
+      "section": "D. Whole Arm Teleopration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "pouring from a wine glass (stable manipulation of large breakable object during dynamic motion)",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_8_0",
+      "section": "D. Whole Arm Teleopration",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "the need for durable, repeatable dexterous data collection and policy learning under heavy contact and repeated use",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_10_0",
+      "section": "VI. CONCLUSION",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "contribution",
+      "value": "introduction of CRAFT, an open\u2011source anthropomorphic hand with a hybrid hard\u2011soft design, rolling\u2011contact joints at PIP and DIP, and full coverage of all 33 grasps in the Feix taxonomy",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_10_0",
+      "section": "VI. CONCLUSION",
+      "rhetorical_role": "problem_statement"
+    },
+    {
+      "type": "novelty_claim",
+      "value": "none explicitly stated in the text",
+      "confidence": "high",
+      "paper_id": "craft-hand",
+      "chunk_id": "craft-hand_mid_10_0",
+      "section": "VI. CONCLUSION",
+      "rhetorical_role": "problem_statement"
+    }
+  ],
+  "dexumi": [
+    {
+      "type": "methodology_step",
+      "value": "Design a wearable hand exoskeleton for each target robot hand through a hardware optimization framework that refines exoskeleton parameters (e.g., link lengths) to closely match robot finger trajectories while maintaining wearability.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Collect manipulation data directly from the user wearing the exoskeleton, capturing precise joint angles from encoders and tactile information from fingertip sensors.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Apply a software adaptation data processing pipeline that bridges the visual observation gap between human demonstration and robot deployment.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "DexUMI framework that combines hardware adaptation (wearable exoskeleton) and software adaptation (data processing pipeline) to minimize action and observation gaps for diverse robot hands.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Hardware optimization framework for exoskeleton design that refines link lengths to match target robot hand kinematics.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Integration of tactile sensors on the exoskeleton fingertips to record tactile information identical to that of the robot hand.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_0_0",
+      "section": "Introduction",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Designing a hand exoskeleton that avoids collision between the human thumb and the exoskeleton while preserving the same joint-to-fingertip position mapping as the target robot hand.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_3_0",
+      "section": "Exoskeleton Mechanism Design",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Parameterizing the exoskeleton design and formulating wearability requirements as constraints on design parameters, then solving an optimization that prioritizes exact fingertip kinematics while allowing flexibility in less critical links.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_3_0",
+      "section": "Exoskeleton Mechanism Design",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Alps encoder",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_6_0",
+      "section": "Sensor Integration",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Inspirehand",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_6_0",
+      "section": "Sensor Integration",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "iPhone ARKit (6DoF wrist pose tracking)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_6_0",
+      "section": "Sensor Integration",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "methodology_step",
+      "value": "V.1 Segment human hand and exoskeleton using SAM2 with a fixed set of prompt points",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_7_0",
+      "section": "S.3 Visual observation.",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "V.2 Inpaint environment background by removing hand/exoskeleton pixels and applying ProPainter (flow\u2011based inpainting)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_7_0",
+      "section": "S.3 Visual observation.",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "V.3 Record corresponding robot hand video by replaying recorded joint actions on the robot hand and extracting hand pixels with SAM2",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_7_0",
+      "section": "S.3 Visual observation.",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "V.4 Compose robot demonstrations by merging the inpainted background video with the robot\u2011hand\u2011only video using an occlusion\u2011aware compositing approach",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_7_0",
+      "section": "S.3 Visual observation.",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Developed an occlusion\u2011aware compositing approach that leverages a consistent under\u2011wrist camera setup and kinematic/shape similarity to maintain proper occlusion relationships",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_7_0",
+      "section": "S.3 Visual observation.",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "XHand: fully-actuated hand with twelve active DoFs (thumb three DoFs, index finger three DoFs, remaining fingers two DoFs each)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "IHand: robot hand used in Cube, Egg Carton, and Tea tasks",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Cube task: pick up a 2.5\u202fcm wide cube from a table and place it into a cup",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Egg Carton task: open an egg carton using index, middle, ring, little fingers for downward pressure and thumb to lift the front latch",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Tea task: grasp tweezers from the table and transfer tea leaves from a teapot to a cup",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "scene_description",
+      "value": "Kitchen task: turn off stove knob, transfer pan to counter, pick up salt, and sprinkle it over food in the pan",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "quantitative_claim",
+      "value": "20 evaluation episodes per task, with consistent initial object configurations across method and baselines",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Comparison of relative vs. absolute finger action trajectories (relative position used for wrist action)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Comparison of policies trained with vs. without tactile sensor input",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Comparison of software adaptation variants: Mask (green color mask) vs. Raw (unmodified images)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_8_0",
+      "section": "Evaluation",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "comparison_claim",
+      "value": "Relative finger trajectory consistently achieves better success across all tasks compared to absolute finger trajectory",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_9_0",
+      "section": "Key Findings",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "XHand tactile sensor (drifts and becomes inconsistent after high pressure)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_9_0",
+      "section": "Key Findings",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Inspire hand with manually installed tactile sensors (noisy)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_9_0",
+      "section": "Key Findings",
+      "rhetorical_role": "result"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "collecting real-world dexterous hand data efficiently and at scale beyond traditional teleoperation",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_10_0",
+      "section": "Conclusion",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "DexUMI, a scalable and efficient data collection and policy learning framework that uses the human hand as an interface to transfer human hand motion to precise robot hand actions while providing natural haptic feedback",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_10_0",
+      "section": "Conclusion",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "methodology_step",
+      "value": "hardware optimization pipeline makes the exoskeleton wearable and allows humans to operate it relatively easily for extended periods",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "future work direction: fully automated optimization formulation given robot hand model and some description of the human hand",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "potentially leverage generative models to increase efficiency and accuracy when design space grows",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "future work to also model remaining potential contact geometries such as the palm",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "integrate soft materials, such as TPU, for parts that contact the human hand to improve wearability",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "incorporate other types of tactile sensors, such as vision-based tactile sensors and capacitive F/T sensors",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "DexUMI demonstrates generalizability across underactuated and fully-actuated hands",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "hardware optimization framework enables exoskeleton wearability and reduces embodiment gap via reliable tactile sensors",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_12_0",
+      "section": "Hardware Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Implement an image generation model that receives motor values as input and produces corresponding hand pose images as output.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_13_0",
+      "section": "Software Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Collect a dataset and train an image generation model that receives the relative pose between the camera and hand, along with hand pose information, to generate the corresponding hand pose image from any given camera position.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_13_0",
+      "section": "Software Adaptation:",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "scene_description",
+      "value": "Tea Picking Using Tool task with tea cup positioned relative to tea pot",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_14_0",
+      "section": "B Evaluation Details B.1 Initial State Selection",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "scene_description",
+      "value": "Kitchen task with seasoning bowl placement near stove and knob",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_14_0",
+      "section": "B Evaluation Details B.1 Initial State Selection",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Inspire Hand",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_14_0",
+      "section": "B Evaluation Details B.1 Initial State Selection",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "fixed-base single UR5 robot arm",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_14_0",
+      "section": "B Evaluation Details B.1 Initial State Selection",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "UR5 robot arm",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_16_0",
+      "section": "B.3 Policy Execution",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Inspire Hand",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_16_0",
+      "section": "B.3 Policy Execution",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Capture fingertip poses in SE(3) space using a motion capture system with 3D-printed marker mounting components.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Uniformly sample 16 motor command values from 0 to 1000 for each single-DoF finger and record corresponding fingertip poses.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "For the thumb (2 DoFs), fix swing value and uniformly sample bend motor values; repeat for swing values 0, 200, 400, 600, 800, 1000.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Apply the bi-level optimization formulation (Equation\u202f1) to determine design parameters for each finger based on observed fingertip poses.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Simulate fingertip poses for each sampled design parameter using PlaCo\u202f[75].",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Extend the length of the last link of each finger in the exoskeleton design by 3\u202fmm beyond the optimized value.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Increase the width of the thumb's four-bar linkage to eliminate hollow regions in the camera's field of view.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "methodology_step",
+      "value": "Conservatively tighten joint limits by 5\u202f% at each joint to maintain mask coverage under structural deformation.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "contribution",
+      "value": "Propose using equivalent general linkage designs with matching DoFs as an initial template to capture underactuated hand kinematics for exoskeleton design.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_17_0",
+      "section": "C Exoskeleton Design Details",
+      "rhetorical_role": "algorithm_description"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "Mapping the XHand URDF link lengths and joint limits to a wearable exoskeleton design while ensuring wearability and sufficient material strength.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_18_0",
+      "section": "C.2 XHand",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "limitation",
+      "value": "The exoskeleton design relies on 3D\u2011printed PLA\u2011CF material with a minimum structural width of 4\u202fmm, limiting use to materials that can meet this thickness requirement.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_18_0",
+      "section": "C.2 XHand",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "limitation",
+      "value": "Without a conservative buffer on joint limits, the exoskeleton may deform beyond the physical limits of the XHand, causing an embodiment gap.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_18_0",
+      "section": "C.2 XHand",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Introduced a reverse\u2011modeling approach using STL meshes from the URDF to recover geometric features and manually measure link lengths in CAD software.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_18_0",
+      "section": "C.2 XHand",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Adopted a conservative joint\u2011limit strategy that tightens the actual rotation range (e.g., from -110\u00b0\u201320\u00b0 to -105\u00b0\u201315\u00b0) to account for 3D\u2011printed link deformation.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_18_0",
+      "section": "C.2 XHand",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Established a design guideline that any part expected to experience significant stress must be at least 4\u202fmm thick when using PLA\u2011CF material.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_18_0",
+      "section": "C.2 XHand",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "Integrated Alps RDC506018A rotary resistive sensors as encoders at every joint of the exoskeleton.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_18_0",
+      "section": "C.2 XHand",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "limitation",
+      "value": "The simple voltage divider circuit fails if the 3.3\u202fV power supply is unstable due to temperature drift in semiconductor components or ripple from DC\u2011DC converters and LDOs, causing joint angle reading drift.",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_19_0",
+      "section": "D Sensor Details D.1 Joint Encoder",
+      "rhetorical_role": "limitation"
+    },
+    {
+      "type": "limitation",
+      "value": "Joint angle estimation relies on stable supply voltage; without normalizing by measured supply voltage, readings drift.",
+      "confidence": "medium",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_19_0",
+      "section": "D Sensor Details D.1 Joint Encoder",
+      "rhetorical_role": "limitation"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "FSR sensor mounted on both the dexterous hand and the exoskeleton",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_20_0",
+      "section": "D.2 Tactile",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "XHand (hand equipped with onboard tactile sensors)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_20_0",
+      "section": "D.2 Tactile",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "magnet-based tactile array capable of measuring three-dimensional forces across 120 points on its surface, output via SPI",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_20_0",
+      "section": "D.2 Tactile",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "problem_addressed",
+      "value": "ensuring imitation learning policy receives properly aligned observations and actions despite sensor latency",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_22_0",
+      "section": "E.2 Training Data Latency Management",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "contribution",
+      "value": "calculating and tuning sensor-specific latencies (camera, iPhone, encoder) using timestamps and overlay alignment, then linearly interpolating and downsampling data for training",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_22_0",
+      "section": "E.2 Training Data Latency Management",
+      "rhetorical_role": "general"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "Inspire Hand (6-DoF hand actions)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_23_0",
+      "section": "E.3 Policy Training",
+      "rhetorical_role": "experimental_setup"
+    },
+    {
+      "type": "hardware_detail",
+      "value": "XHand (12-DoF hand actions)",
+      "confidence": "high",
+      "paper_id": "dexumi",
+      "chunk_id": "dexumi_mid_23_0",
+      "section": "E.3 Policy Training",
+      "rhetorical_role": "experimental_setup"
+    }
+  ]
+}

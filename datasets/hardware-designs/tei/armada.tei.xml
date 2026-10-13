@@ -1,0 +1,1925 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A low-cost and lightweight 6 DoF bimanual arm for dynamic and contact-rich manipulation</title>
+				<funder ref="#_DKAngXU #_bnq4ty3">
+					<orgName type="full">unknown</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">National Research Foundation of Korea</orgName>
+					<orgName type="abbreviated">NRF</orgName>
+				</funder>
+				<funder ref="#_gA962p7">
+					<orgName type="full">Korea government(MSIT)</orgName>
+				</funder>
+				<funder ref="#_CSs3Vsq #_hS5V4Pb">
+					<orgName type="full">Artificial Intelligence Graduate School Program(KAIST)</orgName>
+				</funder>
+				<funder>
+					<orgName type="full">Institute of Information &amp; communications Technology Planning &amp; Evaluation</orgName>
+					<orgName type="abbreviated">IITP</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-05-26">26 May 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Jaehyung</forename><surname>Kim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Kim Jaechul Graduate School of AI</orgName>
+								<orgName type="institution" key="instit2">KAIST † Department of Mechanical System Design Engineering</orgName>
+								<address>
+									<country>SEOULTECH</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jiho</forename><surname>Kim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Kim Jaechul Graduate School of AI</orgName>
+								<orgName type="institution" key="instit2">KAIST † Department of Mechanical System Design Engineering</orgName>
+								<address>
+									<country>SEOULTECH</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yujin</forename><surname>Jang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Kim Jaechul Graduate School of AI</orgName>
+								<orgName type="institution" key="instit2">KAIST † Department of Mechanical System Design Engineering</orgName>
+								<address>
+									<country>SEOULTECH</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Dongryung</forename><surname>Lee</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Kim Jaechul Graduate School of AI</orgName>
+								<orgName type="institution" key="instit2">KAIST † Department of Mechanical System Design Engineering</orgName>
+								<address>
+									<country>SEOULTECH</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Beomjoon</forename><surname>Kim</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution" key="instit1">Kim Jaechul Graduate School of AI</orgName>
+								<orgName type="institution" key="instit2">KAIST † Department of Mechanical System Design Engineering</orgName>
+								<address>
+									<country>SEOULTECH</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">A low-cost and lightweight 6 DoF bimanual arm for dynamic and contact-rich manipulation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-05-26">26 May 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">E9A65F7D1B62A038718221CA4CA04D62</idno>
+					<idno type="arXiv">arXiv:2502.16908v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Fig. 1: (a) Illustration of the ARMADA design. (b) ARMADA's lightweight 6-DoF bimanual arms enable dynamic manipulations such as object snatching and hammering. (c) The platform supports sim-to-real transfer of dynamic motions using reinforcement learning policies. (d) ARMADA also demonstrates the ability to shadow dynamic human movements.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Humans use a rich set of action repertoire to manipulate objects: we not only pick-and-place objects but also toss laundry, slide a box, snatch a pen, hammer a nail, otherwise leverage momentum and forces to manipulate diverse objects efficiently and effectively. In contrast, most manipulators today are limited to picking, where a robot simply grasps an object to resist the frictional force. While kinematic pick-and-place is sufficient for static, controlled tasks, dynamic manipulation is necessary for building an effective general-purpose robot.</p><p>One critical reason for the lack of dynamic manipulation capability is hardware. Traditional industrial robots are strong, precise, and consistent, but their heavy and high inertia structures make them unsuitable for dynamic manipulation in human environments. Modern collaborative robots, such as the Franka Panda <ref type="bibr" target="#b18">[19]</ref>, are designed to work alongside humans by using a lighter and smaller design. However, they still have high inertia and are constrained by velocity and torque limits to ensure safety, rendering them inadequate for dynamic manipu-lation that requires high speed and acceleration. Furthermore, they use high gear ratio actuators which effectively "lock" joints, making them difficult to absorb high impact forces at contacts. Such actuators also require expensive torque sensors, as current-to-torque relationship is difficult to model due to the backlash and friction caused by multi-stage gears.</p><p>Our objective is to build and open-source a 6 degrees-offreedom (DoF) bimanual robot that can be easily and cheaply assembled at a lab to democratize dynamic manipulation research, such as examples shown in Figure <ref type="figure">1</ref>. To achieve this, our design must meet the following criteria:</p><p>• Dynamic: the robot should be able to move at high speed with acceleration to perform dynamic manipulation. • Low-cost: the design should use inexpensive materials, sensors, and actuators while having high payload, precision, and torque necessary for versatile manipulation.</p><p>• Safe: the robot should have a low inertia to ensure safety even at the maximum speed. • Ease of assembly: the robot should be built with off-theshelf materials. One potential way to achieve these is through tendon drive systems <ref type="bibr" target="#b50">[51,</ref><ref type="bibr" target="#b42">43,</ref><ref type="bibr" target="#b17">18]</ref>. These systems transmit torques to joints located far from motors, allowing actuators to be placed at the arm's base. This design significantly reduces inertia and enhances the robot's agility. Furthermore, tendons are highly back-drivable, making them well-suited for rapid and dynamic movements.</p><p>However, tendon-driven robots have several problems. First, they are difficult to assemble and maintain at a research lab. Assembling a tendon-wiring mechanism involves integrating multiple pulleys connecting tendons to rotors while avoiding interference with electronic connections, an intricate and complex task. Achieving the desired levels of stiffness and friction adds another layer of complexity, as it requires precise adjustment of tendon tension through a tensioner. Moreover, tendon-driven systems are susceptible to wear and tear, particularly during high-impact tasks such as hammering. In such scenarios, tendons may loosen upon impact, necessitating frequent adjustments and repairs to maintain performance.</p><p>We instead take inspiration from the recent success of quadrupeds in designing our bimanual robot. Recent quadrupeds demonstrate dynamic and explosive movements, such as jumping and parkour <ref type="bibr" target="#b24">[25,</ref><ref type="bibr" target="#b10">11]</ref>, while reliably withstanding high-impact, high-frequency contact forces. What enables this is the use of quasi-direct drive (QDD) actuators, which have significantly lower gear ratios compared to those typically used in collaborative robots (eg., 1:10 vs. 1:100). These low-gear ratio actuators make the system highly backdrivable, allowing joints to absorb impact forces through natural compliance. Additionally, the reduced backlash and friction in these actuators simplify modeling the current-totorque relationship, eliminating the need for expensive torque sensors.</p><p>To minimize inertia, we would ideally move all the actuators to the body, as done in quadrupeds. However, the key difference between a quadruped leg and a bimanual arm is the number of joints. While a quadruped leg typically has 3 DoF, with only the knee joint located away from the body, a robot arm requires at least 6 DoF to achieve full spatial manipulation. To address this, we mount heavier and stronger actuators on the main body to control the shoulder joints, and use smaller, lighter actuators for the elbow and wrist joints. This design results in a lighter moving mass, albeit at the cost of reduced strength in the elbow and wrist.</p><p>Figure <ref type="figure">1a</ref> top showcases our robot, ARMADA (Affordable Robot for Manipulation and Dynamic Actions), built with these design principles. Each arm weighs 1.09 kg (excluding body-mounted parts and gripper) and is constructed using offthe-shelf motors and 3D-printed links. The entire system costs $6,100 to build. To eliminate the need for a torque sensor at each joint, we manually measured and calibrated the currentto-torque relationship<ref type="foot" target="#foot_0">foot_0</ref> . To improve impact resistance and ease of assembly, we use a linkage-based transmission mechanism that does not require tensioners. The robot's links are 3Dprinted using polylactic acid (PLA), except for the elbow joint, which is made from aluminum to reduce deformation under high loads.</p><p>We also develop a simple, compact jaw gripper compatible with the arm shown in Figure <ref type="figure">1a</ref> bottom. By using the thermoplastic polyurethane (TPU) based finger without linkage structure, this design simplifies construction and maintenance while providing sufficient robustness for dynamic tasks. The gripper design, like the rest of ARMADA, is fully opensourced.</p><p>In our experiments, we show ARMADA could perform several dynamic motions, such as object snatching and hammering. We also demonstrate we can train a contact-rich nonprehensile manipulation policy entirely in simulation using reinforcement learning (RL), and zero-shot transfer to the real world. Lastly, we show ARMADA can be used for human motion retargeting on the dynamic bimanual object throwing task. Examples from these tasks are highlighted in Figure <ref type="figure">1</ref>. We completely open-source our code and design.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Existing manipulators in the context of dynamic manipulation</head><p>Collaborative robots (cobots), such as the Franka Emika <ref type="bibr" target="#b18">[19]</ref> and KUKA LBR series <ref type="bibr" target="#b22">[23,</ref><ref type="bibr" target="#b23">24,</ref><ref type="bibr" target="#b2">3]</ref>, are designed to operate in humans environments. One significant limitation of cobots is their reliance on high-gear-ratio actuators, which introduce uncertainties in joint dynamics due to gearbox backlash and friction. Because of this, to achieve precise torque control, cobots often incorporate torque sensors; however, these sensors are susceptible to damage from impacts, and are expensive <ref type="bibr" target="#b59">[59]</ref>. Furthermore, while cobots are smaller in size, they still have the same design structure as industrial robots, with heavy actuators (around 2 kg) placed at each joint, which results in a high-inertia arm. 2 "?" denotes information not provided in the paper. 1 moving mass is defined as the arm's mass, excluding body-mounted components and the gripper.</p><p>The dominant approach for designing robots for dynamic manipulation is to use tendon transmissions to achieve low inertia and absorb impact forces. Barrett WAM <ref type="bibr" target="#b44">[45]</ref> uses a cable-and-cylinder drive system to mount four motors for the shoulder and elbow joints on the robot's body, resulting in a low-inertia 4 DoF arm capable of tasks such as batting and throwing. Similarly, Quigley et al. <ref type="bibr" target="#b42">[43]</ref> incorporate serieselastic actuators at the shoulder and elbow joints with tendonbased transmission to achieve low inertia. LIMS <ref type="bibr" target="#b32">[33,</ref><ref type="bibr" target="#b50">51]</ref> attach all seven actuators to the main body and control joints via tendons. Coupled with lightweight link designs, it can perform dynamic tasks such as swinging folding fans. PAMY2 <ref type="bibr" target="#b17">[18]</ref> combines tendon-driven transmissions with pneumatic artificial muscles for passive compliance in a 4 DoF arm, demonstrating dynamic capabilities such as table tennis smashing. Nishii et al. <ref type="bibr" target="#b40">[41]</ref> uses a combination of timing belts and tendons. It uses a timing belt to attach four motors near the body, and a tendon-based quaternion joint mechanism for the 2 DoF wrist, achieving 6 DoF maneuverability with reduced moving mass.</p><p>Tendon-based systems generally achieve low inertia and gear ratio, and enable quick, explosive, and dynamic movements. However, maintaining tendons requires precise tensioning to achieve proper stiffness and friction, and it is very difficult to assemble them. These systems also face wear and tear during high-impact tasks, requiring frequent repairs. We summarize the comparison among ARMADA and existing manipulators in Table <ref type="table" target="#tab_0">I</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Dynamic movements in quadrupeds</head><p>The state-of-the-art quadruped hardware, combined reinforcement learning, has shown impressive dynamic motions such as jumping and parkour recently <ref type="bibr" target="#b60">[60,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b12">13]</ref>. Representative quadruped hardware includes, but is not limited to, Unitree Go1, MIT Cheetah <ref type="bibr" target="#b6">[7]</ref>, KAIST Hound <ref type="bibr" target="#b49">[50]</ref>, and Raibo <ref type="bibr" target="#b12">[13]</ref>. One common factor in all these hardware platforms is the use of quasi-direct-drive (QDD) actuators <ref type="bibr" target="#b53">[53]</ref>. Since QDD actuators have fewer gear stages, they have much less backlash and friction compared to high-gear ratio actuators (See Figure <ref type="figure" target="#fig_0">2</ref>). Further, their back-drivability makes them naturally compliant, enabling them to absorb high-impact forces, and allows us to model the current-to-torque relationship much easier. We take inspiration from these successes, and adopt QDD in our arms.</p><p>Another essential design principle in recent quadrupeds is the use of low-inertia legs, typically achieved by mounting actuators on the body and connecting them to the legs via transmission systems such as timing belts or linkages. This approach minimizes the moving mass, enabling the legs to move rapidly while using less torque. In our arm, we also employ linkages as our transmission system to control the elbow joint since it is easier to assemble, and locate as many actuators as possible to the robot's body. However, unlike quadrupeds, our arm features six degrees of freedom (6 DoF) and requires additional degrees of freedom at the wrist. To address this and maintain low inertia, we use lighter, weaker actuators at the wrist since high torque is generally not required in the regions of these parts.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Hardware solutions for high-impact manipulation</head><p>For dynamic and contact-rich tasks, robustness against impact forces is essential. Several works have proposed hardware solutions to address this in high-impact scenarios such as hammering. Izumi et al. <ref type="bibr" target="#b27">[28]</ref> utilize a flexible link to minimize impulsive forces, and Garabini et al. <ref type="bibr" target="#b14">[15]</ref> use actuators with torsional elastic springs to absorb impact while achieving high speeds. Both approaches model the system to control and demonstrate the hammering task but require accounting for damping forces and vibrations from elastic components, making them difficult to simulate. Instead of mitigating impact forces with elastic materials, ARMADA adopts QDD actuators to make the system inherently compliant which simplifies modeling and simulation.</p><p>Other designs <ref type="bibr" target="#b26">[27,</ref><ref type="bibr" target="#b43">44]</ref> focus on adding links or control modes to manage impact forces for hammering. Imran et al. <ref type="bibr" target="#b26">[27]</ref> introduce serial linkage chains around the robot links to distribute impact forces, while Romanyuk et al. <ref type="bibr" target="#b43">[44]</ref> employ MRR actuators <ref type="bibr" target="#b37">[38]</ref> with multiple working modes. By switching to a passive mode during impacts, these actuators allow free rotation to absorb impulsive forces. Although these design choices effectively absorb impacts, additional links or control modes complicate the robot's design, making them harder to assemble and control. Instead of increasing complexity, ARMADA uses a simpler design with just a four-bar linkage and QDD actuators, ensuring ease of assembly and control while maintaining robustness to impacts.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Dynamic manipulation with existing manipulators</head><p>There have been several attempts to generate dynamic manipulation motions using existing arms, although they have been limited to one specific category of motion such as throwing, catching, or batting. For throwing, Senoo et al. <ref type="bibr" target="#b47">[48]</ref> models contact at the robot fingertip to throw with the WAM robot (4 DoF). Bombile and Billard <ref type="bibr" target="#b7">[8]</ref> formulate modulated dynamical systems of a pair of KUKA LBR to toss a box with dual manipulators. Recently, some works using learning to account for the physical properties not explicitly considered in the projectile mechanics from perceptual input, using a Tx60 (7 DoF) <ref type="bibr" target="#b25">[26]</ref>, a single PR2 arm (7 DoF) <ref type="bibr" target="#b16">[17]</ref>, and UR5 (6 DoF) <ref type="bibr" target="#b56">[56]</ref>.</p><p>For catching, Lampariello et al. <ref type="bibr" target="#b34">[35]</ref> model the motion of 7 DoF manipulator (KUKA LBR) as a dynamical system and propose real-time online optimization algorithms to catch an object tracked with a vision-based motion capture system. Kim et al. <ref type="bibr" target="#b31">[32]</ref> leverage expert demonstration to guide the same 7 DoF manipulator to catch more diverse objects. Bätz et al. <ref type="bibr" target="#b5">[6]</ref> predicts the trajectory of a flying ball and plausible interception points computed offline to catch the ball with Staubli RX90B (6 DoF). These works focus on the light object which induces negligible impulse since the aforementioned manipulators lack compliance to cope with the large impact generated during the catching of heavier objects. Salehian et al. <ref type="bibr" target="#b45">[46]</ref> and Yan et al. <ref type="bibr" target="#b54">[54]</ref> attempt to mitigate the impact in the non-compliant manipulator (KUKA LBR) by separately planning a decelerating motion after the intercept of the object. However, additional computation is required for such motion, which often results in failing to plan the motion before the object falls. Unlike these robots, ARMADA is naturally compliant and can avoid such additional computation. Similarly, Kim et al. <ref type="bibr" target="#b30">[31]</ref> enables fast catching with a compliant Barret WAM (7 DoF), yet maintenance of the robot is difficult due to its tendon-based mechanism.</p><p>For batting, Senoo et al. <ref type="bibr" target="#b46">[47]</ref> develop a high-frequency vision system to track a ball and bat it with a Barrett WAM (4 DoF) using handcrafted batting dynamics. Similarly, Jia et al. <ref type="bibr" target="#b28">[29]</ref> model 2D impact dynamics with Coloumb friction and energy-based restitution to bat an object to a desired position with the same 4 DoF manipulator. Although these methods enable dynamic batting with light objects like styrofoam or ping pong balls, it is difficult to use them with heavier objects with existing arms, as hitting heavy objects might damage the manipulator. In contrast, ARMADA is naturally compliant, and is easy to maintain.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. RL-based Manipulation</head><p>Recently, reinforcement learning (RL) has been successfully applied to contact-rich manipulation tasks, including in-hand manipulation <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b3">4,</ref><ref type="bibr" target="#b19">20]</ref> and non-prehensile manipulation <ref type="bibr" target="#b58">[58,</ref><ref type="bibr" target="#b57">57,</ref><ref type="bibr" target="#b11">12,</ref><ref type="bibr" target="#b29">30]</ref>, addressing challenges that traditional planning techniques have struggled to solve. These advancements have been made possible through the combination of large-scale simulation and simulation-to-reality transfer techniques, such as domain randomization. However, most of these works rely on cobots, which are less suitable for quick and dynamic motions involving frequent impacts limiting them to slow movements. In contrast, we demonstrate that our robot can achieve similar non-prehensile manipulation tasks using RL while exhibiting much more agile and dynamic motions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Human motion shadowing</head><p>Thanks to the recent development of computer vision algorithms, several works show that we can collect human demonstrations simply by watching them. H2O <ref type="bibr" target="#b21">[22]</ref> and OmniH20 <ref type="bibr" target="#b20">[21]</ref> adopts HybrIK <ref type="bibr" target="#b35">[36]</ref> as body pose predictors to achieve real-time humanoid teleoperation using a RGB camera. HumanPlus <ref type="bibr" target="#b13">[14]</ref> leverages human body <ref type="bibr" target="#b48">[49]</ref> and hand <ref type="bibr" target="#b41">[42]</ref> pose predictors to extract human joint angles in real time and project them on the humanoid actuators. Similarly, OKAMI <ref type="bibr" target="#b36">[37]</ref> adopts body <ref type="bibr" target="#b55">[55]</ref> and hand <ref type="bibr" target="#b41">[42]</ref> pose predictors to extract human body keypoints and solve differential inverse kinematics <ref type="bibr" target="#b8">[9]</ref> to imitate human motion that keeps the relative positions between the hands similar to that of human. Leveraging a single RGB camera with body pose predictor <ref type="bibr" target="#b48">[49]</ref> we showcase that our hardware, ARMADA, also is capable of shadowing human demonstrations in dynamic bimanual throwing.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. DESIGN OF ARMADA</head><p>This section describes our hardware design and implementation details. Our primary goal is to achieve high-speed manipulation with low gear-ratio proprioceptive actuators while maintaining sufficient durability and ease of maintenance.</p><p>A. Proprioceptive actuators 1) Choice of actuators: We choose two types of off-theshelf proprioceptive actuators: T-motor AK70-10 for shoulder and elbow and Cubemars RMD X4 V2 for wrist and forearm. Both types have 1:10 gear ratio with integrated drivers. Each arm is powered by two 24V Mean Well LRS-600-24 switch mode power supplies (SMPS). To protect the power supply from the back electromotive force generated by the actuators, SEMI-REX MD110-16 diodes are installed between the power supply and the actuators.</p><p>2) Sensor-free torque estimation for control: Instead of using expensive torque sensors, we estimate the torque output from the actuators by building a custom current-to-torque function using our custom calibration process. To do this, we fix an actuator to a 3D-printed fixture connected to a standard electronic scale, measure the torques by giving a wide range of current values, and create a linear interpolation mapping between current and torque values. We extrapolate to estimate values beyond the available data range to compute the torque.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Actuator placement and transmission</head><p>Fig. <ref type="figure">3</ref>: Positions of the six actuators. Four heavy and strong actuators are attached to the base. Two small actuators to rotate the wrist is attached to the elbow and wrist.</p><p>1) Low inertia actuator placement: ARMADA arm features 6 DoF: three on the shoulder, one on the elbow, and two on the wrist. We place the shoulder and elbow actuators near the base as illustrated in Figure <ref type="figure">3</ref>. By positioning the heavy actuators near the shoulder and transmitting the motion via the linkage system, we can effectively reduce the moment of inertia of the arm, achieving faster motion with the same amount of power from the actuators. We attach the two weaker but lightweight actuators directly on the elbow and wrist to keep the design simple.</p><p>2) Parallelogram linkage for one-to-one torque transfer: One of the body-mounted actuators drives the elbow joints through a four-bar parallelogram linkage, as illustrated in Figure <ref type="figure" target="#fig_3">5a</ref>. This linkage transfers torque in 1:1 ratio, preserving the low gear ratio of the actuator and simplifying the model used in simulation and control.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Material selection</head><p>We primarily build the arm using 3D printing with PLA. This choice of material provides several advantages. First, compared to metals, which are the common choice for existing robot arms, PLA greatly reduces the total mass of the arm. Second, 3D printing is cost-effective and enables rapid part replacement for design iteration and maintenance. One disadvantage of PLA is that it is non-rigid compared to metals. This may harm the durability of the hardware and reduce control accuracy when exposed to high loads. Therefore, for the linkage for the elbow, where high loads are applied, we use aluminum, as shown in Figure <ref type="figure" target="#fig_3">5a</ref>. This way, we minimize the complicated and costly machining process while maintaining the rigidity sufficient for manipulation. To validate that our robot attains enough rigidity, we perform finite element method (FEM) analysis. Specifically, we assess the arm's deformation under a 10 N load applied along the x-axis (leftward) and the z-axis (downward).</p><p>Figure <ref type="figure" target="#fig_1">4</ref> illustrates the deformation results under z-axis and x-axis loading, respectively. Although this material change involves a trade-off with an increase in moving mass from 0.962 kg to 1.09 kg, it reduces deformation under loading conditions. For z-axis loading, the deformation decreases from 1.69 mm with PLA components to 1.58 mm with the addition of aluminum. Similarly, for x-axis loading, the deformation is reduced from 2.85 mm to 2.24 mm.</p><p>However, even at low loads, inaccuracies in the four-bar linkage components, especially in the rotational alignment of bearings and shafts, can significantly increase the end-effector position error. While PLA offers lighter weight and easier replacement, 3D-printed parts lack the dimensional accuracy needed for consistent performance, compared to CNC machining. Therefore, despite the challenges posed by aluminum part replacement, we selectively use them in critical regions to preserve precision. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Custom gripper</head><p>We also design a compact jaw gripper driven by a Dynamixel XM430 motor. The gripper utilizes a simple directdrive 1 DoF gear mechanism, enabling jaw manipulation while maintaining ease of assembly. The gear mechanism is made of PLA, while the gripper pads are printed from flexible TPU to accommodate objects of various shapes. The entire assembly weighs approximately 290 g. Figure <ref type="figure" target="#fig_3">5b</ref> illustrates the design of the gripper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. MECHANICAL ANALYSIS</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. End-effector speed</head><p>To test whether ARMADA can perform dynamic manipulation, we measure its end-effector maximum speed. To do this, we initialize the robot with its right end-effector positioned at the opposite shoulder with the elbow completely flexed, and then fully extend the elbow downward, as shown in Figure <ref type="figure" target="#fig_4">6a</ref>. The joint trajectory is generated by interpolating between the initial and final configurations, and joint position control is used to follow the trajectory. ARMADA achieves an average maximum end-effector speed of 6.16 m/s with a  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Impact force at the maximum velocity</head><p>To evaluate the safety of ARMADA, we measure its impact force near maximum velocity using a push-pull gauge, as shown in Figure <ref type="figure" target="#fig_4">6c</ref>. Over eight repetitions, ARMADA records an average impact force of 50.5 N, with a maximum of 52.2 N and a standard deviation of 5.55 N. For comparison, a typical human palm strike at a similar speed generates approximately 575 N of impact force, based on an average effective hand mass of 1.39 kg <ref type="bibr" target="#b1">[2]</ref> and an impact duration of 13 ms <ref type="bibr" target="#b52">[52]</ref>, which is nearly 10 times that of ARMADA. While humans have soft skin and ARMADA does not, this demonstrates ARMADA can operate safely even at its maximum speed.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Payload</head><p>We evaluate ARMADA's payload using dumbbells, as shown in Figure <ref type="figure" target="#fig_4">6b</ref>. The test involves performing bicep curls with the dumbbell. By gradually increasing the weights, we find that ARMADA can hold up to 2.5 kg, compared to 3 kg for existing collaborative robots. The arm and gripper reliably grasp, lift, hold, and release the weight across ten consecutive trials without any damage or failure.</p><p>We analyze both mechanical stress and current to evaluate the reliability under the maximum payload. To measure mechanical stress, the robot configuration is set to position 2 in Figure <ref type="figure" target="#fig_4">6b</ref>. Each link's stress limit is determined by its tensile strength, which is defined as the material's resistance to breaking under tension. Using FEM analysis in Ansys, as shown in Figure <ref type="figure" target="#fig_6">7a</ref>, we find that the maximum stress experienced by the arm while lifting a 2.5 kg payload is 49.8 MPa, which is within the tensile strength of the PLA filament, 61 MPa. This indicates that ARMADA would deform, but not break and can safely operate under its maximum payload without significant risk of structural failure. Each actuator has a nominal current limit, the maximum current it can handle without overheating. To evaluate whether the robot operates safely within this limit, we measure the input current throughout the entire payload test including lifting, holding, and releasing. Figure <ref type="figure" target="#fig_6">7b</ref> shows the current ratios relative to nominal values for each actuator. We can see that all currents are under their nominal values.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Repeatability</head><p>To evaluate ARMADA's repeatability, we follow ISO 9283 standard <ref type="bibr" target="#b0">[1]</ref> to setup an experiment where the robot has to follow a designated set of points in a 250mm cube within ARMADA's workspace. Figure <ref type="figure">8</ref> shows a test plane placed diagonally within the cube. Five end-effector points P 1 to P 5 are marked on the plane, with P 1 at the center and P 2 , P 3 , P 4 , and P 5 near the corners, each located one-tenth of the cube's diagonal length from the center. ARMADA sequentially moves through these five points and repeats the trajectory 30 times with its end-effector facing forward. We use 12 OptiTrack cameras to monitor it simultaneously to record the end-effector's position. For each point, N = 30 is the total number of measurements, and  The average ratio of actuator current to its nominal value for each actuator and their standard deviations, measured during ten repetitions under a 2.5 kg payload. Fig. <ref type="figure">8</ref>: Repeatability test setup with five end-effector points P 1 to P 5 . The test plane is placed diagonally within the 250 mm cube. P 1 is positioned at the center of the plane, while P 2 , P 3 , P 4 , and P 5 are near the corners, each located one-tenth of the cube's diagonal length from the center. is the measured position at the i th instance. The ISO 9283 standard states that the mean position of the end-effector P = 1 N N i=1 P i is calculated as the average of the measured positions P i . The repeatability R is computed based on the average (µ) and the standard deviation (σ) of the distances between P and P i .</p><formula xml:id="formula_0">P i ∈ R 3 , i = 1, 2, • • • , N</formula><formula xml:id="formula_1">µ = 1 N N i=1 ∥P i -P ∥, σ = 1 N -1 N i=1 (∥P i -P ∥) 2 R = µ + 3σ</formula><p>As shown in Table <ref type="table" target="#tab_1">II</ref>, ARMADA achieves an average repeatability of 2.63 mm which means it is less consistent compared to the cobots with high gear ratio actuators, whose repeatability is around 0.1mm. This shows the trade-off between compliance and consistency. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. EXPERIMENTS A. Dynamic manipulation</head><p>We conduct three experiments, snatching, hammering, and batting, to show that ARMADA can perform dynamic manipulation. In these experiments, the target object pose is known in advance, and a pre-defined trajectory is executed with a joint position control to focus on demonstrating raw hardware capability. 1) Snatching: Unlike static pick-and-place, snatching involves swift single-arm manipulations, where the robot rapidly approaches, grasps, and releases the target object. The experiment setup is shown in Figure <ref type="figure" target="#fig_7">9a</ref>, where the goal is to snatch the object and releases it into a basket beside the table. We test ARMADA with five objects of varying shapes and masses, with ten trials for each object. Detailed information on the sizes and masses of these objects is described in Figure <ref type="figure" target="#fig_7">9b</ref>. ARMADA achieves an overall success rate of 80%, successfully completing all trials and objects except for the heavy tumbler, as shown in Table <ref type="table" target="#tab_2">III</ref>. This highlights the strength and limitation of ARMADA, and the difficulty of snatching. While it can snatch light-weight objects, it often drops the heavy tumbler (560 g) after snatching. Such heavy object demands a much more delicate yet firm grasp to counteract momentum and gravity effectively. Please see our supplement videos on snatching for better visualization. 2) Hammering: This task involves repeatedly striking a nail into a wooden board to evaluate the robot's capability of creating significant impact force. The experiment setup is shown in Figure <ref type="figure" target="#fig_9">10a</ref>. We record the number of strikes required to drive the nail 20 mm into the wooden board. If the nail bends during hammering, a human intervenes and straightens it with a wrench. For comparison, 14 humans (2 females and 12 males) perform the same single-hand hammering task under identical conditions, using the same wooden board, nail, and hammer. For human participants, it takes an average 13.15 strikes with a standard deviation of 6.41 to accomplish the task. On the other hand, ARMADA achieves a comparable level of efficiency to humans, driving the nail with an average of 10 strikes with a standard deviation of 1.26. Please see our supplement video on hammering to better grasp the speed and impact that ARMADA can generate.  3) Batting: Batting requires sufficient impact on a projectile in a short period of time. As illustrated in Figure <ref type="figure" target="#fig_9">10b</ref>, ARMADA swings its arm with a pre-computed trajectory to hit the ping pong ball with the dorsum of its end-effector (EE). We record the distance between the base of the ball stand and the point where the ball touches the ground first. We repeat the batting 20 times, and the average driving distance of the ball is 3.484 m with a standard deviation of 0.385 m. The average speed of the EE at the impact is 6.135 m/s. Since the length of ping pong table is 2.74 m, ARMADA can produce enough impact to play ping pong.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. RL-based non-prehensile manipulation</head><p>To validate our claim that ARMADA can be used for RL, we train ARMADA on a contact-rich non-prehensile manipulation task entirely in simulation and zero-shot transfer the policy to the real world. We demonstrated two tasks, each named as the bump and the card task.</p><p>1) Bump: In this bump task, the robot uses a single arm to manipulate a cube whose length is 90mm over a 25 mm bump obstacle on the table, as shown in Figure <ref type="figure" target="#fig_10">11</ref>. Starting from a random initial pose, the robot must push, topple, strike, and reorient the object to overcome the bump and put it at the specified goal position and orientation without dropping it. We train the policy using NVIDIA Isaac Gym <ref type="bibr" target="#b39">[40]</ref> with extensive domain randomization and zero-shot transfer to the real robot. Details regarding the training, including hyperparameters and MDP definitions are in Appendix VI-A.</p><p>We perform 20 trials in total, 10 on each scenario. AR-MADA achieves a 9/10 success rate in scenario 1, with a single failure where the cube falls off the table during the manipulation. In scenario 2, it achieves 7/10, where failures occur because the robot fails to make solid contact with the object. Most of the errors happen because of the sim-to-real gap in the environment and object, such as the object friction coefficient. Overall, the robot demonstrates 80% success rate across both scenarios. 2) Card: Figure <ref type="figure" target="#fig_11">12</ref> illustrates the domain where the robot uses a single arm to manipulate a card too flat to be grasped directly. The card is placed at a random pose on the table. The robot pushes, drags, and reorients the card to the specified goal pose. We train everything in simulation and zero-shot transfer to the real world. Out of 20 trials, ARMADA achieves a success rate of 17/20. Failures are mostly due to sim-to-real gap such as the friction coefficient of the table and the card. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Human motion shadowing: Bimanual throwing</head><p>In this task, we re-target human joint poses to the robot to show that ARMADA can serve as the platform for learning dynamic motions from a human demonstration. We use WHAM <ref type="bibr" target="#b48">[49]</ref> to predict SMPL <ref type="bibr" target="#b38">[39]</ref> parameters, which estimate human joint keypoints, joint angles, and body shape to describe the pose of the human body. However, simply copying the joint angles to the corresponding actuators results in inaccurate motion due to the discrepancy of morphology between the SMPL model and ARMADA. We instead track the positions of the elbow and wrist joints of the human operator and solve differential inverse kinematics using PINK <ref type="bibr" target="#b8">[9]</ref> to find the joint configuration that minimizes the distance between the robot and the human joints at the elbow and wrist. This enables ARMADA to mimic human motion while preserving the relative position between the two hands, which is crucial in a bimanual task. To show that ARMADA can shadow dynamic motion, we perform bimanual throwing task where the human shows a quick motion for throwing a box, and the robot's goal is to mimic that behavior to throw a box (318 g) placed 515 mm above the ground and 300 mm in front of its base as quickly as possible. The overall process of throwing is shown in Figure <ref type="figure">1d</ref>. Since the driving distance of the box is directly proportional to the end-effector speed at the moment of release, we measure the distance between the base and the closest part of the box. We repeat the experiment 5 times. ARMADA throws the box 2.03 m on average, as shown in Table <ref type="table" target="#tab_3">IV</ref>, and during throwing, ARMADA achieves an average maximum speed of 3.56 m/s with the left hand and 3.92 m/s with the right hand. To view the more detailed motion of ARMADA, please see our supplement video on bimanual throwing.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. LIMITATION</head><p>The use of 3D-printed PLA for structural components improves ease of assembly and reduces weight and cost, yet it causes deformation under heavy load, which can diminish end-effector precision. Using metal, such as aluminum, would remedy this problem. Additionally, ARMADA relies on integrated joint relative encoders, requiring manual initialization in a fixed joint configuration each time the system is powered on. Using absolute joint encoders could significantly improve accuracy and ease of use, although it would increase the overall cost.</p><p>The 6 DoF configuration of the arm provides sufficient mobility for single-arm manipulation tasks, yet it shows a limitation in certain bimanual manipulation problems. Specifically, when ARMADA holds onto a rigid object with both hands, each arm loses 1 DoF because the hands are fixed to the object during grasping. This leads to an underactuated kinematic chain which has a limited mobility in 3D space. We can achieve more mobility by letting the object slip inside the grippers, yet this renders the grasp less robust and simulation difficult. Therefore, we anticipate that designing a lightweight 3 DoF wrist in place of the current 2 DoF wrist allows a more diverse repertoire of manipulation in bimanual tasks.</p><p>Finally, the limited torque density of commercially available proprioceptive actuators restricts the performance. Currently, all of our actuators feature a 1:10 gear ratio, so ARMADA can handle up to 2.5 kg of payload. To handle a heavier object and manipulate it with higher torque, we expect the actuator to have 1:20∼30 gear ratio, but it is difficult to find an off-theshelf product that meets our requirements. Customizing the actuator to increase the torque density while minimizing the weight will enable ARMADA to move faster and handle more diverse objects.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 2 :</head><label>2</label><figDesc>Fig. 2: Comparison of gearboxes in low-gear ratio actuators (b) vs. high-gear ratio actuators (c). All gear mechanisms introduce backlash and friction (a) which are difficult to model. Because low gear ratios use fewer gears, it is easier to model.</figDesc><graphic coords="3,337.08,168.14,200.84,114.83" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: FEM analysis of deformation under a 10 N load applied along the (a) z-axis and (b) x-axis for configurations with all PLA and partially aluminum components. Deformation reduces from 1.69 mm to 1.58 mm (z-axis) and 2.85 mm to 2.24 mm (x-axis) with aluminum reinforcement. Deformation is exaggerated for clarity and visualization.</figDesc><graphic coords="5,343.36,235.71,188.29,136.36" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: (a) Assembly of the upper arm. Black parts are aluminum-machined, and white parts are 3D printed PLA. (b) Assembly of the custom-designed gripper. The brown component is the Dynamixel XM430 motor, the white parts are PLA parts, and the green parts are flexible TPU fingers.</figDesc><graphic coords="6,74.07,191.77,200.85,73.06" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: (a) Trajectory of the end-effector speed test. Starting from the initial joint position, ARMADA accelerates toward the terminal position. (b) A sequence of a realistic dumbbell lifting task. The robot grasps, lifts, holds for three seconds, and places down the dumbbell. (c) We use push-pull gauge to measure the maximum impact force near the point of maximum speed.</figDesc><graphic coords="6,313.23,194.80,248.55,70.72" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head></head><label></label><figDesc>(a) FEM result (b) Current graph during payload experiment</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: (a) FEM analysis under a 2.5 kg payload in position 2 in Figure 6b. Maximum deformation occurs at the gripper tip, measuring 4.60 mm, while the maximum stress is observed at the wrist link at 49.8 MPa. Note that the material of the TPU-based gripper is replaced with PLA for FEM analysis, as it is difficult to accurately simulate TPU's flexibility. (b)The average ratio of actuator current to its nominal value for each actuator and their standard deviations, measured during ten repetitions under a 2.5 kg payload.</figDesc><graphic coords="7,111.72,415.17,125.52,102.09" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Fig. 9 :</head><label>9</label><figDesc>Fig. 9: (a) Snatching experiment setup. The object is placed in a fixed pose, and ARMADA rapidly snatches and releases it into the white basket. (b) Various real-world objects used in snatching which have different sizes and masses.</figDesc><graphic coords="7,362.18,549.41,150.64,92.55" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head></head><label></label><figDesc>(a) batting experiment setup (b) card domain setup</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Fig. 10 :</head><label>10</label><figDesc>Fig. 10: (a) Hammering experiment setup. A nail is fixed on a wooden board with a height of 20 mm. The robot repeatedly strikes the nail until fully driven into the board. (b) Batting experiment setup. The ping pong ball is placed 65 cm above the ground beside ARMADA.</figDesc><graphic coords="8,56.63,513.17,106.70,118.60" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Fig. 11 :</head><label>11</label><figDesc>Fig. 11: (a) Scenario 1: The robot moves the object from the right to the left of the bump. (b) Scenario 2: The robot moves the object from the left to the right. The object's initial pose is randomly set within the blue area. The robot must manipulate the object to match both the position and orientation of the goal pose sampled within the green area.</figDesc><graphic coords="8,313.23,505.15,248.55,69.50" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Fig. 12 :</head><label>12</label><figDesc>Fig. 12: In the card domain, the object's initial and goal poses are randomly set within the green area.</figDesc><graphic coords="9,124.28,105.86,100.42,100.96" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="1,74.67,191.48,462.65,247.56" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I :</head><label>I</label><figDesc>Comparison of manipulators</figDesc><table><row><cell></cell><cell cols="2">ARMADA (Ours) Franka Panda [19]</cell><cell>KUKA iiwa 7 R800</cell><cell cols="5">Quigley et al. [43] LIMS [34] Nishii et al. [41] PAMY2 [18] BLUE [16]</cell></row><row><cell>DoF (one arm)</cell><cell>6</cell><cell>7</cell><cell>7</cell><cell>7</cell><cell>7</cell><cell>6</cell><cell>4</cell><cell>7</cell></row><row><cell>Inertia (kg•m 2 )</cell><cell>0.234</cell><cell>large</cell><cell>large</cell><cell>0.083</cell><cell>0.599</cell><cell>?</cell><cell>?</cell><cell>0.75</cell></row><row><cell>Moving mass 1 (kg)</cell><cell>1.09</cell><cell>18</cell><cell>22.3</cell><cell>2</cell><cell>2.24</cell><cell>0.176</cell><cell>1.3</cell><cell>8.7</cell></row><row><cell>End-effector speed (m/s)</cell><cell>6.16</cell><cell>1.7</cell><cell>3.2</cell><cell>1.5</cell><cell>5.35</cell><cell>?</cell><cell>12</cell><cell>2.1</cell></row><row><cell>Total cost ($, one arm)</cell><cell>3,040</cell><cell>expensive</cell><cell>expensive</cell><cell>4,135</cell><cell>?</cell><cell>?</cell><cell>14,540</cell><cell>&lt;5,000</cell></row><row><cell>Open-source</cell><cell>O</cell><cell>X</cell><cell>X</cell><cell>O</cell><cell>X</cell><cell>X</cell><cell>O</cell><cell>O</cell></row><row><cell>Payload (kg)</cell><cell>2.5</cell><cell>3</cell><cell>7</cell><cell>2</cell><cell>3</cell><cell>3</cell><cell>?</cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE II :</head><label>II</label><figDesc>ISO 9283 repeatability experiment results</figDesc><table><row><cell>Point</cell><cell cols="3">Average distance (mm) Std dev. (mm) Repeatability (mm)</cell></row><row><cell>P 1</cell><cell>1.048</cell><cell>0.546</cell><cell>2.687</cell></row><row><cell>P 2</cell><cell>1.042</cell><cell>0.409</cell><cell>2.269</cell></row><row><cell>P 3</cell><cell>0.939</cell><cell>0.689</cell><cell>3.006</cell></row><row><cell>P 4</cell><cell>0.751</cell><cell>0.520</cell><cell>2.311</cell></row><row><cell>P 5</cell><cell>1.104</cell><cell>0.584</cell><cell>2.857</cell></row><row><cell>Average</cell><cell>0.977</cell><cell>0.550</cell><cell>2.626</cell></row><row><cell></cell><cell>Franka Panda [19]</cell><cell></cell><cell>0.1</cell></row><row><cell></cell><cell>KUKA iiwa 7 R800</cell><cell></cell><cell>0.1</cell></row><row><cell></cell><cell>Quigley et al. [43]</cell><cell></cell><cell>*3</cell></row><row><cell></cell><cell>LIMS [34]</cell><cell></cell><cell>0.43</cell></row><row><cell></cell><cell>Nishii et al. [41]</cell><cell></cell><cell>*2.2</cell></row><row><cell></cell><cell>BLUE [16]</cell><cell></cell><cell>*3.7</cell></row></table><note><p>"*" indicates that repeatability is obtained manually, not by ISO 9283.</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE III :</head><label>III</label><figDesc>Snatching experiment results</figDesc><table><row><cell>Object</cell><cell>Glue</cell><cell cols="4">Threadlocker Plastic box Bracket Tumbler</cell><cell>Total</cell></row><row><cell cols="2">Success/Trial 10/10</cell><cell>10/10</cell><cell>10/10</cell><cell>10/10</cell><cell>0/10</cell><cell>40/50</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>TABLE IV :</head><label>IV</label><figDesc>Box driving distance</figDesc><table><row><cell>Trial</cell><cell>1</cell><cell>2</cell><cell>3</cell><cell>4</cell><cell>5</cell><cell cols="2">Avg. Std dev.</cell></row><row><cell cols="2">Distance (m) 1.80</cell><cell>2.07</cell><cell>1.81</cell><cell>2.20</cell><cell>2.25</cell><cell>2.03</cell><cell>0.19</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>vendor's data was inaccurate</p></note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENTS</head><p>This work was supported by <rs type="funder">Institute of Information &amp; communications Technology Planning &amp; Evaluation (IITP)</rs> grant and <rs type="funder">National Research Foundation of Korea (NRF)</rs> funded by the <rs type="funder">Korea government(MSIT)</rs> (No.<rs type="grantNumber">2019-0-00075</rs>, <rs type="funder">Artificial Intelligence Graduate School Program(KAIST)</rs>), (No.<rs type="grantNumber">2022-0-00311</rs>, <rs type="programName">Development of Goal-Oriented Reinforcement Learning Techniques for Contact-Rich Robotic Manipulation of Everyday Objects</rs>), (No. <rs type="grantNumber">2022-0-00612</rs>, <rs type="projectName">Geometric and Physical Commonsense Reasoning based Behavior Intelligence for Embodied AI</rs>), (No. <rs type="grantNumber">RS-2024-00359085</rs>, Foundation model for learning-based humanoid robot that can understand and achieve language commands in unstructured human environments), (No. <rs type="grantNumber">RS-2024-00509279</rs>, <rs type="institution">Global AI Frontier Lab)</rs>. We would also like to thank <rs type="person">Prof. Haewon Park</rs> for his great guidance.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_gA962p7">
+					<idno type="grant-number">2019-0-00075</idno>
+				</org>
+				<org type="funding" xml:id="_CSs3Vsq">
+					<idno type="grant-number">2022-0-00311</idno>
+					<orgName type="program" subtype="full">Development of Goal-Oriented Reinforcement Learning Techniques for Contact-Rich Robotic Manipulation of Everyday Objects</orgName>
+				</org>
+				<org type="funded-project" xml:id="_hS5V4Pb">
+					<idno type="grant-number">2022-0-00612</idno>
+					<orgName type="project" subtype="full">Geometric and Physical Commonsense Reasoning based Behavior Intelligence for Embodied AI</orgName>
+				</org>
+				<org type="funding" xml:id="_DKAngXU">
+					<idno type="grant-number">RS-2024-00359085</idno>
+				</org>
+				<org type="funding" xml:id="_bnq4ty3">
+					<idno type="grant-number">RS-2024-00509279</idno>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>APPENDIX</head><p>A. Non-prehensile Manipulation Policy Details 1) Simulation Setup: The RL training setup uses 24,576 simulated environments in NVIDIA IsaacGym, running on an NVIDIA GeForce RTX 4090 GPU and an AMD Ryzen 7 7800X3D CPU, with training completed in 2 days. Initial configurations are randomly set to collision-free configuration, without requiring an additional π pre to enforce contact between the robot's end-effector and the object. The policy operates at 20 Hz, while the controller runs at 200 Hz. Domain randomization (DR) is applied extensively to enhance robustness, including variations in table height, joint positions, velocities, end-effector position, object properties (friction and mass), and torque noise. The ranges of these parameters are shown in Table <ref type="table">V</ref>. The environment design mirrors the bump and cube dimensions from Kim et al. <ref type="bibr" target="#b29">[30]</ref>, but with an enlarged table size of 84 × 40 cm to accommodate the bimanual workspace of our robot. 2) Reinforcement Learning Setup: The state space S includes joint positions and velocities, current and goal object keypoints, end-effector pose, and the previous action. Details of the state space components are provided in Table <ref type="table">VI</ref>. The action space A comprises joint position residual, proportional gain, and derivative gain for each joint, as summarized in Table <ref type="table">VII</ref>. The policy architecture follows π post from Kim et al. <ref type="bibr" target="#b29">[30]</ref>.  </p><p>proportional gain for each joint</p><p>derivative gain for each joint</p><p>3) Real-World Experiment Setup: The real-world experiment setup includes one Intel RealSense D455 and one D435 camera, calibrated using four AprilTags for accurate pose alignment. To ensure reliable object tracking, 24 AprilTags are distributed across the cube, with four tags on each face. This configuration maintains visibility even when some tags are occluded during manipulation. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Bill of Materials</head></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Manipulating industrial robots -performance criteria and related test methods</title>
+		<idno>ISO 9283</idno>
+	</analytic>
+	<monogr>
+		<title level="j">International Organization for Standardization</title>
+		<imprint>
+			<date type="published" when="1998">1998. 1998</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Biomechanical assessment of various punching techniques</title>
+		<author>
+			<persName><forename type="first">Jiri</forename><surname>Adamec</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Hofer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Pittner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fabio</forename><surname>Monticelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthias</forename><surname>Graw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jutta</forename><surname>Schöpfer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International journal of legal medicine</title>
+		<imprint>
+			<biblScope unit="volume">135</biblScope>
+			<biblScope unit="page" from="853" to="859" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">The dlr lightweight robot: design and control concepts for robots in human environments</title>
+		<author>
+			<persName><forename type="first">Alin</forename><surname>Albu-Schäffer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sami</forename><surname>Haddadin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ch</forename><surname>Ott</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andreas</forename><surname>Stemmer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Wimböck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gerhard</forename><surname>Hirzinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Industrial Robot: an international journal</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="376" to="385" />
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Ankur Handa, and Animesh Garg. Transferring dexterous manipulation from gpu simulation to a remote real-world trifinger</title>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mayank</forename><surname>Mittai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Varun</forename><surname>Lodaya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Viktor</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Denys</forename><surname>Makoviichuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Felix</forename><surname>Widmaier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuel</forename><surname>Wüthrich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Bauer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="11802" to="11809" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Learning dexterous in-hand manipulation</title>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Openai ; Marcin Andrychowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maciek</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rafal</forename><surname>Chociej</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bob</forename><surname>Jozefowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jakub</forename><surname>Mcgrew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Pachocki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthias</forename><surname>Petron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Glenn</forename><surname>Plappert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Ray</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="3" to="20" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Dynamic manipulation: Nonprehensile ball catching</title>
+		<author>
+			<persName><forename type="first">Georg</forename><surname>Bätz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arhan</forename><surname>Yaqub</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haiyan</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kolja</forename><surname>Kühnlenz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dirk</forename><surname>Wollherr</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Martin</forename><surname>Buss</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">18th Mediterranean Conference on Control and Automation, MED&apos;10</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2010">2010</date>
+			<biblScope unit="page" from="365" to="370" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Mit cheetah 3: Design and control of a robust, dynamic quadruped robot</title>
+		<author>
+			<persName><forename type="first">Gerardo</forename><surname>Bledt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><forename type="middle">J</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Katz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jared</forename><surname>Di Carlo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Patrick</forename><forename type="middle">M</forename><surname>Wensing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sangbae</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="2245" to="2252" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Dual-arm control for coordinated fast grabbing and tossing of an object: Proposing a new approach</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Bombile</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Billard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="127" to="138" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<author>
+			<persName><forename type="first">Stéphane</forename><surname>Caron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yann</forename><surname>De Mont-Marin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Budhiraja</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hyeon</forename><surname>Seung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ivan</forename><surname>Bang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Simeon</forename><surname>Domrachev</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Nedelchev</surname></persName>
+		</author>
+		<title level="m">Python inverse kinematics based on Pinocchio</title>
+		<meeting><address><addrLine>Pink</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">A system for general in-hand object re-orientation</title>
+		<author>
+			<persName><forename type="first">Tao</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pulkit</forename><surname>Agrawal</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="297" to="307" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Extreme parkour with legged robots</title>
+		<author>
+			<persName><forename type="first">Xuxin</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kexin</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ananye</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deepak</forename><surname>Pathak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="11443" to="11450" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Corn: Contact-based object representation for nonprehensile manipulation of general unseen objects</title>
+		<author>
+			<persName><forename type="first">Yoonyoung</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junhyek</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yoontae</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Beomjoon</forename><surname>Kim</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Learning quadrupedal locomotion on deformable terrain</title>
+		<author>
+			<persName><forename type="first">Suyoung</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gwanghyeon</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeongsoo</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hyeongjun</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Juhyeok</forename><surname>Mun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeong</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hyun</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jemin</forename><surname>Hwangbo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">74</biblScope>
+			<biblScope unit="page">2256</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Humanplus: Humanoid shadowing and imitation from humans</title>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingqing</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qi</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gordon</forename><surname>Wetzstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Optimality principles in variable stiffness control: The vsa hammer</title>
+		<author>
+			<persName><forename type="first">Manolo</forename><surname>Garabini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrea</forename><surname>Passaglia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Felipe</forename><surname>Belo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Paolo</forename><surname>Salaris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antonio</forename><surname>Bicchi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2011 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="page" from="3770" to="3775" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Quasidirect drive for low-cost compliant robotic manipulation</title>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>David V Gealy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brent</forename><surname>Mckinley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Phillip</forename><forename type="middle">R</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Greg</forename><surname>Downey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Allan</forename><surname>Balke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Menglong</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rachel</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anthony</forename><surname>Thomasson</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Sinclair</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="437" to="443" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Deep predictive policy training using reinforcement learning</title>
+		<author>
+			<persName><forename type="first">Ali</forename><surname>Ghadirzadeh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Atsuto</forename><surname>Maki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Danica</forename><surname>Kragic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mårten</forename><surname>Björkman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="2351" to="2358" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Safe &amp; accurate at speed with tendons: A robot arm for exploring dynamic motion</title>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Guist</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Le</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Berenz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julian</forename><surname>Martus</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Heiko</forename><surname>Ott</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Felix</forename><surname>Grüninger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Muehlebach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Fiene</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">RSS 2024 Workshop: Data Generation for Robotics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">The franka emika robot: A reference platform for robotics research and education</title>
+		<author>
+			<persName><forename type="first">Sami</forename><surname>Haddadin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sven</forename><surname>Parusel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lars</forename><surname>Johannsmeier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saskia</forename><surname>Golz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Gabl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florian</forename><surname>Walch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohamadreza</forename><surname>Sabaghian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christoph</forename><surname>Jähne</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lukas</forename><surname>Hausperger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Haddadin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics &amp; Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="46" to="64" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Dextreme: Transfer of agile in-hand manipulation from simulation to reality</title>
+		<author>
+			<persName><forename type="first">Ankur</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Viktor</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aleksei</forename><surname>Petrenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ritvik</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingzhou</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Denys</forename><surname>Makoviichuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karl</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Zhurkevich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Balakumar</forename><surname>Sundaralingam</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="5977" to="5984" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<author>
+			<persName><forename type="first">Tairan</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhengyi</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xialin</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenli</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chong</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weinan</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kris</forename><surname>Kitani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Changliu</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guanya</forename><surname>Shi</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2406.08858</idno>
+		<title level="m">Omnih2o: Universal and dexterous humanto-humanoid whole-body teleoperation and learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Learning humanto-humanoid real-time whole-body teleoperation</title>
+		<author>
+			<persName><forename type="first">Tairan</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhengyi</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenli</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chong</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kris</forename><surname>Kitani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Changliu</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guanya</forename><surname>Shi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">On a new generation of torque controlled light-weight robots</title>
+		<author>
+			<persName><forename type="first">Gerd</forename><surname>Hirzinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Albu-Schaffer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hahnle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ingo</forename><surname>Schaefer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Norbert</forename><surname>Sporer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2001">2001. 2001</date>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page" from="3356" to="3363" />
+		</imprint>
+	</monogr>
+	<note>Proceedings. Cat. No. 01CH37164</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Dlr&apos;s torque-controlled light weight robot iii-are we reaching the technological limits now</title>
+		<author>
+			<persName><forename type="first">Gerd</forename><surname>Hirzinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Norbert</forename><surname>Sporer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alin</forename><surname>Albu-Schaffer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hahnle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rainer</forename><surname>Krenn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antonio</forename><surname>Pascucci</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Schedl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings 2002 IEEE International Conference on Robotics and Automation</title>
+		<meeting>2002 IEEE International Conference on Robotics and Automation</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2002">2002</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="1710" to="1716" />
+		</imprint>
+	</monogr>
+	<note>Cat. No. 02CH37292</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Anymal parkour: Learning agile navigation for quadrupedal robots</title>
+		<author>
+			<persName><forename type="first">David</forename><surname>Hoeller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikita</forename><surname>Rudin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dhionis</forename><surname>Sako</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Hutter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science Robotics</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">88</biblScope>
+			<biblScope unit="page">7566</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">A ball-throwing robot with visual feedback</title>
+		<author>
+			<persName><forename type="first">Jwu-Sheng</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ming-Chih</forename><surname>Chien</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yung-Jung</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shyh-Haur</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen-Yu</forename><surname>Kai</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2010 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2010">2010</date>
+			<biblScope unit="page" from="2511" to="2512" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Impulse modeling and analysis of dual arm hammering task: Human-like manipulator</title>
+		<author>
+			<persName><forename type="first">Abid</forename><surname>Imran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Byung-Ju</forename><surname>Yi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="362" to="367" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Control of a hitting velocity and direction for a hammering robot using a flexible link</title>
+		<author>
+			<persName><forename type="first">Izumi</forename><surname>Teruyuki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hitaka</forename><surname>Yoshikazu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the Robotics Society of Japan</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="436" to="443" />
+			<date type="published" when="1993">1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Batting an in-flight object to the target</title>
+		<author>
+			<persName><forename type="first">Yan-Bin</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><surname>Gardner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoqian</forename><surname>Mu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="451" to="485" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Pre-and post-contact policy decomposition for non-prehensile manipulation with zero-shot sim-to-real transfer</title>
+		<author>
+			<persName><forename type="first">Minchan</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junhyek</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jaehyung</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Beomjoon</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="10644" to="10651" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Estimating the nonlinear dynamics of free-flying objects</title>
+		<author>
+			<persName><forename type="first">Seungsu</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Billard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Autonomous Systems</title>
+		<imprint>
+			<biblScope unit="volume">60</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="1108" to="1122" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Catching objects in flight</title>
+		<author>
+			<persName><forename type="first">Seungsu</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwini</forename><surname>Shukla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Billard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="1049" to="1065" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Design of low inertia manipulator with high stiffness and strength using tension amplifying mechanisms</title>
+		<author>
+			<persName><forename type="first">Yong-Jae</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2015 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="5850" to="5856" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Anthropomorphic low-inertia highstiffness manipulator for high-speed safe interaction</title>
+		<author>
+			<persName><forename type="first">Yong-Jae</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on robotics</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="1358" to="1374" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Trajectory planning for optimal robot catching in real-time</title>
+		<author>
+			<persName><forename type="first">Roberto</forename><surname>Lampariello</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Duy</forename><surname>Nguyen-Tuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Claudio</forename><surname>Castellini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gerd</forename><surname>Hirzinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan</forename><surname>Peters</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2011 IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="page" from="3719" to="3726" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Hybrik: A hybrid analytical-neural inverse kinematics solution for 3d human pose and shape estimation</title>
+		<author>
+			<persName><forename type="first">Jiefeng</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chao</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhicun</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyuan</forename><surname>Bian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lixin</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cewu</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="3383" to="3393" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Okami: Teaching humanoid robots manipulation skills through single video imitation</title>
+		<author>
+			<persName><forename type="first">Jinhan</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yifeng</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuqi</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenyu</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mingyo</forename><surname>Seo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Pavlakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuke</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Development of modular and reconfigurable robot with multiple working modes</title>
+		<author>
+			<persName><forename type="first">Guangjun</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaojia</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jing</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sajan</forename><surname>Abdul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><forename type="middle">A</forename><surname>Goldenberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2008 IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2008">2008</date>
+			<biblScope unit="page" from="3502" to="3507" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Smpl: A skinned multi-person linear model</title>
+		<author>
+			<persName><forename type="first">Matthew</forename><surname>Loper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Naureen</forename><surname>Mahmood</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Javier</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gerard</forename><surname>Pons-Moll</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><forename type="middle">J</forename><surname>Black</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Seminal Graphics Papers: Pushing the Boundaries</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="851" to="866" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<author>
+			<persName><forename type="first">Viktor</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lukasz</forename><surname>Wawrzyniak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunrong</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michelle</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kier</forename><surname>Storey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Miles</forename><surname>Macklin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Hoeller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikita</forename><surname>Rudin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ankur</forename><surname>Handa</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2108.10470</idno>
+		<title level="m">Isaac gym: High performance gpu-based physics simulation for robot learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Ultra-low inertia 6-dof manipulator arm for touching the world</title>
+		<author>
+			<persName><forename type="first">Kazutoshi</forename><surname>Nishii</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Akira</forename><surname>Hatano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yoshihiro</forename><surname>Okumatsu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="432" to="438" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Reconstructing hands in 3d with transformers</title>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Pavlakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dandan</forename><surname>Shan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ilija</forename><surname>Radosavovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Angjoo</forename><surname>Kanazawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><forename type="middle">F</forename><surname>Fouhey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">A lowcost compliant 7-dof robotic manipulator</title>
+		<author>
+			<persName><forename type="first">Morgan</forename><surname>Quigley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><surname>Asbeck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Ng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2011 IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="page" from="6051" to="6058" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">A multiple working mode approach to hammering with a modular reconfigurable robot</title>
+		<author>
+			<persName><forename type="first">Sina</forename><surname>Vladyslav Romanyuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guangjun</forename><surname>Soleymanpour</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE International Conference on Mechatronics and Automation (ICMA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="774" to="779" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">The harmonious robot</title>
+		<author>
+			<persName><forename type="first">Brian</forename><surname>Rooks</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Industrial Robot: An International Journal</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="125" to="130" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">A dynamical system approach for softly catching a flying object: Theory and experiment</title>
+		<author>
+			<persName><forename type="first">Seyed</forename><surname>Sina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mirrazavi</forename><surname>Salehian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mahdi</forename><surname>Khoramshahi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aude</forename><surname>Billard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="462" to="471" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Ball control in high-speed batting motion using hybrid trajectory generator</title>
+		<author>
+			<persName><forename type="first">Taku</forename><surname>Senoo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Akio</forename><surname>Namiki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Masatoshi</forename><surname>Ishikawa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings 2006 IEEE International Conference on Robotics and Automation</title>
+		<meeting>2006 IEEE International Conference on Robotics and Automation</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2006">2006. 2006. 2006</date>
+			<biblScope unit="page" from="1762" to="1767" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">High-speed throwing motion based on kinetic chain approach</title>
+		<author>
+			<persName><forename type="first">Taku</forename><surname>Senoo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Akio</forename><surname>Namiki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Masatoshi</forename><surname>Ishikawa</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/IROS.2008.4651142</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2008 IEEE/RSJ International Conference on Intelligent Robots and Systems</title>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+			<biblScope unit="page" from="3206" to="3211" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Wham: Reconstructing world-grounded humans with accurate 3d motion</title>
+		<author>
+			<persName><forename type="first">Soyong</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Juyong</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eni</forename><surname>Halilaj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><forename type="middle">J</forename><surname>Black</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Design of kaist hound, a quadruped robot platform for fast and efficient locomotion with mixed-integer nonlinear optimization of a gear train</title>
+		<author>
+			<persName><forename type="first">Young-Ha</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seungwoo</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sangyoung</forename><surname>Woo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonghun</forename><surname>Choe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Harim</forename><surname>Son</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gijeong</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joon-Ha</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kangkyu</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jemin</forename><surname>Hwangbo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hae-Won</forename><surname>Park</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="6614" to="6620" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">Development of low-inertia high-stiffness manipulator lims2 for highspeed manipulation of foldable objects</title>
+		<author>
+			<persName><forename type="first">Hansol</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yun-Soo</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junsuk</forename><surname>Yoon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seong-Ho</forename><surname>Yun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiwon</forename><surname>Seo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong-Jae</forename><surname>Kim</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="4145" to="4151" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Biomechanics of the head for olympic boxer punches to the face</title>
+		<author>
+			<persName><forename type="first">Timothy</forename><forename type="middle">J</forename><surname>Walilko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><forename type="middle">C</forename><surname>Viano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cynthia</forename><forename type="middle">A</forename><surname>Bir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">British journal of sports medicine</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="710" to="719" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Proprioceptive actuator design in the mit cheetah: Impact mitigation and high-bandwidth physical interaction for dynamic legged robots</title>
+		<author>
+			<persName><forename type="first">Albert</forename><surname>Patrick M Wensing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sangok</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Seok</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Otten</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sangbae</forename><surname>Lang</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Ieee transactions on robotics</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="509" to="522" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">Impact-aware bimanual catching of large-momentum objects</title>
+		<author>
+			<persName><forename type="first">Lei</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Theodoros</forename><surname>Stouraitis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">João</forename><surname>Moura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenfu</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Gienger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sethu</forename><surname>Vijayakumar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<analytic>
+		<title level="a" type="main">Decoupling human and camera motion from videos in the wild</title>
+		<author>
+			<persName><forename type="first">Vickie</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Pavlakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Angjoo</forename><surname>Kanazawa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<analytic>
+		<title level="a" type="main">Tossingbot: Learning to throw arbitrary objects with residual physics</title>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Johnny</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alberto</forename><surname>Rodriguez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Funkhouser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Robotics</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="1307" to="1319" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<analytic>
+		<title level="a" type="main">Learning to grasp the ungraspable with emergent extrinsic dexterity</title>
+		<author>
+			<persName><forename type="first">Wenxuan</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Held</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="150" to="160" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<monogr>
+		<title level="m" type="main">Hacman: Learning hybrid actor-critic maps for 6d non-prehensile manipulation</title>
+		<author>
+			<persName><forename type="first">Wenxuan</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fan</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chris</forename><surname>Paxton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Held</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<title level="m" type="main">Design of a Highly Dynamic Humanoid Robot</title>
+		<author>
+			<persName><forename type="first">Taoyuanmin</forename><surname>Zhu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+		<respStmt>
+			<orgName>University of California, Los Angeles</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">Phd thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main">Robot parkour learning</title>
+		<author>
+			<persName><forename type="first">Ziwen</forename><surname>Zhuang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianren</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><surname>Atkeson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sören</forename><surname>Schwertfeger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hang</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning (CoRL)</title>
+		<imprint>
+			<biblScope unit="page">2023</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

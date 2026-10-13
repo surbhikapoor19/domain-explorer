@@ -1,0 +1,2550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation</title>
+				<funder>
+					<orgName type="full">Apple</orgName>
+				</funder>
+				<funder ref="#_GeqBb2N">
+					<orgName type="full">JPMorgan Chase &amp; Co</orgName>
+				</funder>
+				<funder ref="#_yMH6y68 #_2yhaEfB #_RpjZA2a">
+					<orgName type="full">National Science Foundation</orgName>
+					<orgName type="abbreviated">NSF</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability  status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2025-10-02">2 Oct 2025</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Mengda</forename><surname>Xu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+							<affiliation key="aff1">
+								<orgName type="institution">Columbia University</orgName>
+							</affiliation>
+							<affiliation key="aff2">
+								<orgName type="institution">J.P. Morgan AI Research</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Han</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yifan</forename><surname>Hou</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zhenjia</forename><surname>Xu</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Linxi</forename><surname>Fan</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Manuela</forename><surname>Veloso</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="institution">J.P. Morgan AI Research</orgName>
+							</affiliation>
+							<affiliation key="aff3">
+								<orgName type="institution">Carnegie Mellon University</orgName>
+								<address>
+									<addrLine>5 NVIDIA</addrLine>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shuran</forename><surname>Song</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Stanford University</orgName>
+							</affiliation>
+							<affiliation key="aff1">
+								<orgName type="institution">Columbia University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2025-10-02">2 Oct 2025</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">214B5B2DAF38729C34D367CA0C5C8B79</idno>
+					<idno type="arXiv">arXiv:2505.21864v3[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2026-10-13T13:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Dexterous Manipulation</term>
+					<term>Learning from Human</term>
+					<term>Imitation Learning XHand Inspire-Hand Long-Horizon Contact-Rich Multi-Finger Precise Diverse Skills Demo w. DexUMI Robot Execution</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>We present DexUMI -a data collection and policy learning framework that uses the human hand as the natural interface to transfer dexterous manipulation skills to various robot hands. DexUMI includes hardware and software adaptations to minimize the embodiment gap between the human hand and various robot hands. The hardware adaptation bridges the kinematics gap using a wearable hand exoskeleton. It allows direct haptic feedback in manipulation data collection and adapts human motion to feasible robot hand motion. The software adaptation bridges the visual gap by replacing the human hand in video data with high-fidelity robot hand inpainting. We demonstrate DexUMI's capabilities through comprehensive real-world experiments on two different dexterous robot hand hardware platforms, achieving an average task success rate of 86%.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Human hands are incredibly dexterous in a wide range of tasks. Dexterous robot hands are designed with the hope of replicating this capability. However, it remains a significant challenge to transfer skills from human hands to robotic counterparts due to their substantial embodiment gap. This gap manifests in various forms, such as differences in kinematic structures, contact surface shape, available tactile information, and visual appearance.</p><p>What further complicates this challenge is the diversity of dexterous hand hardware designs available today. Each robotic hand presents different engineering trade-offs in degrees of freedom, motor ranges, actuation mechanisms, and overall dimensions. The solution for reducing the embodiment gap must handle the vast hardware design space. Teleoperation has become a popular manipulation interface for dexterous hands. However, teleoperation can be difficult due to the spatial observation mismatch and the lack of direct haptic feedback. These problems do not exist when human hand can perform the manipulation task directly. In other words, human hand itself is a better manipulation interface. In this paper, we ask the following question: How can we minimize the embodiment gap, so that we can use the human hand as the universal manipulation interface for diverse robot hands?</p><p>To answer this question, we propose DexUMI, a framework with hardware and software adaptation components that is designed to minimize the action and observation gaps.</p><p>The hardware adaptation takes the form of a wearable hand exoskeleton. A user can directly collect manipulation data while wearing it. The exoskeleton is designed for each target robot hand through a hardware optimization framework that refines exoskeleton parameters (e.g., link lengths) to closely match the robot finger trajectories while maintaining wearability for the human hand. The hardware adaption provides the following benefits:</p><p>• Intuitive demonstration with direct haptic feedback: Unlike teleoperation systems, the wearable exoskeleton has no spatial mismatch and allows users to directly contact objects during manipulation, making the demonstration intuitive and doable without a robot. • Records feasible motion for the robot hand: The exoskeleton constrains human hand motions to match the kinematics of the target hand, ensuring the recorded motion is transferable. • Capturing precise joint action: Unlike retargeting methods, our exoskeleton reads precise joint angles directly from encoders, eliminating inaccuracies due to visual fingertip tracking. • Matching tactile information for learning: Most handheld grippers for data collection <ref type="bibr" target="#b0">[1]</ref><ref type="bibr" target="#b1">[2]</ref><ref type="bibr" target="#b2">[3]</ref> do not record the tactile information. Our design includes additional tactile sensors on the fingertip to record the same tactile info as what the robot hand would record.</p><p>Our software adaptation takes the form of a data processing pipeline that bridges the visual observation gap between human demonstration and robot deployment. This processing pipeline first removes the human hand and exoskeleton from the demonstration video using video segmentation, then inpaints the video with the corresponding robot hand and environment backgrounds that match the target action. This adaptation ensures visual input consistency between training and robot deployment, despite visual differences between human and robotic hands.</p><p>With both hardware and software adaptation layers, DexUMI allows us to collect data on various tasks with minimal kinematic and visual gaps then transfer skills to robots. Comprehensive realworld experiments demonstrate DexUMI's capability on two different dexterous hand types: a 6-DoF Inspire hand <ref type="bibr" target="#b3">[4]</ref> and a 12-DoF XHand <ref type="bibr" target="#b4">[5]</ref>. Our approach achieves 3.2 times greater data collection efficiency compared to teleoperation and an average success rate of 86% across four tasks , including long-horizon and complex tasks requiring multi-finger contacts. teaching <ref type="bibr" target="#b37">[38]</ref> require the robot hardware to be present, limiting the flexibility of data collection. In contrast, DexUMI collects manipulation data without physical robots.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Tactile sensor</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Inspire Hand XHand</head><note type="other">Record</note><p>Human hand video: Learning manipulation skills from human hand video is an attractive direction.</p><p>Prior works have explored learning affordance <ref type="bibr" target="#b38">[39]</ref><ref type="bibr" target="#b39">[40]</ref><ref type="bibr" target="#b40">[41]</ref><ref type="bibr" target="#b41">[42]</ref> or extracting human and object pose <ref type="bibr" target="#b42">[43]</ref><ref type="bibr" target="#b43">[44]</ref><ref type="bibr" target="#b44">[45]</ref><ref type="bibr" target="#b45">[46]</ref><ref type="bibr" target="#b46">[47]</ref> from video. Though showing promising results, many of these works either require additional real-world robot data or need to learn the policy in simulation and depend on privileged information, such as object pose, to deploy the policy in the real world.</p><p>Wearable devices: Another line of work focuses on designing wearable devices for data collection, such as portable hand-held grippers <ref type="bibr" target="#b0">[1]</ref><ref type="bibr" target="#b1">[2]</ref><ref type="bibr" target="#b2">[3]</ref><ref type="bibr" target="#b47">[48]</ref><ref type="bibr" target="#b48">[49]</ref><ref type="bibr" target="#b49">[50]</ref><ref type="bibr" target="#b50">[51]</ref><ref type="bibr" target="#b51">[52]</ref><ref type="bibr" target="#b52">[53]</ref><ref type="bibr" target="#b53">[54]</ref><ref type="bibr" target="#b54">[55]</ref><ref type="bibr" target="#b55">[56]</ref><ref type="bibr" target="#b56">[57]</ref>. These approaches have demonstrated promising results in scaling real-robot manipulation skills. However, these systems primarily target simple parallel/pinch grippers and cannot be easily adapted to multi-fingered systems. Alternatively, Dexcap <ref type="bibr" target="#b57">[58]</ref> uses motion capture gloves for in-contact data collection. However, it still relies on retargeting methods and real-world robot data. In contrast, our method eliminates these requirement, enabling direct policy deployment with data collected through DexUMI. Recently, Wei and Xu <ref type="bibr" target="#b58">[59]</ref> and Fang et al. <ref type="bibr" target="#b59">[60]</ref> proposed hand-over-hand systems for dexterous hands. These works require the actual robot hand to be available and lifted by the human hand.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Hardware Adaptation to Bridge the Embodiment Gap</head><p>This section introduces our hardware adaptation, which is a wearable exoskeleton design that adapts human motion to feasible robot actions. While the final exoskeleton design is robot-specific, the principles of the design framework can be shared. We introduce the design framework in two parts: mechanism design optimization ( §3.1) and sensor integration ( §3.2).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Exoskeleton Mechanism Design</head><p>Modern robot hands often closely mimic human hands anatomically, meaning that a hand exoskeleton would compete for space with the human hand wearing it. The biggest challenge is for the thumb, whose pronation-supination movement can sweep a large volume and cause significant collision between the human thumb and a naively designed exoskeleton. Our exoskeleton design has two goals to achieve:</p><p>1. Shared joint-action mapping: The exoskeleton and the target robot hand must share the same joint-to-fingertip position mapping, including their limits, so the action can transfer. 2. Wearability: The exoskeleton must allow sufficient natural movements of the user's hand.</p><p>While the first goal can be mathematically defined, the wearability goal is hard to write down concretely. Our solution is to parameterize the exoskeleton design and formulate the wearability requirements as constraints on the design parameters, then find a solution that accommodates wearability while preserving kinematic relationships by solving an optimization. To make the optimization fea-sible, we prioritize the exact kinematics of fingertip links, while allowing greater flexibility in the kinematics of links less likely to contact objects.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E.1 Design initialization:</head><p>We initialize the design with parameterized robot hand models based on URDF files (See Fig. <ref type="figure" target="#fig_1">3</ref>). When such detailed designs are unavailable (e.g., the Inspire-Hand's finger mechanisms), we substitute them with equivalent general linkage designs with the same DoFs (e.g., a four-bar linkage) and allow optimization to find parameters that best match the observed kinematic behavior. Please see Appendix for details. E.2 Bi-level optimization objective: Our optimization objective maximizes the following similarity: max p S(W tip exo (p), W tip robot ), where W tip exo and W tip robot represent the fingertip workspaces (set of all possible fingertip pose in SE(3)) for the exoskeleton and robot hand, respectively. p = {j 1 , ..., j n , l 1 , ..., l m } is the exoskeleton design parameters including joint positions j i ∈ R 3 in the wrist coordinate (i.e., flange) and linkage lengths l j . The function S(•, •) represents a similarity metric between the two workspaces, which quantifies how closely the exoskeleton's fingertip pose distribution matches that of the robot hand. In practice, the S(•, •) is implemented as minimization by sampling configurations from both workspaces. Given a set of K robot hand configurations θ robot,k and N exoskeleton configurations θ exo,n :</p><formula xml:id="formula_0">S(W tip exo (p), W tip robot ) = - K k=1 min θexo ∥F tip exo (p, θexo) -F tip robot (θ robot,k )∥ 2 + N n=1 min θ robot ∥F tip exo (p, θexo,n) -F tip robot (θrobot)∥ 2<label>(1)</label></formula><p>where F tip exo and F tip robot are the forward kinematics for the exoskeleton and robot hand respectively. Optimizing the first term encourages the exoskeleton to cover the robot hand's workspace by finding exoskeleton configurations closest to the sampled robot hand configurations. The second term requires W tip exo (p) ⊆ W tip robot , ensuring the exoskeleton's fingertip workspace remains within the robot hand's capabilities, preventing generation of unreachable poses outside the robot hand's workspace.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E.3 Constraints:</head><p>We apply bound constraints j i ∈ C i and l min j ≤ l j ≤ l max j , which are empirically selected to ensure that the exoskeleton can be comfortably worn. For example, we want to move the thumb swing joint closer to the wrist along the x-axis under MANO <ref type="bibr" target="#b60">[61]</ref> convention to avoid collision between the human thumb's pronation-supination movement and that of the exoskeleton.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Sensor Integration</head><p>Sensors on the exoskeleton need to satisfy the following design objectives:</p><p>1. Capture sufficient information: the sensors need to capture ALL the information necessary for policy learning, which includes: robot action such as joint angle (S.1) and wrist motion (S.2), as well as observations in both vision (S.3) and tactile (S.4). 2. Minimize embodiment gap: the sensory information should have minimal distribution shift between human demonstration and robot deployment.</p><p>S.1 Joint capture &amp; mapping. To precisely capture joint actions, our exoskeleton integrates joint encoders at every actuated joint -using resistive position encoders for both the XHand and Inspirehand. We choose the Alps encoder <ref type="bibr" target="#b61">[62]</ref> for its size and precision. Due to the joint friction and motor backlash, the mapping between exoskeleton joint encoder θ i exo and robot hand motor M i robot values is often non-linear, therefore, we train a simple regression model for each joint to obtain this mapping. To calibrate the regression model, we collect a set of paired data by uniformly sampling K motor values on the physical robot for each finger and then find the corresponding exoskeleton joint value by overlaying the visual observation between the robot hand and exoskeleton. This process creates a paired dataset for us to train the regression model.</p><p>S.2 Wrist pose tracking. We use iPhone ARKit to capture the 6DoF wrist pose, as smartphones represent the most accessible devices capable of providing precise spatial tracking. This tracking device is only needed for data collection, not for robot deployment.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>S.3 Visual observation.</head><p>We mounted a 150°diagonal field of view (DFoV) wide-angle camera OAK-1 <ref type="bibr" target="#b62">[63]</ref> under the wrist for both the exoskeleton and the target robot dexterous hand. This positioning was chosen to effectively capture hand-object interactions. Critically, the camera poses in the wrist frame were identical for the exoskeleton and the robot hand, which maintains visual consistency between training and deployment.</p><p>S.4 Tactile sensing. The wearable exoskeleton allows users to directly contact objects and receive haptic feedback. However, this human haptic feedback cannot be directly transferred to the robotic dexterous hand. Therefore, we install tactile sensors on the exoskeleton to capture and translate these tactile interactions. To ensure consistent sensor readings, we install the same type of tactile sensors on the exoskeleton as those used on the target robot hand. For XHand, we use the electro-magnetic tactile sensor that comes with the hand. For the Inspire-Hand, we install the same resistive tactile sensor Force Sensitive Resistor <ref type="bibr" target="#b63">[64]</ref> for both the exoskeleton and the robot hand.</p><p>4 Software Adaptation to Bridge the Visual Gap Fig. <ref type="figure" target="#fig_2">4</ref> shows the visual gap between human demonstration (a) and robot deployment (h). To bridge this visual gap, we developed a data processing pipeline to adapt the demonstration image into what the robot will see as if the robot hand was collecting data. This adaptation uses off-the-shelf pretrained models to ensure generalizability. The adaptation takes four steps:</p><p>V.1 Segment human hand and exoskeleton. Firstly, we segment (Fig. <ref type="figure" target="#fig_2">4b</ref>) the human hand and exoskeleton on observation videos using SAM2 <ref type="bibr" target="#b64">[65]</ref>. Since SAM2 requires initial prompt points, we established a protocol where the human operator always begins with the same hand gesture, allowing us to reuse the same prompt points for all demonstrations.</p><p>V.2 Inpaint environment background. With segmentation, we remove the human hand and the exoskeleton pixels from the image data. Then we use ProPainter <ref type="bibr" target="#b65">[66]</ref>, a flow-based inpainting method, to fully refill (Fig. <ref type="figure" target="#fig_2">4c</ref>) the missing areas <ref type="bibr" target="#b66">[67]</ref><ref type="bibr" target="#b67">[68]</ref><ref type="bibr" target="#b68">[69]</ref>.</p><p>V.3 Record corresponding robot hand video. Next, to render robot hand properly into the video, we replay the recorded joint action on the robot hand and record another video with only the robot hand (Fig. <ref type="figure" target="#fig_2">4d</ref>). This step does not involve the robot arm. We then used SAM2 again to extract the robot hand pixels (Fig. <ref type="figure" target="#fig_2">4e</ref>) and discard the background. Notice, it is possible to train an image generation model to output the robot hand image based on the actions, but it requires additional model training.  V.4 Compose robot demonstrations. The last step is to merge the inpainted-background-only video with robot-hand-only video. It is crucial to maintain proper occlusion relationships: the robot hand does not always appear on top. We developed an occlusion-aware compositing approach leveraging:</p><p>(1) our consistent under-wrist camera setup, and (2) the kinematic and shape similarity between the exoskeleton and robot hand. We compute a visible mask (Fig. <ref type="figure" target="#fig_2">4f</ref>) by intersecting the exoskeleton mask and robot hand mask. Rather than naively overwriting pixels, we selectively replace pixels in the inpainted observation with robot hand pixels only if those pixels are present in the visible mask. This preserved natural occlusion relationships between the hand and objects when viewed from our under-wrist camera perspective. This approach generated visually coherent robot manipulation demonstrations that maintained proper spatial relationships.</p><p>Imitation learning. Our imitation learning policy p(a t |o t , f t ) takes processed visual observation o t and tactile sensing f t as input. The output is a sequence of actions {a t , . . . , a t+L } of length L, starting from the current time t, denoted as a t . The robot action a t includes a 6-DOF end-effector action and N-DOF hand action where N depends on the specific robot hand hardware.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Evaluation</head><p>Target robot hands: We evaluate DexUMI across two different robot hands: • XHand: A fully-actuated hand with twelve active DoFs. The thumb contains three DoFs, the index finger has three DoFs, and each of the remaining fingers has two DoFs. Tasks: We evaluate DexUMI across four different real-world tasks:</p><p>• Cube [IHand]: Pick up a 2.5cm wide cube from a table and place it into a cup. This evaluates the basic capabilities and precision of the DexUMI system. • Egg Carton [IHand]: Open an egg carton with multiple fingers: the hand needs the index, middle, ring, and little fingers to apply downward pressure on the carton's top while simultaneously using the thumb to lift the front latch. • Tea [IHand &amp; XHand]: Grasp tweezers from the table and use them to transfer tea leaves from a teapot to a cup. The main challenge is to stably operate the deformable tweezers with multifinger contacts. • Kitchen [XHand]: The task involves four sequential steps: turn off the stove knob; transfer the pan from the stove top to the counter; pick up salt from a container; and lastly, sprinkle it over the food in the pan. The task tests DexUMI's capability over long-horizon tasks with precise actions, tactile sensing and skills beyond using fingertips.</p><p>Comparison: We evaluate the impact of policy action space choices, tactile sensing, and software adaptation on system performance.</p><p>• Relative vs. Absolute finger action: We compare the form of finger action trajectory: absolute position or relative trajectory proposed by <ref type="bibr" target="#b0">[1]</ref>. We always use relative position for wrist action. • With vs. Without tactile sensing: We trained policies with and without tactile sensor input.</p><p>• With vs. Without software adaptation: We examine two variants without software adaptation:</p><p>(1) Mask, which replaces pixels occupied by the exoskeleton (during training) or robot hand (during inference) with a green color mask, and (2) Raw, which simply passes unmodified images containing the exoskeleton as policy input.</p><p>Evaluation protocol: For each evaluation episode, the test objects are randomly placed on the table at initialization. We conduct 20 evaluation episodes per task, maintaining consistent initial object configurations across our method and all baselines. For long horizon tasks, we report stage-wise accumulated success rate in Tab. 1.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Key Findings</head><p>DexUMI framework enables efficient dexterous policy learning: As shown in Tab. 1, the Dex-UMI system achieves high success rates across all four tasks on two robot hands. The system handles precise manipulation, long-horizon tasks, and coordinated multi-finger contact, while effectively generalizing across diverse manipulation scenarios.</p><p>Relative finger trajectories are more robust to noise and hardware imperfections: Tab. 1 shows relative finger trajectory consistently achieves better success across all tasks. Fig. <ref type="figure" target="#fig_5">6</ref> shows more insights: relative trajectory can make critical contact events more reliable. We hypothesize two reasons for this difference: 1. Relative action has a simpler distribution than absolute and is thus easier to learn; 2. Relative action learns a reactive behavior where the delta action keeps accumulating until a key event is reached (e.g. fingers close on contact). However, the absolute action learns a static mapping and would stall if the mapping has errors. Only relative finger trajectories can benefit from the noisy tactile feedback: An interesting observation in Tab. 1 is how having tactile affects the results differently. The tactile sensor on the XHand can drift and become inconsistent after experiencing high pressure. Therefore, in most cases, having tactile makes the results worse. We observed that only with relative trajectory can the policy benefit from having such tactile sensing. For the Inspire hand, the tactile sensors we manually installed are even more noisy (See section §3.2 for details), then all methods become worse after adding tactile sensor as input. However, policies with relative trajectory still suffer less performance drop compared with the ones with absolute trajectory.</p><note type="other">Abs Action Rel Action Imprecise Contact Poor</note><p>Tactile feedback improves performance on tasks with clean force profiles: We try to understand what kind of task would benefit from having tactile sensing. We focused on the XHand as its tactile sensors provide cleaner readings. We observed that tactile feedback significantly improved performance on picking up salt. This task highlights the effect of tactile because 1) The tactile sensors give a clear, large reading when the fingers touch the bowl of salt. 2) There is little useful visual information close to grasping as the camera view is mostly blocked by the bowl. In this case, we found that tactile feedback completely changes policy behavior. With tactile sensors, the fingers always insert into the salt first then close the fingers. Without tactile feedback, the fingers attempt to grasp the salt sometimes in the air. On the contrary, tactile info does not help in tweezer manipulation, which lacks strong correlation between hand motion and force feedback. Holding a tweezer only triggers minimal tactile sensor readings. DexUMI framework enables efficient dexterous hand data collection: We compared data collection efficiency across three ways: DexUMI, bare human hand, and teleoperation on the tea-picking-with-tool task. The same human operator collected data using each approach within 15-minute sessions. We computed the collection throughput (CT) based on the number of successful demonstrations acquired. As illustrated in Fig. <ref type="figure" target="#fig_6">7</ref>, while DexUMI remains slower than direct human hand manipulation, it achieves 3.2 times greater efficiency than traditional teleoperation methods, significantly reducing the time required for dexterous manipulation data collection.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusion</head><p>We present DexUMI, a scalable and efficient data collection and policy learning framework that uses the human hand as an interface to transfer human hand motion to precise robot hand actions while providing natural haptic feedback. Through extensive challenging real-world experiments, we demonstrate DexUMI's capability in learning dexterous manipulation policies for precise, contactrich, and long-horizon tasks. Our work establishes a new approach to collecting real-world dexterous hand data efficiently and at scale beyond traditional teleoperation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Limitation and Future Work</head><p>We would like to discuss DexUMI's limitations from three different aspects: hardware adaptation, software adaptation, and existing robot hand hardware.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Hardware Adaptation:</head><p>• Per robot hand exoskeleton design: Although DexUMI demonstrates generalizability across underactuated and fully-actuated hands, our optimization framework still requires hardwarespecific tuning, especially for wearability. One future work direction is fully automated optimization formulation given robot hand model and some description of the human hand. Further, our hardware optimization framework can potentially leverage generative models <ref type="bibr" target="#b69">[70]</ref> to increase efficiency and accuracy when design space grows. • Fingertips Matching: Our current formulation focuses only on matching the fingertip workspace between the designed exoskeleton and target robot hand. It would be interesting for future work to also model remaining potential contact geometries such as the palm. • Wearability: The hardware optimization pipeline makes the exoskeleton wearable and allows humans to operate it relatively easily for extended periods. However, wearability could be further improved by integrating soft materials, such as TPU for parts that contact the human hand. Additionally, constrained by both the design of the target hand and 3D printing material strength, users might still experience limitations in fully stretching certain fingers. • Reliability of Tactile Sensors: Throughout our experiments, we found that reliable tactile sensors are key to maintaining consistent tactile observation between the exoskeleton and corresponding robot hand, thereby reducing the embodiment gap. In our implementation, the resistive tactile sensors added to the Inspire hand and its exoskeleton proved sensitive to their attachment way on fingers. Meanwhile, the electromagnetic tactile sensors on the XHand and its exoskeleton showed a tendency to drift after exposure to high pressure. Since the human hand generates more force than the robot hand, tactile sensor readings frequently drift when humans operate the exoskeleton. Future work can also incorporate other types of tactile sensors, such as vision-based tactile sensors <ref type="bibr" target="#b70">[71]</ref><ref type="bibr" target="#b71">[72]</ref><ref type="bibr" target="#b72">[73]</ref> and capacitive F/T sensors <ref type="bibr" target="#b73">[74]</ref>. • Material Limitations: Our experiments demonstrate that DexUMI is able to capture fine-grained fingertip actions such as closing tweezers. However, we sometimes found that encoders cannot precisely capture human motion due to 3D printing material strength limitations; occasionally, the human hand slightly distorts the exoskeleton linkage when manipulating objects. In such cases, encoders are unable to capture this distortion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Software Adaptation:</head><p>• Robot Hand Image: Currently, we still require real-world robot hardware to obtain robot hand images. However, this requirement could be eliminated by implementing an image generation model that receives motor values as input and produces corresponding hand pose images as output. • Inpainting Quality: Throughout our experiments, we found that the current software adaptation pipeline can already yield high-fidelity robot hand images. Nevertheless, we observed that illumination effects on the robot hand cannot be fully reproduced, and some areas in the image appear blurred due to limitations in the inpainting process. • Camera Location: DexUMI currently requires the camera to be rigidly attached to the robot hand/exoskeleton and does not support a moving camera. However, it would be feasible to collect a dataset and train an image generation model that receives the relative pose between the camera and hand, along with hand pose information, to generate the corresponding hand pose image from any given camera position.</p><p>Existing Robot Hand Hardware:</p><p>• Precision: Throughout our experiments, we found that both the Inspire Hand and XHand lack sufficient precision due to backlash and friction. For example, the fingertip location of the Inspire Hand differs when moving from 1000 to 500 motor units compared to moving from 0 to 500 motor units. Although the desired motor value is the same in both cases, the final fingertip position varies. We observed this phenomenon in both robot hands. Consequently, when fitting regression models between encoder and hand motor values, we can typically ensure precision in only "one direction"-either when closing the hand or opening it. This inevitably causes minor discrepancies in the inpainting and action mapping processes. Further, we found that the XHand mapping between motor command and fingertip location slightly differs across time shifts or after each reboot. • Size Discrepancy: The size difference between the robot hand and the human hand may cause wearability issues. For example, if the robot hand is twice as large as the human hand, it becomes difficult for both the human hand and the exoskeleton to reach the joint configurations required by the robot hand. • Co-design: Many of these wearability issues arise from design constraints in existing commercial hardware. An interesting direction would be to explore a reverse design paradigm: first designing an exoskeleton that is comfortable and fully operable for humans, and then using that exoskeleton as the foundation for designing the robot hand.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B Evaluation Details B.1 Initial State Selection</head><p>For each task, we manually select a set of initial states for the environment. Objects are placed as diversely as possible within the environment. This set of initial states is shared across all methods. We achieve consistency by placing an additional side camera to record images of all selected initial states. When starting a new evaluation episode, we visualize an image overlay between the recorded pre-selected initial state and the current initial state. We carefully adjust the current setup until it matches the pre-selected initial state with near pixel-perfect alignment.</p><p>Note that due to differences in wrist camera placement relative to the robot flange between the XHand and Inspire Hand, some initial states viable for the Inspire Hand cannot be completed by the XHand. For example, if the tea cup is positioned more than 45 • to the left of the tea pot (image space), the XHand's wrist camera cannot capture the tea cup after grasping the tea due to its camera positioning (the XHand thumb has a larger range of motion, requiring us to rotate the wrist camera more toward the thumb direction to obtain clearer visual observations). Consequently, the XHand and Inspire Hand do not strictly share the same set of initial states for the Tea Picking Using Tool task. Nevertheless, we ensure their initial states remain within similar distributions and maintain as much diversity as possible.</p><p>For the kitchen task, the large workspace presents challenges for a fixed-base single UR5 to cover diverse initial states, particularly regarding the seasoning bowl location, as the stove and knob positions are fixed. Despite these constraints, we maximize the diversity of bowl placement within the kinematically feasible workspace.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.2 Success Criteria</head><p>Cube Picking: The robot must pick up the red cube and place it into the yellow cup. If the cup falls over after the cube is already placed in it, we still count the episode as successful.</p><p>Egg Carton: We define task success as when the lid is lifted up with its box at an angle greater than 30 • and the egg box remains stable on the shelf.</p><p>Tea Picking Using Tool: This task consists of two sub-tasks. We define tool picking success as the robot's ability to steadily hold the tweezers and move them to the tea pot. We define leaf picking success as the robot's ability to use tweezers to 1) grasp at least one tea leaf from the pot and 2) transfer at least half of the grasped tea leaf into the cup. Subsequent sub-tasks automatically count as failures if the previous sub-task fails, even if the robot can successfully complete the later subtasks.</p><p>Kitchen Manipulation: This task consists of three sub-tasks. We define knob closing success as the robot hand rotating the knob by at least 60 • from its initial position. We define pan moving success as the robot moving the pan from the stove to the counter without dropping it during transfer. We define the salt task success as the robot 1) grasping some seasoning from the bowl and 2) sprinkling it inside the pan. Subsequent sub-tasks automatically count as failures if the previous sub-task fails, even if the robot can successfully complete the later sub-tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.3 Policy Execution</head><p>The learned policy predicts 16 steps of future actions, but the robot only executes the first 8 steps and discards the rest. The policy executes at 10 Hz, while the UR5 executes commands at 125 Hz. The Inspire Hand executes at 10 Hz, and the XHand executes at 60 Hz. The 10 Hz policy commands are linearly interpolated to match the desired hardware execution frequency.</p><p>The action output by the policy contains two components: relative UR5 end-effector action and hand action. The relative end-effector action from the learned policy is converted to absolute by adding the relative action to the current UR5 absolute position in the UR5 base frame. For hand actions, if the action type is absolute, the desired motor value is sent directly to the robot hand for execution. If the hand action type is relative, we first read the current hand motor position, add the relative hand action to it, and then send the result for execution.</p><p>For the XHand, we found that creating a virtual current hand motor position improves performance compared to reading the current position directly from hardware. Unlike the Inspire Hand motor, which is self-locking, the XHand finger position slightly drifts after encountering external forces (such as the restoring force of tweezers). The 10 Hz policy isn't reactive enough to adjust for this real-time drifting. Consider the following scenario: the robot hand attempts to close the tweezers to grasp tea leaves. The current motor value obtained by calling the hardware API might already be outdated due to the restoring force of the tweezers (causing fingers to spread wider) when robot execution begins. To address this issue, we initialize a virtual current hand motor position by reading the actual motor position at the beginning of the evaluation. Once the evaluation begins, we update this virtual hand motor position by adding the executed relative hand actions. With this virtual hand motor position approach, finger actions become less impacted by physical drifting, resulting in more precise and reliable grasping operations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C Exoskeleton Design Details</head><p>C.1 Inspire Hand Underactuated hands like the Inspire Hand typically incorporate closed-loop kinematics, such as four-bar linkages, which cannot be directly represented in URDF. As a result, we cannot initialize the exoskeleton design for the Inspire Hand directly from its URDF model. Instead, our approach is to capture the finger kinematic behavior-specifically, the fingertip poses-and use equivalent general linkage designs with the same degrees of freedom (DoFs) as an initial template for the finger mechanisms. This allows the optimization process to identify parameters that best match the observed kinematics.</p><p>To achieve this, we employed a motion capture system (see Fig. <ref type="figure" target="#fig_10">9</ref>) to record the fingertip poses in SE(3) space. We 3D-printed marker mounting components for each finger and flange and installed them on the Inspire Hand. For the index, middle, ring, and pinky fingers, each of which has a single DoF, we uniformly sampled 16 motor command values from the lower limit (0) to the upper limit (1000), sent the commands to the fingers, and recorded the corresponding fingertip poses.</p><p>For the thumb, which has 2 DoFs-swing and bend-we first fixed the swing value and then uniformly sampled the bend motor values. For example, as shown in Fig. <ref type="figure" target="#fig_10">9d</ref>, we set the swing motor to 400 and recorded the fingertip poses by varying the bend motor command. We repeated this procedure for swing values of 0, 200, 400, 600, 800, and 1000.  After obtaining the fingertip poses in the flange coordinate system, we applied the same bi-level optimization formulation defined in Equation <ref type="formula" target="#formula_0">1</ref>in main paper to determine design parameters for each finger. For all five fingers, we employed four-bar linkages as the linkage designs.</p><p>For each sampled design parameter, We simulate the fingertip poses using PlaCo <ref type="bibr" target="#b74">[75]</ref>. For thumb, we minimized the overall loss across all swing motor values, since the thumb's structural configuration should remain consistent regardless of the swing motor value.</p><p>From the optimized design parameters to the physical implementation, we apply three additional steps to ensure that the exoskeleton mask consistently covers the real Inspire Hand. First, we extend the length of the last link of each finger in the exoskeleton design by 3 mm beyond the optimized value. This guarantees that the exoskeleton mask always fully covers the last link of the actual Inspire Hand. Second, we increase the width of the thumb's four-bar linkage to eliminate any hollow regions in the camera's field of view, thereby maintaining the visual integrity of a continuous exoskeleton mask. Third, we conservatively tighten the joint limits by 5 • at each joint to ensure the mask continues to cover the real Inspire Hand even when structural deformation occurs due to the limited strength of the 3D-printed PLA-CF material.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C.2 XHand</head><p>Since the URDF file of the XHand is well-organized, with each joint origin defined at the location of its corresponding rotary joint, we can directly extract link lengths from the URDF structure. In cases where the exact values are not specified, we can perform reverse modeling using the STL meshes from URDF file to recover geometric features near each joint and manually measure link lengths in CAD software.</p><p>Joint limits are also specified in the URDF file and are implemented in the exoskeleton design by physically constraining the link motion to prevent rotation beyond the specified range. Similar to the Inspire Hand exoskeleton design, we adopt a conservative strategy when applying these limits setting slightly tighter bounds on each joints. For example, if the actual joint rotation range is -110 • to 20 • , the corresponding exoskeleton limit is set to -105 • to 15 • . This precaution accounts for possible deformation of the 3D-printed exoskeleton links under human-applied torque, which can introduce unintended joint deflection. Without this buffer, the exoskeleton might deform beyond the physical limits of the XHand, leading to an embodiment gap.</p><p>When converting the link lengths to the actual exoskeleton design, two primary constraints must be considered. The first is wearability. To ensure that the human operator can comfortably wear the exoskeleton, the structure must be hollowed out as much as possible, allowing the finger to pass through unobstructed. The second constraint is material strength. Through empirical testing, we determined that the optimal minimum structural width for 3D-printed PLA-CF material is 4 mm. Therefore, any part expected to experience significant stress is reinforced to be at least 4 mm thick in the final design. Our exoskeleton uses Alps RDC506018A rotary sensors as encoders at every joints. These are resistive sensors whose resistance varies approximately linearly with absolute angular position.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D Sensor Details D.1 Joint Encoder</head><p>As shown in Fig. <ref type="figure" target="#fig_11">10</ref>, when the joint rotates, the voltage on the ADC line changes proportionally. This analog voltage signal is then sampled by an Analog-to-Digital Converter (ADC) on a microcontroller unit (MCU). Then the joint angle α joint can be estimated as:</p><formula xml:id="formula_1">α joint = V ADC 3.3 V × 360 •</formula><p>However, this simple voltage divider circuit has a significant failure mode: if the power supply (3.3 V in our case) is unstable due to temperature drift in semiconductor components or ripple from DC-DC converters and LDOs, the joint angle reading will drift accordingly. To mitigate this issue, we simultaneously measure the supply voltage through another ADC channel. Instead of dividing by a fixed 3.3 V, we normalize the sensor voltage using the measured supply voltage when computing the joint angle:</p><formula xml:id="formula_2">α joint = V ADC V supply × 360 •</formula><p>This voltage normalization runs in real time on the MCU. After computing the joint angles, the MCU packs all joint values into a single data packet with a fixed 2-byte header and a checksum tail. The header simplifies decoding by allowing the receiver to locate a known keyword in variable-length data streams, while the checksum ensures packet integrity. The final data packet is transmitted to the host computer via a Universal Asynchronous Receiver-Transmitter (UART) interface. For commercial dexterous hands without built-in tactile sensors (e.g., the Inspire Hand in our evaluation), we use a simple and low-cost Force-Sensitive Resistor (FSR) as the tactile sensor. When no force is applied, the FSR exhibits a resistance of several megaohms, while under significant force, the resistance drops to the kiloohms range.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D.2 Tactile</head><p>As shown in Fig. <ref type="figure" target="#fig_12">11</ref>, the FSR is incorporated into a simple voltage divider circuit to produce an analog voltage signal. The divider resistor R 1 is selected to be comparable to the minimum resistance of the FSR. Since the FSR resistance is approximately inversely proportional to the applied force, we can express the force using a constant scale factor k as:</p><formula xml:id="formula_3">F = k V supply V ADC -<label>1</label></formula><p>In our experimental setup, the same FSR sensor is mounted on both the dexterous hand and the exoskeleton. For simplicity, we directly use the V ADC reading as a proxy for tactile input.</p><p>For hands equipped with onboard tactile sensors (e.g., the XHand), we install the same type of sensor as used in the hand. In our setup, this sensor is a magnet-based tactile array capable of measuring three-dimensional forces across 120 points on its surface. The force data is output via an SPI communication interface using a proprietary protocol. By configuring this interface on our embedded system, the force array can be successfully transmitted to the host machine.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E Data Collection and Policy Training details E.1 Data Collection</head><p>We collected 310 trajectories for Cube Picking task policy training, 175 trajectories for Egg Carton Opening task policy training, and 400 trajectories for Tea Picking Using Tools policy training (for both Inspire Hand and XHand). For the kitchen task, we collected 370 trajectories covering all four sub-tasks, plus an additional 100 trajectories focused solely on knob closing.</p><p>For the Inspire Hand, all data types-including wrist position from ARKit, policy visual observations from the wrist-mounted camera, joint angles from encoders, and tactile feedback-were recorded at 45 FPS. For the XHand, we recorded at 30 FPS, as the tactile sensor readings became unstable at higher recording frequencies. For each data type, we recorded the receive timestamp t receive when the data arrived at the recording buffer.</p><p>We wear green gloves when collecting data with exoskeleton as we use green PLA-CF to 3D-printed the exoskeleton. We found consistent color helps SAM2 to yield better segmentation results.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E.2 Training Data Latency Management</head><p>There is an inherent latency between the time when sensors capture data and when that data actually arrives in the recording buffer. To ensure our imitation learning policy receives properly aligned observations (visual observations, tactile sensor readings) and actions (joint encoder readings), we calculate the actual data capture time using t capture = t receive -l sensor , where l sensor refers to the latency from capture to receive for a particular sensor. We measure the iPhone and OAK camera latency by reading a rolling QR code displayed on a computer monitor showing the current computer system time, as proposed in UMI <ref type="bibr" target="#b0">[1]</ref>. The camera and iPhone latency is calculated as l camera = t receive -t display -l display , where l display represents the monitor refresh rate.</p><p>The encoder latency is adjusted by examining the overlay image between the recorded exoskeleton image and the corresponding robot hand image from action replay. If the encoder latency is set too high, the robot hand fingers will execute future actions and lead in the overlay image. If the encoder latency is set too low, the robot hand fingers will lag behind the exoskeleton fingers in the overlay image. We tune the encoder latency until the exoskeleton fingers and robot fingers are perfectly aligned. Once all data timestamps are adjusted, we linearly interpolate the joint angles and tactile readings to obtain data points properly aligned with the camera timestamps. Finally, We downsample the data by a factor of 3 to reduce the policy training time.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E.3 Policy Training</head><p>We process the visual observations with pretrained DINO-V2 <ref type="bibr" target="#b75">[76,</ref><ref type="bibr" target="#b76">77]</ref>. Before passing the visual observations into DINO-V2, we augment it with random crop, color jitter, random grayscale and Gaussian Blur. We concatenate the CLS token from DINO-V2 with tactile sensor readings as input to the diffusion policy <ref type="bibr" target="#b77">[78,</ref><ref type="bibr" target="#b78">79]</ref>. The policy predicts 16 steps of robot actions, which contain both 6-DoF robot end-effector relative actions and hand actions (6-DoF for Inspire Hand and 12-DoF for XHand). We train the models for 400 epochs across all tasks for both types of hands. The pretrain DINO-V2 is not frozen and updated during the policy training.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Exoskeleton Design. The optimized exoskeleton design shares the same joint-to-fingertip position mapping as the target robot hand while maintaining the wearability. The exoskeletons utilizes the encoder to precisely capture the joint action and 150°DFoV camera to record the information-rich visual observation. An iPhone is rigidly mounted to track the wrist pose through the ARKit.</figDesc><graphic coords="3,255.07,33.03,342.55,214.16" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Mechanism Optimization. To avoid thumb collision between human hand and exoskeleton, the hardware optimization step allows us to move the exoskeleton thumb backward while still preserving the original fingertip and joint mapping in SE(3) space.</figDesc><graphic coords="4,351.11,158.01,57.25,115.33" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Bridging the Visual Gap. To convert the visual observation into policy training data, we first segment the exoskeleton using SAM2 (b) and inpaint the missing background (c). The corresponding joint action (a) is replayed on the dexterous hand to obtain the robot hand image (d). SAM2 is applied to obtain the robot mask (e). The intersection (f) of the exoskeleton mask (b) and robot mask (e) identifies the visible part of the hand during interaction. Finally, we replace pixels in the inpainted background (c) with the visible robot hand (g).</figDesc><graphic coords="5,228.42,25.23,94.91,175.29" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>› Task 1 .</head><label>1</label><figDesc>Cube Pick and Place Task 2. Egg Carton Opening Task 3. Tea Picking with Tool Inspire Hand XHand Task 4. Kitchen a) Turn off Knob b) Pick and Place Pan c) Pick Up Salt c) Sprinkle Salt</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Policy Rollout: We evaluate DexUMI's capabilities across challenging real-world tasks. The Cube task tests basic picking precision. The Egg Carton task evaluates multi-finger coordination. The Tea Picking task assesses performance on contact-rich manipulation requiring millimeter-level fine-grained fingertip actions. Finally, the Kitchen task tests capabilities on long-horizon high-precision actions to manipulate a knob, move a pan using both the side of thumb and index finger (beyond just fingertips), and utilize tactile sensing for visually challenging salt picking tasks.</figDesc><graphic coords="6,189.81,447.54,89.99,69.44" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Comparisons. a) The policy outputs relative hand actions yield more precise action and demonstrate better multi-finger coordination. Note, we draw a sketch for the knob closing for better visualization. b) Even with noisy tactile sensor reading, the tactile significantly improve tasks which is visually challenging.</figDesc><graphic coords="8,301.92,87.10,205.86,115.65" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Efficiency: Collection throughput (CT) within 15-minute. Though DexUMI still slower than bare hand, it achieves significant higher efficiency than teleportation.</figDesc><graphic coords="8,346.81,473.85,155.43,96.11" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Inpainting Results. The visual observations in the original collected dataset contain exoskeletons and human hands. The software adaptation layer replaces these pixels with corresponding robot hand images while preserving the natural occlusion relationships during hand-object interactions. Please see project website https://dex-umi.github.io for details.</figDesc><graphic coords="18,316.30,444.40,84.91,52.81" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Inspire Mocap: We use motion capture system to record fingertips trajectories in the flange coordinate. We attached marker on fingers and flange to capture the fingertip pose in flange coordinate.</figDesc><graphic coords="20,385.59,490.96,107.81,150.93" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: Joint Encoder Circuit: The rotary sensor acts as a variable resistor with three output pins. As it rotates with the joint, the voltage on the ADC line changes approximately linearly.</figDesc><graphic coords="21,374.06,411.06,101.35,96.74" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Voltage Divider Circuit: This simple voltage divider circuit converts the resistance change of the FSR sensor into an analog voltage on the ADC line.</figDesc><graphic coords="22,373.50,97.46,98.08,93.42" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 :</head><label>1</label><figDesc>Evaluation Results. We report stage-wise accumualted success rate. The experiments compare different combinations of finger action representation (Absolute vs Relative), tactile feedback (Yes vs No), and visual rendering approaches (Inpaint vs Mask/Raw).</figDesc><table><row><cell></cell><cell>Method</cell><cell></cell><cell></cell><cell cols="2">Inspire Hand</cell><cell></cell><cell></cell><cell>XHand</cell><cell></cell><cell></cell></row><row><cell cols="3">Action Tactile Visual</cell><cell cols="2">Cube Carton</cell><cell cols="5">Tea tool leaf tool leaf knob pan Tea Kichen</cell><cell>salt</cell></row><row><cell>Rel</cell><cell>Yes</cell><cell cols="2">Inpaint 1.00</cell><cell>0.85</cell><cell cols="6">1.00 0.85 1.00 0.85 0.95 0.95 0.75</cell></row><row><cell>Abs</cell><cell>Yes</cell><cell cols="2">Inpaint 0.10</cell><cell>0.35</cell><cell cols="6">0.80 0.00 1.00 0.25 0.50 0.45 0.00</cell></row><row><cell>Rel</cell><cell>No</cell><cell cols="2">Inpaint 0.95</cell><cell>0.90</cell><cell cols="6">1.00 0.90 0.95 0.80 0.95 0.95 0.15</cell></row><row><cell>Abs</cell><cell>No</cell><cell cols="2">Inpaint 0.90</cell><cell>0.85</cell><cell cols="6">0.90 0.60 1.00 0.75 0.60 0.60 0.0</cell></row><row><cell>Rel</cell><cell>No</cell><cell>Mask</cell><cell>0.60</cell><cell>0.10</cell><cell>0.90 0.50</cell><cell>/</cell><cell>/</cell><cell>/</cell><cell>/</cell><cell>/</cell></row><row><cell>Rel</cell><cell>No</cell><cell>Raw</cell><cell>0.20</cell><cell>0.05</cell><cell>0.85 0.05</cell><cell>/</cell><cell>/</cell><cell>/</cell><cell>/</cell><cell>/</cell></row></table><note><p>• Inspire Hand (IHand): A twelve-DoF (six active DoFs) underactuated hand. The thumb has two active and two passive DoFs, while each remaining finger has one active and one passive DoF.</p></note></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgments</head><p>We would like to thank <rs type="person">Dominik Bauer</rs>, <rs type="person">Huy Ha</rs>, <rs type="person">Yinghao Xu</rs>, <rs type="person">Yihuai Gao</rs>, <rs type="person">Haoyu Xiong</rs>, <rs type="person">Maximilian Du</rs>, <rs type="person">Mandi Zhao</rs>, <rs type="person">Zhanyi Sun</rs>, <rs type="person">Zeyi Liu</rs>, <rs type="person">Chuer Pan</rs>, <rs type="person">Xiaomeng Xu</rs>, <rs type="person">Austin Patel</rs>, <rs type="person">Haochen shi</rs>, <rs type="person">Jingxi Xu</rs>, <rs type="person">Hojung Choi</rs>, <rs type="person">John So</rs>, <rs type="person">Cheng Chi</rs> and <rs type="person">Shuang Li</rs> for their helpful feedback and fruitful discussions. We thank <rs type="person">Zipeng Fu</rs> and <rs type="person">Chen Wang</rs> for their assistance with the Inspire hand setup. This work was supported in part by the <rs type="funder">NSF</rs> Award #<rs type="grantNumber">2143601</rs>, #<rs type="grantNumber">2037101</rs>, and #<rs type="grantNumber">2132519</rs>. We would like to thank <rs type="institution">TRI</rs> for providing the UR5 robot hardware, NVIDIA for the <rs type="affiliation">Inspire Hand and Robotera</rs> for the XHand, and <rs type="funder">Apple</rs> for the iPhone hardware. The views and conclusions contained herein are those of the authors and should not be interpreted as necessarily representing the official policies, either expressed or implied, of the sponsors. Mengda Xu's work is supported by <rs type="funder">JPMorgan Chase &amp; Co</rs>. This paper was prepared for information purposes in part by the <rs type="projectName">Artificial Intelligence Research group of JPMorgan Chase &amp; Co and its affiliates ("JP Morgan</rs>"), and is not a product of the <rs type="institution">Research Department of JP Morgan</rs>. JP Morgan makes no representation and warranty whatsoever and disclaims all liability, for the completeness, accuracy or reliability of the information contained herein. This document is not intended as investment research or investment advice, or a recommendation, offer or solicitation for the purchase or sale of any security, financial instrument, financial product or service, or to be used in any way for evaluating the merits of participating in any transaction, and shall not constitute a solicitation under any jurisdiction or to any person, if such solicitation under such jurisdiction or to such person would be unlawful.</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_yMH6y68">
+					<idno type="grant-number">2143601</idno>
+				</org>
+				<org type="funding" xml:id="_2yhaEfB">
+					<idno type="grant-number">2037101</idno>
+				</org>
+				<org type="funding" xml:id="_RpjZA2a">
+					<idno type="grant-number">2132519</idno>
+				</org>
+				<org type="funded-project" xml:id="_GeqBb2N">
+					<orgName type="project" subtype="full">Artificial Intelligence Research group of JPMorgan Chase &amp; Co and its affiliates (&quot;JP Morgan</orgName>
+				</org>
+			</listOrg>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Appendix A Additional Experiment Results</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.1 Inpainting Results</head><p>We show the processed visual observation by the software adaptation layer in policy training data in Fig. <ref type="figure">8</ref>. Our software adaptation bridges the visual gap by replacing the human hand and exoskeleton in visual observations recorded by the wrist camera with high-fidelity robot hand inpainting. Though the overall inpainting quality is good, we found there are still some deficiencies in the output caused by:</p><p>• Imperfect Segmentation from SAM2: In most cases, SAM2 can segment the human hand and exoskeleton effectively. However, we notice SAM2 sometimes misses some small areas on the exoskeleton. • Quality of inpainting method: We use flow-based inpainting to replace the human and exoskeleton pixels with background pixels. Though the overall quality is high, some areas remain blurry. We add Gaussian blur augmentation to the images during policy training to make the policy less sensitive to this blurriness. • Robot hand hardware limitations: Throughout our experiments, we found that both the Inspire Hand and XHand lack sufficient precision due to backlash and friction. For example, the fingertip location of the Inspire Hand differs when moving from 1000 to 500 motor units compared to moving from 0 to 500 motor units. Consequently, when fitting regression models between encoder and hand motor values, we can typically ensure precision in only "one direction"-either when closing the hand or opening it. This inevitably causes minor discrepancies in the inpainting and action mapping processes. • Inconsistent illumination: Similar to prior work <ref type="bibr" target="#b68">[69]</ref>, we found that illumination on the robot hand might be inconsistent with what the robot experiences during deployment. Therefore, we add image augmentation including color jitter and random grayscale during policy training to make the learned policy less sensitive to lighting conditions. • 3D-printed exoskeleton deformation: The human hand is powerful and can sometimes cause the 3D-printed exoskeleton to deform during operation. In such cases, the encoder value fails to reflect this deformation. Consequently, the robot finger location might not align with the exoskeleton's actual finger position.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.2 Relative and Absolute Action Distribution</head><p>We visualize both relative and absolute action distribution of thumb swing joints in the Kitchen task. The relative action distribution is a simple unimodal while the absolute action distribution is multi-modal.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Relative Finger Trajectory Absolute Finger Trajectory</head></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tedrake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.10329</idno>
+		<title level="m">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">The surprising effectiveness of representation learning for visual imitation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">P</forename><surname>Arunachalam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2112.01511</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">M M</forename><surname>Shafiullah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Etukuru</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Misra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.16098</idno>
+		<title level="m">On bringing robots home</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<ptr target="https://inspire-robots.store/collections/the-dexterous-hands/products/the-dexterous-hands-rh56dfx-series?variant=42735794422004" />
+		<title level="m">Generic. inspire hand</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Generic</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Xhand</surname></persName>
+		</author>
+		<ptr target="https://www.robotera.com/en/goods1/4.html" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Learning dexterous in-hand manipulation</title>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">M</forename><surname>Andrychowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chociej</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Jozefowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mcgrew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pachocki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Petron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Plappert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Powell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ray</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The International Journal of Robotics Research</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="3" to="20" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<author>
+			<persName><forename type="first">T</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z.-H</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.02338</idno>
+		<title level="m">Twisting lids off with two hands</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Lessons from learning to spin&quot; pens</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Che</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.18902</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Learning purely tactile in-hand manipulation with a torquecontrolled hand</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Sievers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Bäuml</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 International conference on robotics and automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="2745" to="2751" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">G W</forename><surname>Lum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Matak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hermans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">D</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.02274</idno>
+		<title level="m">Dextrah-g: Pixels-to-action dexterous arm-hand grasping with geometric fabrics</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Church</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Ford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Psomopoulou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">A</forename><surname>Barton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">F</forename><surname>Lepora</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2405.07391</idno>
+		<title level="m">Anyrotate: Gravity-invariant in-hand object rotation with sim-to-real touch</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">On the utility of koopman operator theory in learning dexterous manipulation skills</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ravichandar</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="106" to="126" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Uppal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2312.02975</idno>
+		<title level="m">Dexterous functional grasping</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Dextreme: Transfer of agile in-hand manipulation from simulation to reality</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Makoviychuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Petrenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Makoviichuk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zhurkevich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Sundaralingam</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="5977" to="5984" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<author>
+			<persName><forename type="first">Z.-H</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2303.10880</idno>
+		<title level="m">Rotating without seeing: Towards in-hand dexterity through touch</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Ciocarlie. Sampling-based exploration for reinforcement learning of dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Khandate</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Shang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">T</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">L</forename><surname>Saidi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Dennis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Adams</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename></persName>
+		</author>
+		<idno type="arXiv">arXiv:2303.03486</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Atanasov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.05655</idno>
+		<title level="m">Dynamic handover: Throw and catch with bimanual hands</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">In-hand object rotation via rapid motor adaptation</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Calandra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1722" to="1732" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<author>
+			<persName><forename type="first">R</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Allshire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2412.01791</idno>
+		<title level="m">Dextrah-rgb: Visuomotor policies to grasp anything with dexterous hands</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Get a grip: Multi-finger grasp evaluation at scale enables robust sim-to-real transfer</title>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">G W</forename><surname>Lum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">H</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Culbertson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Srinivasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">D</forename><surname>Ames</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schwager</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bohg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.23701</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Doglove: Dexterous manipulation with a low-cost open-source haptic force feedback glove</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2502.07730" />
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">K</forename><surname>Srirama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Mendonca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2411.13677</idno>
+		<title level="m">Bimanual dexterity for complex tasks</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">High-fidelity grasping in virtual reality using a glove-based system</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S.-C</forename><surname>Zhu</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA.2019.8794230</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="5180" to="5186" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Nimbro avatar: Interactive immersive telepresence with force-feedback telemanipulation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schwarz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lenz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rochow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schreiber</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Behnke</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="5312" to="5319" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<author>
+			<persName><forename type="first">Z.-H</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pineda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Hogan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Bodduluri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Lancaster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Prasad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Malik</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2502.04307</idno>
+		<title level="m">Foundation controller for unprecedented dexterity</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sreenath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2412.14803</idno>
+		<title level="m">Video prediction policy: A generalist robot policy with predictive visual representations</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.03162</idno>
+		<title level="m">Bunnyvisionpro: Real-time bimanual dexterous teleoperation for imitation learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Open-television: Teleoperation with immersive active visual feedback</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">8th Annual Conference on Robot Learning</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Guzey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Haldar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2403.07870</idno>
+		<title level="m">Open teach: A versatile teleoperation system for robotic manipulation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Ace: A crossplatform and visual-exoskeletons system for low-cost dexterous teleoperation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+	<note>In 8th Annual Conference on Robot Learning</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Anyteleop: A general vision-based dexterous robot arm-hand teleoperation system</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-W</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Megatrack: monochrome egocentric articulated hand-tracking for virtual reality</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Cabezas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">D</forename><surname>Twigg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Petkau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T.-H</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C.-J</forename><surname>Tai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Akbay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Graphics (ToG)</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="87" to="88" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Dexterous imitation made easy: A learning-based framework for efficient dexterous manipulation</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">P</forename><surname>Arunachalam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Silwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Evans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 ieee international conference on robotics and automation (icra)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="5954" to="5961" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Dexpilot: Vision-based teleoperation of dexterous robotic hand-arm system</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Handa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Wyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-W</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Birchfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ratliff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA40945.2020.9197124</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="9164" to="9170" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">From one hand to multiple hands: Imitation learning for dexterous manipulation from single-camera teleoperation</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/LRA.2022.3196104</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="10873" to="10881" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Holo-dex: Teaching dexterity with immersive mixed reality</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">P</forename><surname>Arunachalam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Güzey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chintala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA48891.2023.10160547</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="5962" to="5969" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tomizuka</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2502.09960</idno>
+		<title level="m">Global-local interface for on-demand teleoperation</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.09309</idno>
+		<title level="m">Adaptive compliance policy: Learning approximate compliance for diffusion guided control</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kannan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mannam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2310.19797</idno>
+		<title level="m">Deft: Dexterous fine-tuning for real-world hand policies</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Learning dexterous grasping with object-centric visual affordances</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mandikal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Grauman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE international conference on robotics and automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="6169" to="6176" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Learning generalizable dexterous manipulation from human grasp affordance</title>
+		<author>
+			<persName><forename type="first">Y.-H</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="618" to="629" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gavryushin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Malate</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Goel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Liconti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zurbrügg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">K</forename><surname>Katzschmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Pollefeys</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Maple</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.06084</idno>
+		<title level="m">Encoding dexterous robotic manipulation priors learned from egocentric videos</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<monogr>
+		<author>
+			<persName><forename type="first">S</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Joo</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2501.04169</idno>
+		<title level="m">Learning to transfer human hand skills for robot manipulations</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Arlaud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Laptev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Schmid</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2404.15709</idno>
+		<title level="m">Vividex: Learning vision-based dexterous manipulation from human videos</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Dexvip: Learning dexterous grasping with human hand pose priors from video</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mandikal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Grauman</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="651" to="661" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Learning continuous grasping function with a dexterous hand from human demonstrations</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="2882" to="2889" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Dexmv: Imitation learning for dexterous manipulation from human videos</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-H</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">European Conference on Computer Vision</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="570" to="587" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">in the wild: Learning 6dof closed-loop grasping from low-cost demonstrations</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Funkhouser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Robotics and Automation Letters</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2407.10353</idno>
+		<title level="m">Umi on legs: Making manipulation policies mobile with manipulation-centric whole-body controllers</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Visual imitation made easy</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Young</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Gandhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tulsiani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Pinto</surname></persName>
+		</author>
+		<idno>PMLR</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Robot learning</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="1992" to="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">On hand-held grippers and the morphological gap in human manipulation demonstration</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Doshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Coros</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.01832</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">Characterizing input methods for human-to-robot demonstrations</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Praveena</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Subramani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mutlu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gleicher</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 14th ACM/IEEE International Conference on Human-Robot Interaction (HRI)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="344" to="353" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Scalable. intuitive human to robot skill transfer with wearable human machine interfaces: On complex, dexterous tasks</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Sanches</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Elangovan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">V</forename><surname>Godoy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chapman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Jarvis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Liarokapis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="6318" to="6325" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Legato: Cross-embodiment imitation using a grasping tool</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Seo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">A</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Sentis</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/LRA.2025.3535182</idno>
+		<ptr target="http://dx.doi.org/10.1109/LRA.2025.3535182" />
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<idno type="ISSN">2377-3774</idno>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="2854" to="2861" />
+			<date type="published" when="2025-03">Mar. 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<title level="m" type="main">Data scaling laws in imitation learning for robotic manipulation</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>You</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Gao</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2410.18647</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<title level="m" type="main">Vitamin: Learning contact-rich tasks through robot-free visuo-tactile manipulation interface</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Shaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2504.06156</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<analytic>
+		<title level="a" type="main">Maniwav: Learning robot manipulation from in-the-wild audio-visual data</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kuppuswamy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">8th Annual Conference on Robot Learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<monogr>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Liu</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2403.07788" />
+		<title level="m">Dexcap: Scalable and portable mocap data collection system for dexterous manipulation</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main">A wearable robotic hand for hand-over-hand imitation learning</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="18113" to="18119" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<title level="m" type="main">Dexo: Hand exoskeleton system for teaching robot dexterous manipulation in-the-wild</title>
+		<author>
+			<persName><forename type="first">H.-S</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename></persName>
+		</author>
+		<ptr target="https://fang-haoshu.github.io/files/DEXO.pdf" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main">Embodied hands: and capturing hands and bodies together</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Tzionas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Black</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/3130800.3130883</idno>
+		<ptr target="http://dx.doi.org/10.1145/3130800.3130883" />
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Graphics</title>
+		<idno type="ISSN">1557-7368</idno>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="1" to="17" />
+			<date type="published" when="2017-11">Nov. 2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<monogr>
+		<title level="m" type="main">Alps alpine rdc506018a rotary position sensor</title>
+		<author>
+			<persName><forename type="first">Alps</forename><surname>Alpine</surname></persName>
+		</author>
+		<ptr target="https://www.digikey.com/en/products/detail/alps-alpine/RDC506018A/19529120" />
+		<imprint>
+			<date type="published" when="2025-03-23">2025. March 23, 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<monogr>
+		<title level="m" type="main">Oak-1 w ov9792</title>
+		<ptr target="https://shop.luxonis.com/products/oak-1-w?variant=44051403604191" />
+		<imprint>
+			<date type="published" when="2025-03-23">2025. March 23, 2025</date>
+		</imprint>
+	</monogr>
+	<note>Generic</note>
+</biblStruct>
+
+<biblStruct xml:id="b63">
+	<monogr>
+		<title level="m" type="main">Zd10-100 force sensitive resistor (fsr) pressure sensor</title>
+		<ptr target="https://www.amazon.com/Pressure-ZD10-100-Resistance-Type-Resistor-Sensitive/dp/B07MHTWR1C/" />
+		<imprint>
+			<date type="published" when="2025-03-23">2025. March 23, 2025</date>
+		</imprint>
+	</monogr>
+	<note>Generic</note>
+</biblStruct>
+
+<biblStruct xml:id="b64">
+	<monogr>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ravi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Gabeur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-T</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Ryali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Khedr</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Rädle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Rolland</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Gustafson</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2408.00714</idno>
+		<title level="m">Segment anything in images and videos</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">2</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b65">
+	<analytic>
+		<title level="a" type="main">Propainter: Improving propagation and transformer for video inpainting</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">C</forename><surname>Chan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">C</forename><surname>Loy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF international conference on computer vision</title>
+		<meeting>the IEEE/CVF international conference on computer vision</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="10477" to="10486" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b66">
+	<monogr>
+		<title level="m" type="main">Human-to-robot imitation in the wild</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pathak</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2207.09450</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b67">
+	<analytic>
+		<title level="a" type="main">Ag2manip: Learning novel manipulation skills with agent-agnostic visual and action representations</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Geng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S.-C</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Huang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="573" to="580" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b68">
+	<monogr>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Dharmarajan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">Z</forename><surname>Irshad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Keutzer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tomizuka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Vuong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Goldberg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2409.03403</idno>
+		<title level="m">Rovi-aug: Robot and viewpoint augmentation for crossembodiment robot learning</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b69">
+	<monogr>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.15038</idno>
+		<title level="m">Dynamics-guided diffusion model for robot manipulator design</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b70">
+	<analytic>
+		<title level="a" type="main">Gelsight: High-resolution robot tactile sensors for estimating geometry and force</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">H</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page">2762</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b71">
+	<analytic>
+		<title level="a" type="main">Eyesight hand: Design of a fully-actuated dexterous robot hand with integrated vision-based tactile sensors and compliant actuation</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Romero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-S</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Agrawal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Adelson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="1853" to="1860" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b72">
+	<analytic>
+		<title level="a" type="main">Enhancing generalizable 6d pose tracking of an in-hand object with tactile sensing</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Yi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1106" to="1113" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b73">
+	<monogr>
+		<title level="m" type="main">Coinft: A coin-sized, capacitive 6-axis force torque sensor for robotic applications</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">E</forename><surname>Low</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">M</forename><surname>Huh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">A</forename><surname>Uribe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">A</forename><surname>Hoffman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Di</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">G</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Stanley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Cutkosky</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2503.19225</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b74">
+	<monogr>
+		<title level="m" type="main">Placo: A python library for planning and control</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Contributors</surname></persName>
+		</author>
+		<ptr target="https://placo.readthedocs.io/" />
+		<imprint>
+			<date type="published" when="2025-05-08">2025. May 8, 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b75">
+	<analytic>
+		<author>
+			<persName><forename type="first">M</forename><surname>Oquab</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Darcet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Moutakanni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Vo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Szafraniec</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Khalidov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Fernandez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Haziza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Massa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>El-Nouby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Assran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ballas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Galuba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Howes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P.-Y</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S.-W</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Misra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Rabbat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Synnaeve</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jegou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mairal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Labatut</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Joulin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Bojanowski</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2304.07193" />
+	</analytic>
+	<monogr>
+		<title level="m">Learning robust visual features without supervision</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">2</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b76">
+	<analytic>
+		<title level="a" type="main">Jacobinerf: Nerf shaping with mutual information gradients</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Mo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Yi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Guibas</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="16498" to="16507" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b77">
+	<analytic>
+		<title level="a" type="main">Diffusion policy: Visuomotor policy learning via action diffusion</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cousineau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Burchfiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Robotics: Science and Systems</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b78">
+	<monogr>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bauer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Song</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2501.05420</idno>
+		<title level="m">Robopanoptes: The all-seeing robot with whole-body dexterity</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
