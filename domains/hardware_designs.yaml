@@ -10,6 +10,7 @@ explorer_enabled: true
 
 csv_path: datasets/hardware-designs/hardware_designs.csv
 papers_dir: datasets/hardware-designs/papers/
+drive_folder: "https://drive.google.com/drive/folders/1ne3gD99B3DVDJD2Od7ecCoSj0R2Dzr_r?usp=drive_link"
 
 columns:
   "Name": { role: identity.name, facet: identifier }
