@@ -1,0 +1,233 @@
+{
+  "9dtact": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2308.14277"
+  },
+  "airexo-2": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2503.03081"
+  },
+  "aloha": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2304.13705"
+  },
+  "aloha-2": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2405.02292"
+  },
+  "anyskin": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2409.08276"
+  },
+  "armada": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2502.16908"
+  },
+  "berkeley-humanoid-lite": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2504.17249"
+  },
+  "coinft": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2503.19225"
+  },
+  "controller-for-humanoid-imitation-and-live-demonstration-child": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2508.00162"
+  },
+  "craft-hand": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2603.12120"
+  },
+  "dexumi": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2505.21864"
+  },
+  "dexwild-system": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2505.07813"
+  },
+  "digit": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2005.14679"
+  },
+  "digitac": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2206.13657"
+  },
+  "doglove": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2502.07730"
+  },
+  "fastumi": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2409.19499"
+  },
+  "freetacman": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2506.01941"
+  },
+  "gello": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2309.13037"
+  },
+  "gelslim": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2103.12269"
+  },
+  "grasp-everything-get": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2505.09771"
+  },
+  "insight": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2111.05934"
+  },
+  "isyhand": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2509.26236"
+  },
+  "leap-hand": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2309.06440"
+  },
+  "legato-gripper": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2411.03682"
+  },
+  "magiclaw": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2509.19169"
+  },
+  "magpie-gripper": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2402.06018"
+  },
+  "midas-hand": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2607.14487"
+  },
+  "minsight": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2304.10990"
+  },
+  "mobile-aloha": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2401.02117"
+  },
+  "orca-hand": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2504.04259"
+  },
+  "punyo": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2004.03691"
+  },
+  "r-tac-sensor": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2504.16649"
+  },
+  "reachy-2": {
+    "resolved_via": "openalex",
+    "similarity": 1.0,
+    "source": "openalex",
+    "url": "https://www.frontiersin.org/articles/10.3389/fnbot.2019.00065/pdf"
+  },
+  "reskin": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2111.00071"
+  },
+  "robotics-benchmarks-for-learning-robel": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/1909.11639"
+  },
+  "ruka-hand": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2504.13165"
+  },
+  "ruka-v2": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2603.26660"
+  },
+  "shapeforce": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2511.19955"
+  },
+  "tactile-softhand-a": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2406.12731"
+  },
+  "tf-gripper": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2602.10013v2"
+  },
+  "tidybot": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2412.10447"
+  },
+  "toddlerbot": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2502.00893"
+  },
+  "trifinger": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2008.03596"
+  },
+  "universal-manipulation-interface-umi-gripper": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2402.10329"
+  },
+  "your-own-robot-yor": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2602.11150"
+  },
+  "yubi": {
+    "resolved_via": "csv_column",
+    "source": "csv:arXiv",
+    "url": "https://arxiv.org/abs/2606.10244"
+  }
+}
